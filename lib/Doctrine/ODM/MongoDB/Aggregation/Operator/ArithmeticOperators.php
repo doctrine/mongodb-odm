@@ -25,6 +25,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/abs/
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function abs($number): self;
 
@@ -41,6 +43,8 @@ interface ArithmeticOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
+     *
+     * @return static
      */
     public function add($expression1, $expression2, ...$expressions): self;
 
@@ -54,6 +58,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ceil/
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function ceil($number): self;
 
@@ -67,6 +73,8 @@ interface ArithmeticOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function divide($expression1, $expression2): self;
 
@@ -79,6 +87,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/exp/
      *
      * @param mixed|Expr $exponent
+     *
+     * @return static
      */
     public function exp($exponent): self;
 
@@ -91,6 +101,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/floor/
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function floor($number): self;
 
@@ -104,6 +116,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function ln($number): self;
 
@@ -120,6 +134,8 @@ interface ArithmeticOperators
      *
      * @param mixed|Expr $number
      * @param mixed|Expr $base
+     *
+     * @return static
      */
     public function log($number, $base): self;
 
@@ -132,6 +148,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log10/
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function log10($number): self;
 
@@ -146,6 +164,8 @@ interface ArithmeticOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function mod($expression1, $expression2): self;
 
@@ -160,6 +180,8 @@ interface ArithmeticOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
+     *
+     * @return static
      */
     public function multiply($expression1, $expression2, ...$expressions): self;
 
@@ -175,6 +197,8 @@ interface ArithmeticOperators
      *
      * @param mixed|Expr $number
      * @param mixed|Expr $exponent
+     *
+     * @return static
      */
     public function pow($number, $exponent): self;
 
@@ -188,6 +212,8 @@ interface ArithmeticOperators
      *
      * @param mixed|Expr      $number
      * @param mixed|Expr|null $place
+     *
+     * @return static
      */
     public function round($number, $place = null): self;
 
@@ -201,6 +227,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sqrt/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function sqrt($expression): self;
 
@@ -214,6 +242,8 @@ interface ArithmeticOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function subtract($expression1, $expression2): self;
 
@@ -226,6 +256,8 @@ interface ArithmeticOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trunc/
      *
      * @param mixed|Expr $number
+     *
+     * @return static
      */
     public function trunc($number): self;
 }

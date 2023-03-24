@@ -25,6 +25,8 @@ interface ObjectOperators
      *
      * @param mixed|Expr $field
      * @param mixed|Expr $input
+     *
+     * @return static
      */
     public function getField($field, $input = null): self;
 
@@ -35,6 +37,8 @@ interface ObjectOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function mergeObjects($expression, ...$expressions): self;
 
@@ -48,6 +52,8 @@ interface ObjectOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/objectToArray/
      *
      * @param mixed|Expr $object
+     *
+     * @return static
      */
     public function objectToArray($object): self;
 
@@ -59,6 +65,8 @@ interface ObjectOperators
      * @param mixed|Expr $field
      * @param mixed|Expr $input
      * @param mixed|Expr $value
+     *
+     * @return static
      */
     public function setField($field, $input, $value): self;
 }

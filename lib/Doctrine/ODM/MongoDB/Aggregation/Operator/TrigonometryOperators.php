@@ -22,6 +22,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acos/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function acos($expression): self;
 
@@ -32,6 +34,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acosh/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function acosh($expression): self;
 
@@ -41,6 +45,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asin/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function asin($expression): self;
 
@@ -51,6 +57,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asinh/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function asinh($expression): self;
 
@@ -60,6 +68,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function atan($expression): self;
 
@@ -71,6 +81,8 @@ interface TrigonometryOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function atan2($expression1, $expression2): self;
 
@@ -81,6 +93,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atanh/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function atanh($expression): self;
 
@@ -90,6 +104,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cos/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function cos($expression): self;
 
@@ -99,6 +115,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cosh/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function cosh($expression): self;
 
@@ -108,6 +126,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/degreesToRadians/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function degreesToRadians($expression): self;
 
@@ -117,6 +137,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/radiansToDegrees/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function radiansToDegrees($expression): self;
 
@@ -126,6 +148,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sin/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function sin($expression): self;
 
@@ -135,6 +159,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sinh/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function sinh($expression): self;
 
@@ -144,6 +170,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tan/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function tan($expression): self;
 
@@ -153,6 +181,8 @@ interface TrigonometryOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tanh/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function tanh($expression): self;
 }

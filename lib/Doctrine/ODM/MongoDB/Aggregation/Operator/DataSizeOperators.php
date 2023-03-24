@@ -22,6 +22,8 @@ interface DataSizeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/binarySize/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function binarySize($expression): self;
 
@@ -31,6 +33,8 @@ interface DataSizeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bsonSize/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function bsonSize($expression): self;
 }

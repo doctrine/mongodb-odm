@@ -25,6 +25,8 @@ interface TypeOperators
      * @param mixed|Expr      $to
      * @param mixed|Expr|null $onError
      * @param mixed|Expr|null $onNull
+     *
+     * @return static
      */
     public function convert($input, $to, $onError = null, $onNull = null): self;
 
@@ -36,6 +38,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isArray/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isArray($expression): self;
 
@@ -47,6 +51,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isNumber/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isNumber($expression): self;
 
@@ -56,6 +62,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toBool/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toBool($expression): self;
 
@@ -65,6 +73,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDate/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toDate($expression): self;
 
@@ -74,6 +84,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDecimal/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toDecimal($expression): self;
 
@@ -83,6 +95,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDouble/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toDouble($expression): self;
 
@@ -92,6 +106,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toInt/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toInt($expression): self;
 
@@ -101,6 +117,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLong/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toLong($expression): self;
 
@@ -110,6 +128,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toObjectId/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toObjectId($expression): self;
 
@@ -119,6 +139,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toString($expression): self;
 
@@ -130,6 +152,8 @@ interface TypeOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/type/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function type($expression): self;
 }

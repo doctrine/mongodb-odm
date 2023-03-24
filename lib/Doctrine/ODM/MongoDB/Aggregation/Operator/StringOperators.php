@@ -28,6 +28,8 @@ interface StringOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
+     *
+     * @return static
      */
     public function concat($expression1, $expression2, ...$expressions): self;
 
@@ -41,6 +43,8 @@ interface StringOperators
      * @param mixed|Expr $timezone
      * @param mixed|Expr $onError
      * @param mixed|Expr $onNull
+     *
+     * @return static
      */
     public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self;
 
@@ -56,6 +60,8 @@ interface StringOperators
      * @param mixed|Expr      $expression
      * @param mixed|Expr|null $timezone
      * @param mixed|Expr|null $onNull
+     *
+     * @return static
      */
     public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self;
 
@@ -70,6 +76,8 @@ interface StringOperators
      * @param mixed|Expr      $substringExpression can be any valid expression as long as it resolves to a string
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     *
+     * @return static
      */
     public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self;
 
@@ -84,6 +92,8 @@ interface StringOperators
      * @param mixed|Expr      $substringExpression can be any valid expression as long as it resolves to a string
      * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     *
+     * @return static
      */
     public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self;
 
@@ -95,6 +105,8 @@ interface StringOperators
      *
      * @param mixed|Expr $input
      * @param mixed|Expr $chars
+     *
+     * @return static
      */
     public function ltrim($input, $chars = null): self;
 
@@ -105,9 +117,13 @@ interface StringOperators
      * If a match is found, returns a document that contains information on the
      * first match. If a match is not found, returns null.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/regexFind/
+     *
      * @param mixed|Expr  $input
      * @param mixed|Expr  $regex
      * @param string|null $options
+     *
+     * @return static
      */
     public function regexFind($input, $regex, $options = null): self;
 
@@ -118,9 +134,13 @@ interface StringOperators
      * The operator returns an array of documents that contains information on
      * each match. If a match is not found, returns an empty array.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/regexFindAll/
+     *
      * @param mixed|Expr  $input
      * @param mixed|Expr  $regex
      * @param string|null $options
+     *
+     * @return static
      */
     public function regexFindAll($input, $regex, $options = null): self;
 
@@ -128,9 +148,13 @@ interface StringOperators
      * Performs a regular expression (regex) pattern matching and returns true
      * if a match exists.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/regexMatch/
+     *
      * @param mixed|Expr  $input
      * @param mixed|Expr  $regex
      * @param string|null $options
+     *
+     * @return static
      */
     public function regexMatch($input, $regex, $options = null): self;
 
@@ -138,9 +162,13 @@ interface StringOperators
      * Replaces all instances of a search string in an input string with a
      * replacement string.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/replaceAll/
+     *
      * @param mixed|Expr $input
      * @param mixed|Expr $find
      * @param mixed|Expr $replacement
+     *
+     * @return static
      */
     public function replaceAll($input, $find, $replacement): self;
 
@@ -149,9 +177,13 @@ interface StringOperators
      * replacement string. If no occurrences are found, it evaluates to the
      * input string.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/replaceOne/
+     *
      * @param mixed|Expr $input
      * @param mixed|Expr $find
      * @param mixed|Expr $replacement
+     *
+     * @return static
      */
     public function replaceOne($input, $find, $replacement): self;
 
@@ -163,6 +195,8 @@ interface StringOperators
      *
      * @param mixed|Expr $input
      * @param mixed|Expr $chars
+     *
+     * @return static
      */
     public function rtrim($input, $chars = null): self;
 
@@ -177,6 +211,8 @@ interface StringOperators
      *
      * @param mixed|Expr $string    The string to be split. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
+     *
+     * @return static
      */
     public function split($string, $delimiter): self;
 
@@ -186,6 +222,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
      *
      * @param mixed|Expr $string
+     *
+     * @return static
      */
     public function strLenBytes($string): self;
 
@@ -195,6 +233,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
      *
      * @param mixed|Expr $string
+     *
+     * @return static
      */
     public function strLenCP($string): self;
 
@@ -211,6 +251,8 @@ interface StringOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function strcasecmp($expression1, $expression2): self;
 
@@ -227,6 +269,8 @@ interface StringOperators
      * @param mixed|Expr $string
      * @param mixed|Expr $start
      * @param mixed|Expr $length
+     *
+     * @return static
      */
     public function substr($string, $start, $length): self;
 
@@ -242,6 +286,8 @@ interface StringOperators
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
+     *
+     * @return static
      */
     public function substrBytes($string, $start, $count): self;
 
@@ -257,6 +303,8 @@ interface StringOperators
      * @param mixed|Expr $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
      * @param mixed|Expr $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
      * @param mixed|Expr $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
+     *
+     * @return static
      */
     public function substrCP($string, $start, $count): self;
 
@@ -268,6 +316,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLower/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toLower($expression): self;
 
@@ -277,6 +327,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toString($expression): self;
 
@@ -288,6 +340,8 @@ interface StringOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toUpper/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toUpper($expression): self;
 
@@ -299,6 +353,8 @@ interface StringOperators
      *
      * @param mixed|Expr      $input
      * @param mixed|Expr|null $chars
+     *
+     * @return static
      */
     public function trim($input, $chars = null): self;
 }

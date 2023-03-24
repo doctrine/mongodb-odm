@@ -23,7 +23,11 @@ interface ConditionalOperators
      * valid expression that resolves to a boolean. If the result is not a
      * boolean, it is coerced to a boolean value.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
+     *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function case($expression): self;
 
@@ -38,6 +42,8 @@ interface ConditionalOperators
      * @param mixed|Expr $if
      * @param mixed|Expr $then
      * @param mixed|Expr $else
+     *
+     * @return static
      */
     public function cond($if, $then, $else): self;
 
@@ -50,7 +56,11 @@ interface ConditionalOperators
      * Note: if no default is specified and no branch evaluates to true, the
      * $switch operator throws an error.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
+     *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function default($expression): self;
 
@@ -66,6 +76,8 @@ interface ConditionalOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $replacementExpression
+     *
+     * @return static
      */
     public function ifNull($expression, $replacementExpression): self;
 
@@ -76,6 +88,10 @@ interface ConditionalOperators
      *
      * To add statements, use the {@link case()}, {@link then()} and
      * {@link default()} methods.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
+     *
+     * @return static
      */
     public function switch(): self;
 
@@ -85,7 +101,11 @@ interface ConditionalOperators
      * Requires {@link case()} to be called first. The argument can be any valid
      * expression.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
+     *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function then($expression): self;
 }

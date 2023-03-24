@@ -28,6 +28,8 @@ interface ArrayOperators
      *
      * @param mixed|Expr $array
      * @param mixed|Expr $index
+     *
+     * @return static
      */
     public function arrayElemAt($array, $index): self;
 
@@ -37,6 +39,8 @@ interface ArrayOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayToObject/
      *
      * @param mixed|Expr $array
+     *
+     * @return static
      */
     public function arrayToObject($array): self;
 
@@ -51,6 +55,8 @@ interface ArrayOperators
      * @param mixed|Expr $array1
      * @param mixed|Expr $array2
      * @param mixed|Expr ...$arrays Additional expressions
+     *
+     * @return static
      */
     public function concatArrays($array1, $array2, ...$arrays): self;
 
@@ -65,6 +71,8 @@ interface ArrayOperators
      * @param mixed|Expr $input
      * @param mixed|Expr $as
      * @param mixed|Expr $cond
+     *
+     * @return static
      */
     public function filter($input, $as, $cond): self;
 
@@ -75,6 +83,8 @@ interface ArrayOperators
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/first-array-element/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function first($expression): self;
 
@@ -86,6 +96,8 @@ interface ArrayOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $n
+     *
+     * @return static
      */
     public function firstN($expression, $n): self;
 
@@ -99,6 +111,8 @@ interface ArrayOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $arrayExpression
+     *
+     * @return static
      */
     public function in($expression, $arrayExpression): self;
 
@@ -113,6 +127,8 @@ interface ArrayOperators
      * @param mixed|Expr $searchExpression can be any valid expression
      * @param mixed|Expr $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
      * @param mixed|Expr $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
+     *
+     * @return static
      */
     public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self;
 
@@ -124,6 +140,8 @@ interface ArrayOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isArray/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isArray($expression): self;
 
@@ -133,6 +151,8 @@ interface ArrayOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/last-array-element/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function last($expression): self;
 
@@ -144,6 +164,8 @@ interface ArrayOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr $n
+     *
+     * @return static
      */
     public function lastN($expression, $n): self;
 
@@ -156,6 +178,8 @@ interface ArrayOperators
      * @param mixed|Expr $input an expression that resolves to an array
      * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
      * @param mixed|Expr $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
+     *
+     * @return static
      */
     public function map($input, $as, $in): self;
 
@@ -163,8 +187,12 @@ interface ArrayOperators
      * Returns the n largest values in an array. Distinct from the $maxN group
      * accumulator.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/maxN/
+     *
      * @param mixed|Expr $expression
      * @param mixed|Expr $n
+     *
+     * @return static
      */
     public function maxN($expression, $n): self;
 
@@ -172,8 +200,12 @@ interface ArrayOperators
      * Returns the n smallest values in an array. Distinct from the $minN group
      * accumulator.
      *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minN/
+     *
      * @param mixed|Expr $expression
      * @param mixed|Expr $n
+     *
+     * @return static
      */
     public function minN($expression, $n): self;
 
@@ -187,6 +219,8 @@ interface ArrayOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/objectToArray/
      *
      * @param mixed|Expr $object
+     *
+     * @return static
      */
     public function objectToArray($object): self;
 
@@ -202,6 +236,8 @@ interface ArrayOperators
      * @param mixed|Expr $start An integer that specifies the start of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
+     *
+     * @return static
      */
     public function range($start, $end, $step = 1): self;
 
@@ -214,6 +250,8 @@ interface ArrayOperators
      * @param mixed|Expr $input        can be any valid expression that resolves to an array
      * @param mixed|Expr $initialValue the initial cumulative value set before in is applied to the first element of the input array
      * @param mixed|Expr $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
+     *
+     * @return static
      */
     public function reduce($input, $initialValue, $in): self;
 
@@ -224,6 +262,8 @@ interface ArrayOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reverseArray/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function reverseArray($expression): self;
 
@@ -235,6 +275,8 @@ interface ArrayOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/size/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function size($expression): self;
 
@@ -246,6 +288,8 @@ interface ArrayOperators
      * @param mixed|Expr      $array
      * @param mixed|Expr      $n
      * @param mixed|Expr|null $position
+     *
+     * @return static
      */
     public function slice($array, $n, $position = null): self;
 
@@ -256,6 +300,8 @@ interface ArrayOperators
      *
      * @param mixed|Expr                $input
      * @param array<string, int|string> $sortBy
+     *
+     * @return static
      */
     public function sortArray($input, $sortBy): self;
 
@@ -269,6 +315,8 @@ interface ArrayOperators
      * @param mixed|Expr      $inputs           An array of expressions that resolve to arrays. The elements of these input arrays combine to form the arrays of the output array.
      * @param bool|null       $useLongestLength a boolean which specifies whether the length of the longest array determines the number of arrays in the output array
      * @param mixed|Expr|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
+     *
+     * @return static
      */
     public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self;
 }

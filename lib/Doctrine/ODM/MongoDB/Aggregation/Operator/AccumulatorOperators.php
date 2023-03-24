@@ -23,6 +23,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function avg($expression, ...$expressions): self;
 
@@ -36,6 +38,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function max($expression, ...$expressions): self;
 
@@ -49,6 +53,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function min($expression, ...$expressions): self;
 
@@ -62,6 +68,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function stdDevPop($expression, ...$expressions): self;
 
@@ -74,6 +82,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function stdDevSamp($expression, ...$expressions): self;
 
@@ -84,6 +94,8 @@ interface AccumulatorOperators
      *
      * @param mixed|Expr $expression
      * @param mixed|Expr ...$expressions
+     *
+     * @return static
      */
     public function sum($expression, ...$expressions): self;
 }

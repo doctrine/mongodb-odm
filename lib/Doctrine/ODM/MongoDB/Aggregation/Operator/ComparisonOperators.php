@@ -26,6 +26,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function cmp($expression1, $expression2): self;
 
@@ -36,6 +38,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function eq($expression1, $expression2): self;
 
@@ -49,6 +53,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function gt($expression1, $expression2): self;
 
@@ -62,6 +68,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function gte($expression1, $expression2): self;
 
@@ -75,6 +83,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function lt($expression1, $expression2): self;
 
@@ -87,6 +97,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function lte($expression1, $expression2): self;
 
@@ -99,6 +111,8 @@ interface ComparisonOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function ne($expression1, $expression2): self;
 }

@@ -29,15 +29,17 @@ interface CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/accumulator/
      *
-     * @param string|Javascript $init
-     * @param mixed|Expr        $initArgs
-     * @param string|Javascript $accumulate
-     * @param mixed|Expr        $accumulateArgs
-     * @param string|Javascript $merge
-     * @param string|Javascript $finalize
-     * @param string            $lang
+     * @param string|Javascript      $init
+     * @param mixed|Expr             $initArgs
+     * @param string|Javascript      $accumulate
+     * @param mixed|Expr             $accumulateArgs
+     * @param string|Javascript      $merge
+     * @param string|Javascript|null $finalize
+     * @param string                 $lang
+     *
+     * @return static
      */
-    public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize, $lang = 'js'): self;
+    public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize = null, $lang = 'js'): self;
 
     /**
      * Defines a custom aggregation function or expression in JavaScript.
@@ -50,6 +52,8 @@ interface CustomOperators
      * @param string|Javascript $body
      * @param mixed|Expr        $args
      * @param string            $lang
+     *
+     * @return static
      */
     public function function($body, $args, $lang = 'js'): self;
 }

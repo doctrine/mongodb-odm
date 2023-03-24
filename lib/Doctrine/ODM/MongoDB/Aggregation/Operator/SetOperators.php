@@ -25,6 +25,8 @@ interface SetOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/allElementsTrue/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function allElementsTrue($expression): self;
 
@@ -37,6 +39,8 @@ interface SetOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/anyElementTrue/
      *
      * @param mixed[]|Expr $expression
+     *
+     * @return static
      */
     public function anyElementTrue($expression): self;
 
@@ -50,6 +54,8 @@ interface SetOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function setDifference($expression1, $expression2): self;
 
@@ -64,6 +70,8 @@ interface SetOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
+     *
+     * @return static
      */
     public function setEquals($expression1, $expression2, ...$expressions): self;
 
@@ -78,6 +86,8 @@ interface SetOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
+     *
+     * @return static
      */
     public function setIntersection($expression1, $expression2, ...$expressions): self;
 
@@ -92,6 +102,8 @@ interface SetOperators
      *
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
+     *
+     * @return static
      */
     public function setIsSubset($expression1, $expression2): self;
 
@@ -107,6 +119,8 @@ interface SetOperators
      * @param mixed|Expr $expression1
      * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
+     *
+     * @return static
      */
     public function setUnion($expression1, $expression2, ...$expressions): self;
 }

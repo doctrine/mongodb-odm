@@ -25,6 +25,8 @@ interface DateOperators
      * @param mixed|Expr $unit
      * @param mixed|Expr $amount
      * @param mixed|Expr $timezone
+     *
+     * @return static
      */
     public function dateAdd($startDate, $unit, $amount, $timezone = null): self;
 
@@ -38,6 +40,8 @@ interface DateOperators
      * @param mixed|Expr $unit
      * @param mixed|Expr $timezone
      * @param mixed|Expr $startOfWeek
+     *
+     * @return static
      */
     public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self;
 
@@ -57,6 +61,8 @@ interface DateOperators
      * @param mixed|Expr $second
      * @param mixed|Expr $millisecond
      * @param mixed|Expr $timezone
+     *
+     * @return static
      */
     public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self;
 
@@ -70,6 +76,8 @@ interface DateOperators
      * @param mixed|Expr $timezone
      * @param mixed|Expr $onError
      * @param mixed|Expr $onNull
+     *
+     * @return static
      */
     public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self;
 
@@ -82,6 +90,8 @@ interface DateOperators
      * @param mixed|Expr $unit
      * @param mixed|Expr $amount
      * @param mixed|Expr $timezone
+     *
+     * @return static
      */
     public function dateSubtract($startDate, $unit, $amount, $timezone = null): self;
 
@@ -95,6 +105,8 @@ interface DateOperators
      * @param mixed|Expr $date
      * @param mixed|Expr $timezone
      * @param mixed|Expr $iso8601
+     *
+     * @return static
      */
     public function dateToParts($date, $timezone = null, $iso8601 = null): self;
 
@@ -110,6 +122,8 @@ interface DateOperators
      * @param mixed|Expr      $expression
      * @param mixed|Expr|null $timezone
      * @param mixed|Expr|null $onNull
+     *
+     * @return static
      */
     public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self;
 
@@ -123,6 +137,8 @@ interface DateOperators
      * @param mixed|Expr $binSize
      * @param mixed|Expr $timezone
      * @param mixed|Expr $startOfWeek
+     *
+     * @return static
      */
     public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self;
 
@@ -134,6 +150,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfMonth/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dayOfMonth($expression): self;
 
@@ -146,6 +164,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dayOfWeek($expression): self;
 
@@ -157,6 +177,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfYear/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function dayOfYear($expression): self;
 
@@ -168,6 +190,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/hour/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function hour($expression): self;
 
@@ -180,6 +204,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoDayOfWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isoDayOfWeek($expression): self;
 
@@ -194,6 +220,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isoWeek($expression): self;
 
@@ -208,6 +236,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function isoWeekYear($expression): self;
 
@@ -219,6 +249,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/millisecond/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function millisecond($expression): self;
 
@@ -230,6 +262,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minute/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function minute($expression): self;
 
@@ -241,6 +275,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/month/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function month($expression): self;
 
@@ -253,6 +289,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/second/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function second($expression): self;
 
@@ -262,6 +300,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDate/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function toDate($expression): self;
 
@@ -273,6 +313,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/week/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function week($expression): self;
 
@@ -284,6 +326,8 @@ interface DateOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/year/
      *
      * @param mixed|Expr $expression
+     *
+     * @return static
      */
     public function year($expression): self;
 }

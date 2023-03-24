@@ -23,7 +23,7 @@ interface MiscOperators
      *
      * @param mixed|Expr $value
      *
-     * @return self
+     * @return static
      */
     public function expression($value);
 
@@ -35,6 +35,8 @@ interface MiscOperators
      *
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|Expr $in   the expression to evaluate
+     *
+     * @return static
      */
     public function let($vars, $in): self;
 
@@ -45,6 +47,8 @@ interface MiscOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/literal/
      *
      * @param mixed|Expr $value
+     *
+     * @return static
      */
     public function literal($value): self;
 
@@ -54,6 +58,8 @@ interface MiscOperators
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/meta/
      *
      * @param mixed|Expr $metaDataKeyword
+     *
+     * @return static
      */
     public function meta($metaDataKeyword): self;
 
@@ -61,6 +67,8 @@ interface MiscOperators
      * Returns a random float between 0 and 1 each time it is called.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rand/
+     *
+     * @return static
      */
     public function rand(): self;
 
@@ -70,6 +78,8 @@ interface MiscOperators
      * total number of documents.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sampleRate/
+     *
+     * @return static
      */
     public function sampleRate(float $rate): self;
 }
