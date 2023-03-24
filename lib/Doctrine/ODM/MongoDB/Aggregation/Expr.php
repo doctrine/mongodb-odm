@@ -167,7 +167,7 @@ class Expr implements
             $this->expr['$and'] = [];
         }
 
-        $this->expr['$and'] = array_merge($this->expr['$and'], array_map([$this, 'ensureArray'], func_get_args()));
+        $this->expr['$and'] = array_merge($this->expr['$and'], array_map([$this, 'prepareArgument'], func_get_args()));
 
         return $this;
     }
@@ -188,7 +188,7 @@ class Expr implements
             $this->expr['$or'] = [];
         }
 
-        $this->expr['$or'] = array_merge($this->expr['$or'], array_map([$this, 'ensureArray'], func_get_args()));
+        $this->expr['$or'] = array_merge($this->expr['$or'], array_map([$this, 'prepareArgument'], func_get_args()));
 
         return $this;
     }
@@ -773,9 +773,9 @@ class Expr implements
         $this->requiresSwitchStatement(static::class . '::default');
 
         if ($this->currentField) {
-            $this->expr[$this->currentField]['$switch']['default'] = $this->ensureArray($expression);
+            $this->expr[$this->currentField]['$switch']['default'] = $this->prepareArgument($expression);
         } else {
-            $this->expr['$switch']['default'] = $this->ensureArray($expression);
+            $this->expr['$switch']['default'] = $this->prepareArgument($expression);
         }
 
         return $this;
@@ -846,7 +846,7 @@ class Expr implements
             throw new LogicException(sprintf('%s requires setting a current field using field().', __METHOD__));
         }
 
-        $this->expr[$this->currentField] = $this->ensureArray($value);
+        $this->expr[$this->currentField] = $this->prepareArgument($value);
 
         return $this;
     }
@@ -2239,18 +2239,24 @@ class Expr implements
     }
 
     /**
+     * Prepares an argument for an operator. It follows these ruls:
+     * - If the argument is a string starting with a $, it is considered a field name and is transformed according to mapping information.
+     * - If the argument is an array, it is recursively prepared.
+     * - If the argument is an Expr instance, its expression is returned.
+     * - Otherwise, the argument is converted to a MongoDB type according to the ODM type information.
+     *
      * @param mixed|self $expression
      *
      * @return mixed
      */
-    private function ensureArray($expression)
+    private function prepareArgument($expression)
     {
         if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 
         if (is_array($expression)) {
-            return array_map([$this, 'ensureArray'], $expression);
+            return array_map([$this, 'prepareArgument'], $expression);
         }
 
         if ($expression instanceof self) {
@@ -2277,9 +2283,9 @@ class Expr implements
     private function operator(string $operator, $expression): self
     {
         if ($this->currentField) {
-            $this->expr[$this->currentField][$operator] = $this->ensureArray($expression);
+            $this->expr[$this->currentField][$operator] = $this->prepareArgument($expression);
         } else {
-            $this->expr[$operator] = $this->ensureArray($expression);
+            $this->expr[$operator] = $this->prepareArgument($expression);
         }
 
         return $this;
@@ -2344,9 +2350,9 @@ class Expr implements
         $this->switchBranch['then'] = $expression;
 
         if ($this->currentField) {
-            $this->expr[$this->currentField]['$switch']['branches'][] = $this->ensureArray($this->switchBranch);
+            $this->expr[$this->currentField]['$switch']['branches'][] = $this->prepareArgument($this->switchBranch);
         } else {
-            $this->expr['$switch']['branches'][] = $this->ensureArray($this->switchBranch);
+            $this->expr['$switch']['branches'][] = $this->prepareArgument($this->switchBranch);
         }
 
         $this->switchBranch = null;
@@ -2783,7 +2789,7 @@ class Expr implements
              * @param mixed $value
              * @param array-key $key
              */
-            static fn ($value, $key): bool => ! in_array($key, $optionalArgNames) || $value !== null,
+            static fn ($value, $key): bool => $value !== null || ! in_array($key, $optionalArgNames),
             ARRAY_FILTER_USE_BOTH,
         );
     }
