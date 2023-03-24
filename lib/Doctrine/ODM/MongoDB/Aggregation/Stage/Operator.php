@@ -60,7 +60,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function abs($number): self
     {
-        $this->expr->abs($number);
+        $this->expr->abs(...func_get_args());
 
         return $this;
     }
@@ -68,7 +68,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function acos($expression): self
     {
-        $this->expr->acos($expression);
+        $this->expr->acos(...func_get_args());
 
         return $this;
     }
@@ -76,7 +76,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function acosh($expression): self
     {
-        $this->expr->acosh($expression);
+        $this->expr->acosh(...func_get_args());
 
         return $this;
     }
@@ -132,7 +132,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function allElementsTrue($expression): self
     {
-        $this->expr->allElementsTrue($expression);
+        $this->expr->allElementsTrue(...func_get_args());
 
         return $this;
     }
@@ -140,7 +140,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function and($expression, ...$expressions): self
     {
-        $this->expr->and($expression, ...$expressions);
+        $this->expr->and(...func_get_args());
 
         return $this;
     }
@@ -148,7 +148,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function anyElementTrue($expression): self
     {
-        $this->expr->anyElementTrue($expression);
+        $this->expr->anyElementTrue(...func_get_args());
 
         return $this;
     }
@@ -156,7 +156,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function arrayElemAt($array, $index): self
     {
-        $this->expr->arrayElemAt($array, $index);
+        $this->expr->arrayElemAt(...func_get_args());
 
         return $this;
     }
@@ -164,7 +164,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function arrayToObject($array): self
     {
-        $this->expr->arrayToObject($array);
+        $this->expr->arrayToObject(...func_get_args());
 
         return $this;
     }
@@ -172,7 +172,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function atan($expression): self
     {
-        $this->expr->atan($expression);
+        $this->expr->atan(...func_get_args());
 
         return $this;
     }
@@ -180,7 +180,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function asin($expression): self
     {
-        $this->expr->asin($expression);
+        $this->expr->asin(...func_get_args());
 
         return $this;
     }
@@ -188,7 +188,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function asinh($expression): self
     {
-        $this->expr->asinh($expression);
+        $this->expr->asinh(...func_get_args());
 
         return $this;
     }
@@ -196,7 +196,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function atan2($expression1, $expression2): self
     {
-        $this->expr->atan2($expression1, $expression2);
+        $this->expr->atan2(...func_get_args());
 
         return $this;
     }
@@ -204,7 +204,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function atanh($expression): self
     {
-        $this->expr->atanh($expression);
+        $this->expr->atanh(...func_get_args());
 
         return $this;
     }
@@ -220,7 +220,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function binarySize($expression): self
     {
-        $this->expr->binarySize($expression);
+        $this->expr->binarySize(...func_get_args());
 
         return $this;
     }
@@ -228,7 +228,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function bsonSize($expression): self
     {
-        $this->expr->bsonSize($expression);
+        $this->expr->bsonSize(...func_get_args());
 
         return $this;
     }
@@ -236,7 +236,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function case($expression): self
     {
-        $this->expr->case($expression);
+        $this->expr->case(...func_get_args());
 
         return $this;
     }
@@ -244,7 +244,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function ceil($number): self
     {
-        $this->expr->ceil($number);
+        $this->expr->ceil(...func_get_args());
 
         return $this;
     }
@@ -252,7 +252,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function cmp($expression1, $expression2): self
     {
-        $this->expr->cmp($expression1, $expression2);
+        $this->expr->cmp(...func_get_args());
 
         return $this;
     }
@@ -276,7 +276,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function cond($if, $then, $else): self
     {
-        $this->expr->cond($if, $then, $else);
+        $this->expr->cond(...func_get_args());
 
         return $this;
     }
@@ -284,7 +284,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function convert($input, $to, $onError = null, $onNull = null): self
     {
-        $this->expr->convert($input, $to, $onError, $onNull);
+        $this->expr->convert(...func_get_args());
 
         return $this;
     }
@@ -292,7 +292,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function cos($expression): self
     {
-        $this->expr->cos($expression);
+        $this->expr->cos(...func_get_args());
 
         return $this;
     }
@@ -300,7 +300,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function cosh($expression): self
     {
-        $this->expr->cosh($expression);
+        $this->expr->cosh(...func_get_args());
 
         return $this;
     }
@@ -308,7 +308,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateAdd($startDate, $unit, $amount, $timezone = null): self
     {
-        $this->expr->dateAdd($startDate, $unit, $amount, $timezone);
+        $this->expr->dateAdd(...func_get_args());
 
         return $this;
     }
@@ -316,7 +316,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): self
     {
-        $this->expr->dateDiff($startDate, $endDate, $unit, $timezone, $startOfWeek);
+        $this->expr->dateDiff(...func_get_args());
 
         return $this;
     }
@@ -324,7 +324,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): self
     {
-        $this->expr->dateFromParts($year, $isoWeekYear, $month, $isoWeek, $day, $isoDayOfWeek, $hour, $minute, $second, $millisecond, $timezone);
+        $this->expr->dateFromParts(...func_get_args());
 
         return $this;
     }
@@ -332,7 +332,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): self
     {
-        $this->expr->dateFromString($dateString, $format, $timezone, $onError, $onNull);
+        $this->expr->dateFromString(...func_get_args());
 
         return $this;
     }
@@ -340,7 +340,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateSubtract($startDate, $unit, $amount, $timezone = null): self
     {
-        $this->expr->dateSubtract($startDate, $unit, $amount, $timezone);
+        $this->expr->dateSubtract(...func_get_args());
 
         return $this;
     }
@@ -348,7 +348,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateToParts($date, $timezone = null, $iso8601 = null): self
     {
-        $this->expr->dateToParts($date, $timezone, $iso8601);
+        $this->expr->dateToParts(...func_get_args());
 
         return $this;
     }
@@ -356,7 +356,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateToString(string $format, $expression, $timezone = null, $onNull = null): self
     {
-        $this->expr->dateToString($format, $expression, $timezone, $onNull);
+        $this->expr->dateToString(...func_get_args());
 
         return $this;
     }
@@ -364,7 +364,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): self
     {
-        $this->expr->dateTrunc($date, $unit, $binSize, $timezone, $startOfWeek);
+        $this->expr->dateTrunc(...func_get_args());
 
         return $this;
     }
@@ -372,7 +372,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dayOfMonth($expression): self
     {
-        $this->expr->dayOfMonth($expression);
+        $this->expr->dayOfMonth(...func_get_args());
 
         return $this;
     }
@@ -380,7 +380,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dayOfWeek($expression): self
     {
-        $this->expr->dayOfWeek($expression);
+        $this->expr->dayOfWeek(...func_get_args());
 
         return $this;
     }
@@ -388,7 +388,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function dayOfYear($expression): self
     {
-        $this->expr->dayOfYear($expression);
+        $this->expr->dayOfYear(...func_get_args());
 
         return $this;
     }
@@ -396,7 +396,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function default($expression): self
     {
-        $this->expr->default($expression);
+        $this->expr->default(...func_get_args());
 
         return $this;
     }
@@ -404,7 +404,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function degreesToRadians($expression): self
     {
-        $this->expr->degreesToRadians($expression);
+        $this->expr->degreesToRadians(...func_get_args());
 
         return $this;
     }
@@ -412,7 +412,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function divide($expression1, $expression2): self
     {
-        $this->expr->divide($expression1, $expression2);
+        $this->expr->divide(...func_get_args());
 
         return $this;
     }
@@ -420,7 +420,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function eq($expression1, $expression2): self
     {
-        $this->expr->eq($expression1, $expression2);
+        $this->expr->eq(...func_get_args());
 
         return $this;
     }
@@ -428,7 +428,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function exp($exponent): self
     {
-        $this->expr->exp($exponent);
+        $this->expr->exp(...func_get_args());
 
         return $this;
     }
@@ -436,7 +436,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function expression($value)
     {
-        $this->expr->expression($value);
+        $this->expr->expression(...func_get_args());
 
         return $this;
     }
@@ -450,7 +450,7 @@ abstract class Operator extends Stage implements
      */
     public function field(string $fieldName)
     {
-        $this->expr->field($fieldName);
+        $this->expr->field(...func_get_args());
 
         return $this;
     }
@@ -458,7 +458,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function filter($input, $as, $cond): self
     {
-        $this->expr->filter($input, $as, $cond);
+        $this->expr->filter(...func_get_args());
 
         return $this;
     }
@@ -466,7 +466,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function first($expression): self
     {
-        $this->expr->first($expression);
+        $this->expr->first(...func_get_args());
 
         return $this;
     }
@@ -474,7 +474,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function firstN($expression, $n): self
     {
-        $this->expr->firstN($expression, $n);
+        $this->expr->firstN(...func_get_args());
 
         return $this;
     }
@@ -482,7 +482,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function floor($number): self
     {
-        $this->expr->floor($number);
+        $this->expr->floor(...func_get_args());
 
         return $this;
     }
@@ -490,7 +490,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function getField($field, $input = null): self
     {
-        $this->expr->getField($field, $input);
+        $this->expr->getField(...func_get_args());
 
         return $this;
     }
@@ -498,7 +498,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function gt($expression1, $expression2): self
     {
-        $this->expr->gt($expression1, $expression2);
+        $this->expr->gt(...func_get_args());
 
         return $this;
     }
@@ -506,7 +506,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function gte($expression1, $expression2): self
     {
-        $this->expr->gte($expression1, $expression2);
+        $this->expr->gte(...func_get_args());
 
         return $this;
     }
@@ -514,7 +514,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function hour($expression): self
     {
-        $this->expr->hour($expression);
+        $this->expr->hour(...func_get_args());
 
         return $this;
     }
@@ -522,7 +522,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function in($expression, $arrayExpression): self
     {
-        $this->expr->in($expression, $arrayExpression);
+        $this->expr->in(...func_get_args());
 
         return $this;
     }
@@ -530,7 +530,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
     {
-        $this->expr->indexOfArray($arrayExpression, $searchExpression, $start, $end);
+        $this->expr->indexOfArray(...func_get_args());
 
         return $this;
     }
@@ -538,7 +538,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
     {
-        $this->expr->indexOfBytes($stringExpression, $substringExpression, $start, $end);
+        $this->expr->indexOfBytes(...func_get_args());
 
         return $this;
     }
@@ -546,7 +546,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
     {
-        $this->expr->indexOfCP($stringExpression, $substringExpression, $start, $end);
+        $this->expr->indexOfCP(...func_get_args());
 
         return $this;
     }
@@ -554,7 +554,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function ifNull($expression, $replacementExpression): self
     {
-        $this->expr->ifNull($expression, $replacementExpression);
+        $this->expr->ifNull(...func_get_args());
 
         return $this;
     }
@@ -562,7 +562,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function isArray($expression): self
     {
-        $this->expr->isArray($expression);
+        $this->expr->isArray(...func_get_args());
 
         return $this;
     }
@@ -570,7 +570,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function isNumber($expression): self
     {
-        $this->expr->isNumber($expression);
+        $this->expr->isNumber(...func_get_args());
 
         return $this;
     }
@@ -578,7 +578,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function isoDayOfWeek($expression): self
     {
-        $this->expr->isoDayOfWeek($expression);
+        $this->expr->isoDayOfWeek(...func_get_args());
 
         return $this;
     }
@@ -586,7 +586,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function isoWeek($expression): self
     {
-        $this->expr->isoWeek($expression);
+        $this->expr->isoWeek(...func_get_args());
 
         return $this;
     }
@@ -594,7 +594,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function isoWeekYear($expression): self
     {
-        $this->expr->isoWeekYear($expression);
+        $this->expr->isoWeekYear(...func_get_args());
 
         return $this;
     }
@@ -602,7 +602,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function last($expression): self
     {
-        $this->expr->last($expression);
+        $this->expr->last(...func_get_args());
 
         return $this;
     }
@@ -610,7 +610,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function lastN($expression, $n): self
     {
-        $this->expr->lastN($expression, $n);
+        $this->expr->lastN(...func_get_args());
 
         return $this;
     }
@@ -618,7 +618,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function let($vars, $in): self
     {
-        $this->expr->let($vars, $in);
+        $this->expr->let(...func_get_args());
 
         return $this;
     }
@@ -626,7 +626,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function literal($value): self
     {
-        $this->expr->literal($value);
+        $this->expr->literal(...func_get_args());
 
         return $this;
     }
@@ -634,7 +634,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function ln($number): self
     {
-        $this->expr->ln($number);
+        $this->expr->ln(...func_get_args());
 
         return $this;
     }
@@ -642,7 +642,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function log($number, $base): self
     {
-        $this->expr->log($number, $base);
+        $this->expr->log(...func_get_args());
 
         return $this;
     }
@@ -650,7 +650,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function log10($number): self
     {
-        $this->expr->log10($number);
+        $this->expr->log10(...func_get_args());
 
         return $this;
     }
@@ -658,7 +658,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function lt($expression1, $expression2): self
     {
-        $this->expr->lt($expression1, $expression2);
+        $this->expr->lt(...func_get_args());
 
         return $this;
     }
@@ -666,7 +666,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function lte($expression1, $expression2): self
     {
-        $this->expr->lte($expression1, $expression2);
+        $this->expr->lte(...func_get_args());
 
         return $this;
     }
@@ -674,7 +674,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function ltrim($input, $chars = null): self
     {
-        $this->expr->ltrim($input, $chars);
+        $this->expr->ltrim(...func_get_args());
 
         return $this;
     }
@@ -682,7 +682,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function map($input, $as, $in): self
     {
-        $this->expr->map($input, $as, $in);
+        $this->expr->map(...func_get_args());
 
         return $this;
     }
@@ -690,7 +690,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function max($expression, ...$expressions): self
     {
-        $this->expr->max($expression, ...$expressions);
+        $this->expr->max(...func_get_args());
 
         return $this;
     }
@@ -698,7 +698,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function maxN($expression, $n): self
     {
-        $this->expr->maxN($expression, $n);
+        $this->expr->maxN(...func_get_args());
 
         return $this;
     }
@@ -706,7 +706,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function mergeObjects($expression, ...$expressions): self
     {
-        $this->expr->mergeObjects($expression, ...$expressions);
+        $this->expr->mergeObjects(...func_get_args());
 
         return $this;
     }
@@ -714,7 +714,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function meta($metaDataKeyword): self
     {
-        $this->expr->meta($metaDataKeyword);
+        $this->expr->meta(...func_get_args());
 
         return $this;
     }
@@ -722,7 +722,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function millisecond($expression): self
     {
-        $this->expr->millisecond($expression);
+        $this->expr->millisecond(...func_get_args());
 
         return $this;
     }
@@ -730,7 +730,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function min($expression, ...$expressions): self
     {
-        $this->expr->min($expression, ...$expressions);
+        $this->expr->min(...func_get_args());
 
         return $this;
     }
@@ -738,7 +738,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function minN($expression, $n): self
     {
-        $this->expr->minN($expression, $n);
+        $this->expr->minN(...func_get_args());
 
         return $this;
     }
@@ -746,7 +746,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function minute($expression): self
     {
-        $this->expr->minute($expression);
+        $this->expr->minute(...func_get_args());
 
         return $this;
     }
@@ -754,7 +754,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function mod($expression1, $expression2): self
     {
-        $this->expr->mod($expression1, $expression2);
+        $this->expr->mod(...func_get_args());
 
         return $this;
     }
@@ -762,7 +762,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function month($expression): self
     {
-        $this->expr->month($expression);
+        $this->expr->month(...func_get_args());
 
         return $this;
     }
@@ -778,7 +778,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function ne($expression1, $expression2): self
     {
-        $this->expr->ne($expression1, $expression2);
+        $this->expr->ne(...func_get_args());
 
         return $this;
     }
@@ -786,7 +786,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function not($expression): self
     {
-        $this->expr->not($expression);
+        $this->expr->not(...func_get_args());
 
         return $this;
     }
@@ -794,7 +794,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function objectToArray($object): self
     {
-        $this->expr->objectToArray($object);
+        $this->expr->objectToArray(...func_get_args());
 
         return $this;
     }
@@ -802,7 +802,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function or($expression, ...$expressions): self
     {
-        $this->expr->or($expression, ...$expressions);
+        $this->expr->or(...func_get_args());
 
         return $this;
     }
@@ -810,7 +810,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function pow($number, $exponent): self
     {
-        $this->expr->pow($number, $exponent);
+        $this->expr->pow(...func_get_args());
 
         return $this;
     }
@@ -818,7 +818,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function range($start, $end, $step = 1): self
     {
-        $this->expr->range($start, $end, $step);
+        $this->expr->range(...func_get_args());
 
         return $this;
     }
@@ -826,7 +826,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function reduce($input, $initialValue, $in): self
     {
-        $this->expr->reduce($input, $initialValue, $in);
+        $this->expr->reduce(...func_get_args());
 
         return $this;
     }
@@ -834,7 +834,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function regexFind($input, $regex, $options = null): self
     {
-        $this->expr->regexFind($input, $regex, $options);
+        $this->expr->regexFind(...func_get_args());
 
         return $this;
     }
@@ -842,7 +842,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function regexFindAll($input, $regex, $options = null): self
     {
-        $this->expr->regexFindAll($input, $regex, $options);
+        $this->expr->regexFindAll(...func_get_args());
 
         return $this;
     }
@@ -850,7 +850,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function regexMatch($input, $regex, $options = null): self
     {
-        $this->expr->regexMatch($input, $regex, $options);
+        $this->expr->regexMatch(...func_get_args());
 
         return $this;
     }
@@ -858,7 +858,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function replaceAll($input, $find, $replacement): self
     {
-        $this->expr->replaceAll($input, $find, $replacement);
+        $this->expr->replaceAll(...func_get_args());
 
         return $this;
     }
@@ -866,7 +866,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function replaceOne($input, $find, $replacement): self
     {
-        $this->expr->replaceOne($input, $find, $replacement);
+        $this->expr->replaceOne(...func_get_args());
 
         return $this;
     }
@@ -874,7 +874,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function reverseArray($expression): self
     {
-        $this->expr->reverseArray($expression);
+        $this->expr->reverseArray(...func_get_args());
 
         return $this;
     }
@@ -882,7 +882,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function rtrim($input, $chars = null): self
     {
-        $this->expr->rtrim($input, $chars);
+        $this->expr->rtrim(...func_get_args());
 
         return $this;
     }
@@ -890,7 +890,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function round($number, $place = null): self
     {
-        $this->expr->round($number, $place);
+        $this->expr->round(...func_get_args());
 
         return $this;
     }
@@ -898,7 +898,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function radiansToDegrees($expression): self
     {
-        $this->expr->radiansToDegrees($expression);
+        $this->expr->radiansToDegrees(...func_get_args());
 
         return $this;
     }
@@ -914,7 +914,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function sampleRate(float $rate): self
     {
-        $this->expr->sampleRate($rate);
+        $this->expr->sampleRate(...func_get_args());
 
         return $this;
     }
@@ -922,7 +922,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function second($expression): self
     {
-        $this->expr->second($expression);
+        $this->expr->second(...func_get_args());
 
         return $this;
     }
@@ -930,7 +930,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function setDifference($expression1, $expression2): self
     {
-        $this->expr->setDifference($expression1, $expression2);
+        $this->expr->setDifference(...func_get_args());
 
         return $this;
     }
@@ -946,7 +946,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function setField($field, $input, $value): self
     {
-        $this->expr->setField($field, $input, $value);
+        $this->expr->setField(...func_get_args());
 
         return $this;
     }
@@ -962,7 +962,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function setIsSubset($expression1, $expression2): self
     {
-        $this->expr->setIsSubset($expression1, $expression2);
+        $this->expr->setIsSubset(...func_get_args());
 
         return $this;
     }
@@ -978,7 +978,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function sin($expression): self
     {
-        $this->expr->sin($expression);
+        $this->expr->sin(...func_get_args());
 
         return $this;
     }
@@ -986,7 +986,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function sinh($expression): self
     {
-        $this->expr->sinh($expression);
+        $this->expr->sinh(...func_get_args());
 
         return $this;
     }
@@ -994,7 +994,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function size($expression): self
     {
-        $this->expr->size($expression);
+        $this->expr->size(...func_get_args());
 
         return $this;
     }
@@ -1002,7 +1002,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function slice($array, $n, $position = null): self
     {
-        $this->expr->slice($array, $n, $position);
+        $this->expr->slice(...func_get_args());
 
         return $this;
     }
@@ -1010,7 +1010,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function sortArray($input, $sortBy): self
     {
-        $this->expr->sortArray($input, $sortBy);
+        $this->expr->sortArray(...func_get_args());
 
         return $this;
     }
@@ -1018,7 +1018,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function split($string, $delimiter): self
     {
-        $this->expr->split($string, $delimiter);
+        $this->expr->split(...func_get_args());
 
         return $this;
     }
@@ -1026,7 +1026,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function sqrt($expression): self
     {
-        $this->expr->sqrt($expression);
+        $this->expr->sqrt(...func_get_args());
 
         return $this;
     }
@@ -1034,7 +1034,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function stdDevPop($expression, ...$expressions): self
     {
-        $this->expr->stdDevPop($expression, ...$expressions);
+        $this->expr->stdDevPop(...func_get_args());
 
         return $this;
     }
@@ -1042,7 +1042,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function stdDevSamp($expression, ...$expressions): self
     {
-        $this->expr->stdDevSamp($expression, ...$expressions);
+        $this->expr->stdDevSamp(...func_get_args());
 
         return $this;
     }
@@ -1050,7 +1050,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function strcasecmp($expression1, $expression2): self
     {
-        $this->expr->strcasecmp($expression1, $expression2);
+        $this->expr->strcasecmp(...func_get_args());
 
         return $this;
     }
@@ -1058,7 +1058,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function strLenBytes($string): self
     {
-        $this->expr->strLenBytes($string);
+        $this->expr->strLenBytes(...func_get_args());
 
         return $this;
     }
@@ -1066,7 +1066,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function strLenCP($string): self
     {
-        $this->expr->strLenCP($string);
+        $this->expr->strLenCP(...func_get_args());
 
         return $this;
     }
@@ -1074,7 +1074,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function substr($string, $start, $length): self
     {
-        $this->expr->substr($string, $start, $length);
+        $this->expr->substr(...func_get_args());
 
         return $this;
     }
@@ -1082,7 +1082,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function substrBytes($string, $start, $count): self
     {
-        $this->expr->substrBytes($string, $start, $count);
+        $this->expr->substrBytes(...func_get_args());
 
         return $this;
     }
@@ -1090,7 +1090,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function substrCP($string, $start, $count): self
     {
-        $this->expr->substrCP($string, $start, $count);
+        $this->expr->substrCP(...func_get_args());
 
         return $this;
     }
@@ -1098,7 +1098,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function subtract($expression1, $expression2): self
     {
-        $this->expr->subtract($expression1, $expression2);
+        $this->expr->subtract(...func_get_args());
 
         return $this;
     }
@@ -1106,7 +1106,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function sum($expression, ...$expressions): self
     {
-        $this->expr->sum($expression, ...$expressions);
+        $this->expr->sum(...func_get_args());
 
         return $this;
     }
@@ -1122,7 +1122,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function tan($expression): self
     {
-        $this->expr->tan($expression);
+        $this->expr->tan(...func_get_args());
 
         return $this;
     }
@@ -1130,7 +1130,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function tanh($expression): self
     {
-        $this->expr->tanh($expression);
+        $this->expr->tanh(...func_get_args());
 
         return $this;
     }
@@ -1138,7 +1138,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function then($expression): self
     {
-        $this->expr->then($expression);
+        $this->expr->then(...func_get_args());
 
         return $this;
     }
@@ -1146,7 +1146,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toBool($expression): self
     {
-        $this->expr->toBool($expression);
+        $this->expr->toBool(...func_get_args());
 
         return $this;
     }
@@ -1154,7 +1154,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toDate($expression): self
     {
-        $this->expr->toDate($expression);
+        $this->expr->toDate(...func_get_args());
 
         return $this;
     }
@@ -1162,7 +1162,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toDecimal($expression): self
     {
-        $this->expr->toDecimal($expression);
+        $this->expr->toDecimal(...func_get_args());
 
         return $this;
     }
@@ -1170,7 +1170,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toDouble($expression): self
     {
-        $this->expr->toDouble($expression);
+        $this->expr->toDouble(...func_get_args());
 
         return $this;
     }
@@ -1178,7 +1178,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toInt($expression): self
     {
-        $this->expr->toInt($expression);
+        $this->expr->toInt(...func_get_args());
 
         return $this;
     }
@@ -1186,7 +1186,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toLong($expression): self
     {
-        $this->expr->toLong($expression);
+        $this->expr->toLong(...func_get_args());
 
         return $this;
     }
@@ -1194,7 +1194,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toObjectId($expression): self
     {
-        $this->expr->toObjectId($expression);
+        $this->expr->toObjectId(...func_get_args());
 
         return $this;
     }
@@ -1202,7 +1202,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toString($expression): self
     {
-        $this->expr->toString($expression);
+        $this->expr->toString(...func_get_args());
 
         return $this;
     }
@@ -1210,7 +1210,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toLower($expression): self
     {
-        $this->expr->toLower($expression);
+        $this->expr->toLower(...func_get_args());
 
         return $this;
     }
@@ -1218,7 +1218,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function toUpper($expression): self
     {
-        $this->expr->toUpper($expression);
+        $this->expr->toUpper(...func_get_args());
 
         return $this;
     }
@@ -1226,7 +1226,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function trim($input, $chars = null): self
     {
-        $this->expr->trim($input, $chars);
+        $this->expr->trim(...func_get_args());
 
         return $this;
     }
@@ -1234,7 +1234,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function trunc($number): self
     {
-        $this->expr->trunc($number);
+        $this->expr->trunc(...func_get_args());
 
         return $this;
     }
@@ -1242,7 +1242,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function tsIncrement($expression): self
     {
-        $this->expr->tsIncrement($expression);
+        $this->expr->tsIncrement(...func_get_args());
 
         return $this;
     }
@@ -1250,7 +1250,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function tsSecond($expression): self
     {
-        $this->expr->tsSecond($expression);
+        $this->expr->tsSecond(...func_get_args());
 
         return $this;
     }
@@ -1258,7 +1258,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function type($expression): self
     {
-        $this->expr->type($expression);
+        $this->expr->type(...func_get_args());
 
         return $this;
     }
@@ -1266,7 +1266,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function week($expression): self
     {
-        $this->expr->week($expression);
+        $this->expr->week(...func_get_args());
 
         return $this;
     }
@@ -1274,7 +1274,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function year($expression): self
     {
-        $this->expr->year($expression);
+        $this->expr->year(...func_get_args());
 
         return $this;
     }
@@ -1282,7 +1282,7 @@ abstract class Operator extends Stage implements
     /** @return static */
     public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
     {
-        $this->expr->zip($inputs, $useLongestLength, $defaults);
+        $this->expr->zip(...func_get_args());
 
         return $this;
     }

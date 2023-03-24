@@ -6,6 +6,8 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 
+use function func_get_args;
+
 trait ProvidesGroupAccumulatorOperators
 {
     abstract protected function getExpr(): Expr;
@@ -13,7 +15,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize = null, $lang = 'js'): self
     {
-        $this->getExpr()->accumulator($init, $initArgs, $accumulate, $accumulateArgs, $merge, $finalize, $lang);
+        $this->getExpr()->accumulator(...func_get_args());
 
         return $this;
     }
@@ -21,7 +23,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function addToSet($expression): self
     {
-        $this->getExpr()->addToSet($expression);
+        $this->getExpr()->addToSet(...func_get_args());
 
         return $this;
     }
@@ -29,7 +31,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function avg($expression, ...$expressions): self
     {
-        $this->getExpr()->avg($expression, ...$expressions);
+        $this->getExpr()->avg(...func_get_args());
 
         return $this;
     }
@@ -37,7 +39,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function bottom($output, $sortBy): self
     {
-        $this->getExpr()->bottom($output, $sortBy);
+        $this->getExpr()->bottom(...func_get_args());
 
         return $this;
     }
@@ -45,7 +47,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function bottomN($output, $sortBy, $n): self
     {
-        $this->getExpr()->bottomN($output, $sortBy, $n);
+        $this->getExpr()->bottomN(...func_get_args());
 
         return $this;
     }
@@ -61,7 +63,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function first($expression): self
     {
-        $this->getExpr()->first($expression);
+        $this->getExpr()->first(...func_get_args());
 
         return $this;
     }
@@ -69,7 +71,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function firstN($expression, $n): self
     {
-        $this->getExpr()->firstN($expression, $n);
+        $this->getExpr()->firstN(...func_get_args());
 
         return $this;
     }
@@ -77,7 +79,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function function($body, $args, $lang = 'js'): self
     {
-        $this->getExpr()->function($body, $args, $lang);
+        $this->getExpr()->function(...func_get_args());
 
         return $this;
     }
@@ -85,7 +87,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function last($expression): self
     {
-        $this->getExpr()->last($expression);
+        $this->getExpr()->last(...func_get_args());
 
         return $this;
     }
@@ -93,7 +95,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function lastN($expression, $n): self
     {
-        $this->getExpr()->lastN($expression, $n);
+        $this->getExpr()->lastN(...func_get_args());
 
         return $this;
     }
@@ -101,7 +103,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function max($expression, ...$expressions): self
     {
-        $this->getExpr()->max($expression, ...$expressions);
+        $this->getExpr()->max(...func_get_args());
 
         return $this;
     }
@@ -109,7 +111,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function maxN($expression, $n): self
     {
-        $this->getExpr()->maxN($expression, $n);
+        $this->getExpr()->maxN(...func_get_args());
 
         return $this;
     }
@@ -117,7 +119,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function mergeObjects($expression, ...$expressions): self
     {
-        $this->getExpr()->mergeObjects($expression, ...$expressions);
+        $this->getExpr()->mergeObjects(...func_get_args());
 
         return $this;
     }
@@ -125,7 +127,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function min($expression, ...$expressions): self
     {
-        $this->getExpr()->min($expression, ...$expressions);
+        $this->getExpr()->min(...func_get_args());
 
         return $this;
     }
@@ -133,7 +135,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function minN($expression, $n): self
     {
-        $this->getExpr()->minN($expression, $n);
+        $this->getExpr()->minN(...func_get_args());
 
         return $this;
     }
@@ -141,7 +143,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function push($expression): self
     {
-        $this->getExpr()->push($expression);
+        $this->getExpr()->push(...func_get_args());
 
         return $this;
     }
@@ -149,7 +151,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function stdDevPop($expression, ...$expressions): self
     {
-        $this->getExpr()->stdDevPop($expression, ...$expressions);
+        $this->getExpr()->stdDevPop(...func_get_args());
 
         return $this;
     }
@@ -157,7 +159,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function stdDevSamp($expression, ...$expressions): self
     {
-        $this->getExpr()->stdDevSamp($expression, ...$expressions);
+        $this->getExpr()->stdDevSamp(...func_get_args());
 
         return $this;
     }
@@ -165,7 +167,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function sum($expression, ...$expressions): self
     {
-        $this->getExpr()->sum($expression, ...$expressions);
+        $this->getExpr()->sum(...func_get_args());
 
         return $this;
     }
@@ -173,7 +175,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function top($output, $sortBy): self
     {
-        $this->getExpr()->top($output, $sortBy);
+        $this->getExpr()->top(...func_get_args());
 
         return $this;
     }
@@ -181,7 +183,7 @@ trait ProvidesGroupAccumulatorOperators
     /** @return static */
     public function topN($output, $sortBy, $n): self
     {
-        $this->getExpr()->topN($output, $sortBy, $n);
+        $this->getExpr()->topN(...func_get_args());
 
         return $this;
     }
