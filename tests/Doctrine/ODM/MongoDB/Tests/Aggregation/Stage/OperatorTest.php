@@ -19,7 +19,7 @@ class OperatorTest extends BaseTest
 
     /**
      * @param array<string, mixed>           $expected
-     * @param Closure(Expr): mixed[]|mixed[] $args
+     * @param mixed[]|Closure(Expr): mixed[] $args
      *
      * @dataProvider provideAccumulatorExpressionOperators
      * @dataProvider provideArithmeticExpressionOperators

@@ -21,7 +21,7 @@ class BucketAutoTest extends BaseTest
 
     /**
      * @param array<string, string>          $expected
-     * @param Closure(Expr): mixed[]|mixed[] $args
+     * @param mixed[]|Closure(Expr): mixed[] $args
      *
      * @dataProvider provideGroupAccumulatorExpressionOperators
      */
