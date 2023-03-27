@@ -544,6 +544,19 @@ class Builder
     }
 
     /**
+     * The $search stage performs a full-text search on the specified field or
+     * fields which must be covered by an Atlas Search index.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/query-syntax/#mongodb-pipeline-pipe.-search
+     */
+    public function search(): Stage\Search
+    {
+        $stage = new Stage\Search($this);
+
+        return $this->addStage($stage);
+    }
+
+    /**
      * Adds new fields to documents. $set outputs documents that contain all
      * existing fields from the input documents and newly added fields.
      *
