@@ -9,7 +9,11 @@ use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
 use MongoDB\BSON\UTCDateTime;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/near/
+ */
 class Near extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;

@@ -8,7 +8,11 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use function array_values;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/autocomplete/
+ */
 class Autocomplete extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;

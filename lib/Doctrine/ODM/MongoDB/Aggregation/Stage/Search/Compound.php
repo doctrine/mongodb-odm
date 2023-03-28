@@ -8,7 +8,11 @@ use Closure;
 
 use function array_map;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/compound/
+ */
 class Compound extends AbstractSearchOperator implements CompoundSearchOperatorInterface, ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;

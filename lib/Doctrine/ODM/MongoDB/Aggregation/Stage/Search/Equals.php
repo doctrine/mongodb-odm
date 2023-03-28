@@ -8,7 +8,11 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/equals/
+ */
 class Equals extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;

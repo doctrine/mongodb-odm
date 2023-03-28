@@ -6,7 +6,11 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use MongoDB\BSON\UTCDateTime;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/range/
+ */
 class Range extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;

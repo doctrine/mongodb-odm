@@ -6,7 +6,11 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/embeddedDocument/
+ */
 class EmbeddedDocument extends AbstractSearchOperator implements SupportsEmbeddableSearchOperators, ScoredSearchOperator
 {
     use SupportsAllSearchOperatorsTrait;

@@ -6,7 +6,11 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/queryString/
+ */
 class QueryString extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;
