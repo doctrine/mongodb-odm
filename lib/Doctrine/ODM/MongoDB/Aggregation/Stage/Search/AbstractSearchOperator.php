@@ -36,7 +36,7 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
     }
 
     /** @return array<string, object> */
-    public function getExpression(): array
+    final public function getExpression(): array
     {
         return [$this->getOperatorName() => $this->getOperatorParams()];
     }

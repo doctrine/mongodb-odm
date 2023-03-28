@@ -14,12 +14,6 @@ class Exists extends AbstractSearchOperator
         parent::__construct($search);
     }
 
-    /** @return array<string, object> */
-    public function getExpression(): array
-    {
-        return [$this->getOperatorName() => $this->getOperatorParams()];
-    }
-
     public function getOperatorName(): string
     {
         return 'exists';

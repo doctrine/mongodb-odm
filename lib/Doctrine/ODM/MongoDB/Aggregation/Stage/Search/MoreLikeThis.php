@@ -22,12 +22,6 @@ class MoreLikeThis extends AbstractSearchOperator
         $this->like = array_values($documents);
     }
 
-    /** @return array<string, object> */
-    public function getExpression(): array
-    {
-        return [$this->getOperatorName() => $this->getOperatorParams()];
-    }
-
     public function getOperatorName(): string
     {
         return 'moreLikeThis';
