@@ -14,13 +14,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Count extends Stage
 {
-    private string $fieldName;
-
-    public function __construct(Builder $builder, string $fieldName)
+    public function __construct(Builder $builder, private string $fieldName)
     {
         parent::__construct($builder);
-
-        $this->fieldName = $fieldName;
     }
 
     /** @psalm-return CountStageExpression */

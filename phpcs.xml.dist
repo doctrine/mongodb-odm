@@ -9,7 +9,7 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
-    <config name="php_version" value="70400"/>
+    <config name="php_version" value="80000"/>
 
     <file>benchmark</file>
     <file>lib</file>
@@ -43,6 +43,9 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
+
+        <!-- Allow short nullable syntax for non-union types -->
+        <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat.DisallowedShortNullable" />
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">

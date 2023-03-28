@@ -14,13 +14,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  */
 class Sample extends Stage
 {
-    private int $size;
-
-    public function __construct(Builder $builder, int $size)
+    public function __construct(Builder $builder, private int $size)
     {
         parent::__construct($builder);
-
-        $this->size = $size;
     }
 
     /** @psalm-return SampleStageExpression */

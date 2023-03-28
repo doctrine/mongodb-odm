@@ -12,7 +12,6 @@ use Exception;
 use MongoDB\BSON\ObjectId;
 
 use function array_merge;
-use function get_class;
 
 class GH1058Test extends BaseTest
 {
@@ -47,7 +46,7 @@ class GH1058Listener
 
         foreach (array_merge($uow->getScheduledDocumentInsertions(), $uow->getScheduledDocumentUpserts()) as $document) {
             $document->setValue('value 2');
-            $metadata = $dm->getClassMetadata(get_class($document));
+            $metadata = $dm->getClassMetadata($document::class);
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($metadata, $document);
 
             if ($uow->isScheduledForUpdate($document)) {

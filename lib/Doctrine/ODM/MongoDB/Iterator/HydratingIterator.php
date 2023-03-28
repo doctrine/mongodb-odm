@@ -27,28 +27,14 @@ final class HydratingIterator implements Iterator
     /** @var Generator<mixed, array<string, mixed>>|null */
     private $iterator;
 
-    private UnitOfWork $unitOfWork;
-
-    /** @var ClassMetadata<TDocument> */
-    private ClassMetadata $class;
-
-    /**
-     * @var array<int, mixed>
-     * @psalm-var Hints
-     */
-    private array $unitOfWorkHints;
-
     /**
      * @param Traversable<mixed, array<string, mixed>> $traversable
      * @param ClassMetadata<TDocument>                 $class
      * @psalm-param Hints $unitOfWorkHints
      */
-    public function __construct(Traversable $traversable, UnitOfWork $unitOfWork, ClassMetadata $class, array $unitOfWorkHints = [])
+    public function __construct(Traversable $traversable, private UnitOfWork $unitOfWork, private ClassMetadata $class, private array $unitOfWorkHints = [])
     {
-        $this->iterator        = $this->wrapTraversable($traversable);
-        $this->unitOfWork      = $unitOfWork;
-        $this->class           = $class;
-        $this->unitOfWorkHints = $unitOfWorkHints;
+        $this->iterator = $this->wrapTraversable($traversable);
     }
 
     public function __destruct()

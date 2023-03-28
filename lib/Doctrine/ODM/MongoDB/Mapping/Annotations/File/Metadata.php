@@ -40,7 +40,7 @@ final class Metadata extends AbstractField
         ?string $targetDocument = null,
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
-        ?string $defaultDiscriminatorValue = null
+        ?string $defaultDiscriminatorValue = null,
     ) {
         parent::__construct('metadata', ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
 

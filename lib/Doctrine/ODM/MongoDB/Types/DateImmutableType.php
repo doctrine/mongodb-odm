@@ -9,7 +9,6 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use RuntimeException;
 
-use function get_class;
 use function sprintf;
 
 class DateImmutableType extends DateType
@@ -30,7 +29,7 @@ class DateImmutableType extends DateType
         throw new RuntimeException(sprintf(
             '%s::getDateTime has returned an unsupported implementation of DateTimeInterface: %s',
             parent::class,
-            get_class($datetime),
+            $datetime::class,
         ));
     }
 

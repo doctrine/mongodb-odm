@@ -10,8 +10,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use ReflectionObject;
 
-use function get_class;
-
 class SplObjectHashCollisionsTest extends BaseTest
 {
     /**
@@ -67,7 +65,7 @@ class SplObjectHashCollisionsTest extends BaseTest
             ],
             [
                 static function (DocumentManager $dm, $doc): void {
-                    $dm->clear(get_class($doc));
+                    $dm->clear($doc::class);
                 },
                 1,
             ],

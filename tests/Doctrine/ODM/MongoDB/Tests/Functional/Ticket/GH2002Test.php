@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-use function get_class;
 use function sprintf;
 
 class GH2002Test extends BaseTest
@@ -22,7 +21,7 @@ class GH2002Test extends BaseTest
     {
         $this->dm->persist($document);
 
-        $metadata = $this->dm->getClassMetadata(get_class($document));
+        $metadata = $this->dm->getClassMetadata($document::class);
         $this->dm->getUnitOfWork()->computeChangeSet($metadata, $document);
 
         $data = $this->dm->getUnitOfWork()->getPersistenceBuilder()->prepareInsertData($document);
@@ -65,7 +64,7 @@ class GH2002Test extends BaseTest
     {
         $this->dm->persist($document);
 
-        $metadata = $this->dm->getClassMetadata(get_class($document));
+        $metadata = $this->dm->getClassMetadata($document::class);
         $this->dm->getUnitOfWork()->computeChangeSet($metadata, $document);
 
         $this->expectException(MappingException::class);

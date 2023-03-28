@@ -10,8 +10,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Exception;
 
-use function get_class;
-
 class GH999Test extends BaseTest
 {
     public function testModifyingInFlushHandler(): void
@@ -37,7 +35,7 @@ class GH999Listener
 
         foreach ($dm->getUnitOfWork()->getScheduledDocumentInsertions() as $document) {
             $document->setName('name #changed');
-            $metadata = $dm->getClassMetadata(get_class($document));
+            $metadata = $dm->getClassMetadata($document::class);
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($metadata, $document);
         }
     }

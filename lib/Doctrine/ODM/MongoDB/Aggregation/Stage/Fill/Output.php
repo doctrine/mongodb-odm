@@ -20,18 +20,14 @@ use function sprintf;
  */
 class Output extends Stage
 {
-    private Fill $fill;
-
     private string $currentField = '';
 
     /** @var array<string, array<string, mixed>> */
     private $output = [];
 
-    public function __construct(Builder $builder, Fill $fill)
+    public function __construct(Builder $builder, private Fill $fill)
     {
         parent::__construct($builder);
-
-        $this->fill = $fill;
     }
 
     /** @param mixed|Expr $expression */

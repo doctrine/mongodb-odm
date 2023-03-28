@@ -40,22 +40,16 @@ class GraphLookup extends Stage
 
     private Stage\GraphLookup\MatchStage $restrictSearchWithMatch;
 
-    private DocumentManager $dm;
-
-    private ClassMetadata $class;
-
     private ?ClassMetadata $targetClass = null;
 
     /**
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, private DocumentManager $dm, private ClassMetadata $class)
     {
         parent::__construct($builder);
 
-        $this->dm                      = $documentManager;
-        $this->class                   = $class;
         $this->restrictSearchWithMatch = new GraphLookup\MatchStage($this->builder, $this);
         $this->from($from);
     }
@@ -152,7 +146,7 @@ class GraphLookup extends Stage
         // Check if mapped class with given name exists
         try {
             $this->targetClass = $this->dm->getClassMetadata($from);
-        } catch (BaseMappingException $e) {
+        } catch (BaseMappingException) {
             $this->from = $from;
 
             return $this;

@@ -22,12 +22,12 @@ class MODM116Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $parent = $this->dm->find(get_class($parent), $parent->getId());
+        $parent = $this->dm->find($parent::class, $parent->getId());
 
         $parent->getChild()->setName('ok');
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(get_class($parent))->find()->toArray();
+        $check = $this->dm->getDocumentCollection($parent::class)->find()->toArray();
         $check = array_values($check);
         self::assertCount(1, $check);
         self::assertEquals('test', $check[0]['name']);

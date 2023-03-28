@@ -212,7 +212,7 @@ class FilterTest extends BaseTest
         foreach ($tim->getGroups() as $group) {
             try {
                 $groupnames[] = $group->getName();
-            } catch (DocumentNotFoundException $e) {
+            } catch (DocumentNotFoundException) {
                //Proxy object filtered
             }
         }
@@ -242,7 +242,7 @@ class FilterTest extends BaseTest
         $profile = $tim->getProfile();
         try {
             return $profile->getFirstname();
-        } catch (DocumentNotFoundException $e) {
+        } catch (DocumentNotFoundException) {
             //Proxy object filtered
             return null;
         }
@@ -270,13 +270,13 @@ class FilterTest extends BaseTest
 
         try {
             $usernames[] = $tim->getUsername();
-        } catch (DocumentNotFoundException $e) {
+        } catch (DocumentNotFoundException) {
             //Proxy object filtered
         }
 
         try {
             $usernames[] = $john->getUsername();
-        } catch (DocumentNotFoundException $e) {
+        } catch (DocumentNotFoundException) {
             //Proxy object filtered
         }
 

@@ -33,7 +33,7 @@ final class PersistentCollectionException extends MongoDBException
         string $className,
         string $methodName,
         string $parameterName,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ): self {
         return new self(
             sprintf(

@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTest;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\BSON\ObjectId;
 
-use function get_class;
-
 class GH774Test extends BaseTest
 {
     public function testUpsert(): void
@@ -25,7 +23,7 @@ class GH774Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $thread = $this->dm->find(get_class($thread), $id);
+        $thread = $this->dm->find($thread::class, $id);
         self::assertNotNull($thread);
         self::assertEquals('test', $thread->permalink);
     }

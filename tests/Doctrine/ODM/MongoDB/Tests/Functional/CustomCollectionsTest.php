@@ -19,21 +19,20 @@ use Documents\ProfileNotify;
 use stdClass;
 
 use function assert;
-use function get_class;
 
 class CustomCollectionsTest extends BaseTest
 {
     public function testMappingNamespaceIsAdded(): void
     {
         $d  = new DocumentWithCustomCollection();
-        $cm = $this->dm->getClassMetadata(get_class($d));
+        $cm = $this->dm->getClassMetadata($d::class);
         self::assertSame(MyEmbedsCollection::class, $cm->fieldMappings['coll']['collectionClass']);
     }
 
     public function testLeadingBackslashIsRemoved(): void
     {
         $d  = new DocumentWithCustomCollection();
-        $cm = $this->dm->getClassMetadata(get_class($d));
+        $cm = $this->dm->getClassMetadata($d::class);
         self::assertSame(MyDocumentsCollection::class, $cm->fieldMappings['inverseRefMany']['collectionClass']);
     }
 
@@ -82,7 +81,7 @@ class CustomCollectionsTest extends BaseTest
         self::assertInstanceOf(PersistentCollection::class, $d->boring);
 
         $this->dm->clear();
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
 
         self::assertNotInstanceOf(PersistentCollection::class, $d->coll);
         self::assertInstanceOf(MyEmbedsCollection::class, $d->coll);
@@ -107,7 +106,7 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $d2 = $this->dm->find(get_class($d2), $d2->id);
+        $d2 = $this->dm->find($d2::class, $d2->id);
         self::assertNotInstanceOf(PersistentCollection::class, $d2->refMany);
         self::assertInstanceOf(MyDocumentsCollection::class, $d2->refMany);
         self::assertCount(2, $d2->refMany);
@@ -125,7 +124,7 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $d2 = $this->dm->find(get_class($d2), $d2->id);
+        $d2 = $this->dm->find($d2::class, $d2->id);
         self::assertNotInstanceOf(PersistentCollection::class, $d2->inverseRefMany);
         self::assertInstanceOf(MyDocumentsCollection::class, $d2->inverseRefMany);
     }
@@ -138,12 +137,12 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->persist($d);
         $this->dm->flush();
 
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
         $d->coll->move(0, 1);
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
         self::assertCount(2, $d->coll);
         self::assertEquals($e2, $d->coll[0]);
         self::assertEquals($e1, $d->coll[1]);
@@ -163,12 +162,12 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->persist($profile);
         $this->dm->flush();
 
-        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $profile = $this->dm->find($profile::class, $profile->getProfileId());
         $profile->getImages()->move(0, 1);
         $this->dm->flush();
         $this->dm->clear();
 
-        $profile = $this->dm->find(get_class($profile), $profile->getProfileId());
+        $profile = $this->dm->find($profile::class, $profile->getProfileId());
         self::assertCount(2, $profile->getImages());
         self::assertEquals($f2->getId(), $profile->getImages()[0]->getId());
         self::assertEquals($f1->getId(), $profile->getImages()[1]->getId());
@@ -180,7 +179,7 @@ class CustomCollectionsTest extends BaseTest
         $this->dm->persist($d);
         $this->dm->flush();
 
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
         self::assertInstanceOf(MyEmbedsCollection::class, $d->coll);
         $d->coll->nothingReally();
     }

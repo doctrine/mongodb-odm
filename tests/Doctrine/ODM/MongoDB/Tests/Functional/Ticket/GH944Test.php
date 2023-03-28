@@ -9,8 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTest;
 
-use function get_class;
-
 class GH944Test extends BaseTest
 {
     public function testIssue(): void
@@ -22,20 +20,20 @@ class GH944Test extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
         self::assertCount(2, $d->data);
         $d->removeByText('1');
         self::assertCount(1, $d->data);
         $this->dm->flush();
 
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
         self::assertCount(1, $d->data);
         $d->removeByText('2');
         self::assertEmpty($d->data);
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->find(get_class($d), $d->id);
+        $d = $this->dm->find($d::class, $d->id);
         self::assertEmpty($d->data);
     }
 }

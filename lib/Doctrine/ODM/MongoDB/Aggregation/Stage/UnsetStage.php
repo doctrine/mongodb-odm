@@ -18,17 +18,14 @@ use function array_values;
  */
 class UnsetStage extends Stage
 {
-    private DocumentPersister $documentPersister;
-
     /** @var list<string> */
     private array $fields;
 
-    public function __construct(Builder $builder, DocumentPersister $documentPersister, string ...$fields)
+    public function __construct(Builder $builder, private DocumentPersister $documentPersister, string ...$fields)
     {
         parent::__construct($builder);
 
-        $this->documentPersister = $documentPersister;
-        $this->fields            = array_values($fields);
+        $this->fields = array_values($fields);
     }
 
     /** @return UnsetStageExpression */

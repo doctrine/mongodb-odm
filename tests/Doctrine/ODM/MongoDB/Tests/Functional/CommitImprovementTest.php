@@ -16,8 +16,6 @@ use Documents\Phonenumber;
 use Documents\User;
 use Documents\VersionedUser;
 
-use function get_class;
-
 class CommitImprovementTest extends BaseTest
 {
     private CommandLogger $logger;
@@ -49,7 +47,7 @@ class CommitImprovementTest extends BaseTest
         self::assertCount(1, $this->logger, 'Inserting a document includes all nested collections and requires one query');
         $this->dm->clear();
 
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user = $this->dm->find($user::class, $user->getId());
         self::assertEquals('malarzm', $user->getUsername());
         self::assertCount(1, $user->getPhonebooks());
         self::assertEquals('Private', $user->getPhonebooks()->first()->getTitle());
@@ -75,11 +73,11 @@ class CommitImprovementTest extends BaseTest
         $troll->setVersion(3);
         try {
             $this->dm->flush();
-        } catch (LockException $ex) {
+        } catch (LockException) {
         }
 
         $this->dm->clear();
-        $user         = $this->dm->find(get_class($user), $user->getId());
+        $user         = $this->dm->find($user::class, $user->getId());
         $phonenumbers = $user->getPhonebooks()->first()->getPhonenumbers();
         self::assertCount(2, $phonenumbers);
         self::assertEquals('12345678', $phonenumbers[0]->getPhonenumber());
@@ -106,7 +104,7 @@ class CommitImprovementTest extends BaseTest
         self::assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers); // so we got a number on postPersist
         self::assertTrue($phoneNumbers->isDirty()); // but they should be dirty
 
-        $collection = $this->dm->getDocumentCollection(get_class($user));
+        $collection = $this->dm->getDocumentCollection($user::class);
         $inDb       = $collection->findOne();
         self::assertArrayNotHasKey('phonenumbers', $inDb, 'Collection modified in postPersist should not be in database without recomputing change set');
 
@@ -129,19 +127,19 @@ class CommitImprovementTest extends BaseTest
         $this->dm->flush();
 
         $user->addPhonenumber(new Phonenumber('87654321'));
-        $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
+        $this->uow->computeChangeSet($this->dm->getClassMetadata($user::class), $user);
         self::assertTrue($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
         self::assertFalse($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
 
         $user->getPhonenumbers()->clear();
-        $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($user)), $user);
+        $this->uow->computeChangeSet($this->dm->getClassMetadata($user::class), $user);
         self::assertFalse($this->uow->isCollectionScheduledForUpdate($user->getPhonenumbers()));
         self::assertTrue($this->uow->isCollectionScheduledForDeletion($user->getPhonenumbers()));
         $this->logger->clear();
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find(get_class($user), $user->getId());
+        $user = $this->dm->find($user::class, $user->getId());
         self::assertEmpty($user->getPhonenumbers());
     }
 }
@@ -182,7 +180,7 @@ class PhonenumberMachine implements EventSubscriber
         // prove that even this won't break our flow
         $dm = $args[0]->getDocumentManager();
         $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet(
-            $dm->getClassMetadata(get_class($document)),
+            $dm->getClassMetadata($document::class),
             $document,
         );
     }

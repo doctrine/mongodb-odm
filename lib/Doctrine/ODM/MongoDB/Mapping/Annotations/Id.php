@@ -25,7 +25,7 @@ final class Id extends AbstractField
         bool $nullable = false,
         array $options = [],
         ?string $strategy = 'auto',
-        bool $notSaved = false
+        bool $notSaved = false,
     ) {
         parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
     }

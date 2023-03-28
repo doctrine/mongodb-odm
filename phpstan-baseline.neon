@@ -1,16 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\:\\:getPipeline\\(\\) should return array\\<int, non\\-empty\\-array\\<non\\-empty\\-string, mixed\\>\\|object\\> but returns array\\<array\\<string, mixed\\>\\>\\.$#"
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
-
-		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\:\\:getPipeline\\(\\) should return array\\<int, non\\-empty\\-array\\<non\\-empty\\-string, mixed\\>\\|object\\> but returns non\\-empty\\-array\\<array\\<string, mixed\\>\\>\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
@@ -291,6 +281,16 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Types/DateType.php
 
 		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
+
+		-
+			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
+			count: 3
+			path: lib/Doctrine/ODM/MongoDB/Utility/LifecycleEventManager.php
+
+		-
 			message: "#^Parameter \\#1 \\$builder of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Facet\\:\\:pipeline\\(\\) expects Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Builder\\|Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage, stdClass given\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/FacetTest.php
@@ -561,12 +561,12 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:235\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents81\\\\\\\\Card'\\} given\\.$#"
+			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:234\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents81\\\\\\\\Card'\\} given\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:255\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents81\\\\\\\\SuitNonBacked'\\} given\\.$#"
+			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:254\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents81\\\\\\\\SuitNonBacked'\\} given\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
 

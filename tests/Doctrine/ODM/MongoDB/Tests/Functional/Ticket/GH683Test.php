@@ -10,8 +10,6 @@ use Documents\Functional\Ticket\GH683\EmbeddedSubDocument1;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument2;
 use Documents\Functional\Ticket\GH683\ParentDocument;
 
-use function get_class;
-
 class GH683Test extends BaseTest
 {
     public function testEmbedOne(): void
@@ -30,8 +28,8 @@ class GH683Test extends BaseTest
 
         $id = $parent->id;
 
-        $parent = $this->dm->find(get_class($parent), $id);
-        self::assertInstanceOf(get_class($sub1), $parent->embedOne);
+        $parent = $this->dm->find($parent::class, $id);
+        self::assertInstanceOf($sub1::class, $parent->embedOne);
     }
 
     public function testEmbedMany(): void
@@ -55,10 +53,10 @@ class GH683Test extends BaseTest
 
         $id = $parent->id;
 
-        $parent    = $this->dm->find(get_class($parent), $id);
+        $parent    = $this->dm->find($parent::class, $id);
         $firstSub  = $parent->embedMany->get(0);
         $secondSub = $parent->embedMany->get(1);
-        self::assertInstanceOf(get_class($sub1), $firstSub);
-        self::assertInstanceOf(get_class($sub2), $secondSub);
+        self::assertInstanceOf($sub1::class, $firstSub);
+        self::assertInstanceOf($sub2::class, $secondSub);
     }
 }

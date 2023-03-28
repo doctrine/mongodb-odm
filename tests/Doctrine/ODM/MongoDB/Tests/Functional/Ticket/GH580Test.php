@@ -37,7 +37,7 @@ class GH580Test extends BaseTest
         try {
             $this->dm->flush();
             $this->fail('Expected BulkWriteException for duplicate value');
-        } catch (BulkWriteException $e) {
+        } catch (BulkWriteException) {
         }
 
         $this->dm->clear($class);
