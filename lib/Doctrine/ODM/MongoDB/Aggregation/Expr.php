@@ -14,7 +14,6 @@ use LogicException;
 
 use function array_map;
 use function array_merge;
-use function assert;
 use function func_get_args;
 use function is_array;
 use function is_string;
@@ -41,7 +40,6 @@ class Expr implements GenericOperatorsInterface
 
     public function __construct(private DocumentManager $dm, private ClassMetadata $class)
     {
-        assert($class instanceof ClassMetadata);
     }
 
     /**
