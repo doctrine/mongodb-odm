@@ -758,7 +758,7 @@ class Expr implements
         return $this->operator('$rand', []);
     }
 
-    public function range($start, $end, $step = 1): static
+    public function range($start, $end, $step = null): static
     {
         return $this->operator('$range', func_get_args());
     }
@@ -820,11 +820,16 @@ class Expr implements
 
     public function slice($array, $n, $position = null): static
     {
-        if ($position === null) {
-            return $this->operator('$slice', func_get_args());
+        // With two args provided, the order of parameters is <array>, <n>.
+        // With three args provided, the order of parameters is <array>,
+        // <position>, <n>.
+        if ($position !== null) {
+            $args = [$array, $position, $n];
+        } else {
+            $args = [$array, $n];
         }
 
-        return $this->operator('$slice', func_get_args());
+        return $this->operator('$slice', $args);
     }
 
     public function sortArray($input, $sortBy): static

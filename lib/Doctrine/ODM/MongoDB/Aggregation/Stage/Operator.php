@@ -717,7 +717,7 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function range($start, $end, $step = 1): static
+    public function range($start, $end, $step = null): static
     {
         $this->expr->range(...func_get_args());
 

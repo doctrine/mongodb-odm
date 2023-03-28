@@ -298,7 +298,7 @@ trait AggregationOperatorsProviderTrait
         ];
 
         yield 'rangeWithoutStep' => [
-            'expected' => ['$range' => ['$start', '$end', 1]],
+            'expected' => ['$range' => ['$start', '$end']],
             'operator' => 'range',
             'args' => ['$start', '$end'],
         ];

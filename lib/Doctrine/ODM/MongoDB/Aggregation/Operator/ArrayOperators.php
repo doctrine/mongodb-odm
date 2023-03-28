@@ -207,7 +207,7 @@ interface ArrayOperators
      * @param mixed|Expr $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
      * @param mixed|Expr $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
      */
-    public function range($start, $end, $step = 1): static;
+    public function range($start, $end, $step = null): static;
 
     /**
      * Applies an expression to each element in an array and combines them into
