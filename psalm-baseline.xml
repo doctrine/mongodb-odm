@@ -260,6 +260,11 @@
       <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>
   </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/OperatorTest.php">
+    <InternalClass>
+      <code>Operator</code>
+    </InternalClass>
+  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
     <InvalidArgument>
       <code>$documentPersister</code>

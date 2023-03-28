@@ -44,7 +44,7 @@ class Densify extends Stage
         $this->range = (object) [];
     }
 
-    public function partitionByFields(string ...$fields): self
+    public function partitionByFields(string ...$fields): static
     {
         $this->partitionByFields = array_values($fields);
 
@@ -57,7 +57,7 @@ class Densify extends Stage
      * @psalm-param BoundsType  $bounds
      * @psalm-param ''|UnitType $unit
      */
-    public function range($bounds, $step, string $unit = ''): self
+    public function range($bounds, $step, string $unit = ''): static
     {
         $this->range = (object) [
             'bounds' => $bounds,

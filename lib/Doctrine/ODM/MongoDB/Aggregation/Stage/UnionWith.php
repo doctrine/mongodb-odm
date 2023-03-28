@@ -45,7 +45,7 @@ class UnionWith extends Stage
      * @param array|Builder|Stage $pipeline
      * @psalm-param PipelineParamType $pipeline
      */
-    public function pipeline($pipeline): self
+    public function pipeline($pipeline): static
     {
         if ($pipeline instanceof Stage) {
             $this->pipeline = $pipeline->builder;

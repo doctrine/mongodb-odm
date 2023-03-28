@@ -66,7 +66,7 @@ class Lookup extends Stage
      * collection. If the specified name already exists in the input document,
      * the existing field is overwritten.
      */
-    public function alias(string $alias): self
+    public function alias(string $alias): static
     {
         $this->as = $alias;
 
@@ -76,7 +76,7 @@ class Lookup extends Stage
     /**
      * Specifies the collection or field name in the same database to perform the join with.
      */
-    public function from(string $from): self
+    public function from(string $from): static
     {
         // $from can either be
         // a) a field name indicating a reference to a different document. Currently, only REFERENCE_STORE_AS_ID is supported
@@ -145,7 +145,7 @@ class Lookup extends Stage
      * contain the localField, the $lookup treats the field as having a value of
      * null for matching purposes.
      */
-    public function localField(string $localField): self
+    public function localField(string $localField): static
     {
         $this->localField = $this->prepareFieldName($localField, $this->class);
 
@@ -160,7 +160,7 @@ class Lookup extends Stage
      * contain the foreignField, the $lookup treats the value as null for
      * matching purposes.
      */
-    public function foreignField(string $foreignField): self
+    public function foreignField(string $foreignField): static
     {
         $this->foreignField = $this->prepareFieldName($foreignField, $this->targetClass);
 
@@ -175,7 +175,7 @@ class Lookup extends Stage
      *
      * @param array<string, mixed> $let
      */
-    public function let(array $let): self
+    public function let(array $let): static
     {
         $this->let = $let;
 
@@ -195,7 +195,7 @@ class Lookup extends Stage
      * @param Builder|Stage|array<array<string, mixed>> $pipeline
      * @psalm-param PipelineParamType $pipeline
      */
-    public function pipeline($pipeline): self
+    public function pipeline($pipeline): static
     {
         if ($pipeline instanceof Stage) {
             $this->pipeline = $pipeline->builder;
@@ -213,7 +213,7 @@ class Lookup extends Stage
     /**
      * Excludes localField and foreignField from an expression.
      */
-    public function excludeLocalAndForeignField(): self
+    public function excludeLocalAndForeignField(): static
     {
         $this->excludeLocalAndForeignField = true;
 
@@ -230,7 +230,7 @@ class Lookup extends Stage
     }
 
     /** @throws MappingException */
-    private function fromReference(string $fieldName): self
+    private function fromReference(string $fieldName): static
     {
         if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);

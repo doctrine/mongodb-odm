@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use function assert;
 
-/** @method BucketAuto groupBy($expression) */
 class BucketAuto extends AbstractBucket
 {
     private ?int $buckets = null;
@@ -17,7 +16,7 @@ class BucketAuto extends AbstractBucket
      * A positive 32-bit integer that specifies the number of buckets into which
      * input documents are grouped.
      */
-    public function buckets(int $buckets): self
+    public function buckets(int $buckets): static
     {
         $this->buckets = $buckets;
 
@@ -29,7 +28,7 @@ class BucketAuto extends AbstractBucket
      * the calculated boundary edges end on preferred round numbers or their
      * powers of 10.
      */
-    public function granularity(string $granularity): self
+    public function granularity(string $granularity): static
     {
         $this->granularity = $granularity;
 

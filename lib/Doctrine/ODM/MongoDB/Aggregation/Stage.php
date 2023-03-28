@@ -348,7 +348,7 @@ abstract class Stage
     /**
      * Controls if resulting iterator should be wrapped with CachingIterator.
      */
-    public function rewindable(bool $rewindable = true): self
+    public function rewindable(bool $rewindable = true): static
     {
         $this->builder->rewindable($rewindable);
 

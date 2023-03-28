@@ -51,14 +51,14 @@ class Fill extends Stage
     }
 
     /** @param mixed|Expr $expression */
-    public function partitionBy($expression): self
+    public function partitionBy($expression): static
     {
         $this->partitionBy = $expression;
 
         return $this;
     }
 
-    public function partitionByFields(string ...$fields): self
+    public function partitionByFields(string ...$fields): static
     {
         $this->partitionByFields = array_values($fields);
 
@@ -71,7 +71,7 @@ class Fill extends Stage
      * @psalm-param SortShape|string           $fieldName
      * @psalm-param SortDirection|null         $order
      */
-    public function sortBy($fieldName, $order = null): self
+    public function sortBy($fieldName, $order = null): static
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 

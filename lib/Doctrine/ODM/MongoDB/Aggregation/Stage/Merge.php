@@ -90,7 +90,7 @@ class Merge extends Stage
      * @param string|array $collection
      * @psalm-param OutputCollection $collection
      */
-    public function into($collection): self
+    public function into($collection): static
     {
         if (is_array($collection)) {
             $this->into = $collection;
@@ -116,14 +116,14 @@ class Merge extends Stage
      *
      * @param array<string, mixed|Expr> $let
      */
-    public function let(array $let): self
+    public function let(array $let): static
     {
         $this->let = $let;
 
         return $this;
     }
 
-    public function on(string ...$fields): self
+    public function on(string ...$fields): static
     {
         $this->on = array_values($fields);
 
@@ -134,7 +134,7 @@ class Merge extends Stage
      * @param string|array|Builder|Stage $whenMatched
      * @psalm-param WhenMatchedParamType $whenMatched
      */
-    public function whenMatched($whenMatched): self
+    public function whenMatched($whenMatched): static
     {
         if ($whenMatched instanceof Stage) {
             $this->whenMatched = $whenMatched->builder;
@@ -149,7 +149,7 @@ class Merge extends Stage
         return $this;
     }
 
-    public function whenNotMatched(string $whenNotMatched): self
+    public function whenNotMatched(string $whenNotMatched): static
     {
         $this->whenNotMatched = $whenNotMatched;
 
