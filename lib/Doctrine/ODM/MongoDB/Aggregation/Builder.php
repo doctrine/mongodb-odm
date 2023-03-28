@@ -572,6 +572,20 @@ class Builder
     }
 
     /**
+     * Performs operations on a specified span of documents in a collection,
+     * known as a window, and returns the results based on the chosen window
+     * operator.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/setWindowFields/
+     */
+    public function setWindowFields(): Stage\SetWindowFields
+    {
+        $stage = new Stage\SetWindowFields($this);
+
+        return $this->addStage($stage);
+    }
+
+    /**
      * Skips over the specified number of documents that pass into the stage and
      * passes the remaining documents to the next stage in the pipeline.
      *
