@@ -9,7 +9,7 @@ trait ScoredSearchOperatorTrait
 {
     private ?object $score = null;
 
-    protected function appendScore(object $params): object
+    private function appendScore(object $params): object
     {
         if (! $this->score) {
             return $params;
