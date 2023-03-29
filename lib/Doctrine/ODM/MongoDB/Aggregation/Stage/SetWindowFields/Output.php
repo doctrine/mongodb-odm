@@ -100,12 +100,12 @@ class Output extends Operator implements WindowOperators
 
     public function getExpression(): array
     {
+        // Combine field expressions (handled by Expr) and window objects
+        // (stored in $this->windows) into a single array. This avoids us having
+        // to create a separate Expr class that is capable of handling windows.
         return array_merge_recursive(
             $this->expr->getExpression(),
-            array_map(
-                static fn ($window): object => (object) ['window' => $window],
-                $this->windows,
-            ),
+            $this->getWindowOptionsForFields(),
         );
     }
 
@@ -124,5 +124,23 @@ class Output extends Operator implements WindowOperators
         if (! $this->currentField) {
             throw new LogicException(sprintf('%s requires setting a current field using field().', $method));
         }
+    }
+
+    /**
+     * Generates window options for all fields that have a window set.
+     *
+     * Windows are stored directly associated with a field name, but are needed
+     * to be wrapped inside a "window" object for the output expression. This
+     * method prepares the window options appropriately for use in
+     * getExpression().
+     *
+     * @return array<string, Window>
+     */
+    private function getWindowOptionsForFields(): array
+    {
+        return array_map(
+            static fn ($window): object => (object) ['window' => $window],
+            $this->windows,
+        );
     }
 }
