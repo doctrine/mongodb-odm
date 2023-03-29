@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
-use Doctrine\ODM\MongoDB\Aggregation\Operator\ProvidesWindowAccumulatorOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ProvidesWindowOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Operator\WindowOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
@@ -33,7 +33,7 @@ use function sprintf;
  */
 class Output extends Operator implements WindowOperators
 {
-    use ProvidesWindowAccumulatorOperators;
+    use ProvidesWindowOperators;
 
     private string $currentField = '';
 

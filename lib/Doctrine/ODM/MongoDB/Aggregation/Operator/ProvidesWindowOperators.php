@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use function func_get_args;
 
 /** @internal */
-trait ProvidesWindowAccumulatorOperators
+trait ProvidesWindowOperators
 {
     abstract protected function getExpr(): Expr;
 
