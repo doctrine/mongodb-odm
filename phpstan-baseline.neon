@@ -106,7 +106,17 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:whenMatched\\(\\) has parameter \\$whenMatched with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
+
+		-
 			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\MergeStageExpression is incompatible with native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:\\$whenMatched type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
@@ -126,7 +136,22 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\SearchStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:near\\(\\) has parameter \\$origin with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
+
+		-
+			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\SearchStageExpression is incompatible with native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
 
@@ -683,32 +708,32 @@ parameters:
 		-
 			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
 			count: 5
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Constant DOCTRINE_MONGODB_SERVER not found\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTest\\:\\:assertArraySubset\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTestCase\\:\\:assertArraySubset\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTest\\:\\:assertArraySubset\\(\\) has parameter \\$subset with no value type specified in iterable type array\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTestCase\\:\\:assertArraySubset\\(\\) has parameter \\$subset with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Used constant DOCTRINE_MONGODB_SERVER not found\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Parameter \\#2 \\$referenceMapping of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:createReference\\(\\) expects array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}, array\\{storeAs\\: 'dbRef'\\} given\\.$#"
@@ -863,7 +888,7 @@ parameters:
 		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\AnnotationDriverTestSuper\\:\\:\\$private is unused\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTestCase.php
 
 		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\DocumentSubClass2\\:\\:\\$id is unused\\.$#"
