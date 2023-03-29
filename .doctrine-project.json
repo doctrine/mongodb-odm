@@ -6,19 +6,37 @@
     "docsSlug": "doctrine-mongodb-odm",
     "versions": [
         {
-            "name": "2.4",
-            "branchName": "2.4.x",
+            "name": "2.6",
+            "branchName": "2.6.x",
             "slug": "latest",
             "upcoming": true
+        },
+        {
+            "name": "2.5",
+            "branchName": "2.5.x",
+            "slug": "2.5",
+            "current": true,
+            "aliases": [
+                "current",
+                "stable",
+                "2.5.x"
+            ]
+        },
+        {
+            "name": "2.4",
+            "branchName": "2.4.x",
+            "slug": "2.4",
+            "maintained": false,
+            "aliases": [
+                "2.4.x"
+            ]
         },
         {
             "name": "2.3",
             "branchName": "2.3.x",
             "slug": "2.3",
-            "current": true,
+            "maintained": false,
             "aliases": [
-                "current",
-                "stable",
                 "2.3.x"
             ]
         },
@@ -26,7 +44,10 @@
             "name": "2.2",
             "branchName": "2.2.x",
             "slug": "2.2",
-            "maintained": false
+            "maintained": false,
+            "aliases": [
+                "2.2.x"
+            ]
         },
         {
             "name": "2.1",
