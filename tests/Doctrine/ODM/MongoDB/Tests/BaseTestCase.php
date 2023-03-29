@@ -25,14 +25,14 @@ use function version_compare;
 use const DOCTRINE_MONGODB_DATABASE;
 use const DOCTRINE_MONGODB_SERVER;
 
-abstract class BaseTest extends TestCase
+abstract class BaseTestCase extends TestCase
 {
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
 
     public function setUp(): void
     {
-        $this->dm  = $this->createTestDocumentManager();
+        $this->dm  = static::createTestDocumentManager();
         $this->uow = $this->dm->getUnitOfWork();
     }
 
@@ -64,7 +64,7 @@ abstract class BaseTest extends TestCase
         }
     }
 
-    protected function getConfiguration(): Configuration
+    protected static function getConfiguration(): Configuration
     {
         $config = new Configuration();
 
@@ -75,7 +75,7 @@ abstract class BaseTest extends TestCase
         $config->setPersistentCollectionDir(__DIR__ . '/../../../../PersistentCollections');
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
-        $config->setMetadataDriverImpl($this->createMetadataDriverImpl());
+        $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
 
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
@@ -100,14 +100,14 @@ abstract class BaseTest extends TestCase
         }
     }
 
-    protected function createMetadataDriverImpl(): MappingDriver
+    protected static function createMetadataDriverImpl(): MappingDriver
     {
         return AnnotationDriver::create(__DIR__ . '/../../../../Documents');
     }
 
-    protected function createTestDocumentManager(): DocumentManager
+    protected static function createTestDocumentManager(): DocumentManager
     {
-        $config = $this->getConfiguration();
+        $config = static::getConfiguration();
         $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         return DocumentManager::create($client, $config);

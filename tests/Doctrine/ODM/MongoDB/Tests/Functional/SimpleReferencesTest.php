@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
@@ -15,7 +15,7 @@ use function assert;
 use function current;
 use function end;
 
-class SimpleReferencesTest extends BaseTest
+class SimpleReferencesTest extends BaseTestCase
 {
     private User $user;
 

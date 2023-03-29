@@ -11,12 +11,12 @@ use Doctrine\Common\Collections\ExpressionBuilder;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Bars\Bar;
 use MongoDB\BSON\Regex;
 use RuntimeException;
 
-class QueryExpressionVisitorTest extends BaseTest
+class QueryExpressionVisitorTest extends BaseTestCase
 {
     private Builder $queryBuilder;
 
@@ -43,7 +43,7 @@ class QueryExpressionVisitorTest extends BaseTest
         self::assertEquals($expectedQuery, $expr->getQuery());
     }
 
-    public function provideComparisons(): array
+    public static function provideComparisons(): array
     {
         $builder = new ExpressionBuilder();
 

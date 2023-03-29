@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Issue;
 use Documents\Project;
 use Documents\SubProject;
 
-class ReferenceEmbeddedDocumentsTest extends BaseTest
+class ReferenceEmbeddedDocumentsTest extends BaseTestCase
 {
     public function testSavesEmbeddedDocumentsInReferencedDocument(): void
     {

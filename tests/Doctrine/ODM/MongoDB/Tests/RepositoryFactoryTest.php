@@ -9,14 +9,14 @@ use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Documents\User;
 
-class RepositoryFactoryTest extends BaseTest
+class RepositoryFactoryTest extends BaseTestCase
 {
     public function testRepositoryFactoryCanBeReplaced(): void
     {
         $factory = $this->createMock(RepositoryFactory::class);
         $factory->expects($this->once())->method('getRepository');
 
-        $conf = $this->getConfiguration();
+        $conf = static::getConfiguration();
         $conf->setRepositoryFactory($factory);
         $dm = DocumentManager::create(null, $conf);
 
@@ -34,7 +34,7 @@ class RepositoryFactoryTest extends BaseTest
 
     public function testRepositoriesAreDifferentForDifferentDms(): void
     {
-        $conf = $this->getConfiguration();
+        $conf = static::getConfiguration();
         $conf->setRepositoryFactory(new DefaultRepositoryFactory());
 
         $dm1 = DocumentManager::create(null, $conf);

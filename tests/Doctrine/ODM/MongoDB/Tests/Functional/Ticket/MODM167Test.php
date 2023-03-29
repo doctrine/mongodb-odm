@@ -6,10 +6,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 
-class MODM167Test extends BaseTest
+class MODM167Test extends BaseTestCase
 {
     private MODM167EventListener $listener;
 

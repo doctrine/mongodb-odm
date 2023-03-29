@@ -7,14 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function assert;
 
 /**
  * Test the orphan removal on embedded documents that contain references with cascade operations.
  */
-class OrphanRemovalEmbedTest extends BaseTest
+class OrphanRemovalEmbedTest extends BaseTestCase
 {
     /**
      * Test unsetting an embedOne relationship

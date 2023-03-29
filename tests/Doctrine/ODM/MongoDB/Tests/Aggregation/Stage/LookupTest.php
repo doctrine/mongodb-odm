@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsComment;
 use Documents\ReferenceUser;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use InvalidArgumentException;
 
-class LookupTest extends BaseTest
+class LookupTest extends BaseTestCase
 {
     public function setUp(): void
     {

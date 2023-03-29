@@ -6,10 +6,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\IndexStats;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use stdClass;
 
-class IndexStatsTest extends BaseTest
+class IndexStatsTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

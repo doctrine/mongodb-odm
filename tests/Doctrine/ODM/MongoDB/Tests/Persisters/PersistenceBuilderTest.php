@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Persisters;
 
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use Documents\CmsComment;
 use Documents\Ecommerce\ConfigurableProduct;
@@ -17,7 +17,7 @@ use MongoDB\BSON\ObjectId;
 
 use function array_keys;
 
-class PersistenceBuilderTest extends BaseTest
+class PersistenceBuilderTest extends BaseTestCase
 {
     private PersistenceBuilder $pb;
 
@@ -223,7 +223,7 @@ class PersistenceBuilderTest extends BaseTest
      *
      * @return array
      */
-    public function getDocumentsAndExpectedData(): array
+    public static function getDocumentsAndExpectedData(): array
     {
         return [
             [new ConfigurableProduct('Test Product'), ['name' => 'Test Product']],

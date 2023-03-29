@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\CustomUser;
 use Documents\User;
 
-class CustomIdTest extends BaseTest
+class CustomIdTest extends BaseTestCase
 {
     public function testSetId(): void
     {

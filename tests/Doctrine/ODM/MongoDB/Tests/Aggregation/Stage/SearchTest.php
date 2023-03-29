@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\AbstractSearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\CompoundSearchOperatorInterface;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Generator;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
@@ -20,7 +20,7 @@ use function array_combine;
 use function array_map;
 use function array_merge;
 
-class SearchTest extends BaseTest
+class SearchTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

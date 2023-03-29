@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         failOnRisky="true"
-         stopOnFailure="false"
-         bootstrap="tests/bootstrap.php"
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        backupGlobals="false"
+        backupStaticProperties="false"
+        colors="false"
+        failOnRisky="true"
+        stopOnFailure="false"
+        bootstrap="tests/bootstrap.php"
+        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+        cacheDirectory=".phpunit.cache"
 >
     <testsuites>
         <testsuite name="Doctrine ODM MongoDB Test Suite">
             <directory>./tests/Doctrine/</directory>
         </testsuite>
     </testsuites>
-
     <coverage>
         <include>
             <directory suffix=".php">./lib/Doctrine/ODM/MongoDB</directory>
@@ -25,13 +24,11 @@
             <file>./lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php</file>
         </exclude>
     </coverage>
-
     <groups>
         <exclude>
             <group>performance</group>
         </exclude>
     </groups>
-
     <php>
         <ini name="error_reporting" value="-1"/>
         <const name="DOCTRINE_MONGODB_SERVER" value="mongodb://localhost:27017" />

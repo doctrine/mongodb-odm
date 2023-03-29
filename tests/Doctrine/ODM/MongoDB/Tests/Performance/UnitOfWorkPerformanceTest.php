@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ODM\MongoDB\Performance;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsUser;
 
 use function microtime;
@@ -13,7 +13,7 @@ use function str_replace;
 use const PHP_EOL;
 
 /** @group performance */
-class UnitOfWorkPerformanceTest extends BaseTest
+class UnitOfWorkPerformanceTest extends BaseTestCase
 {
     /**
      * [jwage: compute changesets for 10000 objects in ~10 seconds]

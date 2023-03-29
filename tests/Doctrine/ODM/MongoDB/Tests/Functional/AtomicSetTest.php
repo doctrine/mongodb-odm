@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Book;
 use Documents\Chapter;
 use Documents\IdentifiedChapter;
@@ -22,7 +22,7 @@ use MongoDB\BSON\ObjectId;
  * or atomicSetArray should be handled by it. If no exception was thrown it
  * means that collection update was handled by DocumentPersister.
  */
-class AtomicSetTest extends BaseTest
+class AtomicSetTest extends BaseTestCase
 {
     private CommandLogger $logger;
 
@@ -118,7 +118,7 @@ class AtomicSetTest extends BaseTest
         self::assertEmpty($user->phonenumbers);
     }
 
-    public function provideAtomicCollectionUnset(): array
+    public static function provideAtomicCollectionUnset(): array
     {
         return [
             [null],

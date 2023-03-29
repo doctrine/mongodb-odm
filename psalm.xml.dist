@@ -30,7 +30,7 @@
         <UndefinedConstant>
             <!-- DOCTRINE_MONGODB_DATABASE constant defined in phpunit.xml.dist -->
             <errorLevel type="suppress">
-                <file name="tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php"/>
+                <file name="tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php"/>
                 <file name="tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php"/>
                 <file name="tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php"/>
                 <file name="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php"/>

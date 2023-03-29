@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
 
@@ -14,7 +14,7 @@ use function assert;
 use function end;
 
 /** @group sharding */
-class ShardKeyTest extends BaseTest
+class ShardKeyTest extends BaseTestCase
 {
     private CommandLogger $logger;
 

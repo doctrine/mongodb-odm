@@ -7,9 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Project;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class ProjectTest extends BaseTest
+class ProjectTest extends BaseTestCase
 {
     use AggregationOperatorsProviderTrait;
     use AggregationTestTrait;

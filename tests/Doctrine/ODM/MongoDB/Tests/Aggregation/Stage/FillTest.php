@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class FillTest extends BaseTest
+class FillTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

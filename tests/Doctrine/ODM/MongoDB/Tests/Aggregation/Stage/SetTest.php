@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Set;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class SetTest extends BaseTest
+class SetTest extends BaseTestCase
 {
     use AggregationTestTrait;
 

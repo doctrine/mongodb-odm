@@ -7,10 +7,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 
-class GH499Test extends BaseTest
+class GH499Test extends BaseTestCase
 {
     public function testSetRefMany(): void
     {

@@ -8,7 +8,7 @@ use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\UploadOptions;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\File;
 use Documents\FileMetadata;
 use Documents\FileWithoutChunkSize;
@@ -26,7 +26,7 @@ use function fwrite;
 use function sprintf;
 use function tmpfile;
 
-class DefaultGridFSRepositoryTest extends BaseTest
+class DefaultGridFSRepositoryTest extends BaseTestCase
 {
     public function testOpenUploadStreamReturnsWritableResource(): void
     {

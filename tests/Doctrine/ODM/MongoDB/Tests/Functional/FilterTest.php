@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Group;
 use Documents\Profile;
 use Documents\User;
@@ -14,7 +14,7 @@ use MongoDB\BSON\ObjectId;
 
 use function sort;
 
-class FilterTest extends BaseTest
+class FilterTest extends BaseTestCase
 {
     /** @var array<string, ObjectId|string|null> */
     private array $ids;

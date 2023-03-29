@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Iterator;
 
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use Generator;
 use MongoDB\BSON\ObjectId;
 
 use function is_array;
 
-final class HydratingIteratorTest extends BaseTest
+final class HydratingIteratorTest extends BaseTestCase
 {
     public function testConstructorRewinds(): void
     {

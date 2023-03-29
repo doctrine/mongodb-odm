@@ -10,13 +10,13 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 use Documents\User;
 use Documents\VersionedUser;
 
-class CommitImprovementTest extends BaseTest
+class CommitImprovementTest extends BaseTestCase
 {
     private CommandLogger $logger;
 

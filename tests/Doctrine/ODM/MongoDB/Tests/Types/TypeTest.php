@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
@@ -21,7 +21,7 @@ use function time;
 
 use const STR_PAD_LEFT;
 
-class TypeTest extends BaseTest
+class TypeTest extends BaseTestCase
 {
     /**
      * @param mixed $test
@@ -33,7 +33,7 @@ class TypeTest extends BaseTest
         self::assertEquals($test, $type->convertToPHPValue($type->convertToDatabaseValue($test)));
     }
 
-    public function provideTypes(): array
+    public static function provideTypes(): array
     {
         return [
             'id' => [Type::getType(Type::ID), '507f1f77bcf86cd799439011'],
@@ -73,7 +73,7 @@ class TypeTest extends BaseTest
         self::assertEquals($test, $type->convertToDatabaseValue($test));
     }
 
-    public function provideTypesForIdempotent(): array
+    public static function provideTypesForIdempotent(): array
     {
         return [
             'id' => [Type::getType(Type::ID), new ObjectId()],

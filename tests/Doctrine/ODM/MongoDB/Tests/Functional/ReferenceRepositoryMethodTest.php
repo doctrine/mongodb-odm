@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\BlogPost;
 use Documents\Comment;
 use Documents\User;
@@ -13,7 +13,7 @@ use Documents\User;
 use function assert;
 use function strtotime;
 
-class ReferenceRepositoryMethodTest extends BaseTest
+class ReferenceRepositoryMethodTest extends BaseTestCase
 {
     public function testOneToOne(): void
     {

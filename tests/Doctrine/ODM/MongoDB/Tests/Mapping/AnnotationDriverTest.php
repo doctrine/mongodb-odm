@@ -8,9 +8,9 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
-class AnnotationDriverTest extends AbstractAnnotationDriverTest
+class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected static function loadDriver(): MappingDriver
     {
         $reader = new AnnotationReader();
 

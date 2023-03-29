@@ -10,11 +10,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class GH852Test extends BaseTest
+class GH852Test extends BaseTestCase
 {
     /** @dataProvider provideIdGenerators */
     public function testA(Closure $idGenerator): void
@@ -94,7 +94,7 @@ class GH852Test extends BaseTest
         self::assertCount(4, $docs);
     }
 
-    public function provideIdGenerators(): array
+    public static function provideIdGenerators(): array
     {
         $binDataType = Binary::TYPE_GENERIC;
 

@@ -29,7 +29,7 @@ use function iterator_to_array;
 
 use const DOCTRINE_MONGODB_DATABASE;
 
-class QueryTest extends BaseTest
+class QueryTest extends BaseTestCase
 {
     public function testSelectAndSelectSliceOnSameField(): void
     {
@@ -437,7 +437,7 @@ class QueryTest extends BaseTest
         $query->getIterator();
     }
 
-    public function provideQueryTypesThatDoNotReturnAnIterator(): array
+    public static function provideQueryTypesThatDoNotReturnAnIterator(): array
     {
         return [
             [Query::TYPE_FIND_AND_UPDATE, 'findOneAndUpdate'],

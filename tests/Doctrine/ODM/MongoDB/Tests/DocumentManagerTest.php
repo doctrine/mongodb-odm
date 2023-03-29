@@ -35,7 +35,7 @@ use MongoDB\Client;
 use RuntimeException;
 use stdClass;
 
-class DocumentManagerTest extends BaseTest
+class DocumentManagerTest extends BaseTestCase
 {
     public function testCustomRepository(): void
     {
@@ -118,7 +118,7 @@ class DocumentManagerTest extends BaseTest
         self::assertFalse($this->dm->isOpen());
     }
 
-    public function dataMethodsAffectedByNoObjectArguments(): array
+    public static function dataMethodsAffectedByNoObjectArguments(): array
     {
         return [
             ['persist'],
@@ -136,7 +136,7 @@ class DocumentManagerTest extends BaseTest
         $this->dm->$methodName(null);
     }
 
-    public function dataAffectedByErrorIfClosedException(): array
+    public static function dataAffectedByErrorIfClosedException(): array
     {
         return [
             ['flush'],

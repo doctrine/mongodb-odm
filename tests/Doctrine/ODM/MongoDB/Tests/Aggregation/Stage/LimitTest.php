@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Limit;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class LimitTest extends BaseTest
+class LimitTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
