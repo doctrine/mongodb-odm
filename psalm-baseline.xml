@@ -514,11 +514,6 @@
       <code>1</code>
     </InvalidArgument>
   </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php">
-    <InvalidArgument>
-      <code><![CDATA[['type' => -1]]]></code>
-    </InvalidArgument>
-  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php">
     <InternalClass>
       <code>new IndexInfoIteratorIterator(new ArrayIterator($indexes))</code>

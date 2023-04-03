@@ -418,6 +418,8 @@ class QueryTest extends BaseTestCase
     public function testConstructorShouldThrowExceptionForInvalidType(): void
     {
         $this->expectException(InvalidArgumentException::class);
+
+        /** @psalm-suppress InvalidArgument */
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
     }
 
