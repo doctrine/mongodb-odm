@@ -59,16 +59,22 @@ final class HydratorFactory
 
     /**
      * Which algorithm to use to automatically (re)generate hydrator classes.
+     *
+     * @psalm-var Configuration::AUTOGENERATE_*
      */
     private int $autoGenerate;
 
     /**
      * The namespace that contains all hydrator classes.
+     *
+     * @psalm-var non-empty-string
      */
-    private ?string $hydratorNamespace;
+    private string $hydratorNamespace;
 
     /**
      * The directory that contains all hydrator classes.
+     *
+     * @psalm-var non-empty-string
      */
     private string $hydratorDir;
 
@@ -79,14 +85,21 @@ final class HydratorFactory
      */
     private array $hydrators = [];
 
-    /** @throws HydratorException */
-    public function __construct(DocumentManager $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
+    /**
+     * @psalm-param Configuration::AUTOGENERATE_* $autoGenerate
+     *
+     * @throws HydratorException
+     *
+     * @psalm-assert non-empty-string $hydratorDir
+     * @psalm-assert non-empty-string $hydratorNs
+     */
+    public function __construct(DocumentManager $dm, EventManager $evm, string $hydratorDir, string $hydratorNs, int $autoGenerate)
     {
-        if (! $hydratorDir) {
+        if ($hydratorDir === '') {
             throw HydratorException::hydratorDirectoryRequired();
         }
 
-        if (! $hydratorNs) {
+        if ($hydratorNs === '') {
             throw HydratorException::hydratorNamespaceRequired();
         }
 
