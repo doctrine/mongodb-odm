@@ -57,7 +57,7 @@ use function is_string;
  *     skip?: int,
  *     snapshot?: bool,
  *     sort?: array<string, -1|1|SortMeta>,
- *     type?: Query::TYPE_*,
+ *     type: Query::TYPE_*,
  *     upsert?: bool,
  * }
  * @psalm-import-type Hints from UnitOfWork
@@ -136,7 +136,7 @@ final class Query implements IteratorAggregate
      * @param array<string, mixed>              $options
      * @param array<string, callable|true|null> $primers
      */
-    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query = [], array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false, bool $rewindable = true)
+    public function __construct(DocumentManager $dm, ClassMetadata $class, Collection $collection, array $query, array $options = [], bool $hydrate = true, bool $refresh = false, array $primers = [], bool $readOnly = false, bool $rewindable = true)
     {
         $primers = array_filter($primers);
 
