@@ -382,6 +382,7 @@ class ReferencePrimerTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
+        /** @var array<int, array<int, mixed>> $invokedArgs */
         $invokedArgs = [];
         $primer      = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
@@ -395,6 +396,8 @@ class ReferencePrimerTest extends BaseTestCase
             ->getQuery()
             ->toArray();
 
+        self::assertIsArray($invokedArgs[0]);
+        self::assertIsArray($invokedArgs[1]);
         self::assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
         self::assertArrayHasKey(Query::HINT_READ_PREFERENCE, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
         self::assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');
