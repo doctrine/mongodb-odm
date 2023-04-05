@@ -1467,7 +1467,7 @@ final class DocumentPersister
     /**
      * Returns the list of discriminator values for the given ClassMetadata
      *
-     * @psalm-return list<class-string>
+     * @psalm-return list<class-string|null>
      */
     private function getClassDiscriminatorValues(ClassMetadata $metadata): array
     {
