@@ -211,17 +211,20 @@ class DocumentManagerTest extends BaseTestCase
         self::assertInstanceOf(ObjectId::class, $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref2']);
+        self::assertIsArray($dbRef);
         self::assertCount(2, $dbRef);
         self::assertArrayHasKey('$ref', $dbRef);
         self::assertArrayHasKey('$id', $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref3']);
+        self::assertIsArray($dbRef);
         self::assertCount(3, $dbRef);
         self::assertArrayHasKey('$ref', $dbRef);
         self::assertArrayHasKey('$id', $dbRef);
         self::assertArrayHasKey('$db', $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref4']);
+        self::assertIsArray($dbRef);
         self::assertCount(1, $dbRef);
         self::assertArrayHasKey('id', $dbRef);
     }

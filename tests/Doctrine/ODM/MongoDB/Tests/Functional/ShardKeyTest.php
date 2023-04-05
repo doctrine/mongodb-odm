@@ -54,6 +54,7 @@ class ShardKeyTest extends BaseTestCase
         self::assertSame('update', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
+        self::assertIsArray($command->updates);
         self::assertCount(1, $command->updates);
         self::assertEquals($o->key, $command->updates[0]->q->k);
     }
@@ -70,6 +71,7 @@ class ShardKeyTest extends BaseTestCase
         self::assertSame('update', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
+        self::assertIsArray($command->updates);
         self::assertCount(1, $command->updates);
         self::assertEquals($o->key, $command->updates[0]->q->k);
         self::assertTrue($command->updates[0]->upsert);
@@ -88,6 +90,7 @@ class ShardKeyTest extends BaseTestCase
         self::assertSame('delete', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
+        self::assertIsArray($command->deletes);
         self::assertCount(1, $command->deletes);
         self::assertEquals($o->key, $command->deletes[0]->q->k);
     }
