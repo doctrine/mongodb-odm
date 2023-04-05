@@ -145,7 +145,7 @@ parameters:
             path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
         -
-            message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
+            message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\<0, max\\>\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
             count: 1
             path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
