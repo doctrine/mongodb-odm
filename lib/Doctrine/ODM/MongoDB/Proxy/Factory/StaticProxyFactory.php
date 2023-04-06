@@ -15,6 +15,7 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
+use Throwable;
 
 use function array_filter;
 use function count;
@@ -108,7 +109,15 @@ final class StaticProxyFactory implements ProxyFactory
             $initializer         = null;
             $identifier          = $metadata->getIdentifierValue($ghostObject);
 
-            if (! $documentPersister->load(['_id' => $identifier], $ghostObject)) {
+            try {
+                $document = $documentPersister->load(['_id' => $identifier], $ghostObject);
+            } catch (Throwable $exception) {
+                $initializer = $originalInitializer;
+
+                throw $exception;
+            }
+
+            if (! $document) {
                 $initializer = $originalInitializer;
 
                 if (! $this->lifecycleEventManager->documentNotFound($ghostObject, $identifier)) {
