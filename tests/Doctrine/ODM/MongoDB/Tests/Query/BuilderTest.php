@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Feature;
 use Documents\User;
@@ -26,7 +26,7 @@ use MongoDB\Driver\ReadPreference;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
-class BuilderTest extends BaseTest
+class BuilderTest extends BaseTestCase
 {
     public function testPrimeRequiresBooleanOrCallable(): void
     {
@@ -206,7 +206,7 @@ class BuilderTest extends BaseTest
         self::assertEquals($expected, $q1['newObj']['$addToSet'][$field]);
     }
 
-    public function provideArrayUpdateOperatorsOnReferenceMany(): Generator
+    public static function provideArrayUpdateOperatorsOnReferenceMany(): Generator
     {
         yield [ChildA::class, 'featureFullMany'];
         yield [ChildB::class, 'featureSimpleMany'];
@@ -232,7 +232,7 @@ class BuilderTest extends BaseTest
         self::assertEquals($expected, $q1['newObj']['$set'][$field]);
     }
 
-    public function provideArrayUpdateOperatorsOnReferenceOne(): Generator
+    public static function provideArrayUpdateOperatorsOnReferenceOne(): Generator
     {
         yield [ChildA::class, 'featureFull'];
         yield [ChildB::class, 'featureSimple'];
@@ -490,7 +490,7 @@ class BuilderTest extends BaseTest
         self::assertSame($qb, $qb->$method(...$args));
     }
 
-    public function provideProxiedExprMethods(): array
+    public static function provideProxiedExprMethods(): array
     {
         return [
             'field()' => ['field', ['fieldName']],
@@ -511,8 +511,8 @@ class BuilderTest extends BaseTest
             'mod()' => ['mod', [2, 0]],
             'near()' => ['near', [1, 2]],
             'nearSphere()' => ['nearSphere', [1, 2]],
-            'geoIntersects()' => ['geoIntersects', [$this->getMockGeometry()]],
-            'geoWithin()' => ['geoWithin', [$this->getMockGeometry()]],
+            'geoIntersects()' => ['geoIntersects', [self::createGeometry()]],
+            'geoWithin()' => ['geoWithin', [self::createGeometry()]],
             'geoWithinBox()' => ['geoWithinBox', [1, 2, 3, 4]],
             'geoWithinCenter()' => ['geoWithinCenter', [1, 2, 3]],
             'geoWithinCenterSphere()' => ['geoWithinCenterSphere', [1, 2, 3]],
@@ -522,22 +522,22 @@ class BuilderTest extends BaseTest
             'unsetField()' => ['unsetField'],
             'setOnInsert()' => ['setOnInsert', [1]],
             'push() with value' => ['push', ['value']],
-            'push() with Expr' => ['push', [$this->getMockExpr()]],
+            'push() with Expr' => ['push', [self::createExpr()]],
             'addToSet() with value' => ['addToSet', ['value']],
-            'addToSet() with Expr' => ['addToSet', [$this->getMockExpr()]],
+            'addToSet() with Expr' => ['addToSet', [self::createExpr()]],
             'popFirst()' => ['popFirst'],
             'popLast()' => ['popLast'],
             'pull()' => ['pull', ['value']],
             'pullAll()' => ['pullAll', [['value1', 'value2']]],
             'addAnd() array' => ['addAnd', [[]]],
-            'addAnd() Expr' => ['addAnd', [$this->getMockExpr()]],
+            'addAnd() Expr' => ['addAnd', [self::createExpr()]],
             'addOr() array' => ['addOr', [[]]],
-            'addOr() Expr' => ['addOr', [$this->getMockExpr()]],
+            'addOr() Expr' => ['addOr', [self::createExpr()]],
             'addNor() array' => ['addNor', [[]]],
-            'addNor() Expr' => ['addNor', [$this->getMockExpr()]],
+            'addNor() Expr' => ['addNor', [self::createExpr()]],
             'elemMatch() array' => ['elemMatch', [[]]],
-            'elemMatch() Expr' => ['elemMatch', [$this->getMockExpr()]],
-            'not()' => ['not', [$this->getMockExpr()]],
+            'elemMatch() Expr' => ['elemMatch', [self::createExpr()]],
+            'not()' => ['not', [self::createExpr()]],
             'language()' => ['language', ['en']],
             'caseSensitive()' => ['caseSensitive', [true]],
             'diacriticSensitive()' => ['diacriticSensitive', [true]],
@@ -560,7 +560,7 @@ class BuilderTest extends BaseTest
         return [
             'legacy array' => [$coordinates, $coordinates, false],
             'GeoJSON array' => [$json, $json, true],
-            'GeoJSON object' => [$this->getMockPoint($json), $json, true],
+            'GeoJSON object' => [new Point($coordinates), $json, true],
         ];
     }
 
@@ -577,9 +577,9 @@ class BuilderTest extends BaseTest
         self::assertEquals($expected, $qb->debug('select'));
     }
 
-    public function provideSelectProjections(): array
+    public static function provideSelectProjections(): array
     {
-        return $this->provideProjections(true);
+        return self::provideProjections(true);
     }
 
     /**
@@ -595,9 +595,9 @@ class BuilderTest extends BaseTest
         self::assertEquals($expected, $qb->debug('select'));
     }
 
-    public function provideExcludeProjections(): array
+    public static function provideExcludeProjections(): array
     {
-        return $this->provideProjections(false);
+        return self::provideProjections(false);
     }
 
     /**
@@ -607,7 +607,7 @@ class BuilderTest extends BaseTest
      *
      * @return array
      */
-    private function provideProjections(bool $include): array
+    private static function provideProjections(bool $include): array
     {
         $project = $include ? 1 : 0;
 
@@ -713,7 +713,7 @@ class BuilderTest extends BaseTest
         self::assertEquals(['foo' => $expectedOrder], $qb->debug('sort'));
     }
 
-    public function provideSortOrders(): array
+    public static function provideSortOrders(): array
     {
         return [
             [1, 1],
@@ -864,26 +864,15 @@ class BuilderTest extends BaseTest
         return $this->createMock(Expr::class);
     }
 
-    /** @return MockObject&Geometry */
-    private function getMockGeometry()
+    private static function createExpr(): Expr
     {
-        return $this->createMock(Geometry::class);
+        return new Expr(static::createTestDocumentManager());
     }
 
-    /**
-     * @param array<string, mixed> $json
-     *
-     * @return MockObject&Point
-     */
-    private function getMockPoint(array $json)
+    private static function createGeometry(): Geometry
     {
-        $point = $this->createMock(Point::class);
-
-        $point->expects($this->once())
-            ->method('jsonSerialize')
-            ->willReturn($json);
-
-        return $point;
+        return new class extends Geometry {
+        };
     }
 }
 

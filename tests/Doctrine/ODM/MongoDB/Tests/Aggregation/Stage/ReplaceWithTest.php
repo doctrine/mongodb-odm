@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsComment;
 use Documents\User;
 use MongoDB\BSON\UTCDateTime;
 
-class ReplaceWithTest extends BaseTest
+class ReplaceWithTest extends BaseTestCase
 {
     public function testTypeConversion(): void
     {

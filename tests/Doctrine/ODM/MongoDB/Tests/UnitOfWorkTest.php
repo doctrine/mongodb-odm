@@ -30,7 +30,7 @@ use Throwable;
 use function spl_object_hash;
 use function sprintf;
 
-class UnitOfWorkTest extends BaseTest
+class UnitOfWorkTest extends BaseTestCase
 {
     public function testIsDocumentScheduled(): void
     {
@@ -268,7 +268,7 @@ class UnitOfWorkTest extends BaseTest
         self::assertFalse($this->uow->isScheduledForUpdate($arrayTest));
     }
 
-    public function getScheduleForUpdateWithArraysTests(): array
+    public static function getScheduleForUpdateWithArraysTests(): array
     {
         return [
             [

@@ -14,9 +14,9 @@ use stdClass;
 
 use const DIRECTORY_SEPARATOR;
 
-class XmlMappingDriverTest extends AbstractMappingDriverTest
+class XmlMappingDriverTest extends AbstractMappingDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected static function loadDriver(): MappingDriver
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }

@@ -6,15 +6,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Profile;
 use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
-use PHPUnit\Framework\MockObject\MockObject;
 
-class ExprTest extends BaseTest
+class ExprTest extends BaseTestCase
 {
     public function testSelectIsPrepared(): void
     {
@@ -397,14 +396,15 @@ class ExprTest extends BaseTest
         self::assertEquals(['$in' => [['x' => 1]], '$lt' => 2], $expr->getQuery());
     }
 
-    public function provideGeoJsonPoint(): array
+    public static function provideGeoJsonPoint(): array
     {
-        $json     = ['type' => 'Point', 'coordinates' => [1, 2]];
-        $expected = ['$geometry' => $json];
+        $coordinates = [1, 2];
+        $json        = ['type' => 'Point', 'coordinates' => $coordinates];
+        $expected    = ['$geometry' => $json];
 
         return [
             'array' => [$json, $expected],
-            'object' => [$this->getMockPoint($json), $expected],
+            'object' => [new Point($coordinates), $expected],
         ];
     }
 
@@ -559,18 +559,20 @@ class ExprTest extends BaseTest
         self::assertEquals(['$geoIntersects' => $expected], $expr->getQuery());
     }
 
-    public function provideGeoJsonPolygon(): array
+    public static function provideGeoJsonPolygon(): array
     {
+        $coordinates = [[[0, 0], [1, 1], [1, 0], [0, 0]]];
+
         $json = [
             'type' => 'Polygon',
-            'coordinates' => [[[0, 0], [1, 1], [1, 0], [0, 0]]],
+            'coordinates' => $coordinates,
         ];
 
         $expected = ['$geometry' => $json];
 
         return [
             'array' => [$json, $expected],
-            'object' => [$this->getMockPolygon($json), $expected],
+            'object' => [new Polygon($coordinates), $expected],
         ];
     }
 
@@ -701,37 +703,5 @@ class ExprTest extends BaseTest
         $expr->setClassMetadata($this->dm->getClassMetadata(User::class));
 
         return $expr;
-    }
-
-    /**
-     * @param array<string, mixed> $json
-     *
-     * @return MockObject&Point
-     */
-    private function getMockPoint(array $json)
-    {
-        $point = $this->createMock(Point::class);
-
-        $point->expects($this->once())
-            ->method('jsonSerialize')
-            ->willReturn($json);
-
-        return $point;
-    }
-
-    /**
-     * @param array<string, mixed> $json
-     *
-     * @return MockObject&Polygon
-     */
-    private function getMockPolygon(array $json)
-    {
-        $point = $this->createMock(Polygon::class);
-
-        $point->expects($this->once())
-            ->method('jsonSerialize')
-            ->willReturn($json);
-
-        return $point;
     }
 }

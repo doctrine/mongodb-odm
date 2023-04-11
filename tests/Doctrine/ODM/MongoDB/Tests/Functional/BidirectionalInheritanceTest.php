@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Tournament\ParticipantTeam;
 use Documents\Tournament\TournamentFootball;
 
-class BidirectionalInheritanceTest extends BaseTest
+class BidirectionalInheritanceTest extends BaseTestCase
 {
     /**
      * Test bi-directional reference "one to many", both owning sides and with inheritance maps.

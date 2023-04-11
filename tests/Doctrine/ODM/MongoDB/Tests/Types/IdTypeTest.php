@@ -32,7 +32,7 @@ class IdTypeTest extends TestCase
         self::assertInstanceOf(ObjectId::class, $type->convertToDatabaseValue($value));
     }
 
-    public function provideInvalidObjectIdConstructorArguments(): array
+    public static function provideInvalidObjectIdConstructorArguments(): array
     {
         return [
             'integer' => [1],

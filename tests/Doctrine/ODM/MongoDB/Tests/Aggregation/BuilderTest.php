@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Aggregation;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Article;
 use Documents\BlogPost;
 use Documents\BlogTagAggregation;
@@ -21,7 +21,7 @@ use MongoDB\BSON\UTCDateTime;
 
 use function array_keys;
 
-class BuilderTest extends BaseTest
+class BuilderTest extends BaseTestCase
 {
     public function testGetPipeline(): void
     {

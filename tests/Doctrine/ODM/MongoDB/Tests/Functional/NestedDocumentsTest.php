@@ -7,13 +7,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 
 use function is_numeric;
 use function is_string;
 
-class NestedDocumentsTest extends BaseTest
+class NestedDocumentsTest extends BaseTestCase
 {
     public function testSimple(): void
     {

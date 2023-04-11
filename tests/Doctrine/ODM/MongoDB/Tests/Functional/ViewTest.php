@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\CmsUser;
 use Documents\UserName;
@@ -14,7 +14,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 use function assert;
 
-class ViewTest extends BaseTest
+class ViewTest extends BaseTestCase
 {
     public function setUp(): void
     {

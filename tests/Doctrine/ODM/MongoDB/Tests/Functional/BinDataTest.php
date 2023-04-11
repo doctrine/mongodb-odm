@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 
-class BinDataTest extends BaseTest
+class BinDataTest extends BaseTestCase
 {
     /** @dataProvider provideData */
     public function testBinData(string $field, string $data, int $type): void
@@ -24,7 +24,7 @@ class BinDataTest extends BaseTest
         self::assertEquals($data, $check[$field]->getData());
     }
 
-    public function provideData(): array
+    public static function provideData(): array
     {
         return [
             ['bin', 'test', Binary::TYPE_GENERIC],

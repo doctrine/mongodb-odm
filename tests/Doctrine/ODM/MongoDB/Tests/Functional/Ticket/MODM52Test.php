@@ -6,11 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function count;
 
-class MODM52Test extends BaseTest
+class MODM52Test extends BaseTestCase
 {
     public function testTest(): void
     {

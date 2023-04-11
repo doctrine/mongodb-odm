@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents81\Card;
 use Documents81\Suit;
@@ -17,7 +17,7 @@ use function preg_quote;
 use function sprintf;
 
 /** @requires PHP >= 8.1 */
-class EnumTest extends BaseTest
+class EnumTest extends BaseTestCase
 {
     public function testPersistNew(): void
     {
@@ -96,7 +96,7 @@ class EnumTest extends BaseTest
         self::assertSame(['_id' => 'C'], $qb->getQuery()->debug('query'));
     }
 
-    protected function createMetadataDriverImpl(): MappingDriver
+    protected static function createMetadataDriverImpl(): MappingDriver
     {
         return AttributeDriver::create(__DIR__ . '/../../../Documents');
     }

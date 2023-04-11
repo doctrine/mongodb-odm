@@ -7,10 +7,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use ReflectionObject;
 
-class SplObjectHashCollisionsTest extends BaseTest
+class SplObjectHashCollisionsTest extends BaseTestCase
 {
     /**
      * @param callable(DocumentManager, object=): void $f
@@ -54,7 +54,7 @@ class SplObjectHashCollisionsTest extends BaseTest
         $this->expectCount('embeddedDocumentsRegistry', $leftover);
     }
 
-    public function provideParentAssociationsIsCleared(): array
+    public static function provideParentAssociationsIsCleared(): array
     {
         return [
             [

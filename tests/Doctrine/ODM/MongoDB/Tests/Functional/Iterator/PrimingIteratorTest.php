@@ -10,14 +10,14 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Profile;
 use Documents\ProfileNotify;
 use Documents\User;
 use Iterator;
 use MongoDB\BSON\ObjectId;
 
-final class PrimingIteratorTest extends BaseTest
+final class PrimingIteratorTest extends BaseTestCase
 {
     /** @var class-string[] */
     private array $callbackCalls = [];

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\BSON\ObjectId;
 
-class GH774Test extends BaseTest
+class GH774Test extends BaseTestCase
 {
     public function testUpsert(): void
     {
@@ -28,7 +28,7 @@ class GH774Test extends BaseTest
         self::assertEquals('test', $thread->permalink);
     }
 
-    protected function createMetadataDriverImpl(): MappingDriver
+    protected static function createMetadataDriverImpl(): MappingDriver
     {
         return new XmlDriver(__DIR__ . '/GH774');
     }

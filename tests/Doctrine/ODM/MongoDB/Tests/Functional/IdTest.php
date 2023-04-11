@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
@@ -26,7 +26,7 @@ use function sprintf;
 use function ucfirst;
 use function unserialize;
 
-class IdTest extends BaseTest
+class IdTest extends BaseTestCase
 {
     public function testUuidId(): void
     {
@@ -193,7 +193,7 @@ class IdTest extends BaseTest
         self::assertSame($user2->id, $user2Id);
     }
 
-    public function provideEqualButNotIdenticalIds(): array
+    public static function provideEqualButNotIdenticalIds(): array
     {
         /* MongoDB allows comparisons between different numeric types, so we
          * cannot test integer and floating point values (e.g. 123 and 123.0).
@@ -251,7 +251,7 @@ class IdTest extends BaseTest
         self::assertEquals('changed', $object->test);
     }
 
-    public function getTestIdTypesAndStrategiesData(): array
+    public static function getTestIdTypesAndStrategiesData(): array
     {
         $identifier = new ObjectId();
 
@@ -326,7 +326,7 @@ class IdTest extends BaseTest
         self::assertEquals($expectedMongoBinDataType, $check['_id']->getType());
     }
 
-    public function getTestBinIdsData(): array
+    public static function getTestBinIdsData(): array
     {
         return [
             ['bin', 0, 'test-data'],

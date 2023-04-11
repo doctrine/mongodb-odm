@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\SchemaValidated;
 
 use function MongoDB\BSON\fromJSON;
@@ -14,7 +14,7 @@ use function MongoDB\BSON\fromPHP;
 use function MongoDB\BSON\toCanonicalExtendedJSON;
 use function MongoDB\BSON\toPHP;
 
-class ValidationTest extends BaseTest
+class ValidationTest extends BaseTestCase
 {
     public function testCreateUpdateValidatedDocument(): void
     {

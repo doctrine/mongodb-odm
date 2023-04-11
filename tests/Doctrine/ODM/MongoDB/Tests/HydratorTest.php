@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Query\Query;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class HydratorTest extends BaseTest
+class HydratorTest extends BaseTestCase
 {
     public function testHydrator(): void
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
@@ -14,7 +14,7 @@ use function time;
 
 use const PHP_INT_SIZE;
 
-class DateTest extends BaseTest
+class DateTest extends BaseTestCase
 {
     public function testDates(): void
     {
@@ -57,7 +57,7 @@ class DateTest extends BaseTest
         self::assertEmpty($changeset);
     }
 
-    public function provideEquivalentDates(): array
+    public static function provideEquivalentDates(): array
     {
         return [
             [new DateTime('1985-09-01 00:00:00'), new DateTime('1985-09-01 00:00:00')],
@@ -77,9 +77,10 @@ class DateTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository($user::class)->findOneBy([]);
-        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
-        $user->getCreatedAt()->setTimestamp(time() - 3600);
+        $user      = $this->dm->getRepository($user::class)->findOneBy([]);
+        $createdAt = $user->getCreatedAt();
+        self::assertInstanceOf(DateTime::class, $createdAt);
+        $createdAt->setTimestamp(time() - 3600);
 
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);

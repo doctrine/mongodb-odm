@@ -2395,6 +2395,8 @@ final class UnitOfWork implements PropertyChangedListener
             $this->embeddedDocumentsRegistry   =
             $this->orphanRemovals              =
             $this->hasScheduledCollections     = [];
+
+            $event = new Event\OnClearEventArgs($this->dm);
         } else {
             $visited = [];
             foreach ($this->identityMap as $className => $documents) {
@@ -2406,9 +2408,11 @@ final class UnitOfWork implements PropertyChangedListener
                     $this->doDetach($document, $visited);
                 }
             }
+
+            $event = new Event\OnClearEventArgs($this->dm, $documentName);
         }
 
-        $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->dm, $documentName));
+        $this->evm->dispatchEvent(Events::onClear, $event);
     }
 
     /**

@@ -8,11 +8,11 @@ use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function assert;
 
-class ClassMetadataLoadEventTest extends BaseTest
+class ClassMetadataLoadEventTest extends BaseTestCase
 {
     public function testEvent(): void
     {

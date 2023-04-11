@@ -7,14 +7,14 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Group;
 use Documents\User;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
 
 /** @psalm-type ReadPreferenceTagShape = array{dc?: string, usage?: string} */
-class ReadPreferenceTest extends BaseTest
+class ReadPreferenceTest extends BaseTestCase
 {
     public function setUp(): void
     {
@@ -67,7 +67,7 @@ class ReadPreferenceTest extends BaseTest
         $this->assertReadPreferenceHint($readPreference, $groups->getHints()[Query::HINT_READ_PREFERENCE], $tags);
     }
 
-    public function provideReadPreferenceHints(): array
+    public static function provideReadPreferenceHints(): array
     {
         return [
             [ReadPreference::RP_PRIMARY, []],

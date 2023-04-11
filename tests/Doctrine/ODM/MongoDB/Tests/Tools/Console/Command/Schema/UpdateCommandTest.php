@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
-use Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\AbstractCommandTest;
+use Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\AbstractCommandTestCase;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand;
 use Documents\SchemaValidated;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class UpdateCommandTest extends AbstractCommandTest
+class UpdateCommandTest extends AbstractCommandTestCase
 {
     /** @var Command */
     protected $command;

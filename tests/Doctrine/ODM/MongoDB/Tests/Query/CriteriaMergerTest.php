@@ -22,7 +22,7 @@ class CriteriaMergerTest extends TestCase
         self::assertSame($merged, call_user_func_array([new CriteriaMerger(), 'merge'], $args));
     }
 
-    public function provideMerge(): array
+    public static function provideMerge(): array
     {
         return [
             'no args' => [

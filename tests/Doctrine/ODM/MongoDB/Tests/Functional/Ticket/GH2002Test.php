@@ -6,11 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function sprintf;
 
-class GH2002Test extends BaseTest
+class GH2002Test extends BaseTestCase
 {
     /**
      * @param array<string, mixed> $expectedReference
@@ -29,7 +29,7 @@ class GH2002Test extends BaseTest
         self::assertArraySubset($expectedReference, $data['parentDocument']);
     }
 
-    public function getValidReferenceData(): array
+    public static function getValidReferenceData(): array
     {
         return [
             'discriminatedDocument' => [
@@ -72,7 +72,7 @@ class GH2002Test extends BaseTest
         $this->dm->getUnitOfWork()->getPersistenceBuilder()->prepareInsertData($document);
     }
 
-    public function getInvalidReferenceData(): array
+    public static function getInvalidReferenceData(): array
     {
         return [
             'referenceWithPartialDiscriminatorMapUnlistedDocument' => [

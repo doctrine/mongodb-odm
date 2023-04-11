@@ -29,7 +29,7 @@ abstract class AbstractReplace extends Operator
         return $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
     }
 
-    /** @return array|string */
+    /** @return array<string, mixed>|string */
     protected function getReplaceExpression()
     {
         return $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class ReferenceDiscriminatorsTest extends BaseTest
+class ReferenceDiscriminatorsTest extends BaseTestCase
 {
     public function setUp(): void
     {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 
-class UnionWithTest extends BaseTest
+class UnionWithTest extends BaseTestCase
 {
     public function testStageWithClassName(): void
     {

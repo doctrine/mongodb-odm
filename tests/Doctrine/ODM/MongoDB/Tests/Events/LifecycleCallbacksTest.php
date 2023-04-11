@@ -8,10 +8,10 @@ use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
-class LifecycleCallbacksTest extends BaseTest
+class LifecycleCallbacksTest extends BaseTestCase
 {
     private function createUser(string $name = 'jon', string $fullName = 'Jonathan H. Wage'): User
     {

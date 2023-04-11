@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\SimplifiedXmlDriver;
 use function array_flip;
 
 /** @group DDC-1418 */
-class XmlDriverTest extends AbstractDriverTest
+class XmlDriverTest extends AbstractDriverTestCase
 {
     protected function getFileExtension(): string
     {

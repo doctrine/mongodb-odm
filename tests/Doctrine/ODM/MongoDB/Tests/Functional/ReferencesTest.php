@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\Address;
 use Documents\Group;
@@ -27,7 +27,7 @@ use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
 
-class ReferencesTest extends BaseTest
+class ReferencesTest extends BaseTestCase
 {
     public function testManyDeleteReference(): void
     {

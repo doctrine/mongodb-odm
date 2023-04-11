@@ -19,7 +19,7 @@ use TestDocuments\PrimedCollectionDocument;
 use TestDocuments\QueryResultDocument;
 use TestDocuments\User;
 
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractDriverTestCase extends TestCase
 {
     /** @var MappingDriver|null */
     protected $driver;

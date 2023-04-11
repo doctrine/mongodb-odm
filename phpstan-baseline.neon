@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Circular definition detected in type alias PipelineExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
+
+		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
@@ -9,11 +14,6 @@ parameters:
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
-
-		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\AbstractReplace\\:\\:getReplaceExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/AbstractReplace.php
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Bucket\\\\AbstractOutput\\:\\:avg\\(\\) has parameter \\$expressions with no type specified\\.$#"
@@ -51,19 +51,19 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Densify\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\DensifyStageExpression\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
-
-		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Densify\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
 
 		-
-			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\DensifyStageExpression is incompatible with native type array\\.$#"
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
+
+		-
+			message: "#^Circular definition detected in type alias FacetStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Facet.php
 
 		-
 			message: "#^Return type \\(static\\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\)\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
@@ -76,7 +76,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Lookup\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\LookupStageExpression\\.$#"
+			message: "#^Circular definition detected in type alias PipelineParamType\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
@@ -86,7 +86,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
 		-
-			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\LookupStageExpression is incompatible with native type array\\.$#"
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
@@ -96,7 +96,12 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\MergeStageExpression\\.$#"
+			message: "#^Circular definition detected in type alias WhenMatchedParamType\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
+
+		-
+			message: "#^Circular definition detected in type alias WhenMatchedType\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
@@ -106,7 +111,17 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
 		-
-			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\MergeStageExpression is incompatible with native type array\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:whenMatched\\(\\) has parameter \\$whenMatched with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
+
+		-
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:\\$whenMatched type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
@@ -126,7 +141,17 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:near\\(\\) has parameter \\$origin with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
+
+		-
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
 
@@ -446,11 +471,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/SupportsNearOperator.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) has invalid return type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWithStageExpression\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
-
-		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
@@ -461,7 +481,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
 		-
-			message: "#^PHPDoc tag @return with type Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWithStageExpression is incompatible with native type array\\.$#"
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
@@ -506,7 +526,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
 		-
-			message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$options of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<object\\>\\:\\:addIndex\\(\\) expects array\\{background\\?\\: bool, bits\\?\\: int, default_language\\?\\: string, expireAfterSeconds\\?\\: int, language_override\\?\\: string, min\\?\\: float, max\\?\\: float, name\\?\\: string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<string, array\\<int\\<0, max\\>\\|string, mixed\\>\\|bool\\|float\\|int\\|string\\|null\\>\\|bool\\|float\\|int\\|string\\|null\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
@@ -683,32 +703,32 @@ parameters:
 		-
 			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
 			count: 5
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Constant DOCTRINE_MONGODB_SERVER not found\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTest\\:\\:assertArraySubset\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTestCase\\:\\:assertArraySubset\\(\\) has parameter \\$array with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTest\\:\\:assertArraySubset\\(\\) has parameter \\$subset with no value type specified in iterable type array\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\BaseTestCase\\:\\:assertArraySubset\\(\\) has parameter \\$subset with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Used constant DOCTRINE_MONGODB_SERVER not found\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
 			message: "#^Parameter \\#2 \\$referenceMapping of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:createReference\\(\\) expects array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\}, array\\{storeAs\\: 'dbRef'\\} given\\.$#"
@@ -863,7 +883,7 @@ parameters:
 		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\AnnotationDriverTestSuper\\:\\:\\$private is unused\\.$#"
 			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTest.php
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTestCase.php
 
 		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\DocumentSubClass2\\:\\:\\$id is unused\\.$#"

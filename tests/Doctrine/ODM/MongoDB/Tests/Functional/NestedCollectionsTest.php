@@ -7,11 +7,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 
-class NestedCollectionsTest extends BaseTest
+class NestedCollectionsTest extends BaseTestCase
 {
     /** @dataProvider provideStrategy */
     public function testStrategy(string $field): void
@@ -63,7 +63,7 @@ class NestedCollectionsTest extends BaseTest
         self::assertEquals('10203040', $publicBook->getPhonenumbers()->get(0)->getPhonenumber());
     }
 
-    public function provideStrategy(): array
+    public static function provideStrategy(): array
     {
         return [
             [ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET],

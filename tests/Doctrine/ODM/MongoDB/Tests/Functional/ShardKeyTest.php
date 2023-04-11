@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
 
@@ -14,7 +14,7 @@ use function assert;
 use function end;
 
 /** @group sharding */
-class ShardKeyTest extends BaseTest
+class ShardKeyTest extends BaseTestCase
 {
     private CommandLogger $logger;
 
@@ -54,6 +54,7 @@ class ShardKeyTest extends BaseTest
         self::assertSame('update', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
+        self::assertIsArray($command->updates);
         self::assertCount(1, $command->updates);
         self::assertEquals($o->key, $command->updates[0]->q->k);
     }
@@ -70,6 +71,7 @@ class ShardKeyTest extends BaseTest
         self::assertSame('update', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
+        self::assertIsArray($command->updates);
         self::assertCount(1, $command->updates);
         self::assertEquals($o->key, $command->updates[0]->q->k);
         self::assertTrue($command->updates[0]->upsert);
@@ -88,6 +90,7 @@ class ShardKeyTest extends BaseTest
         self::assertSame('delete', $lastQuery->getCommandName());
 
         $command = $lastQuery->getCommand();
+        self::assertIsArray($command->deletes);
         self::assertCount(1, $command->deletes);
         self::assertEquals($o->key, $command->deletes[0]->q->k);
     }

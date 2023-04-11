@@ -13,7 +13,7 @@ use Documents\CmsUser;
 use Generator;
 use stdClass;
 
-abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
+abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTestCase
 {
     public function testFieldInheritance(): void
     {
@@ -165,7 +165,7 @@ abstract class AbstractAnnotationDriverTest extends AbstractMappingDriverTest
         $annotationDriver->loadMetadataForClass($wrong::class, $cm);
     }
 
-    public function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
+    public static function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
     {
         yield [
             /**

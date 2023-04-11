@@ -7,9 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-class VersionTest extends BaseTest
+class VersionTest extends BaseTestCase
 {
     public function testVersioningWhenManipulatingEmbedMany(): void
     {

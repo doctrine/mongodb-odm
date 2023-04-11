@@ -8,7 +8,7 @@ use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\Account;
 use Documents\Agent;
@@ -37,7 +37,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use function assert;
 use function func_get_args;
 
-class ReferencePrimerTest extends BaseTest
+class ReferencePrimerTest extends BaseTestCase
 {
     public function testPrimeReferencesShouldRequireReferenceMapping(): void
     {
@@ -382,6 +382,7 @@ class ReferencePrimerTest extends BaseTest
         $this->dm->flush();
         $this->dm->clear();
 
+        /** @var array<int, array<int, mixed>> $invokedArgs */
         $invokedArgs = [];
         $primer      = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints) use (&$invokedArgs) {
             $invokedArgs[] = func_get_args();
@@ -395,6 +396,8 @@ class ReferencePrimerTest extends BaseTest
             ->getQuery()
             ->toArray();
 
+        self::assertIsArray($invokedArgs[0]);
+        self::assertIsArray($invokedArgs[1]);
         self::assertCount(2, $invokedArgs, 'Primer was invoked once for each referenced class.');
         self::assertArrayHasKey(Query::HINT_READ_PREFERENCE, $invokedArgs[0][3], 'Primer was invoked with UnitOfWork hints from original query.');
         self::assertSame($readPreference, $invokedArgs[0][3][Query::HINT_READ_PREFERENCE], 'Primer was invoked with UnitOfWork hints from original query.');

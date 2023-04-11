@@ -35,7 +35,7 @@ use MongoDB\Client;
 use RuntimeException;
 use stdClass;
 
-class DocumentManagerTest extends BaseTest
+class DocumentManagerTest extends BaseTestCase
 {
     public function testCustomRepository(): void
     {
@@ -118,7 +118,7 @@ class DocumentManagerTest extends BaseTest
         self::assertFalse($this->dm->isOpen());
     }
 
-    public function dataMethodsAffectedByNoObjectArguments(): array
+    public static function dataMethodsAffectedByNoObjectArguments(): array
     {
         return [
             ['persist'],
@@ -136,7 +136,7 @@ class DocumentManagerTest extends BaseTest
         $this->dm->$methodName(null);
     }
 
-    public function dataAffectedByErrorIfClosedException(): array
+    public static function dataAffectedByErrorIfClosedException(): array
     {
         return [
             ['flush'],
@@ -211,17 +211,20 @@ class DocumentManagerTest extends BaseTest
         self::assertInstanceOf(ObjectId::class, $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref2']);
+        self::assertIsArray($dbRef);
         self::assertCount(2, $dbRef);
         self::assertArrayHasKey('$ref', $dbRef);
         self::assertArrayHasKey('$id', $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref3']);
+        self::assertIsArray($dbRef);
         self::assertCount(3, $dbRef);
         self::assertArrayHasKey('$ref', $dbRef);
         self::assertArrayHasKey('$id', $dbRef);
         self::assertArrayHasKey('$db', $dbRef);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref4']);
+        self::assertIsArray($dbRef);
         self::assertCount(1, $dbRef);
         self::assertArrayHasKey('id', $dbRef);
     }

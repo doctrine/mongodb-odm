@@ -35,7 +35,10 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
         return $this->search->returnStoredSource($returnStoredSource);
     }
 
-    /** @return array<string, object> */
+    /**
+     * @return array<string, object>
+     * @psalm-return non-empty-array<non-empty-string, object>
+     */
     final public function getExpression(): array
     {
         return [$this->getOperatorName() => $this->getOperatorParams()];

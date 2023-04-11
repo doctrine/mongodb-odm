@@ -7,13 +7,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function assert;
 use function count;
 use function end;
 
-class GH1229Test extends BaseTest
+class GH1229Test extends BaseTestCase
 {
     /** @var string */
     protected $firstParentId;

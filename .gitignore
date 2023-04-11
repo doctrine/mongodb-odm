@@ -8,6 +8,7 @@ phpunit.xml
 composer.lock
 vendor/
 .phpcs-cache
+.phpunit.cache
 .phpunit.result.cache
 phpcs.xml
 psalm.xml

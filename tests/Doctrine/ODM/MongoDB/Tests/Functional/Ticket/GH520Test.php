@@ -7,10 +7,10 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-class GH520Test extends BaseTest
+class GH520Test extends BaseTestCase
 {
     public function testPrimeWithGetSingleResult(): void
     {

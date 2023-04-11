@@ -8,10 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
 
-class ResolveTargetDocumentListenerTest extends BaseTest
+class ResolveTargetDocumentListenerTest extends BaseTestCase
 {
     protected ResolveTargetDocumentListener $listener;
 

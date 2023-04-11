@@ -7,9 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 
-class AttributeDriverTest extends AbstractAnnotationDriverTest
+class AttributeDriverTest extends AbstractAnnotationDriverTestCase
 {
-    protected function loadDriver(): MappingDriver
+    protected static function loadDriver(): MappingDriver
     {
         return new AttributeDriver();
     }

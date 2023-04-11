@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument1;
 use Documents\Functional\Ticket\GH683\EmbeddedSubDocument2;
 use Documents\Functional\Ticket\GH683\ParentDocument;
 
-class GH683Test extends BaseTest
+class GH683Test extends BaseTestCase
 {
     public function testEmbedOne(): void
     {

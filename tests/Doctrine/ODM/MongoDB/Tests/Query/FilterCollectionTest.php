@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use InvalidArgumentException;
 
-class FilterCollectionTest extends BaseTest
+class FilterCollectionTest extends BaseTestCase
 {
     public function testEnable(): void
     {

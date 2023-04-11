@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Event;
 use Documents\User;
 use ProxyManager\Proxy\LazyLoadingInterface;
@@ -12,7 +12,7 @@ use ProxyManager\Proxy\LazyLoadingInterface;
 use function assert;
 use function get_class;
 
-class IdentifiersTest extends BaseTest
+class IdentifiersTest extends BaseTestCase
 {
     public function testGetIdentifierValue(): void
     {

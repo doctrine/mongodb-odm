@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Article;
@@ -25,7 +25,7 @@ use ReflectionProperty;
 use function get_debug_type;
 use function sprintf;
 
-class DocumentPersisterTest extends BaseTest
+class DocumentPersisterTest extends BaseTestCase
 {
     /** @var class-string<DocumentPersisterTestDocument> */
     private string $class;
@@ -124,7 +124,7 @@ class DocumentPersisterTest extends BaseTest
         self::assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
     }
 
-    public function getTestPrepareFieldNameData(): array
+    public static function getTestPrepareFieldNameData(): array
     {
         return [
             ['name', 'dbName'],
@@ -254,7 +254,7 @@ class DocumentPersisterTest extends BaseTest
         );
     }
 
-    public function provideHashIdentifiers(): array
+    public static function provideHashIdentifiers(): array
     {
         return [
             [['key' => 'value']],

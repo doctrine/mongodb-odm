@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTest;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
-class RawTypeTest extends BaseTest
+class RawTypeTest extends BaseTestCase
 {
     /**
      * @param mixed $value
@@ -28,7 +28,7 @@ class RawTypeTest extends BaseTest
         self::assertEquals($value, $result['raw']);
     }
 
-    public function getTestRawTypeData(): array
+    public static function getTestRawTypeData(): array
     {
         return [
             ['test'],

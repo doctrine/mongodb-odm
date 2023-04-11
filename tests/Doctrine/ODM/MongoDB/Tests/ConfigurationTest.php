@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 
-class ConfigurationTest extends BaseTest
+class ConfigurationTest extends BaseTestCase
 {
     public function testDefaultPersistentCollectionFactory(): void
     {
