@@ -77,7 +77,7 @@ class DateTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository($user::class)->findOneBy([]);
+        $user      = $this->dm->getRepository($user::class)->findOneBy([]);
         $createdAt = $user->getCreatedAt();
         self::assertInstanceOf(DateTime::class, $createdAt);
         $createdAt->setTimestamp(time() - 3600);
