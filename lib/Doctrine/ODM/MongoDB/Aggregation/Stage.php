@@ -15,7 +15,7 @@ use function trigger_deprecation;
  * @internal
  *
  * @psalm-import-type PipelineExpression from Builder
- * @psalm-type StageExpression = non-empty-array<non-empty-string, mixed>|object
+ * @psalm-type StageExpression = array<non-empty-string, mixed>
  */
 abstract class Stage
 {
@@ -31,6 +31,7 @@ abstract class Stage
      * Assembles the aggregation stage
      *
      * @return array<string, mixed>
+     * @psalm-return StageExpression
      */
     abstract public function getExpression(): array;
 
