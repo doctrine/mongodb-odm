@@ -471,6 +471,16 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/SupportsNearOperator.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\SetWindowFields\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/SetWindowFields.php
+
+		-
+			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/SetWindowFields.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
@@ -699,6 +709,16 @@ parameters:
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SearchTest\\:\\:testSearchOperators\\(\\) has parameter \\$expectedOperator with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SetWindowFieldsTest\\:\\:testOperators\\(\\) has parameter \\$args with no type specified\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SetWindowFieldsTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SetWindowFieldsTest\\:\\:testOperators\\(\\) has parameter \\$expected with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SetWindowFieldsTest.php
 
 		-
 			message: "#^Constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
