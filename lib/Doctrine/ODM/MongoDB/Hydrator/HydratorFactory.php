@@ -21,7 +21,6 @@ use function class_exists;
 use function dirname;
 use function file_exists;
 use function file_put_contents;
-use function get_class;
 use function is_dir;
 use function is_writable;
 use function mkdir;
@@ -448,7 +447,7 @@ EOF
      */
     public function hydrate(object $document, array $data, array $hints = []): array
     {
-        $metadata = $this->dm->getClassMetadata(get_class($document));
+        $metadata = $this->dm->getClassMetadata($document::class);
         // Invoke preLoad lifecycle events and listeners
         if (! empty($metadata->lifecycleCallbacks[Events::preLoad])) {
             $args = [new PreLoadEventArgs($document, $this->dm, $data)];
@@ -477,7 +476,7 @@ EOF
                 string $method, // we don't care
                 array $parameters, // we don't care
                 &$initializer,
-                array $properties // we currently do not use this
+                array $properties, // we currently do not use this
             ): bool {
                 $initializer = null;
 

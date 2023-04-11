@@ -8,8 +8,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonenumber;
 use Documents\User;
 
-use function get_class;
-
 class GH1132Test extends BaseTestCase
 {
     public function testClonedPersistentCollectionCanBeClearedAndUsedInNewDocument(): void
@@ -26,10 +24,10 @@ class GH1132Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $u = $this->dm->find(get_class($u), $u->getId());
+        $u = $this->dm->find($u::class, $u->getId());
         self::assertCount(1, $u->getPhonenumbers());
 
-        $u2 = $this->dm->find(get_class($u2), $u2->getId());
+        $u2 = $this->dm->find($u2::class, $u2->getId());
         self::assertEmpty($u2->getPhonenumbers());
     }
 
@@ -48,10 +46,10 @@ class GH1132Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $u = $this->dm->find(get_class($u), $u->getId());
+        $u = $this->dm->find($u::class, $u->getId());
         self::assertCount(1, $u->getPhonenumbers());
 
-        $u2 = $this->dm->find(get_class($u2), $u2->getId());
+        $u2 = $this->dm->find($u2::class, $u2->getId());
         self::assertEmpty($u2->getPhonenumbers());
     }
 
@@ -71,10 +69,10 @@ class GH1132Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $u = $this->dm->find(get_class($u), $u->getId());
+        $u = $this->dm->find($u::class, $u->getId());
         self::assertCount(1, $u->getPhonenumbers());
 
-        $u2 = $this->dm->find(get_class($u2), $u2->getId());
+        $u2 = $this->dm->find($u2::class, $u2->getId());
         self::assertCount(1, $u2->getPhonenumbers());
         self::assertSame('123456', $u2->getPhonenumbers()->first()->getPhonenumber());
     }

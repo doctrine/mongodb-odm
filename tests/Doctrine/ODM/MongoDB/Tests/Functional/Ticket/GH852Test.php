@@ -14,8 +14,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 use ProxyManager\Proxy\GhostObjectInterface;
 
-use function get_class;
-
 class GH852Test extends BaseTestCase
 {
     /** @dataProvider provideIdGenerators */
@@ -45,7 +43,7 @@ class GH852Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $parent = $this->dm->find(get_class($parent), $idGenerator('parent'));
+        $parent = $this->dm->find($parent::class, $idGenerator('parent'));
         self::assertNotNull($parent);
         self::assertEquals($idGenerator('parent'), $parent->id);
         self::assertEquals('parent', $parent->name);
@@ -76,7 +74,7 @@ class GH852Test extends BaseTestCase
 
         // these lines are relevant for $useKeys = false in ReferencePrimer::__construct()
         $this->dm->clear();
-        $docs = $this->dm->createQueryBuilder(get_class($parent))
+        $docs = $this->dm->createQueryBuilder($parent::class)
                 ->field('name')->equals('parent')
                 ->field('refMany')->prime()
                 ->getQuery()->execute();
@@ -85,13 +83,13 @@ class GH852Test extends BaseTestCase
         self::assertCount(2, $docs->current()->refMany);
 
         $this->dm->clear();
-        $docs = $this->dm->createQueryBuilder(get_class($parent))
+        $docs = $this->dm->createQueryBuilder($parent::class)
                 ->getQuery()->execute();
         self::assertCount(4, $docs);
 
         // these lines are relevant for $useKeys = false in DocumentRepository::matching()
         $this->dm->clear();
-        $docs = $this->dm->getRepository(get_class($parent))
+        $docs = $this->dm->getRepository($parent::class)
                 ->matching(new Criteria());
         self::assertCount(4, $docs);
     }

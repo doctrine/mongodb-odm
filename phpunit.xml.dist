@@ -19,6 +19,10 @@
         <include>
             <directory suffix=".php">./lib/Doctrine/ODM/MongoDB</directory>
         </include>
+        <exclude>
+            <file>./lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php</file>
+            <file>./lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php</file>
+        </exclude>
     </coverage>
     <groups>
         <exclude>

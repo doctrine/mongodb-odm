@@ -13,6 +13,9 @@ use function array_map;
 
 /**
  * Fluent interface for adding a $facet stage to an aggregation pipeline.
+ *
+ * @psalm-import-type PipelineExpression from Builder
+ * @psalm-type FacetStageExpression = array{'$facet': array<string, PipelineExpression>}
  */
 class Facet extends Stage
 {
@@ -31,7 +34,7 @@ class Facet extends Stage
     /**
      * Set the current field for building the pipeline stage.
      */
-    public function field(string $field): self
+    public function field(string $field): static
     {
         $this->field = $field;
 
@@ -43,11 +46,11 @@ class Facet extends Stage
      *
      * @param Builder|Stage $builder
      */
-    public function pipeline($builder): self
+    public function pipeline($builder): static
     {
         /** @psalm-suppress RedundantPropertyInitializationCheck because the property might not be set yet */
         if (! isset($this->field)) {
-            throw new LogicException(__METHOD__ . ' requires you set a current field using field().');
+            throw new LogicException(__METHOD__ . ' requires setting a current field using field().');
         }
 
         if ($builder instanceof Stage) {

@@ -7,8 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class GH245Test extends BaseTestCase
 {
     public function testTest(): void
@@ -24,11 +22,11 @@ class GH245Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->find(get_class($order), $order->id);
+        $user = $this->dm->find($order::class, $order->id);
 
         self::assertIsInt($order->id);
 
-        $check = $this->dm->getDocumentCollection(get_class($orderLog))->findOne();
+        $check = $this->dm->getDocumentCollection($orderLog::class)->findOne();
         self::assertIsInt($check['order']['$id']);
     }
 }

@@ -292,7 +292,7 @@ CODE;
     private function formatType(
         ReflectionType $type,
         ReflectionMethod $method,
-        ?ReflectionParameter $parameter = null
+        ?ReflectionParameter $parameter = null,
     ): string {
         if ($type instanceof ReflectionUnionType) {
             return implode('|', array_map(

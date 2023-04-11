@@ -36,9 +36,6 @@ final class ReferenceMany extends AbstractField
     /** @var string|null */
     public $defaultDiscriminatorValue;
 
-    /** @var string[]|string|null */
-    public $cascade;
-
     /** @var bool|null */
     public $orphanRemoval;
 
@@ -87,7 +84,7 @@ final class ReferenceMany extends AbstractField
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null,
-        $cascade = null,
+        public $cascade = null,
         ?bool $orphanRemoval = null,
         ?string $inversedBy = null,
         ?string $mappedBy = null,
@@ -97,7 +94,7 @@ final class ReferenceMany extends AbstractField
         ?int $limit = null,
         ?int $skip = null,
         ?string $collectionClass = null,
-        array $prime = []
+        array $prime = [],
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
 
@@ -106,7 +103,6 @@ final class ReferenceMany extends AbstractField
         $this->discriminatorField        = $discriminatorField;
         $this->discriminatorMap          = $discriminatorMap;
         $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
-        $this->cascade                   = $cascade;
         $this->orphanRemoval             = $orphanRemoval;
         $this->inversedBy                = $inversedBy;
         $this->mappedBy                  = $mappedBy;

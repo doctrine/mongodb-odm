@@ -92,17 +92,17 @@ final class StaticProxyFactory implements ProxyFactory
      */
     private function createInitializer(
         ClassMetadata $metadata,
-        DocumentPersister $documentPersister
+        DocumentPersister $documentPersister,
     ): Closure {
         return function (
             GhostObjectInterface $ghostObject,
             string $method, // we don't care
             array $parameters, // we don't care
             &$initializer,
-            array $properties // we currently do not use this
+            array $properties, // we currently do not use this
         ) use (
             $metadata,
-            $documentPersister
+            $documentPersister,
         ): bool {
             $originalInitializer = $initializer;
             $initializer         = null;

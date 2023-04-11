@@ -26,7 +26,7 @@ class IdentifiersTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->getRepository(get_class($event))->find($event->getId());
+        $test = $this->dm->getRepository($event::class)->find($event->getId());
 
         $userTest = $test->getUser();
         self::assertEquals($user->getId(), $userTest->getId());
@@ -37,14 +37,16 @@ class IdentifiersTest extends BaseTestCase
 
         $class = $this->dm->getClassMetadata(get_class($test->getUser()));
 
-        $test = $this->dm->getRepository(get_class($event))->find($event->getId());
-        self::assertEquals($user->getId(), $class->getIdentifierValue($test->getUser()));
-        self::assertEquals($user->getId(), $class->getFieldValue($test->getUser(), 'id'));
-        self::assertInstanceOf(LazyLoadingInterface::class, $test->getUser());
-        self::assertFalse($test->getUser()->isProxyInitialized());
+        $test = $this->dm->getRepository($event::class)->find($event->getId());
 
-        self::assertEquals('jwage', $test->getUser()->getUsername());
-        self::assertTrue($test->getUser()->isProxyInitialized());
+        $foundUser = $test->getUser();
+        self::assertEquals($user->getId(), $class->getIdentifierValue($user));
+        self::assertEquals($user->getId(), $class->getFieldValue($foundUser, 'id'));
+        self::assertInstanceOf(LazyLoadingInterface::class, $foundUser);
+        self::assertFalse($foundUser->isProxyInitialized());
+
+        self::assertEquals('jwage', $foundUser->getUsername());
+        self::assertTrue($foundUser->isProxyInitialized());
     }
 
     public function testIdentifiersAreSet(): void

@@ -17,7 +17,7 @@ class ReplaceRootTest extends BaseTestCase
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
+        $mongoDate = new UTCDateTime($dateTime);
         $stage     = $builder
             ->replaceRoot()
                 ->field('isToday')
@@ -26,7 +26,7 @@ class ReplaceRootTest extends BaseTestCase
         self::assertEquals(
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                     ],
                 ],
@@ -40,7 +40,7 @@ class ReplaceRootTest extends BaseTestCase
         $builder = $this->dm->createAggregationBuilder(User::class);
 
         $dateTime  = new DateTimeImmutable('2000-01-01T00:00Z');
-        $mongoDate = new UTCDateTime((int) $dateTime->format('Uv'));
+        $mongoDate = new UTCDateTime($dateTime);
         $stage     = $builder
             ->replaceRoot(
                 $builder->expr()
@@ -51,7 +51,7 @@ class ReplaceRootTest extends BaseTestCase
         self::assertEquals(
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'isToday' => ['$eq' => ['$createdAt', $mongoDate]],
                     ],
                 ],
@@ -72,7 +72,7 @@ class ReplaceRootTest extends BaseTestCase
         self::assertEquals(
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'someField' => ['$concat' => ['$ip', 'foo']],
                     ],
                 ],

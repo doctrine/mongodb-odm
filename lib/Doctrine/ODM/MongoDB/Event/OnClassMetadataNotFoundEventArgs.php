@@ -15,17 +15,12 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  */
 final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
 {
-    /** @psalm-var class-string */
-    private string $className;
-
     /** @var ClassMetadata<object>|null */
     private ?ClassMetadata $foundMetadata = null;
 
     /** @psalm-param class-string $className */
-    public function __construct(string $className, DocumentManager $dm)
+    public function __construct(private string $className, DocumentManager $dm)
     {
-        $this->className = $className;
-
         parent::__construct($dm);
     }
 

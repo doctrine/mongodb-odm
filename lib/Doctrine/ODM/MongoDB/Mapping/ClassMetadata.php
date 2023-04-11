@@ -40,7 +40,6 @@ use function constant;
 use function count;
 use function enum_exists;
 use function extension_loaded;
-use function get_class;
 use function in_array;
 use function is_array;
 use function is_string;
@@ -902,7 +901,7 @@ use const PHP_VERSION_ID;
         }
 
         if (! $document instanceof $this->name) {
-            throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+            throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, $document::class));
         }
 
         if (empty($this->lifecycleCallbacks[$event])) {

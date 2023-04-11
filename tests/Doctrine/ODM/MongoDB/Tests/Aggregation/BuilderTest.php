@@ -285,7 +285,7 @@ class BuilderTest extends BaseTestCase
                 '$group' => [
                     '_id' => [
                         '$cond' => [
-                            'if' => ['$lt' => ['$createdAt', new UTCDateTime((int) $dateTime->format('Uv'))]],
+                            'if' => ['$lt' => ['$createdAt', new UTCDateTime($dateTime)]],
                             'then' => true,
                             'else' => false,
                         ],
@@ -295,9 +295,9 @@ class BuilderTest extends BaseTestCase
             ],
             [
                 '$replaceRoot' => [
-                    'newRoot' => (object) [
+                    'newRoot' => [
                         'isToday' => [
-                            '$eq' => ['$createdAt', new UTCDateTime((int) $dateTime->format('Uv'))],
+                            '$eq' => ['$createdAt', new UTCDateTime($dateTime)],
                         ],
                     ],
                 ],

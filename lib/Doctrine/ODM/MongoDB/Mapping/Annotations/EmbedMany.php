@@ -47,7 +47,7 @@ final class EmbedMany extends AbstractField
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null,
-        ?string $collectionClass = null
+        ?string $collectionClass = null,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
 

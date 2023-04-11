@@ -21,7 +21,7 @@ class IdType extends Type
         if (! $value instanceof ObjectId) {
             try {
                 $value = new ObjectId((string) $value);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $value = new ObjectId();
             }
         }

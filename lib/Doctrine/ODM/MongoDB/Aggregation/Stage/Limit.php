@@ -9,18 +9,17 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $limit stage to an aggregation pipeline.
+ *
+ * @psalm-type LimitStageExpression = array{'$limit': int}
  */
 class Limit extends Stage
 {
-    private int $limit;
-
-    public function __construct(Builder $builder, int $limit)
+    public function __construct(Builder $builder, private int $limit)
     {
         parent::__construct($builder);
-
-        $this->limit = $limit;
     }
 
+    /** @psalm-return LimitStageExpression */
     public function getExpression(): array
     {
         return [

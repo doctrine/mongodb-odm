@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 use function substr;
 
+/** @psalm-type SortByCountStageExpression = array{'$sortByCount': string} */
 class SortByCount extends Stage
 {
     private string $fieldName;
@@ -20,14 +21,15 @@ class SortByCount extends Stage
      * prefix the field name with a dollar sign $ and enclose it in quotes.
      * The expression can not evaluate to an object.
      */
-    public function __construct(Builder $builder, string $fieldName, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $fieldName, DocumentManager $dm, ClassMetadata $class)
     {
         parent::__construct($builder);
 
-        $documentPersister = $documentManager->getUnitOfWork()->getDocumentPersister($class->name);
+        $documentPersister = $dm->getUnitOfWork()->getDocumentPersister($class->name);
         $this->fieldName   = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
     }
 
+    /** @psalm-return SortByCountStageExpression */
     public function getExpression(): array
     {
         return [

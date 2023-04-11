@@ -8,8 +8,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class GH897Test extends BaseTestCase
 {
     public function testRecomputeSingleDocumentChangesetForManagedDocumentWithoutChangeset(): void
@@ -97,7 +95,7 @@ class GH897B
         $documentA        = $this->refOne;
         $documentA->name .= '-changed';
 
-        $class = $this->dm->getClassMetadata(get_class($documentA));
+        $class = $this->dm->getClassMetadata($documentA::class);
         $this->dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($class, $documentA);
     }
 }

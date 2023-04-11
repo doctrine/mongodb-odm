@@ -22,7 +22,6 @@ use function assert;
 use function call_user_func;
 use function count;
 use function explode;
-use function get_class;
 use function implode;
 use function is_object;
 use function serialize;
@@ -140,7 +139,7 @@ final class ReferencePrimer
             }
 
             if ($mapping['type'] === ClassMetadata::ONE && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
-                $refClass                                    = $this->dm->getClassMetadata(get_class($fieldValue));
+                $refClass                                    = $this->dm->getClassMetadata($fieldValue::class);
                 $id                                          = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
             } elseif ($mapping['type'] === ClassMetadata::MANY && $fieldValue instanceof PersistentCollectionInterface) {

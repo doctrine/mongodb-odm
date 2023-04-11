@@ -5,11 +5,6 @@
       <code>IteratorAggregate</code>
     </MissingTemplateParam>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php">
-    <InvalidArgument>
-      <code>$fields</code>
-    </InvalidArgument>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Configuration.php">
     <TypeDoesNotContainType>
       <code><![CDATA[$reflectionClass->implementsInterface(GridFSRepository::class)]]></code>
@@ -260,6 +255,16 @@
       <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>
   </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/OperatorTest.php">
+    <InternalClass>
+      <code>Operator</code>
+    </InternalClass>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
+    <InvalidArgument>
+      <code>$documentPersister</code>
+    </InvalidArgument>
+  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/ClassMetadataTestUtil.php">
     <InvalidReturnStatement>
       <code>$mapping + $defaultFieldMapping</code>
@@ -283,95 +288,12 @@
       <code>new ArrayCollection([$project])</code>
     </InvalidArgument>
   </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/AtomicSetTest.php">
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[$malarzm->friends]]></code>
-      <code><![CDATA[$malarzm->friends]]></code>
-      <code><![CDATA[$malarzm->friends]]></code>
-      <code><![CDATA[$malarzm->friends]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->inception]]></code>
-      <code><![CDATA[$user->phonebooks]]></code>
-      <code><![CDATA[$user->phonebooks]]></code>
-      <code><![CDATA[$user->phonebooks]]></code>
-      <code><![CDATA[$user->phonebooks]]></code>
-      <code><![CDATA[$user->phonebooks]]></code>
-      <code><![CDATA[$user->phonebooks]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbers]]></code>
-      <code><![CDATA[$user->phonenumbersArray]]></code>
-      <code><![CDATA[$user->phonenumbersArray]]></code>
-      <code><![CDATA[$user->phonenumbersArray]]></code>
-      <code><![CDATA[$user->phonenumbersArray]]></code>
-      <code><![CDATA[$user->phonenumbersArray]]></code>
-      <code>clear</code>
-    </UndefinedInterfaceMethod>
-  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
     <InvalidArgument>
       <code><![CDATA[[$user->categories[0]->children, $user->categories[1]->children]]]></code>
       <code><![CDATA[[$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]]]></code>
       <code><![CDATA[[$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]]]></code>
     </InvalidArgument>
-  </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CommitImprovementTest.php">
-    <UndefinedInterfaceMethod>
-      <code>$phonenumbers</code>
-      <code>$phonenumbers</code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php">
     <InvalidArgument>
@@ -380,10 +302,6 @@
       <code>$j</code>
       <code>$j</code>
     </InvalidArgument>
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[$d->coll]]></code>
-      <code><![CDATA[$d->coll]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/DetachedDocumentTest.php">
     <UndefinedInterfaceMethod>
@@ -423,12 +341,6 @@
       <code><![CDATA[$doc->embeds]]></code>
     </InvalidArgument>
   </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1117Test.php">
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[$doc->embeds]]></code>
-      <code><![CDATA[$doc->embeds]]></code>
-    </UndefinedInterfaceMethod>
-  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH245Test.php">
     <RedundantCondition>
       <code>assertIsInt</code>
@@ -467,12 +379,6 @@
         ])]]></code>
       <code>new ArrayCollection([$referenceMany1, $referenceMany2])</code>
     </InvalidPropertyAssignmentValue>
-  </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH852Test.php">
-    <UndefinedInterfaceMethod>
-      <code><![CDATA[$parent->refMany]]></code>
-      <code><![CDATA[$parent->refMany]]></code>
-    </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM29Test.php">
     <InvalidArgument>
