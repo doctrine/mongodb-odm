@@ -22,6 +22,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Operator\StringOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Operator\TimestampOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Operator\TrigonometryOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Operator\TypeOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\WindowOperators;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -63,7 +64,8 @@ class Expr implements
     StringOperators,
     TimestampOperators,
     TrigonometryOperators,
-    TypeOperators
+    TypeOperators,
+    WindowOperators
 {
     /** @var array<string, mixed> */
     private array $expr = [];
@@ -262,6 +264,16 @@ class Expr implements
         return $this->operator('$count', []);
     }
 
+    public function covariancePop($expression1, $expression2): static
+    {
+        return $this->operator('$covariancePop', func_get_args());
+    }
+
+    public function covarianceSamp($expression1, $expression2): static
+    {
+        return $this->operator('$covarianceSamp', func_get_args());
+    }
+
     public function dateAdd($startDate, $unit, $amount, $timezone = null): static
     {
         return $this->operator(
@@ -439,9 +451,24 @@ class Expr implements
         return $this;
     }
 
+    public function denseRank(): static
+    {
+        return $this->operator('$denseRank', []);
+    }
+
+    public function derivative($input, string $unit): static
+    {
+        return $this->operator('$derivative', ['input' => $input, 'unit' => $unit]);
+    }
+
     public function divide($expression1, $expression2): static
     {
         return $this->operator('$divide', func_get_args());
+    }
+
+    public function documentNumber(): static
+    {
+        return $this->operator('$documentNumber', []);
     }
 
     public function eq($expression1, $expression2): static
@@ -452,6 +479,21 @@ class Expr implements
     public function exp($exponent): static
     {
         return $this->operator('$exp', $exponent);
+    }
+
+    public function expMovingAvg($input, ?int $n = null, ?float $alpha = null): static
+    {
+        return $this->operator(
+            '$expMovingAvg',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'N' => $n,
+                    'alpha' => $alpha,
+                ],
+                ['N', 'alpha'],
+            ),
+        );
     }
 
     /**
@@ -599,6 +641,11 @@ class Expr implements
         return $this->operator('$indexOfCP', $args);
     }
 
+    public function integral($input, string $unit): static
+    {
+        return $this->operator('$integral', ['input' => $input, 'unit' => $unit]);
+    }
+
     public function isArray($expression): static
     {
         return $this->operator('$isArray', $expression);
@@ -637,6 +684,11 @@ class Expr implements
         return $this->operator('$let', ['vars' => $vars, 'in' => $in]);
     }
 
+    public function linearFill($expression): static
+    {
+        return $this->operator('$linearFill', $expression);
+    }
+
     public function literal($value): static
     {
         return $this->operator('$literal', $value);
@@ -645,6 +697,11 @@ class Expr implements
     public function ln($number): static
     {
         return $this->operator('$ln', $number);
+    }
+
+    public function locf($expression): static
+    {
+        return $this->operator('$locf', $expression);
     }
 
     public function log($number, $base): static
@@ -763,6 +820,11 @@ class Expr implements
         return $this->operator('$range', func_get_args());
     }
 
+    public function rank(): static
+    {
+        return $this->operator('$rank', []);
+    }
+
     public function reduce($input, $initialValue, $in): static
     {
         return $this->operator('$reduce', ['input' => $input, 'initialValue' => $initialValue, 'in' => $in]);
@@ -811,6 +873,21 @@ class Expr implements
     public function setUnion($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$setUnion', func_get_args());
+    }
+
+    public function shift($output, int $by, $default = null): static
+    {
+        return $this->operator(
+            '$shift',
+            $this->filterOptionalNullArguments(
+                [
+                    'output' => $output,
+                    'by' => $by,
+                    'default' => $default,
+                ],
+                ['default'],
+            ),
+        );
     }
 
     public function size($expression): static

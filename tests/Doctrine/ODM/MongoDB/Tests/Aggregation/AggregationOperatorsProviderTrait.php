@@ -1446,6 +1446,87 @@ trait AggregationOperatorsProviderTrait
         ];
     }
 
+    public function provideWindowExpressionOperators(): Generator
+    {
+        yield 'covariancePop' => [
+            'expected' => ['$covariancePop' => ['$field1', '$field2']],
+            'operator' => 'covariancePop',
+            'args' => ['$field1', '$field2'],
+        ];
+
+        yield 'covarianceSamp' => [
+            'expected' => ['$covarianceSamp' => ['$field1', '$field2']],
+            'operator' => 'covarianceSamp',
+            'args' => ['$field1', '$field2'],
+        ];
+
+        yield 'denseRank' => [
+            'expected' => ['$denseRank' => []],
+            'operator' => 'denseRank',
+            'args' => [],
+        ];
+
+        yield 'derivative' => [
+            'expected' => ['$derivative' => ['input' => '$field', 'unit' => 'second']],
+            'operator' => 'derivative',
+            'args' => ['$field', 'second'],
+        ];
+
+        yield 'documentNumber' => [
+            'expected' => ['$documentNumber' => []],
+            'operator' => 'documentNumber',
+            'args' => [],
+        ];
+
+        yield 'expMovingAvgWithN' => [
+            'expected' => ['$expMovingAvg' => ['input' => '$field', 'N' => 5]],
+            'operator' => 'expMovingAvg',
+            'args' => ['$field', 5],
+        ];
+
+        yield 'expMovingAvgWithAlpha' => [
+            'expected' => ['$expMovingAvg' => ['input' => '$field', 'alpha' => 0.5]],
+            'operator' => 'expMovingAvg',
+            'args' => ['$field', null, 0.5],
+        ];
+
+        yield 'integral' => [
+            'expected' => ['$integral' => ['input' => '$field', 'unit' => 'second']],
+            'operator' => 'integral',
+            'args' => ['$field', 'second'],
+        ];
+
+        yield 'linearFill' => [
+            'expected' => ['$linearFill' => '$field'],
+            'operator' => 'linearFill',
+            'args' => ['$field'],
+        ];
+
+        yield 'locf' => [
+            'expected' => ['$locf' => '$field'],
+            'operator' => 'locf',
+            'args' => ['$field'],
+        ];
+
+        yield 'rank' => [
+            'expected' => ['$rank' => []],
+            'operator' => 'rank',
+            'args' => [],
+        ];
+
+        yield 'shiftWithoutDefault' => [
+            'expected' => ['$shift' => ['output' => '$field', 'by' => -1]],
+            'operator' => 'shift',
+            'args' => ['$field', -1],
+        ];
+
+        yield 'shiftWithDefault' => [
+            'expected' => ['$shift' => ['output' => '$field', 'by' => -1, 'default' => '$defaultField']],
+            'operator' => 'shift',
+            'args' => ['$field', -1, '$defaultField'],
+        ];
+    }
+
     protected function createExpr(): Expr
     {
         return new Expr($this->dm, new ClassMetadata(User::class));

@@ -35,6 +35,7 @@ class ExprTest extends BaseTestCase
      * @dataProvider provideTimestampExpressionOperators
      * @dataProvider provideTrigonometryExpressionOperators
      * @dataProvider provideTypeExpressionOperators
+     * @dataProvider provideWindowExpressionOperators
      */
     public function testGenericOperator(array $expected, string $operator, $args): void
     {
@@ -66,6 +67,7 @@ class ExprTest extends BaseTestCase
      * @dataProvider provideTimestampExpressionOperators
      * @dataProvider provideTrigonometryExpressionOperators
      * @dataProvider provideTypeExpressionOperators
+     * @dataProvider provideWindowExpressionOperators
      */
     public function testGenericOperatorWithField(array $expected, string $operator, $args): void
     {
