@@ -1,14 +1,16 @@
 Aggregation pipeline stages
 ===========================
 
-MongoDB provides the following aggregation pipeline stages:
+Doctrine MongoDB ODM provides integration for the following aggregation pipeline stages:
 
 - `$addFields <https://docs.mongodb.com/manual/reference/operator/aggregation/addFields/>`_
 - `$bucket <https://docs.mongodb.com/manual/reference/operator/aggregation/bucket/>`_
 - `$bucketAuto <https://docs.mongodb.com/manual/reference/operator/aggregation/bucketAuto/>`_
 - `$collStats <https://docs.mongodb.com/manual/reference/operator/aggregation/collStats/>`_
 - `$count <https://docs.mongodb.com/manual/reference/operator/aggregation/count/>`_
+- `$densify <https://docs.mongodb.com/manual/reference/operator/aggregation/densify/>`_
 - `$facet <https://docs.mongodb.com/manual/reference/operator/aggregation/facet/>`_
+- `$fill <https://docs.mongodb.com/manual/reference/operator/aggregation/fill/>`_
 - `$geoNear <https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/>`_
 - `$graphLookup <https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/>`_
 - `$group <https://docs.mongodb.com/manual/reference/operator/aggregation/group/>`_
@@ -16,22 +18,30 @@ MongoDB provides the following aggregation pipeline stages:
 - `$limit <https://docs.mongodb.com/manual/reference/operator/aggregation/limit/>`_
 - `$lookup <https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/>`_
 - `$match <https://docs.mongodb.com/manual/reference/operator/aggregation/match/>`_
+- `$merge <https://docs.mongodb.com/manual/reference/operator/aggregation/merge/>`_
 - `$out <https://docs.mongodb.com/manual/reference/operator/aggregation/out/>`_
 - `$project <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
 - `$redact <https://docs.mongodb.com/manual/reference/operator/aggregation/redact/>`_
 - `$replaceRoot <https://docs.mongodb.com/manual/reference/operator/aggregation/replaceRoot/>`_
+- `$replaceWith <https://docs.mongodb.com/manual/reference/operator/aggregation/replaceWith/>`_
 - `$sample <https://docs.mongodb.com/manual/reference/operator/aggregation/sample/>`_
+- `$search <https://www.mongodb.com/docs/atlas/atlas-search/query-syntax/#-search>`_
+- `$set <https://docs.mongodb.com/manual/reference/operator/aggregation/set/>`_
+- `$setWindowFields <https://docs.mongodb.com/manual/reference/operator/aggregation/setWindowFields/>`_
 - `$skip <https://docs.mongodb.com/manual/reference/operator/aggregation/skip/>`_
 - `$sort <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
 - `$sortByCount <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
+- `$unionWith <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
+- `$unset <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
 - `$unwind <https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/>`_
 
 .. note::
 
-    The ``$lookup``, ``$sample`` and ``$indexStats`` stages were added in MongoDB
-    3.2. The ``$addFields``, ``$bucket``, ``$bucketAuto``, ``$sortByCount``,
-    ``$replaceRoot``, ``$facet``, ``$graphLookup``, ``$coun`` and ``$collStats``
-    stages were added in MongoDB 3.4.
+    Support for ``$densify``, ``$fill``, ``$merge``, ``$replaceWith``,
+    ``$search``, ``$set``, ``$setWindowFields``, ``$unionWith``, and ``$unset``
+    was added in Doctrine MongoDB ODM 2.6. Please consult the MongoDB
+    documentation to ensure that the pipeline stage is available in the MongoDB
+    version you are using.
 
 $addFields
 ----------
@@ -152,6 +162,28 @@ stage.
 The example above returns a single document with the ``numSingleItemOrders``
 containing the number of orders found.
 
+$densify
+--------
+
+Cretaes new documents in a sequence of documents where certain values in a
+field are missing. You can use ``$densify`` to fill gaps in time series data,
+add missing values between groups of data, or to populate your data with a
+specified range of values. Taking the partition example from the
+`$densify documentation <https://www.mongodb.com/docs/manual/reference/operator/aggregation/densify/#densifiction-with-partitions>`_,
+this is how you would create the pipeline from the example with the aggregation
+builder:
+
+.. code-block:: php
+
+    <?php
+    $builder = $dm->createAggregationBuilder(\Documents\Coffee::class);
+    $builder
+        ->densify()
+            ->field('altitude')
+            ->partitionByFields('variety')
+            ->range('full', 200)
+    ;
+
 $facet
 ------
 
@@ -194,6 +226,46 @@ where its results are stored as an array of documents.
                     ->field('averageValue')
                     ->avg('$value')
             )
+    ;
+
+$fill
+-----
+
+The ``$fill`` stage populates ``null`` and missing field values within documents.
+You can use ``$fill`` to populate missing data points in a sequence based on
+surrounding values, or with a fixed value.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\StockPrice::class);
+    $builder
+        ->fill()
+            ->sortBy('time', 1)
+            ->output()
+                ->field('price')->linear()
+    ;
+
+For each field in the output, you can use ``linear`` to use linear interpolation
+based on the surrounding values, ``locf`` to carry forward the last observed
+value, or ``value`` to specify an expression that returns the value for the field:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\StockPrice::class);
+    $builder
+        ->fill()
+            ->sortBy('time', 1)
+            ->output()
+                ->field('interpolated')->linear()
+                ->field('lastValue')->locf()
+                ->field('fixedValue')->value('foo')
+                ->field('computedValue')->value(
+                    $builder->expr()->multiply('$value', 5),
+                )
     ;
 
 $geoNear
@@ -416,6 +488,57 @@ You can also use fields defined in previous stages:
             ->field('purchaseYear')
             ->equals(2016);
 
+$merge
+------
+
+The ``$merge`` stage is used to write the results of an aggregation pipeline to
+a collection. Unlike the ``$out`` stage, this stage does not replace the entire
+output collection, but lets you define how to handle conflicts or missing data
+in the output collection. ``$merge`` must be the last stage in an aggregation
+pipeline.
+
+The following pipeline uses the ``$merge`` pipeline stage to aggregate orders
+that were created after the last aggregation run (tracked separately in the
+``$lastAggregateRun`` variable) and updates the ``monthlyOrderStats`` collection
+to account for latest data.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->match()
+            ->field('purchaseDate')->gte($lastAggregateRun)
+        ->group()
+            ->field('_id')
+            ->expression(
+                $builder->expr()
+                    ->field('month')
+                    ->month('purchaseDate')
+                    ->field('year')
+                    ->year('purchaseDate')
+            )
+            ->field('count')->countDocuments()
+            ->field('totalAmount')->sum('$amount')
+        ->set()
+            ->field('year')->value('$_id.year')
+            ->field('month')->value('$_id.month')
+        ->unset('_id')
+        ->merge()
+            ->into('monthlyOrderStats')
+            ->on('year', 'month')
+            ->whenMatched('replace')
+            ->whenNotMatched('insert')
+    ;
+
+The ``on`` builder method tells the ``merge`` stage which fields to use to match
+documents in the output collection. The output collection needs to have a unique
+index on the fields specified in the ``on`` method. The ``whenMatched`` and
+``whenNotMatched`` methods define how to handle conflicts or missing data in the
+output collection. For more information on the available options, see the
+MongoDB documentation.
+
 $out
 ----
 
@@ -432,7 +555,7 @@ collection.
 .. note::
 
     The aggregation pipeline will fail to complete if the result would violate
-    any unique index constraints, including those on the ``id`` field.
+    any unique index constraints, including those on the ``_id`` field.
 
 $project
 --------
@@ -529,12 +652,86 @@ or create a new document for promotion.
             ->field('averagePricePerItem')
             ->divide('$value', '$itemCount');
 
+$replaceWith
+------------
+
+Replaces the input document with the specified document. This stage is an alias
+for the ``$replaceRoot`` stage.
+
 $sample
 -------
 
 The sample stage can be used to randomly select a subset of documents in the
 aggregation pipeline. It behaves like the ``$limit`` stage, but instead of
 returning the first ``n`` documents it returns ``n`` random documents.
+
+$search
+-------
+
+The ``$search`` stage performs a full-text search on the specified field or
+fields which must be covered by an Atlas Search index. This stage is only
+available when using MongoDB Atlas. ``$search`` must be the first stage in the
+aggregation pipeline.
+
+The following example documents basic usage of the ``$search`` stage. Due to the
+number of available operators, please refer to the
+`MongoDB documentation <https://www.mongodb.com/docs/atlas/atlas-search/query-syntax/#-search>`_
+for a reference of all available operators.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\BlogPosts::class);
+    $builder
+        ->search()
+            ->text()
+                ->query('MongoDB', 'ODM', 'Aggregation')
+                ->fields('title', 'content')
+    ;
+
+$set
+----
+
+Adds new fields to documents. The ``$set`` stage is an alias for the
+``$addFields`` stage.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->set()
+            ->field('purchaseYear')
+            ->year('$purchaseDate');
+
+$setWindowFields
+----------------
+
+The ``$setWindowFields`` performs operations on a specified span of documents in
+a collection and returns the results based on the chosen window operator. For
+example, ``$setWindowFields`` can be used to calculate the difference in a value
+between two documents in a collection.
+
+The following example uses the ``$setWindowFields`` stage to obtain a cumulative
+sales quantity for each year:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\InfectionNumbers::class);
+    $builder
+        ->setWindowFields()
+            ->partitionBy($builder->expr()->year('$purchaseDate'))
+            ->sortBy('purchaseDate', 1)
+            ->output()
+                ->output()
+                    ->field('cumulativeQuantityForYear')
+                        ->sum('$quantity')
+                        ->window(['unbounded', 'current'])
+    ;
 
 $sort, $limit and $skip
 -----------------------
@@ -577,6 +774,62 @@ The example above is equivalent to the following pipeline:
             ->sum(1)
         ->sort(['count' => -1])
     ;
+
+$unionWith
+----------
+
+``$unionWith`` combines the results of two or more pipelines into a single
+result set. The stage outputs the combined result set (including duplicates) to
+the next stage.
+
+.. code-block:: php
+
+    <?php
+
+    // Create a pipeline to apply within the union
+    $unionBuilder = $dm->createAggregationBuilder(\Documents\Warehouse::class);
+    $unionBuilder
+        ->project()
+            ->excludeFields(['_id'])
+            ->includeFields(['location']);
+
+    $builder = $dm->createAggregationBuilder(\Documents\Supplier::class);
+    $builder
+        ->project()
+            ->excludeFields(['_id'])
+            ->includeFields(['location'])
+        ->unionWith(\Documents\Warehouse::class)
+            // Directly filter documents from the unioned collection
+            ->pipeline($unionBuilder)
+    ;
+
+$unset
+------
+
+Removes fields from documents. The ``$unset`` stage is an alias for the
+``$project`` stage that removes fields.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->unset('customer', 'shippingAddress.street', 'billingAddress.street')
+    ;
+
+The above example is equivalent to the following pipeline using ``$project``:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder
+        ->project()
+            ->excludeFields(['customer', 'shippingAddress.street', 'billingAddress.street'])
+    ;
+
 
 $unwind
 -------
