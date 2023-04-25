@@ -31,8 +31,8 @@ Doctrine MongoDB ODM provides integration for the following aggregation pipeline
 - `$skip <https://docs.mongodb.com/manual/reference/operator/aggregation/skip/>`_
 - `$sort <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
 - `$sortByCount <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
-- `$unionWith <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
-- `$unset <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
+- `$unionWith <https://docs.mongodb.com/manual/reference/operator/aggregation/unionWith/>`_
+- `$unset <https://docs.mongodb.com/manual/reference/operator/aggregation/unset/>`_
 - `$unwind <https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/>`_
 
 .. note::
@@ -165,7 +165,7 @@ containing the number of orders found.
 $densify
 --------
 
-Cretaes new documents in a sequence of documents where certain values in a
+Creates new documents in a sequence of documents where certain values in a
 field are missing. You can use ``$densify`` to fill gaps in time series data,
 add missing values between groups of data, or to populate your data with a
 specified range of values. Taking the partition example from the
