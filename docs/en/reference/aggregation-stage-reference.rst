@@ -176,6 +176,7 @@ builder:
 .. code-block:: php
 
     <?php
+
     $builder = $dm->createAggregationBuilder(\Documents\Coffee::class);
     $builder
         ->densify()
@@ -264,7 +265,7 @@ value, or ``value`` to specify an expression that returns the value for the fiel
                 ->field('lastValue')->locf()
                 ->field('fixedValue')->value('foo')
                 ->field('computedValue')->value(
-                    $builder->expr()->multiply('$value', 5),
+                    $builder->expr()->multiply('$someField', 5),
                 )
     ;
 
@@ -499,8 +500,8 @@ pipeline.
 
 The following pipeline uses the ``$merge`` pipeline stage to aggregate orders
 that were created after the last aggregation run (tracked separately in the
-``$lastAggregateRun`` variable) and updates the ``monthlyOrderStats`` collection
-to account for latest data.
+``$lastAggregateRunAt`` variable) and updates the ``monthlyOrderStats``
+collection to account for latest data.
 
 .. code-block:: php
 
@@ -509,7 +510,7 @@ to account for latest data.
     $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
     $builder
         ->match()
-            ->field('purchaseDate')->gte($lastAggregateRun)
+            ->field('purchaseDate')->gte($lastAggregateRunAt)
         ->group()
             ->field('_id')
             ->expression(
@@ -727,10 +728,9 @@ sales quantity for each year:
             ->partitionBy($builder->expr()->year('$purchaseDate'))
             ->sortBy('purchaseDate', 1)
             ->output()
-                ->output()
-                    ->field('cumulativeQuantityForYear')
-                        ->sum('$quantity')
-                        ->window(['unbounded', 'current'])
+                ->field('cumulativeQuantityForYear')
+                    ->sum('$quantity')
+                    ->window(['unbounded', 'current'])
     ;
 
 $sort, $limit and $skip
