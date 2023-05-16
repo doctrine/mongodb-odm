@@ -10,11 +10,13 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents81\Card;
 use Documents81\Suit;
 use Error;
+use Jean85\PrettyVersions;
 use MongoDB\BSON\ObjectId;
 use ValueError;
 
 use function preg_quote;
 use function sprintf;
+use function version_compare;
 
 /** @requires PHP >= 8.1 */
 class EnumTest extends BaseTestCase
@@ -33,6 +35,25 @@ class EnumTest extends BaseTestCase
         self::assertSame($doc->id, $saved->id);
         self::assertSame(Suit::Clubs, $saved->suit);
         self::assertNull($saved->nullableSuit);
+    }
+
+    public function testArrayOfEnums(): void
+    {
+        $persistenceVersion = PrettyVersions::getVersion('doctrine/persistence')->getPrettyVersion();
+        if (version_compare('3.2.0', $persistenceVersion, '>')) {
+            self::markTestSkipped('Support for array of enums was introduced in doctrine/persistence 3.2.0');
+        }
+
+        $doc        = new Card();
+        $doc->suits = ['foo' => Suit::Clubs, 'bar' => Suit::Diamonds];
+
+        $this->dm->persist($doc);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $saved = $this->dm->find(Card::class, $doc->id);
+        self::assertInstanceOf(Card::class, $saved);
+        self::assertSame(['foo' => Suit::Clubs, 'bar' => Suit::Diamonds], $saved->suits);
     }
 
     public function testLoadingInvalidBackingValueThrowsError(): void
