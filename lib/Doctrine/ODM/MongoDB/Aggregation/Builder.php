@@ -30,12 +30,13 @@ use function trigger_deprecation;
  *
  * @psalm-import-type SortShape from Sort
  * @psalm-import-type StageExpression from Stage
+ *
  * @psalm-type PipelineExpression = list<StageExpression>
  */
 class Builder
 {
     /**
-     * The DocumentManager instance for this query
+     * The DocumentManager instance for this query.
      */
     private DocumentManager $dm;
 
@@ -64,8 +65,8 @@ class Builder
      */
     public function __construct(DocumentManager $dm, string $documentName)
     {
-        $this->dm         = $dm;
-        $this->class      = $this->dm->getClassMetadata($documentName);
+        $this->dm = $dm;
+        $this->class = $this->dm->getClassMetadata($documentName);
         $this->collection = $this->dm->getDocumentCollection($documentName);
     }
 
@@ -158,6 +159,22 @@ class Builder
     }
 
     /**
+     * Returns statistics regarding a collection or view.
+     *
+     * $currentOp must be the first stage in an aggregation pipeline, or else
+     * the pipeline returns an error.
+     * Pipelines that start with $currentOp can only be run on the admin database.
+     *
+     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/currentOp/
+     */
+    public function currentOp(): Stage\CurrentOp
+    {
+        $stage = new Stage\CurrentOp($this);
+
+        return $this->addStage($stage);
+    }
+
+    /**
      * Creates new documents in a sequence of documents where certain values in a field are missing.
      *
      * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/densify/
@@ -170,7 +187,19 @@ class Builder
     }
 
     /**
-     * Executes the aggregation pipeline
+     * Returns literal documents from input values.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/documents/
+     */
+    public function documents(array $documents = []): Stage\Documents
+    {
+        $stage = new Stage\Documents($this, $documents);
+
+        return $this->addStage($stage);
+    }
+
+    /**
+     * Executes the aggregation pipeline.
      *
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
      *
@@ -243,7 +272,7 @@ class Builder
     }
 
     /**
-     * Returns an aggregation object for the current pipeline
+     * Returns an aggregation object for the current pipeline.
      *
      * @param array<string, mixed> $options
      */
@@ -256,10 +285,10 @@ class Builder
 
     // phpcs:disable Squiz.Commenting.FunctionComment.ExtraParamComment
     /**
-     * Returns the assembled aggregation pipeline
+     * Returns the assembled aggregation pipeline.
      *
      * @param bool $applyFilters Whether to apply filters on the aggregation
-     * pipeline stage
+     *                           pipeline stage
      *
      * For pipelines where the first stage is a $geoNear stage, it will apply
      * the document filters and discriminator queries to the query portion of
@@ -271,6 +300,7 @@ class Builder
      * given.
      *
      * @return array<array<string, mixed>>
+     *
      * @psalm-return PipelineExpression
      */
     // phpcs:enable Squiz.Commenting.FunctionComment.ExtraParamComment
@@ -278,12 +308,8 @@ class Builder
     {
         $applyFilters = func_num_args() > 0 ? func_get_arg(0) : true;
 
-        if (! is_bool($applyFilters)) {
-            throw new TypeError(sprintf(
-                'Argument 1 passed to %s must be of the type bool, %s given',
-                __METHOD__,
-                gettype($applyFilters),
-            ));
+        if (!is_bool($applyFilters)) {
+            throw new TypeError(sprintf('Argument 1 passed to %s must be of the type bool, %s given', __METHOD__, gettype($applyFilters)));
         }
 
         $pipeline = array_map(
@@ -299,7 +325,7 @@ class Builder
             $applyFilters = false;
         }
 
-        if (! $applyFilters) {
+        if (!$applyFilters) {
             return $pipeline;
         }
 
@@ -310,7 +336,7 @@ class Builder
         }
 
         $matchExpression = $this->applyFilters([]);
-        if ($matchExpression !== []) {
+        if ([] !== $matchExpression) {
             array_unshift($pipeline, ['$match' => $matchExpression]);
         }
 
@@ -318,11 +344,11 @@ class Builder
     }
 
     /**
-     * Returns a certain stage from the pipeline
+     * Returns a certain stage from the pipeline.
      */
     public function getStage(int $index): Stage
     {
-        if (! isset($this->stages[$index])) {
+        if (!isset($this->stages[$index])) {
             throw new OutOfRangeException(sprintf('Could not find stage with index %d.', $index));
         }
 
@@ -335,8 +361,8 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/graphLookup/
      *
-     * @param string $from Target collection for the $graphLookup operation to
-     * search, recursively matching the connectFromField to the connectToField.
+     * @param string $from target collection for the $graphLookup operation to
+     *                     search, recursively matching the connectFromField to the connectToField
      */
     public function graphLookup(string $from): Stage\GraphLookup
     {
@@ -381,6 +407,30 @@ class Builder
     }
 
     /**
+     * Lists the sessions cached in memory by the mongod or mongos instance.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/listLocalSessions/
+     */
+    public function listLocalSessions(array $config = []): Stage\ListLocalSessions
+    {
+        $stage = new Stage\ListLocalSessions($this, $config);
+
+        return $this->addStage($stage);
+    }
+
+    /**
+     * Lists all sessions stored in the system.sessions collection in the config database. These sessions are visible to all members of the MongoDB deployment.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/listSessions/
+     */
+    public function listSessions(array $config = []): Stage\ListSessions
+    {
+        $stage = new Stage\ListSessions($this, $config);
+
+        return $this->addStage($stage);
+    }
+
+    /**
      * Limits the number of documents passed to the next stage in the pipeline.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
@@ -420,7 +470,7 @@ class Builder
     }
 
     /**
-     * Returns a query expression to be used in match stages
+     * Returns a query expression to be used in match stages.
      */
     public function matchExpr(): QueryExpr
     {
@@ -452,6 +502,18 @@ class Builder
     public function out(string $from): Stage\Out
     {
         $stage = new Stage\Out($this, $from, $this->dm);
+
+        return $this->addStage($stage);
+    }
+
+    /**
+     * Returns plan cache information for a collection. The stage returns a document for each plan cache entry.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/planCacheStats/
+     */
+    public function planCacheStats(): Stage\PlanCacheStats
+    {
+        $stage = new Stage\PlanCacheStats($this);
 
         return $this->addStage($stage);
     }
@@ -492,7 +554,7 @@ class Builder
      * the top level, or create a new document for promotion.
      *
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
-     * resolves to a document.
+     *                                             resolves to a document.
      */
     public function replaceRoot($expression = null): Stage\ReplaceRoot
     {
@@ -512,7 +574,7 @@ class Builder
      * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/replaceWith/
      *
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
-     * resolves to a document.
+     *                                             resolves to a document.
      */
     public function replaceWith($expression = null): Stage\ReplaceWith
     {
@@ -586,6 +648,18 @@ class Builder
     }
 
     /**
+     * Returns information on the distribution of data in sharded collections.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/shardedDataDistribution/
+     */
+    public function shardedDataDistribution(): Stage\ShardedDataDistribution
+    {
+        $stage = new Stage\ShardedDataDistribution($this);
+
+        return $this->addStage($stage);
+    }
+
+    /**
      * Skips over the specified number of documents that pass into the stage and
      * passes the remaining documents to the next stage in the pipeline.
      *
@@ -609,6 +683,7 @@ class Builder
      *
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
      * @param int|string|null                                        $order     Field order (if one field is specified)
+     *
      * @psalm-param SortShape|string $fieldName Field name or array of field/order pairs
      */
     public function sort($fieldName, $order = null): Stage\Sort
@@ -675,7 +750,7 @@ class Builder
     }
 
     /**
-     * Allows adding an arbitrary stage to the pipeline
+     * Allows adding an arbitrary stage to the pipeline.
      *
      * @param T $stage
      *
@@ -691,7 +766,7 @@ class Builder
     }
 
     /**
-     * Applies filters and discriminator queries to the pipeline
+     * Applies filters and discriminator queries to the pipeline.
      *
      * @param array<string, mixed> $query
      *
