@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Aggregation\Stage\ListLocalSessions;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\ListSessions;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
@@ -27,6 +29,9 @@ use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
+ *
+ * @phpstan-import-type ListLocalSessionsConfiguration from ListLocalSessions
+ * @phpstan-import-type ListSessionsConfiguration from ListSessions
  *
  * @psalm-import-type SortShape from Sort
  * @psalm-import-type StageExpression from Stage
@@ -188,6 +193,8 @@ class Builder
 
     /**
      * Returns literal documents from input values.
+     *
+     * @param array<mixed> $documents
      *
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/documents/
      */
@@ -409,6 +416,8 @@ class Builder
     /**
      * Lists the sessions cached in memory by the mongod or mongos instance.
      *
+     * @param ListLocalSessionsConfiguration $config
+     *
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/listLocalSessions/
      */
     public function listLocalSessions(array $config = []): Stage\ListLocalSessions
@@ -420,6 +429,8 @@ class Builder
 
     /**
      * Lists all sessions stored in the system.sessions collection in the config database. These sessions are visible to all members of the MongoDB deployment.
+     *
+     * @param ListSessionsConfiguration $config
      *
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/listSessions/
      */
