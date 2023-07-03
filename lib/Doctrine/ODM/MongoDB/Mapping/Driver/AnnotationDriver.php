@@ -179,6 +179,9 @@ class AnnotationDriver extends CompatibilityAnnotationDriver
 
         if (isset($documentAnnot->collection)) {
             $metadata->setCollection($documentAnnot->collection);
+            if (is_array($documentAnnot->collection) && array_key_exists('timeseries', $documentAnnot->collection)) {
+                $metadata->isTimeSeriesDocument = true;
+            }
         }
 
         if (isset($documentAnnot->view)) {
