@@ -65,7 +65,7 @@ final class SchemaManager
     public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isTimeSeriesDocument) {
                 continue;
             }
 
@@ -339,7 +339,7 @@ final class SchemaManager
     public function updateDocumentValidator(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile || $class->isTimeSeriesDocument) {
             throw new InvalidArgumentException('Cannot update validators for files, views, mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -447,6 +447,8 @@ final class SchemaManager
         }
 
         $options = [
+            'timeseries' => $class->getCollectionTimeseries(),
+            'expireAfterSeconds' => $class->getCollectionExpireAfterSeconds(),
             'capped' => $class->getCollectionCapped(),
             'size' => $class->getCollectionSize(),
             'max' => $class->getCollectionMax(),
