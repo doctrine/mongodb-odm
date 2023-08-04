@@ -41,7 +41,7 @@
         "ext-bcmath": "*",
         "doctrine/coding-standard": "^11.0",
         "jmikola/geojson": "^1.0",
-        "phpbench/phpbench": "^1.0.0@dev",
+        "phpbench/phpbench": "^1.0.0",
         "phpstan/phpstan": "^1.10.11",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5.5 || ^10.0.15",
