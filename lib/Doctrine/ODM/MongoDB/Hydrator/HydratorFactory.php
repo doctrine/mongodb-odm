@@ -232,7 +232,7 @@ EOF
                     throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($return));
                 }
 
-                $className = $this->dm->getUnitOfWork()->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $return);
+                $className = $this->dm->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $return);
                 $identifier = ClassMetadata::getReferenceId($return, $this->class->fieldMappings['%2$s']['storeAs']);
                 $targetMetadata = $this->dm->getClassMetadata($className);
                 $id = $targetMetadata->getPHPIdentifierValue($identifier);
@@ -330,7 +330,7 @@ EOF
                     throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($embeddedDocument));
                 }
         
-                $className = $this->dm->getUnitOfWork()->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $embeddedDocument);
+                $className = $this->dm->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $return = $embeddedMetadata->newInstance();
 

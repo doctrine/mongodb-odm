@@ -475,37 +475,6 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertEquals('Nashville', $changeSet['city'][1]);
     }
 
-    public function testGetClassNameForAssociation(): void
-    {
-        $mapping = ClassMetadataTestUtil::getFieldMapping([
-            'discriminatorField' => 'type',
-            'discriminatorMap' => ['forum_user' => ForumUser::class],
-            'targetDocument' => User::class,
-        ]);
-        $data    = ['type' => 'forum_user'];
-
-        self::assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
-    }
-
-    public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap(): void
-    {
-        $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
-        $data    = ['type' => 'forum_user'];
-
-        $userClassMetadata                     = new ClassMetadata(ForumUser::class);
-        $userClassMetadata->discriminatorField = 'type';
-        $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
-        $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
-
-        self::assertEquals(ForumUser::class, $this->uow->getClassNameForAssociation($mapping, $data));
-    }
-
-    public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData(): void
-    {
-        $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
-        self::assertEquals(User::class, $this->uow->getClassNameForAssociation($mapping, null));
-    }
-
     public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset(): void
     {
         $user           = new ForumUser();

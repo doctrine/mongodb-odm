@@ -882,6 +882,48 @@ class DocumentManager implements ObjectManager
         return $this->filterCollection;
     }
 
+    /**
+     * Gets the class name for an association (embed or reference) with respect
+     * to any discriminator value.
+     *
+     * @internal
+     *
+     * @param FieldMapping              $mapping
+     * @param array<string, mixed>|null $data
+     *
+     * @psalm-return class-string
+     */
+    public function getClassNameForAssociation(array $mapping, $data): string
+    {
+        $discriminatorField = $mapping['discriminatorField'] ?? null;
+
+        $discriminatorValue = null;
+        if (isset($discriminatorField, $data[$discriminatorField])) {
+            $discriminatorValue = $data[$discriminatorField];
+        } elseif (isset($mapping['defaultDiscriminatorValue'])) {
+            $discriminatorValue = $mapping['defaultDiscriminatorValue'];
+        }
+
+        if ($discriminatorValue !== null) {
+            return $mapping['discriminatorMap'][$discriminatorValue]
+                ?? (string) $discriminatorValue;
+        }
+
+        $class = $this->getClassMetadata($mapping['targetDocument']);
+
+        if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
+            $discriminatorValue = $data[$class->discriminatorField];
+        } elseif ($class->defaultDiscriminatorValue !== null) {
+            $discriminatorValue = $class->defaultDiscriminatorValue;
+        }
+
+        if ($discriminatorValue !== null) {
+            return $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
+        }
+
+        return $mapping['targetDocument'];
+    }
+
     private static function getVersion(): string
     {
         if (self::$version === null) {
