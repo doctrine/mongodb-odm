@@ -47,11 +47,6 @@ final class HydratorFactory
     private DocumentManager $dm;
 
     /**
-     * The UnitOfWork used to coordinate object-level transactions.
-     */
-    private ?UnitOfWork $unitOfWork = null;
-
-    /**
      * The EventManager associated with this Hydrator
      */
     private EventManager $evm;
@@ -97,16 +92,6 @@ final class HydratorFactory
     }
 
     /**
-     * Sets the UnitOfWork instance.
-     *
-     * @internal
-     */
-    public function setUnitOfWork(UnitOfWork $uow): void
-    {
-        $this->unitOfWork = $uow;
-    }
-
-    /**
      * Gets the hydrator object for the given document class.
      *
      * @psalm-param class-string $className
@@ -147,7 +132,7 @@ final class HydratorFactory
             }
         }
 
-        $this->hydrators[$className] = new $fqn($this->dm, $this->unitOfWork, $class);
+        $this->hydrators[$className] = new $fqn($this->dm, $class);
 
         return $this->hydrators[$className];
     }
@@ -247,7 +232,7 @@ EOF
                     throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($return));
                 }
 
-                $className = $this->unitOfWork->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $return);
+                $className = $this->dm->getUnitOfWork()->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $return);
                 $identifier = ClassMetadata::getReferenceId($return, $this->class->fieldMappings['%2$s']['storeAs']);
                 $targetMetadata = $this->dm->getClassMetadata($className);
                 $id = $targetMetadata->getPHPIdentifierValue($identifier);
@@ -294,7 +279,7 @@ EOF
             isset($this->class->fieldMappings['%2$s']['criteria']) ? $this->class->fieldMappings['%2$s']['criteria'] : array()
         );
         $sort = isset($this->class->fieldMappings['%2$s']['sort']) ? $this->class->fieldMappings['%2$s']['sort'] : array();
-        $return = $this->unitOfWork->getDocumentPersister($className)->load($criteria, null, array(), 0, $sort);
+        $return = $this->dm->getUnitOfWork()->getDocumentPersister($className)->load($criteria, null, array(), 0, $sort);
         $this->class->reflFields['%2$s']->setValue($document, $return);
         $hydratedData['%2$s'] = $return;
 
@@ -345,17 +330,17 @@ EOF
                     throw HydratorException::associationTypeMismatch('%3$s', '%1$s', 'array', gettype($embeddedDocument));
                 }
         
-                $className = $this->unitOfWork->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $embeddedDocument);
+                $className = $this->dm->getUnitOfWork()->getClassNameForAssociation($this->class->fieldMappings['%2$s'], $embeddedDocument);
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $return = $embeddedMetadata->newInstance();
 
-                $this->unitOfWork->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
+                $this->dm->getUnitOfWork()->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
 
                 $embeddedData = $this->dm->getHydratorFactory()->hydrate($return, $embeddedDocument, $hints);
                 $embeddedId = $embeddedMetadata->identifier && isset($embeddedData[$embeddedMetadata->identifier]) ? $embeddedData[$embeddedMetadata->identifier] : null;
 
                 if (empty($hints[Query::HINT_READ_ONLY])) {
-                    $this->unitOfWork->registerManaged($return, $embeddedId, $embeddedData);
+                    $this->dm->getUnitOfWork()->registerManaged($return, $embeddedId, $embeddedData);
                 }
             }
 
@@ -392,13 +377,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class $hydratorClassName implements HydratorInterface
 {
     private \$dm;
-    private \$unitOfWork;
     private \$class;
 
-    public function __construct(DocumentManager \$dm, UnitOfWork \$uow, ClassMetadata \$class)
+    public function __construct(DocumentManager \$dm, ClassMetadata \$class)
     {
         \$this->dm = \$dm;
-        \$this->unitOfWork = \$uow;
         \$this->class = \$class;
     }
 
