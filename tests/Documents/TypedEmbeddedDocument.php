@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Documents74;
+namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 

@@ -60,7 +60,6 @@
             "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
             "Documents\\": "tests/Documents",
-            "Documents74\\": "tests/Documents74",
             "Documents81\\": "tests/Documents81",
             "Stubs\\": "tests/Stubs",
             "TestDocuments\\" :"tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures"
