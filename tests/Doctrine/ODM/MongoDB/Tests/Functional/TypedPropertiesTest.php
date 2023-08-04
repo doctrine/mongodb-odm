@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\TypedDocument;
 use Documents\TypedEmbeddedDocument;
 use MongoDB\BSON\ObjectId;
+
 use function assert;
 
 class TypedPropertiesTest extends BaseTestCase

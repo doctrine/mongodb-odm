@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * @Annotation
@@ -21,8 +22,8 @@ class Validation implements Annotation
     /**
      * @var string|null
      * @Enum({
-     *     \Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
-     *     \Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+     *     ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
+     *     ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
      *     })
      */
     public $action;
@@ -30,9 +31,9 @@ class Validation implements Annotation
     /**
      * @var string|null
      * @Enum({
-     *     \Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF,
-     *     \Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
-     *     \Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+     *     ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF,
+     *     ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
+     *     ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
      *     })
      */
     public $level;

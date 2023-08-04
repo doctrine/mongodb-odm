@@ -37,7 +37,7 @@ class DoctrineGlobal_Article
     protected $author;
 
     /**
-     * @ODM\ReferenceMany(targetDocument=\DoctrineGlobal_User::class)
+     * @ODM\ReferenceMany(targetDocument=DoctrineGlobal_User::class)
      *
      * @var Collection<int, DoctrineGlobal_User>
      */

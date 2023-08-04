@@ -39,6 +39,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionException;
 use stdClass;
+
 use function array_merge;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;

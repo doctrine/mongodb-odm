@@ -41,7 +41,10 @@ class GH999Listener
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class GH999Document
 {
     /**

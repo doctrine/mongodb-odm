@@ -39,7 +39,10 @@ class MODM116Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document @ODM\InheritanceType("COLLECTION_PER_CLASS") **/
+/**
+ * @ODM\Document
+ * @ODM\InheritanceType("COLLECTION_PER_CLASS") *
+ */
 class MODM116Parent
 {
     /**

@@ -576,7 +576,8 @@ abstract class AbstractVersionBase
     public $title;
 
     /**
-     * @ODM\Lock @ODM\Field(type="int")
+     * @ODM\Lock
+     * @ODM\Field(type="int")
      *
      * @var int|null
      */
@@ -620,7 +621,8 @@ abstract class AbstractVersionBase
 class LockInt extends AbstractVersionBase
 {
     /**
-     * @ODM\Version @ODM\Field(type="int")
+     * @ODM\Version
+     * @ODM\Field(type="int")
      *
      * @var int|null
      */
@@ -631,7 +633,8 @@ class LockInt extends AbstractVersionBase
 class LockDate extends AbstractVersionBase
 {
     /**
-     * @ODM\Version @ODM\Field(type="date")
+     * @ODM\Version
+     * @ODM\Field(type="date")
      *
      * @var DateTime|null
      */
@@ -642,7 +645,8 @@ class LockDate extends AbstractVersionBase
 class LockDateImmutable extends AbstractVersionBase
 {
     /**
-     * @ODM\Version @ODM\Field(type="date_immutable")
+     * @ODM\Version
+     * @ODM\Field(type="date_immutable")
      *
      * @var DateTimeImmutable|null
      */
@@ -653,7 +657,8 @@ class LockDateImmutable extends AbstractVersionBase
 class LockDecimal128 extends AbstractVersionBase
 {
     /**
-     * @ODM\Version @ODM\Field(type="decimal128")
+     * @ODM\Version
+     * @ODM\Field(type="decimal128")
      *
      * @var string|null
      */
