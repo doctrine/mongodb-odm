@@ -48,8 +48,6 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "lowest"
 
       - name: "Upload composer.lock as build artifact"
         uses: actions/upload-artifact@v2
@@ -82,8 +80,6 @@ jobs:
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v1"
-        with:
-          dependency-versions: "lowest"
 
       - name: "Upload composer.lock as build artifact"
         uses: actions/upload-artifact@v2
