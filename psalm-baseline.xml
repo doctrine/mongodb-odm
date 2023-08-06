@@ -47,7 +47,6 @@
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
-      <code>$mapping</code>
       <code><![CDATA[array_filter(
             $this->associationMappings,
             static fn ($assoc) => ! empty($assoc['embedded'])
@@ -55,7 +54,6 @@
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>FieldMapping</code>
-      <code>FieldMappingConfig</code>
       <code><![CDATA[array<string, FieldMapping>]]></code>
     </InvalidReturnType>
     <LessSpecificImplementedReturnType>
@@ -101,23 +99,6 @@
       <code><![CDATA[(bool) $mapping['unique']]]></code>
       <code><![CDATA[(string) $mapping['index-name']]]></code>
     </RedundantCast>
-    <RedundantCondition>
-      <code>assert($attributes instanceof SimpleXMLElement)</code>
-      <code><![CDATA[isset($xmlRoot->field)]]></code>
-      <code><![CDATA[isset($xmlRoot->id)]]></code>
-      <code><![CDATA[isset($xmlRoot->{'default-discriminator-value'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'discriminator-field'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'discriminator-map'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'embed-many'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'embed-one'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'indexes'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'lifecycle-callbacks'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'read-preference'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'reference-many'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'reference-one'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'schema-validation'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'shard-key'})]]></code>
-    </RedundantCondition>
     <TypeDoesNotContainType>
       <code><![CDATA[$xmlRoot->getName() === 'document']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'embedded-document']]></code>
@@ -125,7 +106,6 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'query-result-document']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'view']]></code>
-      <code><![CDATA[isset($xmlRoot->{'also-load-methods'})]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/AbstractPersistentCollectionFactory.php">
@@ -144,24 +124,13 @@
       <code>array_values</code>
     </RedundantFunctionCall>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/CachingClassNameResolver.php">
-    <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->resolvedNames]]></code>
-    </InvalidPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/ProxyManagerClassNameResolver.php">
     <MoreSpecificImplementedParamType>
       <code>$className</code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Builder.php">
-    <InvalidArgument>
-      <code>$query</code>
-    </InvalidArgument>
     <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->query]]></code>
-      <code><![CDATA[$this->query]]></code>
-      <code><![CDATA[$this->query]]></code>
       <code><![CDATA[$this->query]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
