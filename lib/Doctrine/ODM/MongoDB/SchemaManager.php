@@ -65,7 +65,7 @@ final class SchemaManager
     public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isTimeSeriesDocument) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
