@@ -420,20 +420,6 @@ use const PHP_VERSION_ID;
      */
     public $collectionMax;
 
-        /**
-     * READ-ONLY: If the collection is fixed size, its size in bytes.
-     *
-     * @var int|null
-     */
-    public $collectionSize;
-
-    /**
-     * READ-ONLY: If the collection is fixed size, the maximum number of elements to store in the collection.
-     *
-     * @var int|null
-     */
-    public $collectionMax;
-
     /**
      * READ-ONLY: If the collection should be a timeseries
      *
