@@ -10,9 +10,10 @@ use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Iterator as SPLIterator;
 use IteratorAggregate;
 use MongoDB\Collection;
-use MongoDB\Driver\Cursor;
+use MongoDB\Driver\CursorInterface;
 
 use function array_merge;
 use function assert;
@@ -35,12 +36,14 @@ final class Aggregation implements IteratorAggregate
         $options = array_merge($this->options, ['cursor' => true]);
 
         $cursor = $this->collection->aggregate($this->pipeline, $options);
-        assert($cursor instanceof Cursor);
+        // This assertion can be dropped when requiring mongodb/mongodb 1.17.0
+        assert($cursor instanceof CursorInterface);
+        assert($cursor instanceof SPLIterator);
 
         return $this->prepareIterator($cursor);
     }
 
-    private function prepareIterator(Cursor $cursor): Iterator
+    private function prepareIterator(CursorInterface&SPLIterator $cursor): Iterator
     {
         if ($this->classMetadata) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->classMetadata);
