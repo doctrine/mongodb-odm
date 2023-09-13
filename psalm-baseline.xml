@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.9.0@8b9ad1eb9e8b7d3101f949291da2b9f7767cd163">
+<files psalm-version="5.14.1@b9d355e0829c397b9b3b47d0c0ed042a8a70284d">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
       <code>IteratorAggregate</code>
@@ -134,6 +134,13 @@
       <code><![CDATA[$this->query]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Query/Expr.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$current = &$this->newObj]]></code>
+      <code><![CDATA[$query = &$this->query]]></code>
+      <code><![CDATA[$query = &$this->query[$this->currentField]]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Query.php">
     <MissingTemplateParam>
       <code>IteratorAggregate</code>
@@ -257,6 +264,11 @@
       <code>new ArrayCollection([$project])</code>
     </InvalidArgument>
   </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Events/PreLoadEventArgsTest.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$eventArgsData =& $eventArgs->getData()]]></code>
+    </UnsupportedPropertyReferenceUsage>
+  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php">
     <InvalidArgument>
       <code><![CDATA[[$user->categories[0]->children, $user->categories[1]->children]]]></code>
@@ -353,6 +365,11 @@
     <InvalidArgument>
       <code>$collection</code>
     </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM43Test.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$data =& $e->getData()]]></code>
+    </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM81Test.php">
     <InvalidNullableReturnType>
