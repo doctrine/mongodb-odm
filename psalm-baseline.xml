@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.14.1@b9d355e0829c397b9b3b47d0c0ed042a8a70284d">
+<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
       <code>IteratorAggregate</code>
@@ -76,6 +76,23 @@
       <code>$mapping</code>
       <code>$options</code>
     </InvalidArgument>
+    <InvalidPropertyFetch>
+      <code><![CDATA[$xmlRoot->field]]></code>
+      <code><![CDATA[$xmlRoot->id]]></code>
+      <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
+      <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
+      <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
+      <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
+      <code><![CDATA[$xmlRoot->{'indexes'}]]></code>
+      <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
+      <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
+      <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
+      <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
+      <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
+      <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
+    </InvalidPropertyFetch>
     <NoInterfaceProperties>
       <code><![CDATA[$xmlRoot->field]]></code>
       <code><![CDATA[$xmlRoot->id]]></code>
@@ -99,6 +116,39 @@
       <code><![CDATA[(bool) $mapping['unique']]]></code>
       <code><![CDATA[(string) $mapping['index-name']]]></code>
     </RedundantCast>
+    <RedundantCondition>
+      <code>assert($attributes instanceof SimpleXMLElement)</code>
+      <code><![CDATA[isset($embed->{'default-discriminator-value'})]]></code>
+      <code><![CDATA[isset($embed->{'discriminator-field'})]]></code>
+      <code><![CDATA[isset($embed->{'discriminator-map'})]]></code>
+      <code><![CDATA[isset($field->{'generator-option'})]]></code>
+      <code><![CDATA[isset($partialFilterExpressionMapping->and)]]></code>
+      <code><![CDATA[isset($partialFilterExpressionMapping->field)]]></code>
+      <code><![CDATA[isset($reference->{'criteria'})]]></code>
+      <code><![CDATA[isset($reference->{'default-discriminator-value'})]]></code>
+      <code><![CDATA[isset($reference->{'discriminator-field'})]]></code>
+      <code><![CDATA[isset($reference->{'discriminator-map'})]]></code>
+      <code><![CDATA[isset($reference->{'prime'})]]></code>
+      <code><![CDATA[isset($reference->{'sort'})]]></code>
+      <code><![CDATA[isset($xmlIndex->{'option'})]]></code>
+      <code><![CDATA[isset($xmlIndex->{'partial-filter-expression'})]]></code>
+      <code><![CDATA[isset($xmlReadPreference->{'tag-set'})]]></code>
+      <code><![CDATA[isset($xmlRoot->field)]]></code>
+      <code><![CDATA[isset($xmlRoot->id)]]></code>
+      <code><![CDATA[isset($xmlRoot->{'default-discriminator-value'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'discriminator-field'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'discriminator-map'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'embed-many'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'embed-one'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'indexes'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'lifecycle-callbacks'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'read-preference'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'reference-many'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'reference-one'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'schema-validation'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'shard-key'})]]></code>
+      <code><![CDATA[isset($xmlShardkey->{'option'})]]></code>
+    </RedundantCondition>
     <TypeDoesNotContainType>
       <code><![CDATA[$xmlRoot->getName() === 'document']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'embedded-document']]></code>
@@ -106,6 +156,8 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'query-result-document']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'view']]></code>
+      <code><![CDATA[isset($xmlRoot->metadata)]]></code>
+      <code><![CDATA[isset($xmlRoot->{'also-load-methods'})]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/AbstractPersistentCollectionFactory.php">
