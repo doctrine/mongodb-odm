@@ -52,7 +52,10 @@ class LifecycleTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class ParentObject
 {
     /**
@@ -103,7 +106,10 @@ class ParentObject
         return $this->name;
     }
 
-    /** @ODM\PrePersist @ODM\PreUpdate */
+    /**
+     * @ODM\PrePersist
+     * @ODM\PreUpdate
+     */
     public function prePersistPreUpdate(): void
     {
         $this->children = [$this->child];

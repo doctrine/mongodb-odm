@@ -9,7 +9,10 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 
-/** @ODM\Document @ODM\ChangeTrackingPolicy("NOTIFY") */
+/**
+ * @ODM\Document
+ * @ODM\ChangeTrackingPolicy("NOTIFY")
+ */
 class ProfileNotify implements NotifyPropertyChanged
 {
     /**

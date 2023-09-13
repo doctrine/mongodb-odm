@@ -58,7 +58,10 @@ class GH897A
     public $name;
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class GH897B
 {
     /**

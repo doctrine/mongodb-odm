@@ -864,7 +864,8 @@ class DocumentPersisterTestDocumentWithVersion
     public $name;
 
     /**
-     * @ODM\Version @ODM\Field(type="int")
+     * @ODM\Version
+     * @ODM\Field(type="int")
      *
      * @var int
      */

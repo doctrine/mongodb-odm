@@ -267,7 +267,10 @@ class UniqueOnFieldTest
     public $email;
 }
 
-/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc"}) */
+/**
+ * @ODM\Document
+ * @ODM\UniqueIndex(keys={"username"="asc"})
+ */
 class UniqueOnDocumentTest
 {
     /**
@@ -292,7 +295,10 @@ class UniqueOnDocumentTest
     public $email;
 }
 
-/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"})) */
+/**
+ * @ODM\Document
+ * @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}))
+ */
 class IndexesOnDocumentTest
 {
     /**
@@ -317,7 +323,10 @@ class IndexesOnDocumentTest
     public $email;
 }
 
-/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"},partialFilterExpression={"counter"={"$gt"=5}})) */
+/**
+ * @ODM\Document
+ * @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"},partialFilterExpression={"counter"={"$gt"=5}}))
+ */
 class PartialIndexOnDocumentTest
 {
     /**
@@ -349,7 +358,10 @@ class PartialIndexOnDocumentTest
     public $counter;
 }
 
-/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}) */
+/**
+ * @ODM\Document
+ * @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"})
+ */
 class MultipleFieldsUniqueIndexTest
 {
     /**
@@ -400,7 +412,10 @@ class UniqueSparseOnFieldTest
     public $email;
 }
 
-/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true}) */
+/**
+ * @ODM\Document
+ * @ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true})
+ */
 class UniqueSparseOnDocumentTest
 {
     /**
@@ -425,7 +440,10 @@ class UniqueSparseOnDocumentTest
     public $email;
 }
 
-/** @ODM\Document @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true})) */
+/**
+ * @ODM\Document
+ * @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true}))
+ */
 class SparseIndexesOnDocumentTest
 {
     /**
@@ -450,7 +468,10 @@ class SparseIndexesOnDocumentTest
     public $email;
 }
 
-/** @ODM\Document @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}, options={"sparse"=true}) */
+/**
+ * @ODM\Document
+ * @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}, options={"sparse"=true})
+ */
 class MultipleFieldsUniqueSparseIndexTest
 {
     /**

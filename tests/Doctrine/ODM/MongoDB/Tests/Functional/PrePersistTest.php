@@ -28,7 +28,10 @@ class PrePersistTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class PrePersistTestDocument
 {
     /** @var int */

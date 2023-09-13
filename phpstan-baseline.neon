@@ -526,7 +526,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Hydrator/HydratorFactory.php
 
 		-
-			message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<int\\|string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
+			message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
@@ -616,7 +616,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Proxy\\\\Factory\\\\StaticProxyFactory\\:\\:createInitializer\\(\\) should return Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<TDocument of object\\>&TDocument of object\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool but returns Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Proxy\\\\Factory\\\\StaticProxyFactory\\:\\:createInitializer\\(\\) should return Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface\\<TDocument\\>&TDocument\\=, string\\=, array\\<string, mixed\\>\\=, Closure\\|null\\=, array\\<string, mixed\\>\\=\\)\\: bool but returns Closure\\(ProxyManager\\\\Proxy\\\\GhostObjectInterface, string, array, mixed, array\\)\\: true\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/StaticProxyFactory.php
 

@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="Documents74\UserTyped">
+    <document name="Documents\UserTyped">
         <id field-name="id" />
 
         <field name="username"/>

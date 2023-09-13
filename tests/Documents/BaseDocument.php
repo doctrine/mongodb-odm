@@ -6,7 +6,10 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\MappedSuperclass
+ * @ODM\HasLifecycleCallbacks
+ */
 abstract class BaseDocument
 {
     /** @var bool */
