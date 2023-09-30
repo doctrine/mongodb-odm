@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
@@ -59,6 +60,11 @@ class MongoDBException extends Exception
     public static function invalidGridFSRepository(string $className): self
     {
         return new self(sprintf("Invalid repository class '%s'. It must be a %s.", $className, GridFSRepository::class));
+    }
+
+    public static function invalidClassMetadataFactory(string $className): self
+    {
+        return new self(sprintf("Invalid class metadata factory class '%s'. It must be a %s.", $className, ClassMetadataFactoryInterface::class));
     }
 
     /**

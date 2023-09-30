@@ -9,6 +9,7 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
@@ -86,7 +87,7 @@ class Configuration
      * @psalm-var array{
      *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
-     *      classMetadataFactoryName?: class-string<ClassMetadataFactory>,
+     *      classMetadataFactoryName?: class-string<ClassMetadataFactoryInterface>,
      *      defaultCommitOptions?: CommitOptions,
      *      defaultDocumentRepositoryClassName?: class-string<ObjectRepository<object>>,
      *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository<object>>,
@@ -409,13 +410,23 @@ class Configuration
         return $this->attributes['defaultDB'] ?? null;
     }
 
-    /** @psalm-param class-string<ClassMetadataFactory> $cmfName */
+    /**
+     * @psalm-param class-string<ClassMetadataFactoryInterface> $cmfName
+     *
+     * @throws MongoDBException If is not a ClassMetadataFactoryInterface.
+     */
     public function setClassMetadataFactoryName(string $cmfName): void
     {
+        $reflectionClass = new ReflectionClass($cmfName);
+
+        if (! $reflectionClass->implementsInterface(ClassMetadataFactoryInterface::class)) {
+            throw MongoDBException::invalidClassMetadataFactory($cmfName);
+        }
+
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /** @psalm-return class-string<ClassMetadataFactory> */
+    /** @psalm-return class-string<ClassMetadataFactoryInterface> */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
@@ -474,7 +485,7 @@ class Configuration
     /**
      * @psalm-param class-string<ObjectRepository<object>> $className
      *
-     * @throws MongoDBException If not is a ObjectRepository.
+     * @throws MongoDBException If is not an ObjectRepository.
      */
     public function setDefaultDocumentRepositoryClassName(string $className): void
     {

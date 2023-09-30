@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
@@ -69,7 +70,7 @@ class DocumentManager implements ObjectManager
     /**
      * The metadata factory, used to retrieve the ODM metadata of document classes.
      */
-    private ClassMetadataFactory $metadataFactory;
+    private ClassMetadataFactoryInterface $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
@@ -132,7 +133,8 @@ class DocumentManager implements ObjectManager
      */
     private ?FilterCollection $filterCollection = null;
 
-    private ClassNameResolver $classNameResolver;
+    /** @var ProxyClassNameResolver&ClassNameResolver  */
+    private ProxyClassNameResolver $classNameResolver;
 
     private static ?string $version = null;
 
@@ -155,10 +157,13 @@ class DocumentManager implements ObjectManager
             ],
         );
 
+        $this->classNameResolver = new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
+
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
+        $this->metadataFactory->setProxyClassNameResolver($this->classNameResolver);
 
         $cacheDriver = $this->config->getMetadataCache();
         if ($cacheDriver) {
@@ -180,9 +185,6 @@ class DocumentManager implements ObjectManager
         $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory      = new StaticProxyFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
-        $this->classNameResolver = new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
-
-        $this->metadataFactory->setProxyClassNameResolver($this->classNameResolver);
     }
 
     /**
@@ -221,7 +223,7 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
-     * @return ClassMetadataFactory
+     * @return ClassMetadataFactoryInterface
      */
     public function getMetadataFactory()
     {

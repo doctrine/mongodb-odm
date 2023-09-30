@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Command\Command;
@@ -64,7 +64,7 @@ abstract class AbstractCommand extends Command
         return $this->getHelper('documentManager')->getDocumentManager();
     }
 
-    /** @return ClassMetadataFactory */
+    /** @return ClassMetadataFactoryInterface */
     protected function getMetadataFactory()
     {
         return $this->getDocumentManager()->getMetadataFactory();
