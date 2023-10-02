@@ -78,7 +78,10 @@ An implementation might look like this in a ``User`` document:
     {
         // ...
 
-        /** @ODM\Field(type="date") @ODM\Index */
+        /**
+         * @ODM\Field(type="date")
+         * @ODM\Index
+         */
         private $deletedAt;
 
         public function getDeletedAt(): ?\DateTime

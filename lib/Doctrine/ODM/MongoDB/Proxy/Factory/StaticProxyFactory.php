@@ -39,6 +39,14 @@ final class StaticProxyFactory implements ProxyFactory
         $this->proxyFactory          = $documentManager->getConfiguration()->buildGhostObjectFactory();
     }
 
+    /**
+     * @param mixed $identifier
+     * @psalm-param ClassMetadata<T> $metadata
+     *
+     * @psalm-return T&GhostObjectInterface<T>
+     *
+     * @template T of object
+     */
     public function getProxy(ClassMetadata $metadata, $identifier): GhostObjectInterface
     {
         $documentPersister = $this->uow->getDocumentPersister($metadata->getName());

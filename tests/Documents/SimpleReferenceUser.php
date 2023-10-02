@@ -18,7 +18,8 @@ class SimpleReferenceUser
     public $id;
 
     /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id", name="userId", inversedBy="simpleReferenceManyInverse") @ODM\Index
+     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id", name="userId", inversedBy="simpleReferenceManyInverse")
+     * @ODM\Index
      *
      * @var User|null
      */

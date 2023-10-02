@@ -127,7 +127,10 @@ abstract class HasLifecycleCallbacksSuper
     }
 }
 
-/** @ODM\MappedSuperclass @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\MappedSuperclass
+ * @ODM\HasLifecycleCallbacks
+ */
 abstract class HasLifecycleCallbacksSuperAnnotated
 {
     /**
@@ -157,12 +160,18 @@ class HasLifecycleCallbacksSubExtendsSuperAnnotated extends HasLifecycleCallback
 {
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class HasLifecycleCallbacksSubAnnotatedExtendsSuper extends HasLifecycleCallbacksSuper
 {
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class HasLifecycleCallbacksSubAnnotatedExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
 }
@@ -187,7 +196,10 @@ class HasLifecycleCallbacksSubOverrideExtendsSuperAnnotated extends HasLifecycle
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycleCallbacksSuper
 {
     /** @ODM\PrePersist */
@@ -197,7 +209,10 @@ class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycle
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
     /** @ODM\PrePersist */

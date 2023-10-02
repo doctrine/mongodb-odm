@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.9.0@8b9ad1eb9e8b7d3101f949291da2b9f7767cd163">
+<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
       <code>IteratorAggregate</code>
@@ -52,7 +52,6 @@
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code>$mapping</code>
-      <code>$mapping</code>
       <code><![CDATA[array_filter(
             $this->associationMappings,
             static fn ($assoc) => ! empty($assoc['embedded'])
@@ -60,7 +59,6 @@
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code>FieldMapping</code>
-      <code>FieldMappingConfig</code>
       <code><![CDATA[array<string, FieldMapping>]]></code>
     </InvalidReturnType>
     <LessSpecificImplementedReturnType>
@@ -83,6 +81,23 @@
       <code>$mapping</code>
       <code>$options</code>
     </InvalidArgument>
+    <InvalidPropertyFetch>
+      <code><![CDATA[$xmlRoot->field]]></code>
+      <code><![CDATA[$xmlRoot->id]]></code>
+      <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
+      <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
+      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
+      <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
+      <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
+      <code><![CDATA[$xmlRoot->{'indexes'}]]></code>
+      <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
+      <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
+      <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
+      <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
+      <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
+      <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
+    </InvalidPropertyFetch>
     <NoInterfaceProperties>
       <code><![CDATA[$xmlRoot->field]]></code>
       <code><![CDATA[$xmlRoot->id]]></code>
@@ -108,6 +123,21 @@
     </RedundantCast>
     <RedundantCondition>
       <code>assert($attributes instanceof SimpleXMLElement)</code>
+      <code><![CDATA[isset($embed->{'default-discriminator-value'})]]></code>
+      <code><![CDATA[isset($embed->{'discriminator-field'})]]></code>
+      <code><![CDATA[isset($embed->{'discriminator-map'})]]></code>
+      <code><![CDATA[isset($field->{'generator-option'})]]></code>
+      <code><![CDATA[isset($partialFilterExpressionMapping->and)]]></code>
+      <code><![CDATA[isset($partialFilterExpressionMapping->field)]]></code>
+      <code><![CDATA[isset($reference->{'criteria'})]]></code>
+      <code><![CDATA[isset($reference->{'default-discriminator-value'})]]></code>
+      <code><![CDATA[isset($reference->{'discriminator-field'})]]></code>
+      <code><![CDATA[isset($reference->{'discriminator-map'})]]></code>
+      <code><![CDATA[isset($reference->{'prime'})]]></code>
+      <code><![CDATA[isset($reference->{'sort'})]]></code>
+      <code><![CDATA[isset($xmlIndex->{'option'})]]></code>
+      <code><![CDATA[isset($xmlIndex->{'partial-filter-expression'})]]></code>
+      <code><![CDATA[isset($xmlReadPreference->{'tag-set'})]]></code>
       <code><![CDATA[isset($xmlRoot->field)]]></code>
       <code><![CDATA[isset($xmlRoot->id)]]></code>
       <code><![CDATA[isset($xmlRoot->{'default-discriminator-value'})]]></code>
@@ -122,6 +152,7 @@
       <code><![CDATA[isset($xmlRoot->{'reference-one'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'schema-validation'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'shard-key'})]]></code>
+      <code><![CDATA[isset($xmlShardkey->{'option'})]]></code>
     </RedundantCondition>
     <TypeDoesNotContainType>
       <code><![CDATA[$xmlRoot->getName() === 'document']]></code>
@@ -130,6 +161,7 @@
       <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'query-result-document']]></code>
       <code><![CDATA[$xmlRoot->getName() === 'view']]></code>
+      <code><![CDATA[isset($xmlRoot->metadata)]]></code>
       <code><![CDATA[isset($xmlRoot->{'also-load-methods'})]]></code>
     </TypeDoesNotContainType>
   </file>
@@ -149,26 +181,22 @@
       <code>array_values</code>
     </RedundantFunctionCall>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/CachingClassNameResolver.php">
-    <InvalidPropertyAssignmentValue>
-      <code><![CDATA[$this->resolvedNames]]></code>
-    </InvalidPropertyAssignmentValue>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/ProxyManagerClassNameResolver.php">
     <MoreSpecificImplementedParamType>
       <code>$className</code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Builder.php">
-    <InvalidArgument>
-      <code>$query</code>
-    </InvalidArgument>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$this->query]]></code>
-      <code><![CDATA[$this->query]]></code>
-      <code><![CDATA[$this->query]]></code>
-      <code><![CDATA[$this->query]]></code>
     </InvalidPropertyAssignmentValue>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Query/Expr.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$current = &$this->newObj]]></code>
+      <code><![CDATA[$query = &$this->query]]></code>
+      <code><![CDATA[$query = &$this->query[$this->currentField]]]></code>
+    </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Query.php">
     <MissingTemplateParam>
@@ -282,6 +310,11 @@
     <InvalidArgument>
       <code>new ArrayCollection([$project])</code>
     </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Events/PreLoadEventArgsTest.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$eventArgsData =& $eventArgs->getData()]]></code>
+    </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/AtomicSetTest.php">
     <UndefinedInterfaceMethod>
@@ -478,6 +511,11 @@
     <InvalidArgument>
       <code>$collection</code>
     </InvalidArgument>
+  </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM43Test.php">
+    <UnsupportedPropertyReferenceUsage>
+      <code><![CDATA[$data =& $e->getData()]]></code>
+    </UnsupportedPropertyReferenceUsage>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM81Test.php">
     <InvalidNullableReturnType>

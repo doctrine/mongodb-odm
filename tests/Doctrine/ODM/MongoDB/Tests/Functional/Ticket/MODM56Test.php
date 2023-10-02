@@ -35,7 +35,10 @@ class MODM56Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class MODM56Parent
 {
     /**
