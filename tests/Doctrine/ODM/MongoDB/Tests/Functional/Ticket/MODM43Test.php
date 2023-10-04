@@ -26,7 +26,10 @@ class MODM43Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document @ODM\HasLifecycleCallbacks */
+/**
+ * @ODM\Document
+ * @ODM\HasLifecycleCallbacks
+ */
 class Person
 {
     /**
