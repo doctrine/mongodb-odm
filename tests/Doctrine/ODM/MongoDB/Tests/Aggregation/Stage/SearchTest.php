@@ -1182,6 +1182,53 @@ class SearchTest extends BaseTestCase
     }
 
     #[DataProvider('provideAutocompleteBuilders')]
+    #[DataProvider('provideCompoundBuilders')]
+    #[DataProvider('provideEmbeddedDocumentBuilders')]
+    #[DataProvider('provideEqualsBuilders')]
+    #[DataProvider('provideExistsBuilders')]
+    #[DataProvider('provideGeoShapeBuilders')]
+    #[DataProvider('provideGeoWithinBuilders')]
+    #[DataProvider('provideMoreLikeThisBuilders')]
+    #[DataProvider('provideNearBuilders')]
+    #[DataProvider('providePhraseBuilders')]
+    #[DataProvider('provideQueryStringBuilders')]
+    #[DataProvider('provideRangeBuilders')]
+    #[DataProvider('provideRegexBuilders')]
+    #[DataProvider('provideTextBuilders')]
+    #[DataProvider('provideWildcardBuilders')]
+    public function testSearchOperatorsWithSort(array $expectedOperator, Closure $createOperator): void
+    {
+        $baseExpected = [
+            'index' => 'my_search_index',
+            'sort' => (object) [
+                'unused' => ['$meta' => 'searchScore'],
+                'date' => -1,
+                'bar' => 1,
+            ],
+        ];
+
+        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage
+            ->index('my_search_index');
+
+        $result = $createOperator($searchStage);
+
+        self::logicalOr(
+            new IsInstanceOf(AbstractSearchOperator::class),
+            new IsInstanceOf(Search::class),
+        );
+
+        $result
+            ->sort(['unused' => 'searchScore', 'date' => -1])
+            ->sort(['bar' => 1]);
+
+        self::assertEquals(
+            ['$search' => (object) array_merge($baseExpected, $expectedOperator)],
+            $searchStage->getExpression(),
+        );
+    }
+
+    #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
     #[DataProvider('provideEqualsBuilders')]
     #[DataProvider('provideExistsBuilders')]

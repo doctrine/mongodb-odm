@@ -10,6 +10,11 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperatorsTrait;
 
+use function in_array;
+use function is_array;
+use function is_string;
+use function strtolower;
+
 /**
  * @psalm-type CountType = 'lowerBound'|'total'
  * @psalm-type SearchStageExpression = array{
@@ -25,6 +30,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperatorsTrai
  *             maxNumPassages?: int,
  *         },
  *         returnStoredSource?: bool,
+ *         sort?: object,
  *         autocomplete?: object,
  *         compound?: object,
  *         embeddedDocument?: object,
@@ -52,6 +58,7 @@ class Search extends Stage implements SupportsAllSearchOperators
     private ?object $highlight        = null;
     private ?bool $returnStoredSource = null;
     private ?SearchOperator $operator = null;
+    private array $sort               = [];
 
     public function __construct(Builder $builder)
     {
@@ -77,6 +84,10 @@ class Search extends Stage implements SupportsAllSearchOperators
 
         if ($this->returnStoredSource !== null) {
             $params->returnStoredSource = $this->returnStoredSource;
+        }
+
+        if ($this->sort) {
+            $params->sort = (object) $this->sort;
         }
 
         if ($this->operator !== null) {
@@ -124,6 +135,27 @@ class Search extends Stage implements SupportsAllSearchOperators
     public function returnStoredSource(bool $returnStoredSource = true): static
     {
         $this->returnStoredSource = $returnStoredSource;
+
+        return $this;
+    }
+
+    public function sort($fieldName, $order = null): static
+    {
+        $allowedMetaSort = ['searchScore'];
+
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+
+        foreach ($fields as $fieldName => $order) {
+            if (is_string($order)) {
+                if (in_array($order, $allowedMetaSort, true)) {
+                    $order = ['$meta' => $order];
+                } else {
+                    $order = strtolower($order) === 'asc' ? 1 : -1;
+                }
+            }
+
+            $this->sort[$fieldName] = $order;
+        }
 
         return $this;
     }

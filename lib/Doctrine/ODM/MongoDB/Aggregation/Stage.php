@@ -434,8 +434,10 @@ abstract class Stage
      *
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
+     *
+     * @return Stage\Sort
      */
-    public function sort($fieldName, $order = null): Stage\Sort
+    public function sort($fieldName, $order = null)
     {
         return $this->builder->sort($fieldName, $order);
     }
