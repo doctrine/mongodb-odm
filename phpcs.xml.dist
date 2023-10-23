@@ -9,7 +9,7 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
-    <config name="php_version" value="80000"/>
+    <config name="php_version" value="80100"/>
 
     <file>benchmark</file>
     <file>lib</file>

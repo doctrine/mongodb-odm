@@ -18,10 +18,10 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
+use Documents\Card;
 use Documents\CustomCollection;
+use Documents\Suit;
 use Documents\UserTyped;
-use Documents81\Card;
-use Documents81\Suit;
 use InvalidArgumentException;
 
 use function key;
@@ -632,7 +632,6 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         ], $metadata->fieldMappings['name']);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumType(): void
     {
         $metadata = $this->dm->getClassMetadata(Card::class);

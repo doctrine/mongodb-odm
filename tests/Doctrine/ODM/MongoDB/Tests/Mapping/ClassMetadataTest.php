@@ -20,19 +20,19 @@ use Documents\Account;
 use Documents\Address;
 use Documents\Album;
 use Documents\Bars\Bar;
+use Documents\Card;
 use Documents\CmsGroup;
 use Documents\CmsUser;
 use Documents\CustomCollection;
 use Documents\CustomRepository\Repository;
 use Documents\SpecialUser;
+use Documents\Suit;
+use Documents\SuitInt;
+use Documents\SuitNonBacked;
 use Documents\User;
 use Documents\UserName;
 use Documents\UserRepository;
 use Documents\UserTyped;
-use Documents81\Card;
-use Documents81\Suit;
-use Documents81\SuitInt;
-use Documents81\SuitNonBacked;
 use Generator;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -181,7 +181,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('referenceMany'));
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflection(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -202,7 +201,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertFalse($cm->isNullable('nullableSuit'));
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumReflectionPropertySerialization(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -216,19 +214,17 @@ class ClassMetadataTest extends BaseTestCase
         self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflectionMustBeBacked(): void
     {
         $cm = new ClassMetadata(Card::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked',
+            'Attempting to map a non-backed enum Documents\SuitNonBacked: Documents\Card::suitNonBacked',
         );
         $cm->mapField(['fieldName' => 'suitNonBacked']);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToAnEnum(): void
     {
         $object = new class {
@@ -240,7 +236,7 @@ class ClassMetadataTest extends BaseTestCase
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-enum type Documents81\Card as an enum: ',
+            'Attempting to map a non-enum type Documents\Card as an enum: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -248,7 +244,6 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToABackedEnum(): void
     {
         $object = new class {
@@ -260,7 +255,7 @@ class ClassMetadataTest extends BaseTestCase
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: ',
+            'Attempting to map a non-backed enum Documents\SuitNonBacked: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',

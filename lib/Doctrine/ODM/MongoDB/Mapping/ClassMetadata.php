@@ -2377,10 +2377,6 @@ use const PHP_VERSION_ID;
         assert($reflProp instanceof ReflectionProperty);
 
         if (isset($mapping['enumType'])) {
-            if (PHP_VERSION_ID < 80100) {
-                throw MappingException::enumsRequirePhp81($this->name, $mapping['fieldName']);
-            }
-
             if (! enum_exists($mapping['enumType'])) {
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }
