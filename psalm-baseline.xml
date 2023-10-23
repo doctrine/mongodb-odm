@@ -7,13 +7,14 @@
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Configuration.php">
     <TypeDoesNotContainType>
+      <code><![CDATA[$reflectionClass->implementsInterface(ClassMetadataFactoryInterface::class)]]></code>
       <code><![CDATA[$reflectionClass->implementsInterface(GridFSRepository::class)]]></code>
       <code><![CDATA[$reflectionClass->implementsInterface(ObjectRepository::class)]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/DocumentManager.php">
     <ImplementedReturnTypeMismatch>
-      <code>ClassMetadataFactory</code>
+      <code>ClassMetadataFactoryInterface</code>
     </ImplementedReturnTypeMismatch>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs.php">

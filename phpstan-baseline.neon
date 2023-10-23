@@ -506,7 +506,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
 		-
-			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactory\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
+			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadataFactoryInterface\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getMetadataFactory\\(\\) should be compatible with return type \\(Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadataFactory\\<Doctrine\\\\Persistence\\\\Mapping\\\\ClassMetadata\\<object\\>\\>\\) of method Doctrine\\\\Persistence\\\\ObjectManager\\:\\:getMetadataFactory\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/DocumentManager.php
 
