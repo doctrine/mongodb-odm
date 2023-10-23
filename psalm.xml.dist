@@ -4,6 +4,7 @@
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
     findUnusedPsalmSuppress="true"
+    phpVersion="8.2"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -14,7 +15,6 @@
         <directory name="lib/Doctrine/ODM/MongoDB" />
         <directory name="tests/Doctrine" />
         <directory name="tests/Documents" />
-        <directory name="tests/Documents74" />
         <ignoreFiles>
             <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php" />
             <file name="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php" />

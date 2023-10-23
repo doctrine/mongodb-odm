@@ -12,7 +12,6 @@ use MongoDB\BSON\ObjectId;
 
 use function assert;
 use function end;
-use function get_class;
 
 /** @group sharding */
 class ShardKeyTest extends BaseTestCase
@@ -45,7 +44,7 @@ class ShardKeyTest extends BaseTestCase
         $this->dm->persist($o);
         $this->dm->flush();
 
-        $o = $this->dm->find(get_class($o), $o->id);
+        $o = $this->dm->find($o::class, $o->id);
         assert($o instanceof ShardedOne);
         $o->title = 'test2';
         $this->dm->flush();

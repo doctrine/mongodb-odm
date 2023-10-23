@@ -21,7 +21,6 @@ use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
-use function get_class;
 use function time;
 
 class LockTest extends BaseTestCase
@@ -66,7 +65,7 @@ class LockTest extends BaseTestCase
         $this->dm->flush();
 
         // Manually change the version so the next code will cause an exception
-        $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => 5]]);
+        $this->dm->getDocumentCollection($article::class)->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => 5]]);
 
         // Now lets change a property and try and save it again
         $article->title = 'ok';
@@ -241,7 +240,7 @@ class LockTest extends BaseTestCase
         $this->dm->flush();
 
         // Manually change the version so the next code will cause an exception
-        $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new UTCDateTime(time() * 1000 + 600)]]);
+        $this->dm->getDocumentCollection($article::class)->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new UTCDateTime(time() * 1000 + 600)]]);
 
         // Now lets change a property and try and save it again
         $article->title = 'ok';
@@ -258,7 +257,7 @@ class LockTest extends BaseTestCase
         $this->dm->flush();
 
         // Manually change the version so the next code will cause an exception
-        $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new UTCDateTime(time() * 1000 + 600)]]);
+        $this->dm->getDocumentCollection($article::class)->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new UTCDateTime(time() * 1000 + 600)]]);
 
         // Now lets change a property and try and save it again
         $article->title = 'ok';
@@ -275,7 +274,7 @@ class LockTest extends BaseTestCase
         $this->dm->flush();
 
         // Manually change the version so the next code will cause an exception
-        $this->dm->getDocumentCollection(get_class($article))->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new Decimal128('3')]]);
+        $this->dm->getDocumentCollection($article::class)->updateOne(['_id' => new ObjectId($article->id)], ['$set' => ['version' => new Decimal128('3')]]);
 
         // Now lets change a property and try and save it again
         $article->title = 'ok';
@@ -344,7 +343,7 @@ class LockTest extends BaseTestCase
 
         $this->dm->lock($article, LockMode::PESSIMISTIC_WRITE);
 
-        $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
+        $check = $this->dm->getDocumentCollection($article::class)->findOne();
         self::assertEquals(LockMode::PESSIMISTIC_WRITE, $check['locked']);
     }
 
@@ -358,7 +357,7 @@ class LockTest extends BaseTestCase
 
         $this->dm->lock($article, LockMode::PESSIMISTIC_READ);
 
-        $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
+        $check = $this->dm->getDocumentCollection($article::class)->findOne();
         self::assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
     }
 
@@ -372,13 +371,13 @@ class LockTest extends BaseTestCase
 
         $this->dm->lock($article, LockMode::PESSIMISTIC_READ);
 
-        $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
+        $check = $this->dm->getDocumentCollection($article::class)->findOne();
         self::assertEquals(LockMode::PESSIMISTIC_READ, $check['locked']);
         self::assertEquals(LockMode::PESSIMISTIC_READ, $article->locked);
 
         $this->dm->unlock($article);
 
-        $check = $this->dm->getDocumentCollection(get_class($article))->findOne();
+        $check = $this->dm->getDocumentCollection($article::class)->findOne();
         self::assertArrayNotHasKey('locked', $check);
         self::assertNull($article->locked);
     }

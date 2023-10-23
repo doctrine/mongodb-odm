@@ -23,7 +23,6 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
 
 use function assert;
-use function get_class;
 use function get_class_methods;
 use function in_array;
 use function interface_exists;
@@ -282,14 +281,14 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
                 $customGenerator = new $idGenOptions['class']();
                 unset($idGenOptions['class']);
                 if (! $customGenerator instanceof IdGenerator) {
-                    throw MappingException::classIsNotAValidGenerator(get_class($customGenerator));
+                    throw MappingException::classIsNotAValidGenerator($customGenerator::class);
                 }
 
                 $methods = get_class_methods($customGenerator);
                 foreach ($idGenOptions as $name => $value) {
                     $method = 'set' . ucfirst($name);
                     if (! in_array($method, $methods)) {
-                        throw MappingException::missingGeneratorSetter(get_class($customGenerator), $name);
+                        throw MappingException::missingGeneratorSetter($customGenerator::class, $name);
                     }
 
                     $customGenerator->$method($value);

@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.2"
 
     steps:
       - name: "Checkout code"
@@ -88,4 +88,4 @@ jobs:
           path: composer.lock
 
       - name: "Run a static analysis with vimeo/psalm"
-        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc) --php-version=${{ matrix.php-version }}"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"

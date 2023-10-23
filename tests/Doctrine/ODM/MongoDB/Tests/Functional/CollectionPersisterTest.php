@@ -13,8 +13,6 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class CollectionPersisterTest extends BaseTestCase
 {
     private CommandLogger $logger;
@@ -363,8 +361,8 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($post);
         $this->dm->flush();
 
-        self::assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.by' => 'userA']));
-        self::assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.comments.b.by' => 'userB']));
+        self::assertSame($post, $this->dm->getRepository($post::class)->findOneBy(['comments.a.by' => 'userA']));
+        self::assertSame($post, $this->dm->getRepository($post::class)->findOneBy(['comments.a.comments.b.by' => 'userB']));
     }
 
     public function testPersistSeveralNestedEmbedManySetStrategy(): void
@@ -395,7 +393,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "set" strategy requires one query',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManySetArrayStrategy(): void
@@ -426,7 +424,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "setArray" strategy requires one query',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyAddToSetStrategy(): void
@@ -457,7 +455,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "addToSet" strategy requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyPushAllStrategy(): void
@@ -488,7 +486,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyDifferentStrategies(): void
@@ -522,7 +520,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyDifferentStrategiesDeepNesting(): void
@@ -562,7 +560,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 }
 

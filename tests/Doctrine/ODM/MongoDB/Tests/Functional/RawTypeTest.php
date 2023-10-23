@@ -9,8 +9,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
-use function get_class;
-
 class RawTypeTest extends BaseTestCase
 {
     /**
@@ -26,7 +24,7 @@ class RawTypeTest extends BaseTestCase
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $result = $this->dm->getDocumentCollection(get_class($test))->findOne(['_id' => new ObjectId($test->id)]);
+        $result = $this->dm->getDocumentCollection($test::class)->findOne(['_id' => new ObjectId($test->id)]);
         self::assertEquals($value, $result['raw']);
     }
 

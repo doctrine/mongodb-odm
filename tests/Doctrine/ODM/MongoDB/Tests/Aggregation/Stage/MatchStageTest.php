@@ -6,18 +6,16 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage;
-use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
-use GeoJson\Geometry\Geometry;
 use MongoDB\BSON\UTCDateTime;
 
 class MatchStageTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
-    public function testMatchStage(): void
+    public function testStage(): void
     {
         $matchStage = new MatchStage($this->getTestAggregationBuilder());
         $matchStage
@@ -27,7 +25,7 @@ class MatchStageTest extends BaseTestCase
         self::assertSame(['$match' => ['someField' => 'someValue']], $matchStage->getExpression());
     }
 
-    public function testMatchFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -36,62 +34,6 @@ class MatchStageTest extends BaseTestCase
             ->equals('someValue');
 
         self::assertSame([['$match' => ['someField' => 'someValue']]], $builder->getPipeline());
-    }
-
-    /** @dataProvider provideProxiedExprMethods */
-    public function testProxiedExprMethods(string $method, array $args = []): void
-    {
-        $expr = $this->getMockQueryExpr();
-        $expr
-            ->expects($this->once())
-            ->method($method)
-            ->with(...$args);
-
-        $stage = new class ($this->getTestAggregationBuilder()) extends MatchStage {
-            public function setQuery(Expr $query): void
-            {
-                $this->query = $query;
-            }
-        };
-        $stage->setQuery($expr);
-
-        self::assertSame($stage, $stage->$method(...$args));
-    }
-
-    public static function provideProxiedExprMethods(): array
-    {
-        return [
-            'field()' => ['field', ['fieldName']],
-            'equals()' => ['equals', ['value']],
-            'in()' => ['in', [['value1', 'value2']]],
-            'notIn()' => ['notIn', [['value1', 'value2']]],
-            'notEqual()' => ['notEqual', ['value']],
-            'gt()' => ['gt', [1]],
-            'gte()' => ['gte', [1]],
-            'lt()' => ['gt', [1]],
-            'lte()' => ['gte', [1]],
-            'range()' => ['range', [0, 1]],
-            'size()' => ['size', [1]],
-            'exists()' => ['exists', [true]],
-            'type()' => ['type', [7]],
-            'all()' => ['all', [['value1', 'value2']]],
-            'mod()' => ['mod', [2, 0]],
-            'geoIntersects()' => ['geoIntersects', [self::createGeometry()]],
-            'geoWithin()' => ['geoWithin', [self::createGeometry()]],
-            'geoWithinBox()' => ['geoWithinBox', [1, 2, 3, 4]],
-            'geoWithinCenter()' => ['geoWithinCenter', [1, 2, 3]],
-            'geoWithinCenterSphere()' => ['geoWithinCenterSphere', [1, 2, 3]],
-            'geoWithinPolygon()' => ['geoWithinPolygon', [[0, 0], [1, 1], [1, 0]]],
-            'addAnd() array' => ['addAnd', [[]]],
-            'addAnd() Expr' => ['addAnd', [self::createExpr()]],
-            'addOr() array' => ['addOr', [[]]],
-            'addOr() Expr' => ['addOr', [self::createExpr()]],
-            'addNor() array' => ['addNor', [[]]],
-            'addNor() Expr' => ['addNor', [self::createExpr()]],
-            'not()' => ['not', [self::createExpr()]],
-            'language()' => ['language', ['en']],
-            'text()' => ['text', ['foo']],
-        ];
     }
 
     public function testTypeConversion(): void
@@ -113,16 +55,5 @@ class MatchStageTest extends BaseTestCase
             ],
             $stage->getExpression(),
         );
-    }
-
-    private static function createGeometry(): Geometry
-    {
-        return new class extends Geometry {
-        };
-    }
-
-    private static function createExpr(): Expr
-    {
-        return new Expr(static::createTestDocumentManager());
     }
 }

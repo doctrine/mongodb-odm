@@ -17,34 +17,16 @@ use MongoDB\Driver\Cursor;
 use function array_merge;
 use function assert;
 
+/** @psalm-import-type PipelineExpression from Builder */
 final class Aggregation implements IteratorAggregate
 {
-    private DocumentManager $dm;
-
-    private ?ClassMetadata $classMetadata;
-
-    private Collection $collection;
-
-    /** @var array<string, mixed> */
-    private array $pipeline;
-
-    /** @var array<string, mixed> */
-    private array $options;
-
-    private bool $rewindable;
-
     /**
      * @param array<string, mixed> $pipeline
      * @param array<string, mixed> $options
+     * @psalm-param PipelineExpression $pipeline
      */
-    public function __construct(DocumentManager $dm, ?ClassMetadata $classMetadata, Collection $collection, array $pipeline, array $options = [], bool $rewindable = true)
+    public function __construct(private DocumentManager $dm, private ?ClassMetadata $classMetadata, private Collection $collection, private array $pipeline, private array $options = [], private bool $rewindable = true)
     {
-        $this->dm            = $dm;
-        $this->classMetadata = $classMetadata;
-        $this->collection    = $collection;
-        $this->pipeline      = $pipeline;
-        $this->options       = $options;
-        $this->rewindable    = $rewindable;
     }
 
     public function getIterator(): Iterator

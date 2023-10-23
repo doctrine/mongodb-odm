@@ -9,18 +9,17 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $skip stage to an aggregation pipeline.
+ *
+ * @psalm-type SkipStageExpression = array{'$skip': int}
  */
 class Skip extends Stage
 {
-    private int $skip;
-
-    public function __construct(Builder $builder, int $skip)
+    public function __construct(Builder $builder, private int $skip)
     {
         parent::__construct($builder);
-
-        $this->skip = $skip;
     }
 
+    /** @return SkipStageExpression */
     public function getExpression(): array
     {
         return [

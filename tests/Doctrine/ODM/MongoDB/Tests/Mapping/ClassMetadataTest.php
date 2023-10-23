@@ -22,13 +22,13 @@ use Documents\Album;
 use Documents\Bars\Bar;
 use Documents\CmsGroup;
 use Documents\CmsUser;
+use Documents\CustomCollection;
 use Documents\CustomRepository\Repository;
 use Documents\SpecialUser;
 use Documents\User;
 use Documents\UserName;
 use Documents\UserRepository;
-use Documents74\CustomCollection;
-use Documents74\UserTyped;
+use Documents\UserTyped;
 use Documents81\Card;
 use Documents81\Suit;
 use Documents81\SuitInt;
@@ -41,7 +41,6 @@ use ReflectionException;
 use stdClass;
 
 use function array_merge;
-use function get_class;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
 use function serialize;
@@ -237,7 +236,7 @@ class ClassMetadataTest extends BaseTestCase
             public $enum;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
@@ -257,7 +256,7 @@ class ClassMetadataTest extends BaseTestCase
             public $enum;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
@@ -435,7 +434,7 @@ class ClassMetadataTest extends BaseTestCase
             public $assocWithDiscriminatorField;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
 
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -713,7 +712,7 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm                     = new ClassMetadata(get_class($object));
+        $cm                     = new ClassMetadata($object::class);
         $cm->isEmbeddedDocument = true;
 
         $this->expectException(MappingException::class);
@@ -733,7 +732,7 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm                     = new ClassMetadata(get_class($object));
+        $cm                     = new ClassMetadata($object::class);
         $cm->isEmbeddedDocument = true;
 
         $mapping = $cm->mapField([
@@ -894,7 +893,7 @@ class ClassMetadataTest extends BaseTestCase
             public $inc;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapField([
             'fieldName' => 'inc',
             'type' => 'int',
@@ -912,7 +911,7 @@ class ClassMetadataTest extends BaseTestCase
             public $collection;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapField([
             'fieldName' => 'collection',
             'type' => 'collection',
@@ -929,7 +928,7 @@ class ClassMetadataTest extends BaseTestCase
             public $embedMany;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
@@ -943,7 +942,7 @@ class ClassMetadataTest extends BaseTestCase
             public $referenceMany;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
@@ -957,7 +956,7 @@ class ClassMetadataTest extends BaseTestCase
             public $contentType;
         };
 
-        $cm         = new ClassMetadata(get_class($object));
+        $cm         = new ClassMetadata($object::class);
         $cm->isFile = true;
 
         $this->expectException(MappingException::class);

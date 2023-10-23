@@ -7,8 +7,6 @@ namespace Doctrine\ODM\MongoDB\Id;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\Operation\FindOneAndUpdate;
 
-use function get_class;
-
 /**
  * IncrementGenerator is responsible for generating auto increment identifiers. It uses
  * a collection and generates the next id by using $inc on a field named "current_id".
@@ -53,7 +51,7 @@ class IncrementGenerator extends AbstractIdGenerator
 
     public function generate(DocumentManager $dm, object $document)
     {
-        $className = get_class($document);
+        $className = $document::class;
         $db        = $dm->getDocumentDatabase($className);
 
         $key            = $this->key ?: $dm->getDocumentCollection($className)->getCollectionName();

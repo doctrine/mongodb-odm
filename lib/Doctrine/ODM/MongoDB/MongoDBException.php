@@ -11,7 +11,6 @@ use Exception;
 
 use function array_slice;
 use function end;
-use function get_class;
 use function implode;
 use function is_array;
 use function is_object;
@@ -84,7 +83,7 @@ class MongoDBException extends Exception
         }
 
         if (is_object($got)) {
-            $gotType = get_class($got);
+            $gotType = $got::class;
         } elseif (is_array($got)) {
             $gotType = 'array';
         } else {

@@ -7,8 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\FriendUser;
 
-use function get_class;
-
 class FlushTest extends BaseTestCase
 {
     /**
@@ -41,7 +39,7 @@ class FlushTest extends BaseTestCase
 
         $this->assertSize(0);
 
-        $userA = $this->dm->find(get_class($userA), $userA->id);
+        $userA = $this->dm->find($userA::class, $userA->id);
 
         // the size is 1. userA is in the uow.
         $this->assertSize(1);

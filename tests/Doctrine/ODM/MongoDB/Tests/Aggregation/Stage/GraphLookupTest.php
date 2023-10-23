@@ -24,7 +24,7 @@ class GraphLookupTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
-    public function testGraphLookupStage(): void
+    public function testStage(): void
     {
         $graphLookupStage = new GraphLookup($this->getTestAggregationBuilder(), 'employees', $this->dm, new ClassMetadata(User::class));
         $graphLookupStage
@@ -48,7 +48,7 @@ class GraphLookupTest extends BaseTestCase
         );
     }
 
-    public function testGraphLookupFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->graphLookup('employees')
@@ -74,7 +74,7 @@ class GraphLookupTest extends BaseTestCase
         );
     }
 
-    public function testGraphLookupWithMatch(): void
+    public function testWithMatch(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->graphLookup('employees')
@@ -152,7 +152,7 @@ class GraphLookupTest extends BaseTestCase
      *
      * @dataProvider provideEmployeeAggregations
      */
-    public function testGraphLookupWithEmployees(Closure $addGraphLookupStage, array $expectedFields): void
+    public function testWithEmployees(Closure $addGraphLookupStage, array $expectedFields): void
     {
         $this->insertEmployeeTestData();
 
@@ -225,7 +225,7 @@ class GraphLookupTest extends BaseTestCase
      *
      * @dataProvider provideTravellerAggregations
      */
-    public function testGraphLookupWithTraveller(Closure $addGraphLookupStage, array $expectedFields): void
+    public function testWithTraveller(Closure $addGraphLookupStage, array $expectedFields): void
     {
         $this->insertTravellerTestData();
 
@@ -251,7 +251,7 @@ class GraphLookupTest extends BaseTestCase
         self::assertCount(3, $result);
     }
 
-    public function testGraphLookupWithUnmappedFields(): void
+    public function testWithUnmappedFields(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 
@@ -278,7 +278,7 @@ class GraphLookupTest extends BaseTestCase
         self::assertEquals($expectedPipeline, $builder->getPipeline());
     }
 
-    public function testGraphLookupWithconnectFromFieldToDifferentTargetClass(): void
+    public function testWithconnectFromFieldToDifferentTargetClass(): void
     {
         $builder = $this->dm->createAggregationBuilder(User::class);
 

@@ -228,7 +228,7 @@ class IdTest extends BaseTestCase
         self::assertNotNull($object->id);
 
         if ($expectedMongoType !== null) {
-            $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
+            $check = $this->dm->getDocumentCollection($object::class)->findOne([]);
             self::assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
         }
 
@@ -236,7 +236,7 @@ class IdTest extends BaseTestCase
             self::assertEquals($expected, $object->id);
         }
 
-        $object = $this->dm->find(get_class($object), $object->id);
+        $object = $this->dm->find($object::class, $object->id);
         self::assertNotNull($object);
 
         if ($expected !== null) {
@@ -247,7 +247,7 @@ class IdTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $object = $this->dm->find(get_class($object), $object->id);
+        $object = $this->dm->find($object::class, $object->id);
         self::assertEquals('changed', $object->test);
     }
 
@@ -320,7 +320,7 @@ class IdTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
+        $check = $this->dm->getDocumentCollection($object::class)->findOne([]);
 
         self::assertEquals(Binary::class, get_class($check['_id']));
         self::assertEquals($expectedMongoBinDataType, $check['_id']->getType());

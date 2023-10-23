@@ -12,7 +12,7 @@ class GeoNearTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
-    public function testGeoNearStage(): void
+    public function testStage(): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
         $geoNearStage
@@ -24,7 +24,7 @@ class GeoNearTest extends BaseTestCase
         self::assertSame(['$geoNear' => $stage], $geoNearStage->getExpression());
     }
 
-    public function testGeoNearFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder

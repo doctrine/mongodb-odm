@@ -12,14 +12,14 @@ class SampleTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
-    public function testSampleStage(): void
+    public function testStage(): void
     {
         $sampleStage = new Sample($this->getTestAggregationBuilder(), 10);
 
         self::assertSame(['$sample' => ['size' => 10]], $sampleStage->getExpression());
     }
 
-    public function testSampleFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sample(10);

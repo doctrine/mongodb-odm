@@ -16,7 +16,6 @@ use Documents\Functional\SameCollection2;
 use MongoDB\BSON\ObjectId;
 
 use function array_keys;
-use function get_class;
 
 class PersistenceBuilderTest extends BaseTestCase
 {
@@ -118,7 +117,7 @@ class PersistenceBuilderTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $article        = $this->dm->getRepository(get_class($article))->find($article->id);
+        $article        = $this->dm->getRepository($article::class)->find($article->id);
         $article->id    = null;
         $article->topic = 'test';
 
@@ -157,7 +156,7 @@ class PersistenceBuilderTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $article          = $this->dm->find(get_class($article), $article->id);
+        $article          = $this->dm->find($article::class, $article->id);
         $comment          = new CmsComment();
         $comment->article = $article;
 
@@ -182,7 +181,7 @@ class PersistenceBuilderTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $article          = $this->dm->find(get_class($article), $article->id);
+        $article          = $this->dm->find($article::class, $article->id);
         $comment          = new CmsComment();
         $comment->topic   = 'test';
         $comment->text    = 'text';

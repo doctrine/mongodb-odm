@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Documents74\GH2310Container;
-use Documents74\GH2310Embedded;
+use Documents\GH2310Container;
+use Documents\GH2310Embedded;
 use MongoDB\BSON\ObjectId;
 
 class GH2310Test extends BaseTestCase

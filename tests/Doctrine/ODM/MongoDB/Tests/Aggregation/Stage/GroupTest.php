@@ -17,60 +17,21 @@ class GroupTest extends BaseTestCase
     use AggregationOperatorsProviderTrait;
 
     /**
-     * @param Closure(Expr): Expr[]|mixed[] $args
+     * @param array<string, string>          $expected
+     * @param mixed[]|Closure(Expr): mixed[] $args
      *
-     * @dataProvider provideProxiedExprMethods
+     * @dataProvider provideGroupAccumulatorExpressionOperators
      */
-    public function testProxiedExprMethods(string $method, $args = []): void
+    public function testGroupAccumulators(array $expected, string $operator, $args): void
     {
-        $args = $this->resolveArgs($args);
+        $groupStage = new Group($this->getTestAggregationBuilder());
+        $args       = $this->resolveArgs($args);
 
-        $expr = $this->getMockAggregationExpr();
-        $expr
-            ->expects($this->once())
-            ->method($method)
-            ->with(...$args);
-
-        $stage = new class ($this->getTestAggregationBuilder()) extends Group {
-            public function setExpr(Expr $expr): void
-            {
-                $this->expr = $expr;
-            }
-        };
-        $stage->setExpr($expr);
-
-        self::assertSame($stage, $stage->$method(...$args));
+        self::assertSame($groupStage, $groupStage->field('foo')->$operator(...$args));
+        self::assertSame(['$group' => ['foo' => $expected]], $groupStage->getExpression());
     }
 
-    public static function provideProxiedExprMethods(): array
-    {
-        return [
-            'addToSet()' => ['addToSet', ['$field']],
-            'avg()' => ['avg', ['$field']],
-            'expression()' => [
-                'expression',
-                static function (Expr $expr) {
-                    $expr
-                    ->field('dayOfMonth')
-                    ->dayOfMonth('$dateField')
-                    ->field('dayOfWeek')
-                    ->dayOfWeek('$dateField');
-
-                    return [$expr];
-                },
-            ],
-            'first()' => ['first', ['$field']],
-            'last()' => ['last', ['$field']],
-            'max()' => ['max', ['$field']],
-            'min()' => ['min', ['$field']],
-            'push()' => ['push', ['$field']],
-            'stdDevPop()' => ['stdDevPop', ['$field']],
-            'stdDevSamp()' => ['stdDevSamp', ['$field']],
-            'sum()' => ['sum', ['$field']],
-        ];
-    }
-
-    public function testGroupStage(): void
+    public function testStage(): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());
         $groupStage
@@ -82,7 +43,7 @@ class GroupTest extends BaseTestCase
         self::assertSame(['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]], $groupStage->getExpression());
     }
 
-    public function testGroupFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder
@@ -95,7 +56,7 @@ class GroupTest extends BaseTestCase
         self::assertSame([['$group' => ['_id' => '$field', 'count' => ['$sum' => 1]]]], $builder->getPipeline());
     }
 
-    public function testGroupWithOperatorInId(): void
+    public function testWithOperatorInId(): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());
         $groupStage
