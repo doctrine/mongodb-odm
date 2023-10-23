@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
@@ -56,9 +56,9 @@ final class SchemaManager
 
     protected DocumentManager $dm;
 
-    protected ClassMetadataFactory $metadataFactory;
+    protected ClassMetadataFactoryInterface $metadataFactory;
 
-    public function __construct(DocumentManager $dm, ClassMetadataFactory $cmf)
+    public function __construct(DocumentManager $dm, ClassMetadataFactoryInterface $cmf)
     {
         $this->dm              = $dm;
         $this->metadataFactory = $cmf;
