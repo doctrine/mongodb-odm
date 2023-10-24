@@ -6,9 +6,9 @@
     xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
     http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd"
 >
-    <document name="Documents81\Card">
+    <document name="Documents\Card">
         <id />
         <field name="suit" />
-        <field name="nullableSuit" type="string" enum-type="Documents81\Suit" nullable="true" />
+        <field name="nullableSuit" type="string" enum-type="Documents\Suit" nullable="true" />
     </document>
 </doctrine-mongo-mapping>
