@@ -90,7 +90,8 @@ final class PersistenceBuilder
             // of duplicated entries stored in the collection
             } elseif (
                 $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && $mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET && ! $new->isEmpty()
+                    && (! $new->isEmpty() || $mapping['storeEmptyArray'])
+                    && ($mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET || $mapping['storeEmptyArray'])
             ) {
                 $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }

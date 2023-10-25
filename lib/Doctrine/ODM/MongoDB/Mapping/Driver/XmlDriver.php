@@ -452,6 +452,7 @@ class XmlDriver extends FileDriver
             'skip'             => isset($attributes['skip']) ? (int) $attributes['skip'] : null,
             'prime'            => [],
             'nullable'         => isset($attributes['nullable']) ? ((string) $attributes['nullable'] === 'true') : false,
+            'storeEmptyArray'  => isset($attributes['store-empty-array']) ? ((string) $attributes['store-empty-array'] === 'true') : false,
         ];
 
         if (isset($attributes['field-name'])) {

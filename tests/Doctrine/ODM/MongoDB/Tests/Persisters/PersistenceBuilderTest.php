@@ -9,8 +9,10 @@ use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use Documents\CmsComment;
+use Documents\Ecommerce\Basket;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Order;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use MongoDB\BSON\ObjectId;
@@ -228,6 +230,8 @@ class PersistenceBuilderTest extends BaseTestCase
         return [
             [new ConfigurableProduct('Test Product'), ['name' => 'Test Product']],
             [new Currency('USD', 1), ['name' => 'USD', 'multiplier' => 1]],
+            [new Order(), ['products' => []]],
+            [new Basket(), []],
         ];
     }
 

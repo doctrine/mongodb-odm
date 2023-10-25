@@ -66,6 +66,9 @@ final class ReferenceMany extends AbstractField
     /** @var string[] */
     public $prime;
 
+    /** @var bool */
+    public $storeEmptyArray;
+
     /**
      * @param array<string, class-string>|null $discriminatorMap
      * @param string[]|string|null             $cascade
@@ -95,6 +98,7 @@ final class ReferenceMany extends AbstractField
         ?int $skip = null,
         ?string $collectionClass = null,
         array $prime = [],
+        bool $storeEmptyArray = false,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
 
@@ -113,5 +117,6 @@ final class ReferenceMany extends AbstractField
         $this->skip                      = $skip;
         $this->collectionClass           = $collectionClass;
         $this->prime                     = $prime;
+        $this->storeEmptyArray           = $storeEmptyArray;
     }
 }

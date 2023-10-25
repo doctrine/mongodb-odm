@@ -43,6 +43,17 @@ class CollectionPersisterTest extends BaseTestCase
         self::assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
+    public function testDeleteReferenceManyWithStoreEmptyArray(): void
+    {
+        $persister = $this->getCollectionPersister();
+        $user      = $this->getTestUser('jwage');
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->roles);
+        $persister->delete($user, [$user->roles], []);
+
+        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+        self::assertSame([], $user['roles'], 'Test that the roles field was stored as empty array');
+    }
+
     public function testDeleteEmbedMany(): void
     {
         $persister = $this->getCollectionPersister();
@@ -52,6 +63,17 @@ class CollectionPersisterTest extends BaseTestCase
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
+    }
+
+    public function testDeleteEmbedManyWithStoreEmptyArray(): void
+    {
+        $persister = $this->getCollectionPersister();
+        $user      = $this->getTestUser('jwage');
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->groups);
+        $persister->delete($user, [$user->groups], []);
+
+        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+        self::assertSame([], $user['groups'], 'Test that the groups field was stored as empty array');
     }
 
     public function testDeleteNestedEmbedMany(): void
@@ -589,11 +611,25 @@ class CollectionPersisterUser
     public $categories = [];
 
     /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterGroup::class, storeEmptyArray=true)
+     *
+     * @var Collection<int, CollectionPersisterGroup>|array<CollectionPersisterGroup>
+     */
+    public $groups = [];
+
+    /**
      * @ODM\ReferenceMany(targetDocument=CollectionPersisterPhonenumber::class, cascade={"persist"})
      *
      * @var Collection<int, CollectionPersisterPhonenumber>|array<CollectionPersisterPhonenumber>
      */
     public $phonenumbers = [];
+
+    /**
+     * @ODM\ReferenceMany(targetDocument=CollectionPersisterRole::class, cascade={"persist"}, storeEmptyArray=true)
+     *
+     * @var Collection<int, CollectionPersisterRole>|array<CollectionPersisterRole>
+     */
+    public $roles = [];
 }
 
 /** @ODM\EmbeddedDocument */
@@ -639,6 +675,52 @@ class CollectionPersisterPhonenumber
     public function __construct(string $phonenumber)
     {
         $this->phonenumber = $phonenumber;
+    }
+}
+
+/** @ODM\Document(collection="role_collection_persister_test") */
+class CollectionPersisterRole
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
+    public $role;
+
+    public function __construct(string $role)
+    {
+        $this->role = $role;
+    }
+}
+
+/** @ODM\Document(collection="group_collection_persister_test") */
+class CollectionPersisterGroup
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
+    public $group;
+
+    public function __construct(string $group)
+    {
+        $this->group = $group;
     }
 }
 

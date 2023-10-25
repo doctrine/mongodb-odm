@@ -55,7 +55,7 @@ final class CollectionPersister
      */
     public function delete(object $parent, array $collections, array $options): void
     {
-        $unsetPathsMap = [];
+        $unsetPathsMap = $storeEmptyArray = [];
 
         foreach ($collections as $collection) {
             $mapping = $collection->getMapping();
@@ -67,19 +67,35 @@ final class CollectionPersister
                 throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
 
-            [$propertyPath]               = $this->getPathAndParent($collection);
+            [$propertyPath] = $this->getPathAndParent($collection);
+
+            if ($mapping['storeEmptyArray']) {
+                $storeEmptyArray[$propertyPath] = [];
+
+                continue;
+            }
+
             $unsetPathsMap[$propertyPath] = true;
         }
 
-        if (empty($unsetPathsMap)) {
+        if (empty($unsetPathsMap) && empty($storeEmptyArray)) {
             return;
         }
 
         /** @var string[] $unsetPaths */
         $unsetPaths = array_keys($unsetPathsMap);
 
+        $query      = [];
         $unsetPaths = array_fill_keys($this->excludeSubPaths($unsetPaths), true);
-        $query      = ['$unset' => $unsetPaths];
+
+        if ($unsetPathsMap) {
+            $query['$unset'] = $unsetPaths;
+        }
+
+        if ($storeEmptyArray) {
+            $query['$set'] = $storeEmptyArray;
+        }
+
         $this->executeQuery($parent, $query, $options);
     }
 
