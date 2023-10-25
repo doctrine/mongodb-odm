@@ -434,3 +434,39 @@ from the database.
 .. _`DBRef`: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>
+
+.. _store_empty_array:
+
+Storing Empty Arrays
+---------------------
+
+By default, when a collection property is empty, Doctrine does not store any data for it in the database.
+However, in some cases, you may want to explicitly store an empty array for such properties.
+You can achieve this behavior by using the `storeEmptyArray` option.
+
+.. configuration-block::
+
+    .. code-block:: php
+        <?php
+        /** @Document */
+        class User
+        {
+            // ...
+            /**
+             * @ReferenceMany(targetDocument=Account::class, storeEmptyArray=true)
+             */
+            private $accounts = [];
+            // ...
+        }
+    .. code-block:: xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+          <document name="Documents\User">
+                <reference-many field="accounts" target-document="Documents\Account" store-empty-array="true" />
+          </document>
+        </doctrine-mongo-mapping>
+Now, when the `$accounts` collection is empty, an empty array will be stored in the database for the `User` document,
+even if there are no actual referenced documents.

@@ -8,7 +8,7 @@
     <document name="TestDocuments\PrimedCollectionDocument" collection="primed_collection">
         <id />
 
-        <reference-many target-document="TestDocuments\PrimedCollectionDocument" field="references" />
+        <reference-many target-document="TestDocuments\PrimedCollectionDocument" field="references" store-empty-array="true" />
         <reference-many target-document="TestDocuments\PrimedCollectionDocument" field="inverseMappedBy" mapped-by="references">
             <prime>
                 <field name="references" />

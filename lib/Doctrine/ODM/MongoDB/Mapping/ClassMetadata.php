@@ -151,6 +151,7 @@ use const PHP_VERSION_ID;
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
  *      enumType?: class-string<BackedEnum>,
+ *      storeEmptyArray?: bool,
  * }
  * @psalm-type AssociationFieldMapping = array{
  *      type?: string,
@@ -195,6 +196,7 @@ use const PHP_VERSION_ID;
  *      index?: bool,
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
+ *      storeEmptyArray?: bool,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
  * @psalm-type IndexOptions = array{
