@@ -31,12 +31,6 @@
             </errorLevel>
         </UndefinedConstant>
 
-        <UndefinedAttributeClass>
-            <errorLevel type="suppress">
-                <!-- Remove it when using PHP 8.1 for running Psalm -->
-                <referencedClass name="ReturnTypeWillChange" />
-            </errorLevel>
-        </UndefinedAttributeClass>
         <InvalidReturnType>
             <errorLevel type="suppress">
                 <!-- Remove it when dropping support for doctrine/collections v1 -->
