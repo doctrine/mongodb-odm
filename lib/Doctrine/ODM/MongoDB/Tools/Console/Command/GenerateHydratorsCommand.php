@@ -6,9 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
-use Symfony\Component\Console;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function assert;
 use function count;
@@ -25,13 +27,11 @@ use const PHP_EOL;
 /**
  * Command to (re)generate the hydrator classes used by doctrine.
  */
-class GenerateHydratorsCommand extends Console\Command\Command
+class GenerateHydratorsCommand extends Command
 {
-    /**
-     * @see Console\Command\Command
-     *
-     * @return void
-     */
+    use CommandCompatibility;
+
+    /** @return void */
     protected function configure()
     {
         $this
@@ -56,8 +56,7 @@ EOT
         );
     }
 
-    /** @return int */
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $filter = $input->getOption('filter');
         assert(is_array($filter));

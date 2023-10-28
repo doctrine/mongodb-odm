@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,11 +20,9 @@ use const PHP_EOL;
  */
 class MetadataCommand extends Command
 {
-    /**
-     * @see \Symfony\Component\Console\Command\Command
-     *
-     * @return void
-     */
+    use CommandCompatibility;
+
+    /** @return void */
     protected function configure()
     {
         $this
@@ -36,8 +35,7 @@ EOT
         );
     }
 
-    /** @return int */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);

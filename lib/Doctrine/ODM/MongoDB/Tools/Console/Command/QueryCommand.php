@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use LogicException;
-use Symfony\Component\Console;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
 
@@ -21,13 +23,11 @@ use const JSON_THROW_ON_ERROR;
 /**
  * Command to query mongodb and inspect the outputted results from your document classes.
  */
-class QueryCommand extends Console\Command\Command
+class QueryCommand extends Command
 {
-    /**
-     * @see Console\Command\Command
-     *
-     * @return void
-     */
+    use CommandCompatibility;
+
+    /** @return void */
     protected function configure()
     {
         $this
@@ -69,8 +69,7 @@ EOT
         );
     }
 
-    /** @return int */
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $query = $input->getArgument('query');
         assert(is_string($query));

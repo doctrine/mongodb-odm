@@ -209,6 +209,11 @@
       <code>getDocumentManager</code>
     </UndefinedInterfaceMethod>
   </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/CommandCompatibility.php">
+    <DuplicateClass>
+      <code>CommandCompatibility</code>
+    </DuplicateClass>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateHydratorsCommand.php">
     <UndefinedInterfaceMethod>
       <code>getDocumentManager</code>
@@ -238,6 +243,11 @@
     <UndefinedInterfaceMethod>
       <code>getDocumentManager</code>
     </UndefinedInterfaceMethod>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Helper/DocumentManagerHelper.php">
+    <DuplicateClass>
+      <code>DocumentManagerHelperCompatibility</code>
+    </DuplicateClass>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/MetadataFilter.php">
     <MissingTemplateParam>
