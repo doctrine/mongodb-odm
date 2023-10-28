@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
+use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,6 +19,8 @@ use function ucfirst;
 
 class DropCommand extends AbstractCommand
 {
+    use CommandCompatibility;
+
     /** @var string[] */
     private array $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
 
@@ -35,8 +38,7 @@ class DropCommand extends AbstractCommand
             ->setDescription('Drop databases, collections and indexes for your documents');
     }
 
-    /** @return int */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $drop = array_filter($this->dropOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 

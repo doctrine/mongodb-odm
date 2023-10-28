@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,6 +18,8 @@ use function sprintf;
 
 class ShardCommand extends AbstractCommand
 {
+    use CommandCompatibility;
+
     /** @return void */
     protected function configure()
     {
@@ -28,8 +31,7 @@ class ShardCommand extends AbstractCommand
             ->setDescription('Enable sharding for selected documents');
     }
 
-    /** @return int */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $class = $input->getOption('class');
 

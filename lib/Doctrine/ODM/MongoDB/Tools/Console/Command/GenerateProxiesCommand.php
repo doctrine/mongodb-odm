@@ -9,8 +9,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tools\Console\MetadataFilter;
 use InvalidArgumentException;
-use Symfony\Component\Console;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_filter;
 use function assert;
@@ -29,13 +31,11 @@ use const PHP_EOL;
 /**
  * Command to (re)generate the proxy classes used by doctrine.
  */
-class GenerateProxiesCommand extends Console\Command\Command
+class GenerateProxiesCommand extends Command
 {
-    /**
-     * @see Console\Command\Command
-     *
-     * @return void
-     */
+    use CommandCompatibility;
+
+    /** @return void */
     protected function configure()
     {
         $this
@@ -55,8 +55,7 @@ EOT
         );
     }
 
-    /** @return int */
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $filter = $input->getOption('filter');
         assert(is_array($filter));

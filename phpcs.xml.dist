@@ -60,10 +60,13 @@
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>lib/Doctrine/ODM/MongoDB/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Command/CommandCompatibility.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Helper/DocumentManagerHelper.php</exclude-pattern>
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Helper/DocumentManagerHelper.php</exclude-pattern>
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 

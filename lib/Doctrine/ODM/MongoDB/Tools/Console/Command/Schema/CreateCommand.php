@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,6 +20,8 @@ use function ucfirst;
 
 class CreateCommand extends AbstractCommand
 {
+    use CommandCompatibility;
+
     /** @var string[] */
     private array $createOrder = [self::COLLECTION, self::INDEX];
 
@@ -36,8 +39,7 @@ class CreateCommand extends AbstractCommand
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
-    /** @return int */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    private function doExecute(InputInterface $input, OutputInterface $output): int
     {
         $create = array_filter($this->createOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 
