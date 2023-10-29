@@ -32,6 +32,7 @@ use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use stdClass;
 
@@ -129,7 +130,7 @@ class DocumentManagerTest extends BaseTestCase
         ];
     }
 
-    /** @dataProvider dataMethodsAffectedByNoObjectArguments */
+    #[DataProvider('dataMethodsAffectedByNoObjectArguments')]
     public function testThrowsExceptionOnNonObjectValues(string $methodName): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -147,7 +148,7 @@ class DocumentManagerTest extends BaseTestCase
         ];
     }
 
-    /** @dataProvider dataAffectedByErrorIfClosedException */
+    #[DataProvider('dataAffectedByErrorIfClosedException')]
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(MongoDBException::class);

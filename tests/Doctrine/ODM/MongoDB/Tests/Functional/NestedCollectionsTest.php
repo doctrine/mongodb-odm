@@ -10,10 +10,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonebook;
 use Documents\Phonenumber;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class NestedCollectionsTest extends BaseTestCase
 {
-    /** @dataProvider provideStrategy */
+    #[DataProvider('provideStrategy')]
     public function testStrategy(string $field): void
     {
         $doc         = new DocWithNestedCollections();

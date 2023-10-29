@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_merge;
 
@@ -73,10 +74,8 @@ class SetWindowFieldsTest extends BaseTestCase
         );
     }
 
-    /**
-     * @dataProvider provideGroupAccumulatorExpressionOperators
-     * @dataProvider provideWindowExpressionOperators
-     */
+    #[DataProvider('provideGroupAccumulatorExpressionOperators')]
+    #[DataProvider('provideWindowExpressionOperators')]
     public function testOperators(array $expected, string $operator, $args): void
     {
         $args = $this->resolveArgs($args);

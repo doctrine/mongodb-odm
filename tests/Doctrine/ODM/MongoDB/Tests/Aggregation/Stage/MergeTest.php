@@ -10,6 +10,7 @@ use Documents\SimpleReferenceUser;
 use Documents\User;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function is_callable;
 
@@ -80,11 +81,8 @@ class MergeTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param array<array<string, mixed>>|callable $pipeline
-     *
-     * @dataProvider providePipeline
-     */
+    /** @param array<array<string, mixed>>|callable $pipeline */
+    #[DataProvider('providePipeline')]
     public function testStageWithPipeline($pipeline): void
     {
         if (is_callable($pipeline)) {

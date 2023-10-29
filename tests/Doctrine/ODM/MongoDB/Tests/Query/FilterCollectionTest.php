@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Query\Filter\BsonFilter;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Depends;
 
 class FilterCollectionTest extends BaseTestCase
 {
@@ -35,7 +36,7 @@ class FilterCollectionTest extends BaseTestCase
         self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
-    /** @depends testEnable */
+    #[Depends('testEnable')]
     public function testIsEnabled(): void
     {
         $filterCollection = $this->dm->getFilterCollection();

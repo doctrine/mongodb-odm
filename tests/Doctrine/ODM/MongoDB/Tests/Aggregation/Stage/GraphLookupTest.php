@@ -16,6 +16,7 @@ use Documents\GraphLookup\Employee;
 use Documents\GraphLookup\ReportingHierarchy;
 use Documents\GraphLookup\Traveller;
 use Documents\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_merge;
 use function count;
@@ -149,9 +150,8 @@ class GraphLookupTest extends BaseTestCase
     /**
      * @param Closure(Builder): GraphLookup $addGraphLookupStage
      * @param array<string, string>         $expectedFields
-     *
-     * @dataProvider provideEmployeeAggregations
      */
+    #[DataProvider('provideEmployeeAggregations')]
     public function testWithEmployees(Closure $addGraphLookupStage, array $expectedFields): void
     {
         $this->insertEmployeeTestData();
@@ -222,9 +222,8 @@ class GraphLookupTest extends BaseTestCase
     /**
      * @param Closure(Builder): GraphLookup $addGraphLookupStage
      * @param array<string, string>         $expectedFields
-     *
-     * @dataProvider provideTravellerAggregations
      */
+    #[DataProvider('provideTravellerAggregations')]
     public function testWithTraveller(Closure $addGraphLookupStage, array $expectedFields): void
     {
         $this->insertTravellerTestData();

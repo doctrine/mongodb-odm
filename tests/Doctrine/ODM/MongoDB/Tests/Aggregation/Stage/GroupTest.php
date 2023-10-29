@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Group;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GroupTest extends BaseTestCase
 {
@@ -19,9 +20,8 @@ class GroupTest extends BaseTestCase
     /**
      * @param array<string, string>          $expected
      * @param mixed[]|Closure(Expr): mixed[] $args
-     *
-     * @dataProvider provideGroupAccumulatorExpressionOperators
      */
+    #[DataProvider('provideGroupAccumulatorExpressionOperators')]
     public function testGroupAccumulators(array $expected, string $operator, $args): void
     {
         $groupStage = new Group($this->getTestAggregationBuilder());

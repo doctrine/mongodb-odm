@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
@@ -135,9 +136,8 @@ class PersistentCollectionTest extends BaseTestCase
     /**
      * @param stdClass[] $expected
      * @param stdClass[] $snapshot
-     *
-     * @dataProvider dataGetDeletedDocuments
      */
+    #[DataProvider('dataGetDeletedDocuments')]
     public function testGetDeletedDocuments(array $expected, array $snapshot, Closure $callback): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);
@@ -209,9 +209,8 @@ class PersistentCollectionTest extends BaseTestCase
     /**
      * @param stdClass[] $expected
      * @param stdClass[] $snapshot
-     *
-     * @dataProvider dataGetInsertedDocuments
      */
+    #[DataProvider('dataGetInsertedDocuments')]
     public function testGetInsertedDocuments(array $expected, array $snapshot, Closure $callback): void
     {
         $collection = new PersistentCollection(new ArrayCollection(), $this->dm, $this->uow);

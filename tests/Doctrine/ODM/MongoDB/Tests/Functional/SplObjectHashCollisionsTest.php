@@ -8,15 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionObject;
 
 class SplObjectHashCollisionsTest extends BaseTestCase
 {
-    /**
-     * @param callable(DocumentManager, object=): void $f
-     *
-     * @dataProvider provideParentAssociationsIsCleared
-     */
+    /** @param callable(DocumentManager, object=): void $f */
+    #[DataProvider('provideParentAssociationsIsCleared')]
     public function testParentAssociationsIsCleared(callable $f): void
     {
         $d         = new SplColDoc();
@@ -32,11 +30,8 @@ class SplObjectHashCollisionsTest extends BaseTestCase
         $this->expectCount('embeddedDocumentsRegistry', 0);
     }
 
-    /**
-     * @param callable(DocumentManager, object=): void $f
-     *
-     * @dataProvider provideParentAssociationsIsCleared
-     */
+    /** @param callable(DocumentManager, object=): void $f */
+    #[DataProvider('provideParentAssociationsIsCleared')]
     public function testParentAssociationsLeftover(callable $f, int $leftover): void
     {
         $d         = new SplColDoc();

@@ -35,6 +35,7 @@ use Documents\UserRepository;
 use Documents\UserTyped;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -382,11 +383,8 @@ class ClassMetadataTest extends BaseTestCase
         $cm->mapField(['fieldName' => 'namee', 'type' => 'string']);
     }
 
-    /**
-     * @param ClassMetadata<CmsUser> $cm
-     *
-     * @dataProvider dataProviderMetadataClasses
-     */
+    /** @param ClassMetadata<CmsUser> $cm */
+    #[DataProvider('dataProviderMetadataClasses')]
     public function testEmbeddedDocumentWithDiscriminator(ClassMetadata $cm): void
     {
         $cm->setDiscriminatorField('discriminator');
@@ -655,11 +653,8 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
-     */
+    /** @param mixed $value */
+    #[DataProvider('provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort')]
     public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, $value): void
     {
         $cm = new ClassMetadata('stdClass');
@@ -738,11 +733,8 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(CollectionHelper::DEFAULT_STRATEGY, $mapping['strategy']);
     }
 
-    /**
-     * @param array<string, mixed> $config
-     *
-     * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
-     */
+    /** @param array<string, mixed> $config */
+    #[DataProvider('provideOwningAndInversedRefsNeedTargetDocument')]
     public function testOwningAndInversedRefsNeedTargetDocument(array $config): void
     {
         $config = array_merge($config, [

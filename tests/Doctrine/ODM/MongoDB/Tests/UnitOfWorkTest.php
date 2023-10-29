@@ -24,6 +24,8 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Throwable;
 
@@ -155,7 +157,7 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testPreUpdateTriggeredWithEmptyChangeset(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
@@ -248,9 +250,8 @@ class UnitOfWorkTest extends BaseTestCase
     /**
      * @param array<string, mixed>|null $origData
      * @param array<string, mixed>|null $updateData
-     *
-     * @dataProvider getScheduleForUpdateWithArraysTests
      */
+    #[DataProvider('getScheduleForUpdateWithArraysTests')]
     public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
     {
         $arrayTest = new ArrayTest($origData);

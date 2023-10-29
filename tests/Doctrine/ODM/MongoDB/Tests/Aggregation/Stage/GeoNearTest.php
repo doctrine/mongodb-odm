@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class GeoNearTest extends BaseTestCase
 {
@@ -37,11 +38,8 @@ class GeoNearTest extends BaseTestCase
         self::assertSame([['$geoNear' => $stage]], $builder->getPipeline());
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider provideOptionalSettings
-     */
+    /** @param mixed $value */
+    #[DataProvider('provideOptionalSettings')]
     public function testOptionalSettings(string $field, $value): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);

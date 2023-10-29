@@ -7,10 +7,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BinDataTest extends BaseTestCase
 {
-    /** @dataProvider provideData */
+    #[DataProvider('provideData')]
     public function testBinData(string $field, string $data, int $type): void
     {
         $test         = new BinDataTestUser();

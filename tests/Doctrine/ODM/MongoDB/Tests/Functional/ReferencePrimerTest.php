@@ -32,6 +32,7 @@ use Documents\SimpleReferenceUser;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\Driver\ReadPreference;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 use function assert;
@@ -69,7 +70,7 @@ class ReferencePrimerTest extends BaseTestCase
             ->toArray();
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testFieldPrimingCanBeToggled(): void
     {
         $this->dm->createQueryBuilder(User::class)

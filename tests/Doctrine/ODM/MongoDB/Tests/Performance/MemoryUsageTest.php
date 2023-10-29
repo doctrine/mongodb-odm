@@ -7,6 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Performance;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Group;
 
 use function current;
 use function end;
@@ -19,14 +21,13 @@ use function sprintf;
 
 use const PHP_EOL;
 
-/** @group performance */
+#[Group('performance')]
 class MemoryUsageTest extends BaseTestCase
 {
     /**
      * [jwage: Memory increased by 14.09 kb]
-     *
-     * @doesNotPerformAssertions
      */
+    #[DoesNotPerformAssertions]
     public function testMemoryUsage(): void
     {
         $memoryUsage = [];

@@ -9,16 +9,14 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function get_class;
 
 class GH560Test extends BaseTestCase
 {
-    /**
-     * @param int|string $id
-     *
-     * @dataProvider provideDocumentIds
-     */
+    /** @param int|string $id */
+    #[DataProvider('provideDocumentIds')]
     public function testPersistListenersAreCalled($id): void
     {
         $listener = new GH560EventSubscriber([
@@ -41,11 +39,8 @@ class GH560Test extends BaseTestCase
         self::assertEquals($called, $listener->called);
     }
 
-    /**
-     * @param int|string $id
-     *
-     * @dataProvider provideDocumentIds
-     */
+    /** @param int|string $id */
+    #[DataProvider('provideDocumentIds')]
     public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id): void
     {
         $doc = new GH560Document($id, 'test');
@@ -57,11 +52,8 @@ class GH560Test extends BaseTestCase
         self::assertEquals($id, $doc->id);
     }
 
-    /**
-     * @param int|string $id
-     *
-     * @dataProvider provideDocumentIds
-     */
+    /** @param int|string $id */
+    #[DataProvider('provideDocumentIds')]
     public function testUpdateListenersAreCalled($id): void
     {
         $listener = new GH560EventSubscriber([

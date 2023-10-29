@@ -16,6 +16,7 @@ use Documents\Ecommerce\Order;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_keys;
 
@@ -207,11 +208,8 @@ class PersistenceBuilderTest extends BaseTestCase
         self::assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }
 
-    /**
-     * @param array<string, mixed> $expectedData
-     *
-     * @dataProvider getDocumentsAndExpectedData
-     */
+    /** @param array<string, mixed> $expectedData */
+    #[DataProvider('getDocumentsAndExpectedData')]
     public function testPrepareInsertData(object $document, array $expectedData): void
     {
         $this->dm->persist($document);

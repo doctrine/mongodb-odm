@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OperatorTest extends BaseTestCase
 {
@@ -20,23 +21,22 @@ class OperatorTest extends BaseTestCase
     /**
      * @param array<string, mixed>           $expected
      * @param mixed[]|Closure(Expr): mixed[] $args
-     *
-     * @dataProvider provideAccumulatorExpressionOperators
-     * @dataProvider provideArithmeticExpressionOperators
-     * @dataProvider provideArrayExpressionOperators
-     * @dataProvider provideBooleanExpressionOperators
-     * @dataProvider provideComparisonExpressionOperators
-     * @dataProvider provideConditionalExpressionOperators
-     * @dataProvider provideDataSizeExpressionOperators
-     * @dataProvider provideDateExpressionOperators
-     * @dataProvider provideMiscExpressionOperators
-     * @dataProvider provideObjectExpressionOperators
-     * @dataProvider provideSetExpressionOperators
-     * @dataProvider provideStringExpressionOperators
-     * @dataProvider provideTimestampExpressionOperators
-     * @dataProvider provideTrigonometryExpressionOperators
-     * @dataProvider provideTypeExpressionOperators
      */
+    #[DataProvider('provideAccumulatorExpressionOperators')]
+    #[DataProvider('provideArithmeticExpressionOperators')]
+    #[DataProvider('provideArrayExpressionOperators')]
+    #[DataProvider('provideBooleanExpressionOperators')]
+    #[DataProvider('provideComparisonExpressionOperators')]
+    #[DataProvider('provideConditionalExpressionOperators')]
+    #[DataProvider('provideDataSizeExpressionOperators')]
+    #[DataProvider('provideDateExpressionOperators')]
+    #[DataProvider('provideMiscExpressionOperators')]
+    #[DataProvider('provideObjectExpressionOperators')]
+    #[DataProvider('provideSetExpressionOperators')]
+    #[DataProvider('provideStringExpressionOperators')]
+    #[DataProvider('provideTimestampExpressionOperators')]
+    #[DataProvider('provideTrigonometryExpressionOperators')]
+    #[DataProvider('provideTypeExpressionOperators')]
     public function testProxiedExpressionOperators(array $expected, string $operator, $args): void
     {
         $stage = $this->getStubStage();

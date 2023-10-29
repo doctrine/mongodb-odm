@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function time;
 
@@ -39,9 +40,8 @@ class DateTest extends BaseTestCase
     /**
      * @param DateTime|UTCDateTime $oldValue
      * @param DateTime|UTCDateTime $newValue
-     *
-     * @dataProvider provideEquivalentDates
      */
+    #[DataProvider('provideEquivalentDates')]
     public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue): void
     {
         $user = new User();

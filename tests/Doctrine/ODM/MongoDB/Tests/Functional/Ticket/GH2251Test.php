@@ -7,13 +7,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\TestWith;
 
 class GH2251Test extends BaseTestCase
 {
-    /**
-     * @testWith ["groups"]
-     *           ["groupsSimple"]
-     */
+    #[TestWith(['groups'])]
+    #[TestWith(['groupsSimple'])]
     public function testElemMatchQuery(string $fieldName): void
     {
         $builder = $this->dm->createQueryBuilder(User::class);
