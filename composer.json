@@ -39,13 +39,12 @@
     },
     "require-dev": {
         "ext-bcmath": "*",
-        "doctrine/coding-standard": "^11.0",
+        "doctrine/coding-standard": "^12.0",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.0.0@dev",
         "phpstan/phpstan": "^1.10.11",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5.5 || ^10.0.15",
-        "squizlabs/php_codesniffer": "^3.5",
         "symfony/cache": "^4.4 || ^5.0 || ^6.0",
         "vimeo/psalm": "^5.9.0"
     },
