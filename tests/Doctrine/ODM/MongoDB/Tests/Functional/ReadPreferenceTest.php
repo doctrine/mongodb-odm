@@ -12,6 +12,7 @@ use Documents\Group;
 use Documents\User;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /** @psalm-type ReadPreferenceTagShape = array{dc?: string, usage?: string} */
 class ReadPreferenceTest extends BaseTestCase
@@ -43,11 +44,8 @@ class ReadPreferenceTest extends BaseTestCase
         self::assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $groups->getHints());
     }
 
-    /**
-     * @psalm-param ReadPreferenceTagShape[] $tags
-     *
-     * @dataProvider provideReadPreferenceHints
-     */
+    /** @psalm-param ReadPreferenceTagShape[] $tags */
+    #[DataProvider('provideReadPreferenceHints')]
     public function testHintIsSetOnQuery(int $readPreference, array $tags = []): void
     {
         $this->skipTestIfSharded(User::class);

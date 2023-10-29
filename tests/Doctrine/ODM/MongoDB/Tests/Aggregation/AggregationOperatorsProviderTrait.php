@@ -1446,7 +1446,7 @@ trait AggregationOperatorsProviderTrait
         ];
     }
 
-    public function provideWindowExpressionOperators(): Generator
+    public static function provideWindowExpressionOperators(): Generator
     {
         yield 'covariancePop' => [
             'expected' => ['$covariancePop' => ['$field1', '$field2']],

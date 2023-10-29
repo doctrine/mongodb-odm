@@ -13,6 +13,7 @@ use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Timestamp;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function md5;
 use function str_pad;
@@ -23,11 +24,8 @@ use const STR_PAD_LEFT;
 
 class TypeTest extends BaseTestCase
 {
-    /**
-     * @param mixed $test
-     *
-     * @dataProvider provideTypes
-     */
+    /** @param mixed $test */
+    #[DataProvider('provideTypes')]
     public function testConversion(Type $type, $test): void
     {
         self::assertEquals($test, $type->convertToPHPValue($type->convertToDatabaseValue($test)));
@@ -63,11 +61,8 @@ class TypeTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param mixed $test
-     *
-     * @dataProvider provideTypesForIdempotent
-     */
+    /** @param mixed $test */
+    #[DataProvider('provideTypesForIdempotent')]
     public function testConversionIsIdempotent(Type $type, $test): void
     {
         self::assertEquals($test, $type->convertToDatabaseValue($test));

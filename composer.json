@@ -44,7 +44,7 @@
         "phpbench/phpbench": "^1.0.0",
         "phpstan/phpstan": "^1.10.11",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": "^9.6 || ^10.0.15",
+        "phpunit/phpunit": "^10.4",
         "squizlabs/php_codesniffer": "^3.5",
         "symfony/cache": "^5.4 || ^6.0 || ^7.0",
         "vimeo/psalm": "^5.9.0"

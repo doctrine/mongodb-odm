@@ -20,6 +20,7 @@ use InvalidArgumentException;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function time;
 
@@ -284,7 +285,7 @@ class LockTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testLockVersionedDocument(): void
     {
         $article        = new LockInt();

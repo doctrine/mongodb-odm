@@ -18,6 +18,7 @@ use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function array_values;
 use function assert;
@@ -532,9 +533,8 @@ class QueryTest extends BaseTestCase
 
     /**
      * Checks that the query class runs a ReplaceOne operation internally
-     *
-     * @doesNotPerformAssertions
      */
+    #[DoesNotPerformAssertions]
     public function testReplaceDocumentRunsReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)
@@ -563,7 +563,7 @@ class QueryTest extends BaseTestCase
             ->execute();
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testFindAndReplaceDocumentRunsFindAndReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)

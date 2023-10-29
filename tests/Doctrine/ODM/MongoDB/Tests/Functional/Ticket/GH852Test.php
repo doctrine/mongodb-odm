@@ -12,11 +12,12 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH852Test extends BaseTestCase
 {
-    /** @dataProvider provideIdGenerators */
+    #[DataProvider('provideIdGenerators')]
     public function testA(Closure $idGenerator): void
     {
         $parent       = new GH852Document();

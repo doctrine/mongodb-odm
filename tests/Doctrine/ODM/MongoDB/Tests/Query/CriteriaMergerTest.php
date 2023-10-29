@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function call_user_func_array;
@@ -14,9 +15,8 @@ class CriteriaMergerTest extends TestCase
     /**
      * @param array<array<string, mixed>> $args
      * @param array<string, mixed>        $merged
-     *
-     * @dataProvider provideMerge
      */
+    #[DataProvider('provideMerge')]
     public function testMerge(array $args, array $merged): void
     {
         self::assertSame($merged, call_user_func_array([new CriteriaMerger(), 'merge'], $args));

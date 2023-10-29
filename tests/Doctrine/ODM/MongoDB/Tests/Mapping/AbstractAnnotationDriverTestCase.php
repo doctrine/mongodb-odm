@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Documents\CmsUser;
 use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
 
 abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTestCase
@@ -152,7 +153,7 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         self::assertNull($cm->writeConcern);
     }
 
-    /** @dataProvider provideClassCanBeMappedByOneAbstractDocument */
+    #[DataProvider('provideClassCanBeMappedByOneAbstractDocument')]
     public function testClassCanBeMappedByOneAbstractDocument(object $wrong, string $messageRegExp): void
     {
         $this->expectException(MappingException::class);

@@ -14,6 +14,7 @@ use Generator;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Constraint\IsInstanceOf;
 
 use function array_combine;
@@ -1126,24 +1127,22 @@ class SearchTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @dataProvider provideAutocompleteBuilders
-     * @dataProvider provideCompoundBuilders
-     * @dataProvider provideEmbeddedDocumentBuilders
-     * @dataProvider provideEmbeddedDocumentCompoundBuilders
-     * @dataProvider provideEqualsBuilders
-     * @dataProvider provideExistsBuilders
-     * @dataProvider provideGeoShapeBuilders
-     * @dataProvider provideGeoWithinBuilders
-     * @dataProvider provideMoreLikeThisBuilders
-     * @dataProvider provideNearBuilders
-     * @dataProvider providePhraseBuilders
-     * @dataProvider provideQueryStringBuilders
-     * @dataProvider provideRangeBuilders
-     * @dataProvider provideRegexBuilders
-     * @dataProvider provideTextBuilders
-     * @dataProvider provideWildcardBuilders
-     */
+    #[DataProvider('provideAutocompleteBuilders')]
+    #[DataProvider('provideCompoundBuilders')]
+    #[DataProvider('provideEmbeddedDocumentBuilders')]
+    #[DataProvider('provideEmbeddedDocumentCompoundBuilders')]
+    #[DataProvider('provideEqualsBuilders')]
+    #[DataProvider('provideExistsBuilders')]
+    #[DataProvider('provideGeoShapeBuilders')]
+    #[DataProvider('provideGeoWithinBuilders')]
+    #[DataProvider('provideMoreLikeThisBuilders')]
+    #[DataProvider('provideNearBuilders')]
+    #[DataProvider('providePhraseBuilders')]
+    #[DataProvider('provideQueryStringBuilders')]
+    #[DataProvider('provideRangeBuilders')]
+    #[DataProvider('provideRegexBuilders')]
+    #[DataProvider('provideTextBuilders')]
+    #[DataProvider('provideWildcardBuilders')]
     public function testSearchOperators(array $expectedOperator, Closure $createOperator): void
     {
         $baseExpected = [
@@ -1182,22 +1181,20 @@ class SearchTest extends BaseTestCase
         );
     }
 
-    /**
-     * @dataProvider provideAutocompleteBuilders
-     * @dataProvider provideEmbeddedDocumentBuilders
-     * @dataProvider provideEqualsBuilders
-     * @dataProvider provideExistsBuilders
-     * @dataProvider provideGeoShapeBuilders
-     * @dataProvider provideGeoWithinBuilders
-     * @dataProvider provideMoreLikeThisBuilders
-     * @dataProvider provideNearBuilders
-     * @dataProvider providePhraseBuilders
-     * @dataProvider provideQueryStringBuilders
-     * @dataProvider provideRangeBuilders
-     * @dataProvider provideRegexBuilders
-     * @dataProvider provideTextBuilders
-     * @dataProvider provideWildcardBuilders
-     */
+    #[DataProvider('provideAutocompleteBuilders')]
+    #[DataProvider('provideEmbeddedDocumentBuilders')]
+    #[DataProvider('provideEqualsBuilders')]
+    #[DataProvider('provideExistsBuilders')]
+    #[DataProvider('provideGeoShapeBuilders')]
+    #[DataProvider('provideGeoWithinBuilders')]
+    #[DataProvider('provideMoreLikeThisBuilders')]
+    #[DataProvider('provideNearBuilders')]
+    #[DataProvider('providePhraseBuilders')]
+    #[DataProvider('provideQueryStringBuilders')]
+    #[DataProvider('provideRangeBuilders')]
+    #[DataProvider('provideRegexBuilders')]
+    #[DataProvider('provideTextBuilders')]
+    #[DataProvider('provideWildcardBuilders')]
     public function testSearchCompoundOperators(array $expectedOperator, Closure $createOperator): void
     {
         $searchStage = new Search($this->getTestAggregationBuilder());
@@ -1233,22 +1230,20 @@ class SearchTest extends BaseTestCase
         );
     }
 
-    /**
-     * @dataProvider provideAutocompleteBuilders
-     * @dataProvider provideCompoundBuilders
-     * @dataProvider provideEqualsBuilders
-     * @dataProvider provideExistsBuilders
-     * @dataProvider provideGeoShapeBuilders
-     * @dataProvider provideGeoWithinBuilders
-     * @dataProvider provideMoreLikeThisBuilders
-     * @dataProvider provideNearBuilders
-     * @dataProvider providePhraseBuilders
-     * @dataProvider provideQueryStringBuilders
-     * @dataProvider provideRangeBuilders
-     * @dataProvider provideRegexBuilders
-     * @dataProvider provideTextBuilders
-     * @dataProvider provideWildcardBuilders
-     */
+    #[DataProvider('provideAutocompleteBuilders')]
+    #[DataProvider('provideCompoundBuilders')]
+    #[DataProvider('provideEqualsBuilders')]
+    #[DataProvider('provideExistsBuilders')]
+    #[DataProvider('provideGeoShapeBuilders')]
+    #[DataProvider('provideGeoWithinBuilders')]
+    #[DataProvider('provideMoreLikeThisBuilders')]
+    #[DataProvider('provideNearBuilders')]
+    #[DataProvider('providePhraseBuilders')]
+    #[DataProvider('provideQueryStringBuilders')]
+    #[DataProvider('provideRangeBuilders')]
+    #[DataProvider('provideRegexBuilders')]
+    #[DataProvider('provideTextBuilders')]
+    #[DataProvider('provideWildcardBuilders')]
     public function testSearchEmbeddedDocumentOperators(array $expectedOperator, Closure $createOperator): void
     {
         $searchStage = new Search($this->getTestAggregationBuilder());

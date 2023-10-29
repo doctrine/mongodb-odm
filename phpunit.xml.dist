@@ -7,7 +7,7 @@
         failOnRisky="true"
         stopOnFailure="false"
         bootstrap="tests/bootstrap.php"
-        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
         cacheDirectory=".phpunit.cache"
 >
     <testsuites>
@@ -15,11 +15,11 @@
             <directory>./tests/Doctrine/</directory>
         </testsuite>
     </testsuites>
-    <coverage>
+    <source>
         <include>
             <directory suffix=".php">./lib/Doctrine/ODM/MongoDB</directory>
         </include>
-    </coverage>
+    </source>
     <groups>
         <exclude>
             <group>performance</group>

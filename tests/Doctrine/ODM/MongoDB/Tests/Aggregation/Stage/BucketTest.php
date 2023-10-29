@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsComment;
 use Documents\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BucketTest extends BaseTestCase
 {
@@ -22,9 +23,8 @@ class BucketTest extends BaseTestCase
     /**
      * @param array<string, string>          $expected
      * @param mixed[]|Closure(Expr): mixed[] $args
-     *
-     * @dataProvider provideGroupAccumulatorExpressionOperators
      */
+    #[DataProvider('provideGroupAccumulatorExpressionOperators')]
     public function testGroupAccumulators(array $expected, string $operator, $args): void
     {
         $args = $this->resolveArgs($args);

@@ -10,12 +10,13 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Exception;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function array_merge;
 
 class GH1058Test extends BaseTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testModifyingDuringOnFlushEventNewDocument(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());
@@ -25,7 +26,7 @@ class GH1058Test extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testModifyingDuringOnFlushEventNewDocumentWithId(): void
     {
         $this->dm->getEventManager()->addEventListener([Events::onFlush], new GH1058Listener());

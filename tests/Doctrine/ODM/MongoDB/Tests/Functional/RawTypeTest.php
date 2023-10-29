@@ -8,14 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class RawTypeTest extends BaseTestCase
 {
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider getTestRawTypeData
-     */
+    /** @param mixed $value */
+    #[DataProvider('getTestRawTypeData')]
     public function testRawType($value): void
     {
         $test      = new RawType();

@@ -6,10 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Functional\Ticket\MODM160;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class MODM160Test extends BaseTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testEmbedManyInArrayMergeNew(): void
     {
         // create a test document
@@ -27,7 +28,7 @@ class MODM160Test extends BaseTestCase
         $this->dm->merge($test);
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testEmbedManyInArrayCollectionMergeNew(): void
     {
         // create a test document
@@ -45,7 +46,7 @@ class MODM160Test extends BaseTestCase
         $this->dm->merge($test);
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testEmbedOneMergeNew(): void
     {
         // create a test document

@@ -16,6 +16,7 @@ use Documents\Page;
 use Documents\Phonebook;
 use Documents\Phonenumber;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * CollectionPersister will throw exception when collection with atomicSet
@@ -86,11 +87,8 @@ class AtomicSetTest extends BaseTestCase
         self::assertEquals('12345678', $user->phonenumbers[0]->getPhonenumber());
     }
 
-    /**
-     * @param mixed[]|ArrayCollection<int, mixed>|null $clearWith
-     *
-     * @dataProvider provideAtomicCollectionUnset
-     */
+    /** @param mixed[]|ArrayCollection<int, mixed>|null $clearWith */
+    #[DataProvider('provideAtomicCollectionUnset')]
     public function testAtomicCollectionUnset($clearWith): void
     {
         $user                 = new AtomicSetUser('Maciej');

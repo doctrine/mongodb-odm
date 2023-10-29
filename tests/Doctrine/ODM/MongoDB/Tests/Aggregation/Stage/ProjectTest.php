@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Project;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ProjectTest extends BaseTestCase
 {
@@ -39,7 +40,7 @@ class ProjectTest extends BaseTestCase
         self::assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 
-    /** @dataProvider provideAccumulatorExpressionOperators */
+    #[DataProvider('provideAccumulatorExpressionOperators')]
     public function testAccumulatorsWithMultipleArguments(array $expected, string $operator, $args): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
