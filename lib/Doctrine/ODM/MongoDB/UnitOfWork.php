@@ -905,7 +905,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             foreach ($documentsToProcess as $document) {
                 // Ignore uninitialized proxy objects
-                if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                if ($this->isUninitializedObject($document)) {
                     continue;
                 }
 
@@ -1061,7 +1061,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document): void
     {
         // Ignore uninitialized proxy objects
-        if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+        if ($this->isUninitializedObject($document)) {
             return;
         }
 
@@ -1489,10 +1489,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $this->identityMap[$class->name][$id] = $document;
 
-        if (
-            $document instanceof NotifyPropertyChanged &&
-            ( ! $document instanceof GhostObjectInterface || $document->isProxyInitialized())
-        ) {
+        if ($document instanceof NotifyPropertyChanged && ! $this->isUninitializedObject($document)) {
             $document->addPropertyChangedListener($this);
         }
 
@@ -1881,8 +1878,8 @@ final class UnitOfWork implements PropertyChangedListener
         $managedCopy = $document;
 
         if ($this->getDocumentState($document, self::STATE_DETACHED) !== self::STATE_MANAGED) {
-            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-                $document->initializeProxy();
+            if ($this->isUninitializedObject($document)) {
+                $this->initializeObject($document);
             }
 
             $identifier = $class->getIdentifier();
@@ -1899,8 +1896,8 @@ final class UnitOfWork implements PropertyChangedListener
                     throw new InvalidArgumentException('Removed entity detected during merge. Cannot merge with a removed entity.');
                 }
 
-                if ($managedCopy instanceof GhostObjectInterface && ! $managedCopy->isProxyInitialized()) {
-                    $managedCopy->initializeProxy();
+                if ($managedCopy && $this->isUninitializedObject($managedCopy)) {
+                    $this->initializeObject($managedCopy);
                 }
             }
 
@@ -1946,7 +1943,7 @@ final class UnitOfWork implements PropertyChangedListener
 
                         if ($other === null) {
                             $prop->setValue($managedCopy, null);
-                        } elseif ($other instanceof GhostObjectInterface && ! $other->isProxyInitialized()) {
+                        } elseif ($this->isUninitializedObject($other)) {
                             // Do not merge fields marked lazy that have not been fetched
                             continue;
                         } elseif (! $assoc2['isCascadeMerge']) {
@@ -2305,9 +2302,7 @@ final class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-                $document->initializeProxy();
-            }
+            $this->initializeObject($document);
 
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
@@ -2459,10 +2454,7 @@ final class UnitOfWork implements PropertyChangedListener
         if ($owner === null) { // cloned
             $coll->setOwner($document, $class->fieldMappings[$propName]);
         } elseif ($owner !== $document) { // no clone, we have to fix
-            if (! $coll->isInitialized()) {
-                $coll->initialize(); // we have to do this otherwise the cols share state
-            }
-
+            $this->initializeObject($coll); // we have to do this otherwise the cols share state
             $newValue = clone $coll;
             $newValue->setOwner($document, $class->fieldMappings[$propName]);
             $class->reflFields[$propName]->setValue($document, $newValue);
@@ -2807,7 +2799,7 @@ final class UnitOfWork implements PropertyChangedListener
             /** @psalm-var T $document */
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_hash($document);
-            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+            if ($this->isUninitializedObject($document)) {
                 $document->setProxyInitializer(null);
                 $overrideLocalValues = true;
                 if ($document instanceof NotifyPropertyChanged) {
@@ -3088,11 +3080,25 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof GhostObjectInterface) {
+        if ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
             $obj->initializeProxy();
         } elseif ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
         }
+    }
+
+    /**
+     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     *
+     * @internal
+     */
+    public function isUninitializedObject(object $obj): bool
+    {
+        return match (true) {
+            $obj instanceof GhostObjectInterface => $obj->isProxyInitialized() === false,
+            $obj instanceof PersistentCollectionInterface => $obj->isInitialized() === false,
+            default => false
+        };
     }
 
     private function objToStr(object $obj): string

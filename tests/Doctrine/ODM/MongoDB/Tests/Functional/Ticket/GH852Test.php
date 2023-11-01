@@ -51,10 +51,10 @@ class GH852Test extends BaseTestCase
 
         self::assertInstanceOf(GhostObjectInterface::class, $parent->refOne);
         self::assertInstanceOf(GH852Document::class, $parent->refOne);
-        self::assertFalse($parent->refOne->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($parent->refOne));
         self::assertEquals($idGenerator('childA'), $parent->refOne->id);
         self::assertEquals('childA', $parent->refOne->name);
-        self::assertTrue($parent->refOne->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($parent->refOne));
 
         self::assertCount(2, $parent->refMany);
 
@@ -63,13 +63,13 @@ class GH852Test extends BaseTestCase
          */
         self::assertInstanceOf(GhostObjectInterface::class, $parent->refMany[0]);
         self::assertInstanceOf(GH852Document::class, $parent->refMany[0]);
-        self::assertTrue($parent->refMany[0]->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($parent->refMany[0]));
         self::assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
         self::assertEquals('childB', $parent->refMany[0]->name);
 
         self::assertInstanceOf(GhostObjectInterface::class, $parent->refMany[1]);
         self::assertInstanceOf(GH852Document::class, $parent->refMany[1]);
-        self::assertTrue($parent->refMany[1]->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($parent->refMany[1]));
         self::assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
         self::assertEquals('childC', $parent->refMany[1]->name);
 

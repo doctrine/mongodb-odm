@@ -96,7 +96,7 @@ class ReferencePrimerTest extends BaseTestCase
 
         foreach ($qb->getQuery() as $user) {
             self::assertInstanceOf(GhostObjectInterface::class, $user->getAccount());
-            self::assertTrue($user->getAccount()->isProxyInitialized());
+            self::assertFalse($this->uow->isUninitializedObject($user->getAccount()));
 
             self::assertCount(2, $user->getGroups());
 
@@ -134,7 +134,7 @@ class ReferencePrimerTest extends BaseTestCase
 
         foreach ($qb->getQuery() as $simpleUser) {
             self::assertInstanceOf(GhostObjectInterface::class, $simpleUser->getUser());
-            self::assertTrue($simpleUser->getUser()->isProxyInitialized());
+            self::assertFalse($this->uow->isUninitializedObject($simpleUser->getUser()));
 
             self::assertCount(2, $simpleUser->getUsers());
 
@@ -197,7 +197,7 @@ class ReferencePrimerTest extends BaseTestCase
                 self::assertInstanceOf(EmbeddedWhichReferences::class, $embeddedDoc);
 
                 self::assertInstanceOf(GhostObjectInterface::class, $embeddedDoc->referencedDoc);
-                self::assertTrue($embeddedDoc->referencedDoc->isProxyInitialized());
+                self::assertFalse($this->uow->isUninitializedObject($embeddedDoc->referencedDoc));
 
                 self::assertCount(2, $embeddedDoc->referencedDocs);
                 foreach ($embeddedDoc->referencedDocs as $referencedDoc) {
@@ -253,7 +253,7 @@ class ReferencePrimerTest extends BaseTestCase
             $user = $referenceUser->getUser();
             self::assertInstanceOf(User::class, $user);
             self::assertInstanceOf(GhostObjectInterface::class, $user);
-            self::assertTrue($user->isProxyInitialized());
+            self::assertFalse($this->uow->isUninitializedObject($user));
 
             self::assertCount(1, $referenceUser->getUsers());
 
@@ -265,7 +265,7 @@ class ReferencePrimerTest extends BaseTestCase
             $parentUser = $referenceUser->getParentUser();
             self::assertInstanceOf(GhostObjectInterface::class, $parentUser);
             self::assertInstanceOf(User::class, $parentUser);
-            self::assertTrue($parentUser->isProxyInitialized());
+            self::assertFalse($this->uow->isUninitializedObject($parentUser));
 
             self::assertCount(1, $referenceUser->getParentUsers());
 
@@ -277,7 +277,7 @@ class ReferencePrimerTest extends BaseTestCase
             $otherUser = $referenceUser->getOtherUser();
             self::assertInstanceOf(User::class, $otherUser);
             self::assertInstanceOf(GhostObjectInterface::class, $otherUser);
-            self::assertTrue($otherUser->isProxyInitialized());
+            self::assertFalse($this->uow->isUninitializedObject($otherUser));
 
             self::assertCount(1, $referenceUser->getOtherUsers());
 
@@ -332,7 +332,7 @@ class ReferencePrimerTest extends BaseTestCase
 
         foreach ($qb->getQuery() as $agent) {
             self::assertInstanceOf(GhostObjectInterface::class, $agent->server);
-            self::assertTrue($agent->server->isProxyInitialized());
+            self::assertFalse($this->uow->isUninitializedObject($agent->server));
         }
     }
 
@@ -523,7 +523,7 @@ class ReferencePrimerTest extends BaseTestCase
 
         self::assertInstanceOf(GhostObjectInterface::class, $currency);
         self::assertInstanceOf(Currency::class, $currency);
-        self::assertTrue($currency->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($currency));
     }
 
     public function testPrimeReferencesInReferenceMany(): void
@@ -550,7 +550,7 @@ class ReferencePrimerTest extends BaseTestCase
 
         $comment = $post->comments->first();
         self::assertInstanceOf(GhostObjectInterface::class, $comment->author);
-        self::assertTrue($comment->author->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($comment->author));
     }
 
     public function testPrimeReferencesInReferenceManyWithRepositoryMethodEager(): void
@@ -577,6 +577,6 @@ class ReferencePrimerTest extends BaseTestCase
 
         $comment = $post->repoCommentsWithPrimer->first();
         self::assertInstanceOf(GhostObjectInterface::class, $comment->author);
-        self::assertTrue($comment->author->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($comment->author));
     }
 }

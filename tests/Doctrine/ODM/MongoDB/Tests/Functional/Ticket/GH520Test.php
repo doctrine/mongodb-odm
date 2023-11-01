@@ -30,7 +30,7 @@ class GH520Test extends BaseTestCase
 
         self::assertInstanceOf(GH520Document::class, $document);
         self::assertInstanceOf(GhostObjectInterface::class, $document->ref);
-        self::assertTrue($document->ref->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($document->ref));
     }
 
     public function testPrimeWithGetSingleResultWillNotPrimeEntireResultSet(): void

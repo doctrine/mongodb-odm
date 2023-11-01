@@ -242,6 +242,14 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     */
+    public function isUninitializedObject(object $obj): bool
+    {
+        return $this->unitOfWork->isUninitializedObject($obj);
+    }
+
+    /**
      * Gets the UnitOfWork used by the DocumentManager to coordinate operations.
      */
     public function getUnitOfWork(): UnitOfWork
