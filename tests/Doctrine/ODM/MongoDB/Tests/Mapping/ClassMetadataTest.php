@@ -494,7 +494,7 @@ class ClassMetadataTest extends BaseTestCase
 
         self::assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
         self::assertInstanceOf(GhostObjectInterface::class, $proxy);
-        self::assertTrue($proxy->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($proxy));
     }
 
     public function testGetFieldValueOfIdentifierDoesNotInitializeProxy(): void
@@ -509,7 +509,7 @@ class ClassMetadataTest extends BaseTestCase
 
         self::assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
         self::assertInstanceOf(GhostObjectInterface::class, $proxy);
-        self::assertFalse($proxy->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($proxy));
     }
 
     public function testSetFieldValue(): void

@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
 use LogicException;
-use ProxyManager\Proxy\GhostObjectInterface;
 use Traversable;
 
 use function array_push;
@@ -138,7 +137,7 @@ final class ReferencePrimer
                 continue;
             }
 
-            if ($mapping['type'] === ClassMetadata::ONE && $fieldValue instanceof GhostObjectInterface && ! $fieldValue->isProxyInitialized()) {
+            if ($mapping['type'] === ClassMetadata::ONE && $this->uow->isUninitializedObject($fieldValue)) {
                 $refClass                                    = $this->dm->getClassMetadata($fieldValue::class);
                 $id                                          = $this->uow->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
@@ -269,7 +268,7 @@ final class ReferencePrimer
 
             $document = $this->uow->tryGetById($id, $class);
 
-            if ($document && ! (($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()))) {
+            if ($document && ! $this->uow->isUninitializedObject($document)) {
                 continue;
             }
 

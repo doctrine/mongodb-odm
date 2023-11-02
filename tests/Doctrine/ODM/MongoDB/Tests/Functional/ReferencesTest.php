@@ -105,7 +105,7 @@ class ReferencesTest extends BaseTestCase
         $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfileNotify();
         self::assertInstanceOf(GhostObjectInterface::class, $profile);
-        self::assertFalse($profile->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($profile));
 
         $user->getProfileNotify()->setLastName('Malarz');
         $this->dm->flush();

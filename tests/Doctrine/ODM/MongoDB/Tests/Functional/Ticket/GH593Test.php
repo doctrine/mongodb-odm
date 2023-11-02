@@ -59,11 +59,11 @@ class GH593Test extends BaseTestCase
         self::assertCount(2, $user1following);
 
         self::assertInstanceOf(GhostObjectInterface::class, $user1following[0]);
-        self::assertTrue($user1following[0]->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($user1following[0]));
         self::assertEquals($user2->getId(), $user1following[0]->getId());
 
         self::assertInstanceOf(GhostObjectInterface::class, $user1following[1]);
-        self::assertFalse($user1following[1]->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($user1following[1]));
         self::assertEquals($user3->getId(), $user1following[1]->getId());
 
         $this->expectException(DocumentNotFoundException::class);

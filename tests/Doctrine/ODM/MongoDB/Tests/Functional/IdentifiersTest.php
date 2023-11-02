@@ -31,7 +31,7 @@ class IdentifiersTest extends BaseTestCase
         $userTest = $test->getUser();
         self::assertEquals($user->getId(), $userTest->getId());
         self::assertInstanceOf(LazyLoadingInterface::class, $userTest);
-        self::assertFalse($userTest->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($userTest));
 
         $this->dm->clear();
 
@@ -43,10 +43,10 @@ class IdentifiersTest extends BaseTestCase
         self::assertEquals($user->getId(), $class->getIdentifierValue($user));
         self::assertEquals($user->getId(), $class->getFieldValue($foundUser, 'id'));
         self::assertInstanceOf(LazyLoadingInterface::class, $foundUser);
-        self::assertFalse($foundUser->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($foundUser));
 
         self::assertEquals('jwage', $foundUser->getUsername());
-        self::assertTrue($foundUser->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($foundUser));
     }
 
     public function testIdentifiersAreSet(): void

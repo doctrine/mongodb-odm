@@ -36,7 +36,6 @@ use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
-use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 
 use function array_combine;
@@ -749,7 +748,7 @@ final class DocumentPersister
             }
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
-            if (! (($reference instanceof GhostObjectInterface && ! $reference->isProxyInitialized())) && ! $sorted) {
+            if (! $this->uow->isUninitializedObject($reference) && ! $sorted) {
                 continue;
             }
 
@@ -787,7 +786,7 @@ final class DocumentPersister
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
-                if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                if ($this->uow->isUninitializedObject($document)) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
                     $this->uow->setOriginalDocumentData($document, $data);
                 }
