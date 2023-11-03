@@ -49,6 +49,7 @@ use Documents\UserUpsertChild;
 use Documents\UserUpsertIdStrategyNone;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function assert;
 use function bcscale;
@@ -80,11 +81,8 @@ class FunctionalTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param ObjectId|string $id
-     *
-     * @dataProvider provideUpsertObjects
-     */
+    /** @param ObjectId|string $id */
+    #[DataProvider('provideUpsertObjects')]
     public function testUpsertObject(string $className, $id, string $discriminator): void
     {
         $user           = new $className();

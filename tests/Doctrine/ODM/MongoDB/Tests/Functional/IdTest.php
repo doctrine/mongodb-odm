@@ -14,6 +14,7 @@ use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function class_exists;
 use function date;
@@ -162,11 +163,8 @@ class IdTest extends BaseTestCase
         self::assertEquals('test', $class->idGenerator->getSalt());
     }
 
-    /**
-     * @param int|float $user2Id
-     *
-     * @dataProvider provideEqualButNotIdenticalIds
-     */
+    /** @param int|float $user2Id */
+    #[DataProvider('provideEqualButNotIdenticalIds')]
     public function testEqualButNotIdenticalIds(string $user1Id, $user2Id): void
     {
         self::assertNotSame($user1Id, $user2Id);
@@ -211,9 +209,8 @@ class IdTest extends BaseTestCase
     /**
      * @param mixed $id
      * @param mixed $expected
-     *
-     * @dataProvider getTestIdTypesAndStrategiesData
      */
+    #[DataProvider('getTestIdTypesAndStrategiesData')]
     public function testIdTypesAndStrategies(string $type, string $strategy, $id = null, $expected = null, ?string $expectedMongoType = null): void
     {
         $className = $this->createIdTestClass($type, $strategy);
@@ -228,7 +225,7 @@ class IdTest extends BaseTestCase
         self::assertNotNull($object->id);
 
         if ($expectedMongoType !== null) {
-            $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
+            $check = $this->dm->getDocumentCollection($object::class)->findOne([]);
             self::assertEquals($expectedMongoType, is_object($check['_id']) ? get_class($check['_id']) : gettype($check['_id']));
         }
 
@@ -236,7 +233,7 @@ class IdTest extends BaseTestCase
             self::assertEquals($expected, $object->id);
         }
 
-        $object = $this->dm->find(get_class($object), $object->id);
+        $object = $this->dm->find($object::class, $object->id);
         self::assertNotNull($object);
 
         if ($expected !== null) {
@@ -247,7 +244,7 @@ class IdTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $object = $this->dm->find(get_class($object), $object->id);
+        $object = $this->dm->find($object::class, $object->id);
         self::assertEquals('changed', $object->test);
     }
 
@@ -308,7 +305,7 @@ class IdTest extends BaseTestCase
         ];
     }
 
-    /** @dataProvider getTestBinIdsData */
+    #[DataProvider('getTestBinIdsData')]
     public function testBinIds(string $type, int $expectedMongoBinDataType, string $id): void
     {
         $className = $this->createIdTestClass($type, 'none');
@@ -320,7 +317,7 @@ class IdTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($object))->findOne([]);
+        $check = $this->dm->getDocumentCollection($object::class)->findOne([]);
 
         self::assertEquals(Binary::class, get_class($check['_id']));
         self::assertEquals($expectedMongoBinDataType, $check['_id']->getType());

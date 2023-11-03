@@ -12,6 +12,7 @@ use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ExprTest extends BaseTestCase
 {
@@ -411,9 +412,8 @@ class ExprTest extends BaseTestCase
     /**
      * @param Point|array<string, mixed> $point
      * @param array<string, mixed>       $expected
-     *
-     * @dataProvider provideGeoJsonPoint
      */
+    #[DataProvider('provideGeoJsonPoint')]
     public function testNearWithGeoJsonPoint($point, array $expected): void
     {
         $expr = $this->createExpr();
@@ -433,9 +433,8 @@ class ExprTest extends BaseTestCase
     /**
      * @param Point|array<string, mixed> $point
      * @param array<string, mixed>       $expected
-     *
-     * @dataProvider provideGeoJsonPoint
      */
+    #[DataProvider('provideGeoJsonPoint')]
     public function testNearSphereWithGeoJsonPoint($point, array $expected): void
     {
         $expr = $this->createExpr();
@@ -548,9 +547,8 @@ class ExprTest extends BaseTestCase
     /**
      * @param Polygon|array<string, array<string, mixed>> $geometry
      * @param array<string, mixed>                        $expected
-     *
-     * @dataProvider provideGeoJsonPolygon
      */
+    #[DataProvider('provideGeoJsonPolygon')]
     public function testGeoIntersects($geometry, array $expected): void
     {
         $expr = $this->createExpr();
@@ -579,9 +577,8 @@ class ExprTest extends BaseTestCase
     /**
      * @param Polygon|array<string, array<string, mixed>> $geometry
      * @param array<string, mixed>                        $expected
-     *
-     * @dataProvider provideGeoJsonPolygon
      */
+    #[DataProvider('provideGeoJsonPolygon')]
     public function testGeoWithin($geometry, array $expected): void
     {
         $expr = $this->createExpr();

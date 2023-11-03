@@ -482,7 +482,7 @@ final class UnitOfWork implements PropertyChangedListener
         $divided = [];
         $embeds  = [];
         foreach ($documents as $oid => $d) {
-            $className = get_class($d);
+            $className = $d::class;
             if (isset($embeds[$className])) {
                 continue;
             }
@@ -520,7 +520,7 @@ final class UnitOfWork implements PropertyChangedListener
     private function computeScheduleInsertsChangeSets(): void
     {
         foreach ($this->documentInsertions as $document) {
-            $class = $this->dm->getClassMetadata(get_class($document));
+            $class = $this->dm->getClassMetadata($document::class);
             if ($class->isEmbeddedDocument || $class->isView()) {
                 continue;
             }
@@ -537,7 +537,7 @@ final class UnitOfWork implements PropertyChangedListener
     private function computeScheduleUpsertsChangeSets(): void
     {
         foreach ($this->documentUpserts as $document) {
-            $class = $this->dm->getClassMetadata(get_class($document));
+            $class = $this->dm->getClassMetadata($document::class);
             if ($class->isEmbeddedDocument || $class->isView()) {
                 continue;
             }
@@ -580,7 +580,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getDocumentActualData(object $document): array
     {
-        $class      = $this->dm->getClassMetadata(get_class($document));
+        $class      = $this->dm->getClassMetadata($document::class);
         $actualData = [];
         foreach ($class->reflFields as $name => $refProp) {
             $mapping = $class->fieldMappings[$name];
@@ -642,7 +642,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function computeChangeSet(ClassMetadata $class, object $document): void
     {
         if (! $class->isInheritanceTypeNone()) {
-            $class = $this->dm->getClassMetadata(get_class($document));
+            $class = $this->dm->getClassMetadata($document::class);
         }
 
         // Fire PreFlush lifecycle callbacks
@@ -714,7 +714,7 @@ final class UnitOfWork implements PropertyChangedListener
                 try {
                     $gridFSMetadata         = $class->getFieldMappingByDbFieldName('metadata');
                     $gridFSMetadataProperty = $gridFSMetadata['fieldName'];
-                } catch (MappingException $e) {
+                } catch (MappingException) {
                 }
             }
 
@@ -905,7 +905,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             foreach ($documentsToProcess as $document) {
                 // Ignore uninitialized proxy objects
-                if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                if ($this->isUninitializedObject($document)) {
                     continue;
                 }
 
@@ -936,7 +936,7 @@ final class UnitOfWork implements PropertyChangedListener
     private function computeAssociationChanges(object $parentDocument, array $assoc, $value): void
     {
         $isNewParentDocument   = isset($this->documentInsertions[spl_object_hash($parentDocument)]);
-        $class                 = $this->dm->getClassMetadata(get_class($parentDocument));
+        $class                 = $this->dm->getClassMetadata($parentDocument::class);
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
 
         if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
@@ -967,11 +967,11 @@ final class UnitOfWork implements PropertyChangedListener
         foreach ($unwrappedValue as $key => $entry) {
             if (! is_object($entry)) {
                 throw new InvalidArgumentException(
-                    sprintf('Expected object, found "%s" in %s::%s', $entry, get_class($parentDocument), $assoc['name']),
+                    sprintf('Expected object, found "%s" in %s::%s', $entry, $parentDocument::class, $assoc['name']),
                 );
             }
 
-            $targetClass = $this->dm->getClassMetadata(get_class($entry));
+            $targetClass = $this->dm->getClassMetadata($entry::class);
 
             $state = $this->getDocumentState($entry, self::STATE_NEW);
 
@@ -1061,7 +1061,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document): void
     {
         // Ignore uninitialized proxy objects
-        if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+        if ($this->isUninitializedObject($document)) {
             return;
         }
 
@@ -1072,7 +1072,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if (! $class->isInheritanceTypeNone()) {
-            $class = $this->dm->getClassMetadata(get_class($document));
+            $class = $this->dm->getClassMetadata($document::class);
         }
 
         $this->computeOrRecomputeChangeSet($class, $document, true);
@@ -1098,14 +1098,14 @@ final class UnitOfWork implements PropertyChangedListener
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 throw new InvalidArgumentException(sprintf(
                     '%s uses NONE identifier generation strategy but no identifier was provided when persisting.',
-                    get_class($document),
+                    $document::class,
                 ));
             }
 
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && $idValue !== null && ! preg_match('#^[0-9a-f]{24}$#', (string) $idValue)) {
                 throw new InvalidArgumentException(sprintf(
                     '%s uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.',
-                    get_class($document),
+                    $document::class,
                 ));
             }
 
@@ -1395,7 +1395,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isScheduledForSynchronization(object $document): bool
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         return isset($this->scheduledForSynchronization[$class->name][spl_object_hash($document)]);
     }
@@ -1480,7 +1480,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function addToIdentityMap(object $document): bool
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
         if (isset($this->identityMap[$class->name][$id])) {
@@ -1489,10 +1489,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $this->identityMap[$class->name][$id] = $document;
 
-        if (
-            $document instanceof NotifyPropertyChanged &&
-            ( ! $document instanceof GhostObjectInterface || $document->isProxyInitialized())
-        ) {
+        if ($document instanceof NotifyPropertyChanged && ! $this->isUninitializedObject($document)) {
             $document->addPropertyChangedListener($this);
         }
 
@@ -1515,7 +1512,7 @@ final class UnitOfWork implements PropertyChangedListener
             return $this->documentStates[$oid];
         }
 
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         if ($class->isEmbeddedDocument) {
             return self::STATE_NEW;
@@ -1575,7 +1572,7 @@ final class UnitOfWork implements PropertyChangedListener
             return false;
         }
 
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
         if (isset($this->identityMap[$class->name][$id])) {
@@ -1651,7 +1648,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleForSynchronization(object $document): void
     {
-        $class                                                                       = $this->dm->getClassMetadata(get_class($document));
+        $class                                                                       = $this->dm->getClassMetadata($document::class);
         $this->scheduledForSynchronization[$class->name][spl_object_hash($document)] = $document;
     }
 
@@ -1668,7 +1665,7 @@ final class UnitOfWork implements PropertyChangedListener
             return false;
         }
 
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
         return isset($this->identityMap[$class->name][$id]);
@@ -1676,7 +1673,7 @@ final class UnitOfWork implements PropertyChangedListener
 
     private function getIdForIdentityMap(object $document): string
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         if (! $class->identifier) {
             $id = spl_object_hash($document);
@@ -1710,7 +1707,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function persist(object $document): void
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         if ($class->isMappedSuperclass || $class->isQueryResultDocument) {
             throw MongoDBException::cannotPersistMappedSuperclass($class->name);
         }
@@ -1741,7 +1738,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $visited[$oid] = $document; // Mark visited
 
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         $documentState = $this->getDocumentState($document, self::STATE_NEW);
         switch ($documentState) {
@@ -1819,7 +1816,7 @@ final class UnitOfWork implements PropertyChangedListener
          */
         $this->cascadeRemove($document, $visited);
 
-        $class         = $this->dm->getClassMetadata(get_class($document));
+        $class         = $this->dm->getClassMetadata($document::class);
         $documentState = $this->getDocumentState($document);
         switch ($documentState) {
             case self::STATE_NEW:
@@ -1871,7 +1868,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $visited[$oid] = $document; // mark visited
 
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         /* First we assume DETACHED, although it can still be NEW but we can
          * avoid an extra DB round trip this way. If it is not MANAGED but has
@@ -1881,8 +1878,8 @@ final class UnitOfWork implements PropertyChangedListener
         $managedCopy = $document;
 
         if ($this->getDocumentState($document, self::STATE_DETACHED) !== self::STATE_MANAGED) {
-            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-                $document->initializeProxy();
+            if ($this->isUninitializedObject($document)) {
+                $this->initializeObject($document);
             }
 
             $identifier = $class->getIdentifier();
@@ -1899,8 +1896,8 @@ final class UnitOfWork implements PropertyChangedListener
                     throw new InvalidArgumentException('Removed entity detected during merge. Cannot merge with a removed entity.');
                 }
 
-                if ($managedCopy instanceof GhostObjectInterface && ! $managedCopy->isProxyInitialized()) {
-                    $managedCopy->initializeProxy();
+                if ($managedCopy && $this->isUninitializedObject($managedCopy)) {
+                    $this->initializeObject($managedCopy);
                 }
             }
 
@@ -1946,12 +1943,12 @@ final class UnitOfWork implements PropertyChangedListener
 
                         if ($other === null) {
                             $prop->setValue($managedCopy, null);
-                        } elseif ($other instanceof GhostObjectInterface && ! $other->isProxyInitialized()) {
+                        } elseif ($this->isUninitializedObject($other)) {
                             // Do not merge fields marked lazy that have not been fetched
                             continue;
                         } elseif (! $assoc2['isCascadeMerge']) {
                             if ($this->getDocumentState($other) === self::STATE_DETACHED) {
-                                $targetDocument = $assoc2['targetDocument'] ?? get_class($other);
+                                $targetDocument = $assoc2['targetDocument'] ?? $other::class;
                                 $targetClass    = $this->dm->getClassMetadata($targetDocument);
                                 $relatedId      = $targetClass->getIdentifierObject($other);
 
@@ -2028,7 +2025,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         if ($prevManagedCopy !== null) {
             $assocField = $assoc['fieldName'];
-            $prevClass  = $this->dm->getClassMetadata(get_class($prevManagedCopy));
+            $prevClass  = $this->dm->getClassMetadata($prevManagedCopy::class);
 
             if ($assoc['type'] === ClassMetadata::ONE) {
                 $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
@@ -2129,7 +2126,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $visited[$oid] = $document; // mark visited
 
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         if (! $class->isEmbeddedDocument) {
             if ($this->getDocumentState($document) !== self::STATE_MANAGED) {
@@ -2149,7 +2146,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeRefresh(object $document, array &$visited): void
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         $associationMappings = array_filter(
             $class->associationMappings,
@@ -2180,7 +2177,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeDetach(object $document, array &$visited): void
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         foreach ($class->fieldMappings as $mapping) {
             if (! $mapping['isCascadeDetach']) {
                 continue;
@@ -2209,7 +2206,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeMerge(object $document, object $managedCopy, array &$visited): void
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         $associationMappings = array_filter(
             $class->associationMappings,
@@ -2241,7 +2238,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePersist(object $document, array &$visited): void
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         $associationMappings = array_filter(
             $class->associationMappings,
@@ -2299,15 +2296,13 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeRemove(object $document, array &$visited): void
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         foreach ($class->fieldMappings as $mapping) {
             if (! $mapping['isCascadeRemove'] && ( ! isset($mapping['orphanRemoval']) || ! $mapping['orphanRemoval'])) {
                 continue;
             }
 
-            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-                $document->initializeProxy();
-            }
+            $this->initializeObject($document);
 
             $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
@@ -2335,7 +2330,7 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document is not MANAGED.');
         }
 
-        $documentName = get_class($document);
+        $documentName = $document::class;
         $class        = $this->dm->getClassMetadata($documentName);
 
         if ($lockMode === LockMode::OPTIMISTIC) {
@@ -2367,7 +2362,7 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document is not MANAGED.');
         }
 
-        $documentName = get_class($document);
+        $documentName = $document::class;
         $this->getDocumentPersister($documentName)->unlock($document);
     }
 
@@ -2459,10 +2454,7 @@ final class UnitOfWork implements PropertyChangedListener
         if ($owner === null) { // cloned
             $coll->setOwner($document, $class->fieldMappings[$propName]);
         } elseif ($owner !== $document) { // no clone, we have to fix
-            if (! $coll->isInitialized()) {
-                $coll->initialize(); // we have to do this otherwise the cols share state
-            }
-
+            $this->initializeObject($coll); // we have to do this otherwise the cols share state
             $newValue = clone $coll;
             $newValue->setOwner($document, $class->fieldMappings[$propName]);
             $class->reflFields[$propName]->setValue($document, $newValue);
@@ -2664,7 +2656,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
-                $class            = $this->dm->getClassMetadata(get_class($document));
+                $class            = $this->dm->getClassMetadata($document::class);
                 $atomicCollection = $class->getFieldValue($document, $mapping['fieldName']);
                 $this->scheduleCollectionUpdate($atomicCollection);
                 $this->unscheduleCollectionDeletion($coll);
@@ -2690,16 +2682,21 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getOwningDocument(object $document): object
     {
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
         while ($class->isEmbeddedDocument) {
             $parentAssociation = $this->getParentAssociation($document);
 
             if (! $parentAssociation) {
-                throw new UnexpectedValueException('Could not determine parent association for ' . get_class($document));
+                throw new UnexpectedValueException('Could not determine parent association for ' . $document::class);
             }
 
-            [, $document] = $parentAssociation;
-            $class        = $this->dm->getClassMetadata(get_class($document));
+            [, $parentDocument] = $parentAssociation;
+            if (! $parentDocument) {
+                throw new UnexpectedValueException('Could not determine parent association for ' . $document::class);
+            }
+
+            $document = $parentDocument;
+            $class    = $this->dm->getClassMetadata($document::class);
         }
 
         return $document;
@@ -2802,7 +2799,7 @@ final class UnitOfWork implements PropertyChangedListener
             /** @psalm-var T $document */
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_hash($document);
-            if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+            if ($this->isUninitializedObject($document)) {
                 $document->setProxyInitializer(null);
                 $overrideLocalValues = true;
                 if ($document instanceof NotifyPropertyChanged) {
@@ -2961,7 +2958,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function registerManaged(object $document, $id, array $data): void
     {
         $oid   = spl_object_hash($document);
-        $class = $this->dm->getClassMetadata(get_class($document));
+        $class = $this->dm->getClassMetadata($document::class);
 
         if (! $class->identifier || $id === null) {
             $this->documentIdentifiers[$oid] = $oid;
@@ -2997,7 +2994,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function propertyChanged($sender, $propertyName, $oldValue, $newValue)
     {
         $oid   = spl_object_hash($sender);
-        $class = $this->dm->getClassMetadata(get_class($sender));
+        $class = $this->dm->getClassMetadata($sender::class);
 
         if (! isset($class->fieldMappings[$propertyName])) {
             return; // ignore non-persistent fields
@@ -3083,15 +3080,29 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof GhostObjectInterface) {
+        if ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
             $obj->initializeProxy();
         } elseif ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
         }
     }
 
+    /**
+     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     *
+     * @internal
+     */
+    public function isUninitializedObject(object $obj): bool
+    {
+        return match (true) {
+            $obj instanceof GhostObjectInterface => $obj->isProxyInitialized() === false,
+            $obj instanceof PersistentCollectionInterface => $obj->isInitialized() === false,
+            default => false
+        };
+    }
+
     private function objToStr(object $obj): string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj) . '@' . spl_object_hash($obj);
+        return method_exists($obj, '__toString') ? (string) $obj : $obj::class . '@' . spl_object_hash($obj);
     }
 }

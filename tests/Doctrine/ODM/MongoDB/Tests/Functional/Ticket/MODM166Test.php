@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonenumber;
 use Documents\User;
 
-use function get_class;
 use function sort;
 
 class MODM166Test extends BaseTestCase
@@ -40,7 +39,7 @@ class MODM166Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $repository = $this->dm->getRepository(get_class($test));
+        $repository = $this->dm->getRepository($test::class);
         $test       = $repository->findOneBy(['username' => 'lucy']);
 
         $phonenumbers = [];
@@ -62,7 +61,7 @@ class MODM166EventListener
         $unitOfWork      = $documentManager->getUnitOfWork();
 
         foreach ($unitOfWork->getScheduledDocumentUpdates() as $document) {
-            $metadata = $documentManager->getClassMetadata(get_class($document));
+            $metadata = $documentManager->getClassMetadata($document::class);
             $document->addPhonenumber(new Phonenumber('2222'));
             $unitOfWork->recomputeSingleDocumentChangeSet($metadata, $document);
         }

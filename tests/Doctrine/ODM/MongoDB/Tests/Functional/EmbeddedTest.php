@@ -23,7 +23,6 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 
 use function assert;
-use function get_class;
 
 class EmbeddedTest extends BaseTestCase
 {
@@ -192,7 +191,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -228,7 +227,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -246,7 +245,7 @@ class EmbeddedTest extends BaseTestCase
         self::assertEquals(0, $test->level1->count());
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -281,7 +280,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -301,7 +300,7 @@ class EmbeddedTest extends BaseTestCase
         self::assertEquals(0, $level1->level2->count());
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -334,7 +333,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->clear();
 
         // retrieve test
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -372,7 +371,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->createQueryBuilder(get_class($test))
+        $test = $this->dm->createQueryBuilder($test::class)
             ->field('id')->equals($test->id)
             ->getQuery()
             ->getSingleResult();
@@ -504,7 +503,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(get_class($test), $test->id);
+        $test = $this->dm->find($test::class, $test->id);
 
         self::assertEquals($newId, $test->embed->id);
     }
@@ -527,7 +526,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(get_class($test), $test->id);
+        $test = $this->dm->find($test::class, $test->id);
 
         self::assertEquals($newId, $test->embedMany[0]->id);
     }
@@ -545,7 +544,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $test = $this->dm->find(get_class($test), $test->id);
+        $test = $this->dm->find($test::class, $test->id);
 
         self::assertNotSame($test->embed, $test->embedMany[0]);
         self::assertNotSame($test->embed, $test->embedMany[1]);
@@ -577,7 +576,7 @@ class EmbeddedTest extends BaseTestCase
         $this->dm->flush();
 
         $this->dm->clear(); //get clean results from mongo
-        $test1 = $this->dm->find(get_class($test1), $test1->id);
+        $test1 = $this->dm->find($test1::class, $test1->id);
 
         self::assertCount(1, $test1->embedMany);
     }

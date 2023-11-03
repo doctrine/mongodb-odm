@@ -172,6 +172,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => true,
             'prime' => [],
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['profile']);
 
         self::assertEquals([
@@ -200,6 +201,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => false,
             'prime' => [],
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['account']);
 
         self::assertEquals([
@@ -228,6 +230,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => false,
             'prime' => [],
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['groups']);
 
         self::assertEquals(
@@ -366,6 +369,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => false,
             'prime' => [],
+            'storeEmptyArray' => true,
         ], $classMetadata->fieldMappings['references']);
 
         self::assertEquals([
@@ -394,6 +398,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => false,
             'prime' => ['references'],
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['inverseMappedBy']);
     }
 
@@ -481,6 +486,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => false,
             'prime' => [],
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['profile']);
 
         self::assertEquals([
@@ -509,6 +515,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'skip' => null,
             'orphanRemoval' => false,
             'prime' => [],
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['groups']);
     }
 }

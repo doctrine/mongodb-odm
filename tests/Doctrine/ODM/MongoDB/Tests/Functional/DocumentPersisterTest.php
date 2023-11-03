@@ -20,11 +20,10 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use MongoDB\Driver\WriteConcern;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionProperty;
 
-use function get_class;
-use function gettype;
-use function is_object;
+use function get_debug_type;
 use function sprintf;
 
 class DocumentPersisterTest extends BaseTestCase
@@ -120,7 +119,7 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertCount(1, $documents);
     }
 
-    /** @dataProvider getTestPrepareFieldNameData */
+    #[DataProvider('getTestPrepareFieldNameData')]
     public function testPrepareFieldName(string $fieldName, string $expected): void
     {
         self::assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
@@ -169,11 +168,8 @@ class DocumentPersisterTest extends BaseTestCase
         );
     }
 
-    /**
-     * @param array<array-key, string> $hashId
-     *
-     * @dataProvider provideHashIdentifiers
-     */
+    /** @param array<array-key, string> $hashId */
+    #[DataProvider('provideHashIdentifiers')]
     public function testPrepareQueryOrNewObjWithHashId(array $hashId): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
@@ -185,11 +181,8 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    /**
-     * @param array<array-key, string> $hashId
-     *
-     * @dataProvider provideHashIdentifiers
-     */
+    /** @param array<array-key, string> $hashId */
+    #[DataProvider('provideHashIdentifiers')]
     public function testPrepareQueryOrNewObjWithHashIdAndInOperators(array $hashId): void
     {
         $class             = DocumentPersisterTestHashIdDocument::class;
@@ -224,9 +217,8 @@ class DocumentPersisterTest extends BaseTestCase
     /**
      * @param array<string, mixed> $expected
      * @param array<string, mixed> $query
-     *
-     * @dataProvider queryProviderForCustomTypeId
      */
+    #[DataProvider('queryProviderForCustomTypeId')]
     public function testPrepareQueryOrNewObjWithCustomTypedId(array $expected, array $query): void
     {
         $class             = DocumentPersisterTestDocumentWithCustomId::class;
@@ -240,7 +232,7 @@ class DocumentPersisterTest extends BaseTestCase
         );
     }
 
-    /** @dataProvider queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId */
+    #[DataProvider('queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId')]
     public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase): void
     {
         Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
@@ -381,11 +373,8 @@ class DocumentPersisterTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param array<array-key, string> $hashId
-     *
-     * @dataProvider provideHashIdentifiers
-     */
+    /** @param array<array-key, string> $hashId */
+    #[DataProvider('provideHashIdentifiers')]
     public function testPrepareQueryOrNewObjWithSimpleReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
@@ -460,11 +449,8 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    /**
-     * @param array<array-key, string> $hashId
-     *
-     * @dataProvider provideHashIdentifiers
-     */
+    /** @param array<array-key, string> $hashId */
+    #[DataProvider('provideHashIdentifiers')]
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
@@ -504,9 +490,8 @@ class DocumentPersisterTest extends BaseTestCase
     /**
      * @param array<string, mixed> $expected
      * @param array<string, mixed> $query
-     *
-     * @dataProvider queryProviderForComplexRefWithObjectValue
      */
+    #[DataProvider('queryProviderForComplexRefWithObjectValue')]
     public function testPrepareQueryOrNewObjWithComplexRefToTargetDocumentFieldWithObjectValue(array $expected, array $query): void
     {
         $class             = DocumentPersisterTestDocument::class;
@@ -579,11 +564,8 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    /**
-     * @param array<array-key, string> $hashId
-     *
-     * @dataProvider provideHashIdentifiers
-     */
+    /** @param array<array-key, string> $hashId */
+    #[DataProvider('provideHashIdentifiers')]
     public function testPrepareQueryOrNewObjWithEmbeddedReferenceToTargetDocumentWithHashIdType(array $hashId): void
     {
         $class             = DocumentPersisterTestDocument::class;
@@ -646,9 +628,8 @@ class DocumentPersisterTest extends BaseTestCase
     /**
      * @param int|string $writeConcern
      * @psalm-param class-string $class
-     *
-     * @dataProvider dataProviderTestWriteConcern
      */
+    #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteInsertsRespectsWriteConcern(string $class, $writeConcern): void
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -670,9 +651,8 @@ class DocumentPersisterTest extends BaseTestCase
     /**
      * @param int|string $writeConcern
      * @psalm-param class-string $class
-     *
-     * @dataProvider dataProviderTestWriteConcern
      */
+    #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteUpsertsRespectsWriteConcern(string $class, $writeConcern): void
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -695,9 +675,8 @@ class DocumentPersisterTest extends BaseTestCase
     /**
      * @param int|string $writeConcern
      * @psalm-param class-string $class
-     *
-     * @dataProvider dataProviderTestWriteConcern
      */
+    #[DataProvider('dataProviderTestWriteConcern')]
     public function testRemoveRespectsWriteConcern(string $class, $writeConcern): void
     {
         $documentPersister = $this->uow->getDocumentPersister($class);
@@ -1083,7 +1062,7 @@ final class DocumentPersisterCustomIdType extends Type
                 'Expected "%s" or "%s", got "%s"',
                 DocumentPersisterCustomTypedId::class,
                 ObjectId::class,
-                is_object($value) ? get_class($value) : gettype($value),
+                get_debug_type($value),
             ),
         );
     }

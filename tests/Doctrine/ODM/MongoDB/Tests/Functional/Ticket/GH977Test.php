@@ -7,8 +7,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class GH977Test extends BaseTestCase
 {
     public function testAutoRecompute(): void
@@ -19,9 +17,9 @@ class GH977Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $d         = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
+        $d         = $this->dm->getRepository($d::class)->findOneBy(['value1' => 'Value 1']);
         $d->value1 = 'Changed';
-        $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($d)), $d);
+        $this->uow->computeChangeSet($this->dm->getClassMetadata($d::class), $d);
         $changeSet = $this->uow->getDocumentChangeSet($d);
         if (isset($changeSet['value1'])) {
             $d->value2 = 'v1 has changed';
@@ -30,7 +28,7 @@ class GH977Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Changed']);
+        $d = $this->dm->getRepository($d::class)->findOneBy(['value1' => 'Changed']);
         self::assertNotNull($d);
         self::assertEquals('v1 has changed', $d->value2);
     }
@@ -43,14 +41,14 @@ class GH977Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $d         = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
+        $d         = $this->dm->getRepository($d::class)->findOneBy(['value1' => 'Value 1']);
         $d->value1 = 'Changed';
-        $this->uow->computeChangeSet($this->dm->getClassMetadata(get_class($d)), $d);
+        $this->uow->computeChangeSet($this->dm->getClassMetadata($d::class), $d);
         $this->dm->refresh($d);
         $this->dm->flush();
         $this->dm->clear();
 
-        $d = $this->dm->getRepository(get_class($d))->findOneBy(['value1' => 'Value 1']);
+        $d = $this->dm->getRepository($d::class)->findOneBy(['value1' => 'Value 1']);
         self::assertNotNull($d);
     }
 }

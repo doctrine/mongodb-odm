@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /** @psalm-import-type SortShape from Sort */
 class SortTest extends BaseTestCase
@@ -16,10 +17,9 @@ class SortTest extends BaseTestCase
     /**
      * @param string|array<string, string> $field
      * @psalm-param SortShape $expectedSort
-     *
-     * @dataProvider provideSortOptions
      */
-    public function testSortStage(array $expectedSort, $field, ?string $order = null): void
+    #[DataProvider('provideSortOptions')]
+    public function testStage(array $expectedSort, $field, ?string $order = null): void
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
@@ -29,10 +29,9 @@ class SortTest extends BaseTestCase
     /**
      * @param string|array<string, string> $field
      * @psalm-param SortShape $expectedSort
-     *
-     * @dataProvider provideSortOptions
      */
-    public function testSortFromBuilder(array $expectedSort, $field, ?string $order = null): void
+    #[DataProvider('provideSortOptions')]
+    public function testFromBuilder(array $expectedSort, $field, ?string $order = null): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);

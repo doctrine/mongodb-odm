@@ -162,7 +162,7 @@ class Expr
      */
     public function addToSet($valueOrExpression): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$addToSet'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
 
         return $this;
@@ -188,7 +188,7 @@ class Expr
      */
     protected function bit(string $operator, int $value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$bit'][$this->currentField][$operator] = $value;
 
         return $this;
@@ -227,7 +227,7 @@ class Expr
      */
     public function bitsAllClear($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
 
         return $this->operator('$bitsAllClear', $value);
     }
@@ -243,7 +243,7 @@ class Expr
      */
     public function bitsAllSet($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
 
         return $this->operator('$bitsAllSet', $value);
     }
@@ -259,7 +259,7 @@ class Expr
      */
     public function bitsAnyClear($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
 
         return $this->operator('$bitsAnyClear', $value);
     }
@@ -275,7 +275,7 @@ class Expr
      */
     public function bitsAnySet($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
 
         return $this->operator('$bitsAnySet', $value);
     }
@@ -345,7 +345,7 @@ class Expr
             throw new InvalidArgumentException('Type for currentDate operator must be date or timestamp.');
         }
 
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$currentDate'][$this->currentField]['$type'] = $type;
 
         return $this;
@@ -646,7 +646,7 @@ class Expr
      */
     public function inc($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$inc'][$this->currentField] = $value;
 
         return $this;
@@ -657,7 +657,7 @@ class Expr
      */
     public function includesReferenceTo(object $document): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $mapping   = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
         $storeAs   = $mapping['storeAs'] ?? null;
@@ -755,7 +755,7 @@ class Expr
      */
     public function max($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$max'][$this->currentField] = $value;
 
         return $this;
@@ -771,7 +771,7 @@ class Expr
      */
     public function min($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$min'][$this->currentField] = $value;
 
         return $this;
@@ -803,7 +803,7 @@ class Expr
      */
     public function mul($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$mul'][$this->currentField] = $value;
 
         return $this;
@@ -929,7 +929,7 @@ class Expr
      */
     public function popFirst(): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$pop'][$this->currentField] = -1;
 
         return $this;
@@ -943,7 +943,7 @@ class Expr
      */
     public function popLast(): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$pop'][$this->currentField] = 1;
 
         return $this;
@@ -973,7 +973,7 @@ class Expr
      */
     public function pull($valueOrExpression): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$pull'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
 
         return $this;
@@ -990,7 +990,7 @@ class Expr
      */
     public function pullAll(array $values): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$pullAll'][$this->currentField] = $values;
 
         return $this;
@@ -1024,7 +1024,7 @@ class Expr
             );
         }
 
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$push'][$this->currentField] = $valueOrExpression;
 
         return $this;
@@ -1051,7 +1051,7 @@ class Expr
      */
     public function references(object $document): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $mapping   = $this->getReferenceMapping();
         $reference = $this->dm->createReference($document, $mapping);
         $storeAs   = $mapping['storeAs'] ?? null;
@@ -1100,7 +1100,7 @@ class Expr
      */
     public function rename(string $name): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$rename'][$this->currentField] = $name;
 
         return $this;
@@ -1120,7 +1120,7 @@ class Expr
      */
     public function set($value, bool $atomic = true): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         assert($this->currentField !== null);
 
         if ($atomic) {
@@ -1184,7 +1184,7 @@ class Expr
      */
     public function setOnInsert($value): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$setOnInsert'][$this->currentField] = $value;
 
         return $this;
@@ -1289,7 +1289,7 @@ class Expr
      */
     public function unsetField(): self
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         $this->newObj['$unset'][$this->currentField] = 1;
 
         return $this;
@@ -1319,7 +1319,7 @@ class Expr
      */
     private function getReferenceMapping(): array
     {
-        $this->requiresCurrentField();
+        $this->requiresCurrentField(__METHOD__);
         assert($this->currentField !== null);
 
         try {
@@ -1368,10 +1368,10 @@ class Expr
      *
      * @throws LogicException If a current field has not been set.
      */
-    private function requiresCurrentField(): void
+    private function requiresCurrentField(string $method): void
     {
         if (! $this->currentField) {
-            throw new LogicException('This method requires you set a current field using field().');
+            throw new LogicException(sprintf('%s requires setting a current field using field().', $method));
         }
     }
 

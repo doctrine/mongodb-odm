@@ -13,6 +13,9 @@ use function trigger_deprecation;
  * Fluent interface for building aggregation pipelines.
  *
  * @internal
+ *
+ * @psalm-import-type PipelineExpression from Builder
+ * @psalm-type StageExpression = array<non-empty-string, mixed>
  */
 abstract class Stage
 {
@@ -28,6 +31,7 @@ abstract class Stage
      * Assembles the aggregation stage
      *
      * @return array<string, mixed>
+     * @psalm-return StageExpression
      */
     abstract public function getExpression(): array;
 
@@ -137,6 +141,16 @@ abstract class Stage
     }
 
     /**
+     * Creates new documents in a sequence of documents where certain values in a field are missing.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/densify/
+     */
+    public function densify(string $fieldName): Stage\Densify
+    {
+        return $this->builder->densify($fieldName);
+    }
+
+    /**
      * Processes multiple aggregation pipelines within a single stage on the
      * same set of input documents.
      *
@@ -146,6 +160,16 @@ abstract class Stage
     public function facet(): Stage\Facet
     {
         return $this->builder->facet();
+    }
+
+    /**
+     * Populates null and missing field values within documents.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/fill/
+     */
+    public function fill(): Stage\Fill
+    {
+        return $this->builder->fill();
     }
 
     /**
@@ -166,6 +190,7 @@ abstract class Stage
      * Returns the assembled aggregation pipeline
      *
      * @return array<array<string, mixed>>
+     * @psalm-return PipelineExpression
      */
     public function getPipeline(): array
     {
@@ -243,6 +268,17 @@ abstract class Stage
     }
 
     /**
+     * Writes the results of the aggregation pipeline to a specified collection.
+     * The $merge operator must be the last stage in the pipeline.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/merge/
+     */
+    public function merge(): Stage\Merge
+    {
+        return $this->builder->merge();
+    }
+
+    /**
      * Takes the documents returned by the aggregation pipeline and writes them
      * to a specified collection. This must be the last stage in the pipeline.
      *
@@ -293,9 +329,27 @@ abstract class Stage
     }
 
     /**
+     * Replaces the input document with the specified document. The operation
+     * replaces all existing fields in the input document, including the _id
+     * field. With $replaceWith, you can promote an embedded document to the
+     * top-level. You can also specify a new document as the replacement.
+     *
+     * The $replaceWith stage is an alias for $replaceRoot.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/replaceWith/
+     *
+     * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
+     * resolves to a document.
+     */
+    public function replaceWith($expression = null): Stage\ReplaceWith
+    {
+        return $this->builder->replaceWith($expression);
+    }
+
+    /**
      * Controls if resulting iterator should be wrapped with CachingIterator.
      */
-    public function rewindable(bool $rewindable = true): self
+    public function rewindable(bool $rewindable = true): static
     {
         $this->builder->rewindable($rewindable);
 
@@ -310,6 +364,42 @@ abstract class Stage
     public function sample(int $size): Stage\Sample
     {
         return $this->builder->sample($size);
+    }
+
+    /**
+     * The $search stage performs a full-text search on the specified field or
+     * fields which must be covered by an Atlas Search index.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-search/query-syntax/#mongodb-pipeline-pipe.-search
+     */
+    public function search(): Stage\Search
+    {
+        return $this->builder->search();
+    }
+
+    /**
+     * Adds new fields to documents. $set outputs documents that contain all
+     * existing fields from the input documents and newly added fields.
+     *
+     * The $set stage is an alias for $addFields.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/set/
+     */
+    public function set(): Stage\Set
+    {
+        return $this->builder->set();
+    }
+
+    /**
+     * Performs operations on a specified span of documents in a collection,
+     * known as a window, and returns the results based on the chosen window
+     * operator.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/setWindowFields/
+     */
+    public function setWindowFields(): Stage\SetWindowFields
+    {
+        return $this->builder->setWindowFields();
     }
 
     /**
@@ -348,6 +438,28 @@ abstract class Stage
     public function sort($fieldName, $order = null): Stage\Sort
     {
         return $this->builder->sort($fieldName, $order);
+    }
+
+    /**
+     * Performs a union of two collections. $unionWith combines pipeline results
+     * from two collections into a single result set. The stage outputs the
+     * combined result set (including duplicates) to the next stage.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/unionWith/
+     */
+    public function unionWith(string $collection): Stage\UnionWith
+    {
+        return $this->builder->unionWith($collection);
+    }
+
+    /**
+     * Removes/excludes fields from documents.
+     *
+     * @see https://www.mongodb.com/docs/rapid/reference/operator/aggregation/unset/
+     */
+    public function unset(string ...$fields): Stage\UnsetStage
+    {
+        return $this->builder->unset(...$fields);
     }
 
     /**

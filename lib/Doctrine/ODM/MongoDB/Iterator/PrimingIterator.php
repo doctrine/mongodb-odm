@@ -20,23 +20,6 @@ use function iterator_to_array;
  */
 final class PrimingIterator implements Iterator
 {
-    /** @var \Iterator<mixed, TValue> */
-    private \Iterator $iterator;
-
-    /** @var ClassMetadata<TDocument> */
-    private ClassMetadata $class;
-
-    private ReferencePrimer $referencePrimer;
-
-    /** @var array<string, callable|true|null> */
-    private array $primers;
-
-    /**
-     * @var array<int, mixed>
-     * @psalm-var Hints
-     */
-    private array $unitOfWorkHints;
-
     private bool $referencesPrimed = false;
 
     /**
@@ -45,13 +28,8 @@ final class PrimingIterator implements Iterator
      * @param array<string, callable|true|null> $primers
      * @psalm-param Hints $unitOfWorkHints
      */
-    public function __construct(\Iterator $iterator, ClassMetadata $class, ReferencePrimer $referencePrimer, array $primers, array $unitOfWorkHints = [])
+    public function __construct(private \Iterator $iterator, private ClassMetadata $class, private ReferencePrimer $referencePrimer, private array $primers, private array $unitOfWorkHints = [])
     {
-        $this->iterator        = $iterator;
-        $this->class           = $class;
-        $this->referencePrimer = $referencePrimer;
-        $this->primers         = $primers;
-        $this->unitOfWorkHints = $unitOfWorkHints;
     }
 
     public function toArray(): array

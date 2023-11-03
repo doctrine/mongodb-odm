@@ -33,7 +33,7 @@ Embed a single document:
         {
             /** @Field(type="string") */
             private $street;
-            
+
             // ...
         }
 
@@ -47,7 +47,7 @@ Embed a single document:
           <document name="Documents\User">
                 <embed-one field="address" target-document="Address" />
           </document>
-          
+
           <embedded-document name="Address">
                 <field name="street" type="string" />
           </embedded-document>
@@ -88,7 +88,7 @@ Embed many documents:
         {
             /** @Field(type="string") */
             private $number;
-        
+
             // ...
         }
 
@@ -102,7 +102,7 @@ Embed many documents:
           <document name="Documents\User">
                 <embed-many field="phoneNumbers" target-document="PhoneNumber" />
           </document>
-          
+
           <embedded-document name="PhoneNumber">
                 <field name="number" type="string" />
           </embedded-document>
@@ -167,7 +167,7 @@ the embedded document. The field name can be customized with the
             private $tasks;
 
             // ...
-            public function __construct() 
+            public function __construct()
             {
                 $this->tasks = new ArrayCollection();
             }
@@ -269,3 +269,42 @@ document and cannot exist without those by nature.
 
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>
+
+.. _embed_store_empty_array:
+
+Storing Empty Arrays in Embedded Documents
+-------------------------------------------
+
+By default, when an embedded collection property is empty, Doctrine does not store any data for it in the database.
+However, in some cases, you may want to explicitly store an empty array for such properties.
+You can achieve this behavior by using the `storeEmptyArray` option for embedded collections.
+
+.. configuration-block::
+
+    .. code-block:: php
+        <?php
+        /** @Document */
+        class User
+        {
+            // ...
+            /**
+             * @EmbedMany(targetDocument=PhoneNumber::class, storeEmptyArray=true)
+             */
+            private $phoneNumbers = [];
+            // ...
+        }
+    .. code-block:: xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+          <document name="Documents\User">
+                <embed-many field="phoneNumbers" target-document="PhoneNumber" store-empty-array="true" />
+          </document>
+          <embedded-document name="PhoneNumber">
+                <field name="number" type="string" />
+          </embedded-document>
+        </doctrine-mongo-mapping>
+Now, when the `$phoneNumbers` collection is empty, an empty array will be stored in the database for the `User`
+document's embedded `phoneNumbers` collection, even if there are no actual embedded documents in the collection.

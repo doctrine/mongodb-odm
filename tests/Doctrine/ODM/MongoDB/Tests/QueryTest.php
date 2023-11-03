@@ -21,6 +21,7 @@ use LogicException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Traversable;
 
@@ -423,11 +424,8 @@ class QueryTest extends BaseTestCase
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
     }
 
-    /**
-     * @psalm-param Query::TYPE_* $type
-     *
-     * @dataProvider provideQueryTypesThatDoNotReturnAnIterator
-     */
+    /** @psalm-param Query::TYPE_* $type */
+    #[DataProvider('provideQueryTypesThatDoNotReturnAnIterator')]
     public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator(int $type, string $method): void
     {
         $collection = $this->getMockCollection();

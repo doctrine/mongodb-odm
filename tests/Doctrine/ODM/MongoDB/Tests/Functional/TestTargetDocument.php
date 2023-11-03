@@ -6,10 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class TargetDocumentTest extends BaseTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testMappedSuperClassAsTargetDocument(): void
     {
         $test            = new TargetDocumentTestDocument();

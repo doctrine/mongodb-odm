@@ -12,8 +12,6 @@ use ReflectionMethod;
 use SimpleXMLElement;
 use stdClass;
 
-use function get_class;
-
 use const DIRECTORY_SEPARATOR;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTestCase
@@ -30,7 +28,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTestCase
         $element = new SimpleXMLElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
-        $m = new ReflectionMethod(get_class($driver), 'setShardKey');
+        $m = new ReflectionMethod($driver::class, 'setShardKey');
         $m->setAccessible(true);
         $m->invoke($driver, $class, $element);
 

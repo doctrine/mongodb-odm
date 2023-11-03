@@ -46,7 +46,6 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTestCase
         self::assertInstanceOf(CollWithNullableReturnType::class, $coll);
     }
 
-    /** @requires PHP >= 8.0 */
     public function testPHP80Types(): void
     {
         $class = $this->generator->loadClass(CollWithPHP80Types::class, Configuration::AUTOGENERATE_EVAL);
@@ -54,7 +53,6 @@ class DefaultPersistentCollectionGeneratorTest extends BaseTestCase
         self::assertInstanceOf(CollWithPHP80Types::class, $coll);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testPHP81Types(): void
     {
         $class = $this->generator->loadClass(CollWithPHP81Types::class, Configuration::AUTOGENERATE_EVAL);

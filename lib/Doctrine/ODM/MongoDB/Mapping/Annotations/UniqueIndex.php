@@ -24,7 +24,7 @@ final class UniqueIndex extends AbstractIndex
         $order = null,
         bool $sparse = false,
         array $options = [],
-        array $partialFilterExpression = []
+        array $partialFilterExpression = [],
     ) {
         parent::__construct(
             $keys,

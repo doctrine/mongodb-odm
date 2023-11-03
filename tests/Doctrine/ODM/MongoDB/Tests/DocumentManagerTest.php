@@ -32,10 +32,9 @@ use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use stdClass;
-
-use function get_class;
 
 class DocumentManagerTest extends BaseTestCase
 {
@@ -131,7 +130,7 @@ class DocumentManagerTest extends BaseTestCase
         ];
     }
 
-    /** @dataProvider dataMethodsAffectedByNoObjectArguments */
+    #[DataProvider('dataMethodsAffectedByNoObjectArguments')]
     public function testThrowsExceptionOnNonObjectValues(string $methodName): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -149,7 +148,7 @@ class DocumentManagerTest extends BaseTestCase
         ];
     }
 
-    /** @dataProvider dataAffectedByErrorIfClosedException */
+    #[DataProvider('dataAffectedByErrorIfClosedException')]
     public function testAffectedByErrorIfClosedException(string $methodName): void
     {
         $this->expectException(MongoDBException::class);
@@ -193,7 +192,7 @@ class DocumentManagerTest extends BaseTestCase
         $d = new WrongSimpleRefDocument();
         $r = new ParticipantSolo('Maciej');
         $this->dm->persist($r);
-        $class = $this->dm->getClassMetadata(get_class($d));
+        $class = $this->dm->getClassMetadata($d::class);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'Identifier reference must not target document using Single Collection Inheritance, ' .
@@ -207,7 +206,7 @@ class DocumentManagerTest extends BaseTestCase
         $r = new User();
         $this->dm->persist($r);
         $d     = new ReferenceStoreAsDocument();
-        $class = $this->dm->getClassMetadata(get_class($d));
+        $class = $this->dm->getClassMetadata($d::class);
 
         $dbRef = $this->dm->createReference($r, $class->associationMappings['ref1']);
         self::assertInstanceOf(ObjectId::class, $dbRef);

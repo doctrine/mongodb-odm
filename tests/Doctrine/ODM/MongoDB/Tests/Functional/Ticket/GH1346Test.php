@@ -8,10 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 class GH1346Test extends BaseTestCase
 {
-    /** @group GH1346Test */
+    #[Group('GH1346Test')]
     public function testPublicProperty(): void
     {
         $referenced1    = new GH1346ReferencedDocument();

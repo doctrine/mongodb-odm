@@ -14,26 +14,27 @@ use Doctrine\Common\Collections\Collection;
  */
 class CollWithPHP80Types extends ArrayCollection
 {
-    public function mixed(mixed $param) : mixed
+    public function mixed(mixed $param): mixed
     {
         return $param;
     }
 
     /**
      * @param Collection<TKey, TElement>|ArrayCollection<TKey, TElement> $param
+     *
      * @return Collection<TKey, TElement>|ArrayCollection<TKey, TElement>
      */
-    public function union(Collection|ArrayCollection $param) : Collection|ArrayCollection
+    public function union(Collection|ArrayCollection $param): Collection|ArrayCollection
     {
         return $param;
     }
 
-    public function static() : static
+    public function static(): static
     {
         return $this;
     }
 
-    public function nullableStatic() : ?static
+    public function nullableStatic(): ?static
     {
         return $this;
     }

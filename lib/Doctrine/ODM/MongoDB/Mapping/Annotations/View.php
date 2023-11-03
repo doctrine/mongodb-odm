@@ -30,7 +30,7 @@ final class View extends AbstractDocument
         ?string $db = null,
         ?string $view = null,
         ?string $rootClass = null,
-        ?string $repositoryClass = null
+        ?string $repositoryClass = null,
     ) {
         $this->db              = $db;
         $this->view            = $view;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Documents74\TypedDocument;
-use Documents74\TypedEmbeddedDocument;
+use Documents\TypedDocument;
+use Documents\TypedEmbeddedDocument;
 use MongoDB\BSON\ObjectId;
 
 use function assert;

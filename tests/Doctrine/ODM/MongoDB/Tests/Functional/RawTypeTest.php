@@ -8,16 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class RawTypeTest extends BaseTestCase
 {
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider getTestRawTypeData
-     */
+    /** @param mixed $value */
+    #[DataProvider('getTestRawTypeData')]
     public function testRawType($value): void
     {
         $test      = new RawType();
@@ -26,7 +22,7 @@ class RawTypeTest extends BaseTestCase
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $result = $this->dm->getDocumentCollection(get_class($test))->findOne(['_id' => new ObjectId($test->id)]);
+        $result = $this->dm->getDocumentCollection($test::class)->findOne(['_id' => new ObjectId($test->id)]);
         self::assertEquals($value, $result['raw']);
     }
 

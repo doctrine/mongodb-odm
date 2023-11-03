@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Types\DateImmutableType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -75,11 +76,8 @@ class DateImmutableTypeTest extends TestCase
         self::assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider provideInvalidDateValues
-     */
+    /** @param mixed $value */
+    #[DataProvider('provideInvalidDateValues')]
     public function testConvertToDatabaseValueWithInvalidValues($value): void
     {
         $type = Type::getType(Type::DATE_IMMUTABLE);
@@ -98,11 +96,8 @@ class DateImmutableTypeTest extends TestCase
         ];
     }
 
-    /**
-     * @param mixed $input
-     *
-     * @dataProvider provideDatabaseToPHPValues
-     */
+    /** @param mixed $input */
+    #[DataProvider('provideDatabaseToPHPValues')]
     public function testConvertToPHPValue($input, DateTimeImmutable $output): void
     {
         $type   = Type::getType(Type::DATE_IMMUTABLE);
@@ -119,11 +114,8 @@ class DateImmutableTypeTest extends TestCase
         self::assertNull($type->convertToPHPValue(null));
     }
 
-    /**
-     * @param mixed $input
-     *
-     * @dataProvider provideDatabaseToPHPValues
-     */
+    /** @param mixed $input */
+    #[DataProvider('provideDatabaseToPHPValues')]
     public function testClosureToPHP($input, DateTimeImmutable $output): void
     {
         $type = Type::getType(Type::DATE_IMMUTABLE);

@@ -7,12 +7,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BinDataTest extends BaseTestCase
 {
-    /** @dataProvider provideData */
+    #[DataProvider('provideData')]
     public function testBinData(string $field, string $data, int $type): void
     {
         $test         = new BinDataTestUser();
@@ -20,7 +19,7 @@ class BinDataTest extends BaseTestCase
         $this->dm->persist($test);
         $this->dm->flush();
 
-        $check = $this->dm->getDocumentCollection(get_class($test))->findOne([]);
+        $check = $this->dm->getDocumentCollection($test::class)->findOne([]);
         self::assertInstanceOf(Binary::class, $check[$field]);
         self::assertEquals($type, $check[$field]->getType());
         self::assertEquals($data, $check[$field]->getData());

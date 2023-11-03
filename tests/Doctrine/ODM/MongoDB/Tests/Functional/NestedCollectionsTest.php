@@ -10,12 +10,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonebook;
 use Documents\Phonenumber;
-
-use function get_class;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class NestedCollectionsTest extends BaseTestCase
 {
-    /** @dataProvider provideStrategy */
+    #[DataProvider('provideStrategy')]
     public function testStrategy(string $field): void
     {
         $doc         = new DocWithNestedCollections();
@@ -26,7 +25,7 @@ class NestedCollectionsTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc = $this->dm->getRepository($doc::class)->find($doc->id);
         self::assertCount(1, $doc->{$field});
         $privateBook = $doc->{$field}[0];
         self::assertEquals('Private', $privateBook->getTitle());
@@ -40,7 +39,7 @@ class NestedCollectionsTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc = $this->dm->getRepository($doc::class)->find($doc->id);
         self::assertCount(2, $doc->{$field});
         $privateBook = $doc->{$field}[0];
         self::assertEquals('Private', $privateBook->getTitle());
@@ -55,7 +54,7 @@ class NestedCollectionsTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc = $this->dm->getRepository($doc::class)->find($doc->id);
         self::assertCount(2, $doc->{$field});
         $privateBook = $doc->{$field}[0];
         self::assertEquals('Private', $privateBook->getTitle());

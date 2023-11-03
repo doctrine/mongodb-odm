@@ -9,22 +9,27 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
+ *
+ * @psalm-type UnwindStageExpression = array{
+ *     '$unwind': string|array{
+ *         path: string,
+ *         includeArrayIndex?: string,
+ *         preserveNullAndEmptyArrays?: bool,
+ *     }
+ * }
  */
 class Unwind extends Stage
 {
-    private string $fieldName;
-
     private ?string $includeArrayIndex = null;
 
     private bool $preserveNullAndEmptyArrays = false;
 
-    public function __construct(Builder $builder, string $fieldName)
+    public function __construct(Builder $builder, private string $fieldName)
     {
         parent::__construct($builder);
-
-        $this->fieldName = $fieldName;
     }
 
+    /** @psalm-return UnwindStageExpression */
     public function getExpression(): array
     {
         // Fallback behavior for MongoDB < 3.2
@@ -36,12 +41,12 @@ class Unwind extends Stage
 
         $unwind = ['path' => $this->fieldName];
 
-        foreach (['includeArrayIndex', 'preserveNullAndEmptyArrays'] as $option) {
-            if (! $this->$option) {
-                continue;
-            }
+        if ($this->includeArrayIndex) {
+            $unwind['includeArrayIndex'] = $this->includeArrayIndex;
+        }
 
-            $unwind[$option] = $this->$option;
+        if ($this->preserveNullAndEmptyArrays) {
+            $unwind['preserveNullAndEmptyArrays'] = $this->preserveNullAndEmptyArrays;
         }
 
         return ['$unwind' => $unwind];
@@ -51,7 +56,7 @@ class Unwind extends Stage
      * The name of a new field to hold the array index of the element. The name
      * cannot start with a dollar sign $.
      */
-    public function includeArrayIndex(string $includeArrayIndex): self
+    public function includeArrayIndex(string $includeArrayIndex): static
     {
         $this->includeArrayIndex = $includeArrayIndex;
 
@@ -62,7 +67,7 @@ class Unwind extends Stage
      * If true, if the path is null, missing, or an empty array, $unwind outputs
      * the document.
      */
-    public function preserveNullAndEmptyArrays(bool $preserveNullAndEmptyArrays = true): self
+    public function preserveNullAndEmptyArrays(bool $preserveNullAndEmptyArrays = true): static
     {
         $this->preserveNullAndEmptyArrays = $preserveNullAndEmptyArrays;
 

@@ -24,10 +24,11 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Throwable;
 
-use function get_class;
 use function spl_object_hash;
 use function sprintf;
 
@@ -88,7 +89,7 @@ class UnitOfWorkTest extends BaseTestCase
     {
         $doc     = new UowCustomIdDocument();
         $doc->id = 'string';
-        $class   = $this->dm->getClassMetadata(get_class($doc));
+        $class   = $this->dm->getClassMetadata($doc::class);
         self::assertFalse($this->uow->isScheduledForInsert($doc));
         self::assertFalse($this->uow->isScheduledForUpsert($doc));
         $this->uow->scheduleForUpsert($class, $doc);
@@ -156,7 +157,7 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testPreUpdateTriggeredWithEmptyChangeset(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
@@ -249,9 +250,8 @@ class UnitOfWorkTest extends BaseTestCase
     /**
      * @param array<string, mixed>|null $origData
      * @param array<string, mixed>|null $updateData
-     *
-     * @dataProvider getScheduleForUpdateWithArraysTests
      */
+    #[DataProvider('getScheduleForUpdateWithArraysTests')]
     public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
     {
         $arrayTest = new ArrayTest($origData);
@@ -380,7 +380,7 @@ class UnitOfWorkTest extends BaseTestCase
 
         $this->uow->commit();
 
-        self::assertNotNull($this->dm->getRepository(get_class($user))->find($user->id));
+        self::assertNotNull($this->dm->getRepository($user::class)->find($user->id));
     }
 
     public function testRemovePersistedButNotFlushedDocument(): void
@@ -392,7 +392,7 @@ class UnitOfWorkTest extends BaseTestCase
         $this->uow->remove($user);
         $this->uow->commit();
 
-        self::assertNull($this->dm->getRepository(get_class($user))->find($user->id));
+        self::assertNull($this->dm->getRepository($user::class)->find($user->id));
     }
 
     public function testPersistRemovedEmbeddedDocument(): void
@@ -403,7 +403,7 @@ class UnitOfWorkTest extends BaseTestCase
         $this->uow->commit();
         $this->uow->clear();
 
-        $test = $this->dm->getRepository(get_class($test))->find($test->id);
+        $test = $this->dm->getRepository($test::class)->find($test->id);
 
         $this->uow->remove($test);
 
@@ -537,7 +537,7 @@ class UnitOfWorkTest extends BaseTestCase
 
         try {
             $this->dm->flush();
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => /** @psalm-suppress InaccessibleProperty */
 $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 

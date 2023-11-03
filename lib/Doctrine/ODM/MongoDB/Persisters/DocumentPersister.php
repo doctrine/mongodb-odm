@@ -36,7 +36,6 @@ use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
-use ProxyManager\Proxy\GhostObjectInterface;
 use stdClass;
 
 use function array_combine;
@@ -52,7 +51,6 @@ use function array_values;
 use function assert;
 use function count;
 use function explode;
-use function get_class;
 use function get_object_vars;
 use function gettype;
 use function implode;
@@ -82,15 +80,6 @@ use function trigger_deprecation;
  */
 final class DocumentPersister
 {
-    private PersistenceBuilder $pb;
-
-    private DocumentManager $dm;
-
-    private UnitOfWork $uow;
-
-    /** @psalm-var ClassMetadata<T> */
-    private ClassMetadata $class;
-
     private ?Collection $collection = null;
 
     private ?Bucket $bucket = null;
@@ -113,24 +102,17 @@ final class DocumentPersister
 
     private CollectionPersister $cp;
 
-    private HydratorFactory $hydratorFactory;
-
     /** @psalm-param ClassMetadata<T> $class */
     public function __construct(
-        PersistenceBuilder $pb,
-        DocumentManager $dm,
-        UnitOfWork $uow,
-        HydratorFactory $hydratorFactory,
-        ClassMetadata $class,
-        ?CriteriaMerger $cm = null
+        private PersistenceBuilder $pb,
+        private DocumentManager $dm,
+        private UnitOfWork $uow,
+        private HydratorFactory $hydratorFactory,
+        private ClassMetadata $class,
+        ?CriteriaMerger $cm = null,
     ) {
-        $this->pb              = $pb;
-        $this->dm              = $dm;
-        $this->cm              = $cm ?: new CriteriaMerger();
-        $this->uow             = $uow;
-        $this->hydratorFactory = $hydratorFactory;
-        $this->class           = $class;
-        $this->cp              = $this->uow->getCollectionPersister();
+        $this->cm = $cm ?: new CriteriaMerger();
+        $this->cp = $this->uow->getCollectionPersister();
 
         if ($class->isEmbeddedDocument || $class->isQueryResultDocument) {
             return;
@@ -710,7 +692,7 @@ final class DocumentPersister
             $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
             if (! is_array($embeddedDocument)) {
-                throw HydratorException::associationItemTypeMismatch(get_class($owner), $mapping['name'], $key, 'array', gettype($embeddedDocument));
+                throw HydratorException::associationItemTypeMismatch($owner::class, $mapping['name'], $key, 'array', gettype($embeddedDocument));
             }
 
             $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
@@ -747,7 +729,7 @@ final class DocumentPersister
             $className = $this->uow->getClassNameForAssociation($mapping, $reference);
 
             if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array($reference)) {
-                throw HydratorException::associationItemTypeMismatch(get_class($owner), $mapping['name'], $key, 'array', gettype($reference));
+                throw HydratorException::associationItemTypeMismatch($owner::class, $mapping['name'], $key, 'array', gettype($reference));
             }
 
             $identifier = ClassMetadata::getReferenceId($reference, $mapping['storeAs']);
@@ -766,7 +748,7 @@ final class DocumentPersister
             }
 
             // only query for the referenced object if it is not already initialized or the collection is sorted
-            if (! (($reference instanceof GhostObjectInterface && ! $reference->isProxyInitialized())) && ! $sorted) {
+            if (! $this->uow->isUninitializedObject($reference) && ! $sorted) {
                 continue;
             }
 
@@ -804,7 +786,7 @@ final class DocumentPersister
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
                 $document = $this->uow->getById($documentData['_id'], $class);
-                if ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+                if ($this->uow->isUninitializedObject($document)) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
                     $this->uow->setOriginalDocumentData($document, $data);
                 }
@@ -839,7 +821,7 @@ final class DocumentPersister
             throw PersistentCollectionException::ownerRequiredToLoadCollection();
         }
 
-        $ownerClass        = $this->dm->getClassMetadata(get_class($owner));
+        $ownerClass        = $this->dm->getClassMetadata($owner::class);
         $targetClass       = $this->dm->getClassMetadata($mapping['targetDocument']);
         $mappedByMapping   = $targetClass->fieldMappings[$mapping['mappedBy']] ?? [];
         $mappedByFieldName = ClassMetadata::getReferenceFieldName($mappedByMapping['storeAs'] ?? ClassMetadata::REFERENCE_STORE_AS_DB_REF, $mapping['mappedBy']);
@@ -1175,7 +1157,7 @@ final class DocumentPersister
             // Prepare mapped, embedded objects
             if (
                 ! empty($mapping['embedded']) && is_object($value) &&
-                ! $this->dm->getMetadataFactory()->isTransient(get_class($value))
+                ! $this->dm->getMetadataFactory()->isTransient($value::class)
             ) {
                 return [[$fieldName, $this->pb->prepareEmbeddedDocumentValue($mapping, $value)]];
             }
@@ -1183,7 +1165,7 @@ final class DocumentPersister
             if (! empty($mapping['reference']) && is_object($value) && ! ($value instanceof ObjectId)) {
                 try {
                     return $this->prepareReference($fieldName, $value, $mapping, $inNewObj);
-                } catch (MappingException $e) {
+                } catch (MappingException) {
                     // do nothing in case passed object is not mapped document
                 }
             }

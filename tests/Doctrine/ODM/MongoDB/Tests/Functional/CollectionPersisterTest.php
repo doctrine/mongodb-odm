@@ -13,8 +13,6 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class CollectionPersisterTest extends BaseTestCase
 {
     private CommandLogger $logger;
@@ -45,6 +43,17 @@ class CollectionPersisterTest extends BaseTestCase
         self::assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
     }
 
+    public function testDeleteReferenceManyWithStoreEmptyArray(): void
+    {
+        $persister = $this->getCollectionPersister();
+        $user      = $this->getTestUser('jwage');
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->roles);
+        $persister->delete($user, [$user->roles], []);
+
+        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+        self::assertSame([], $user['roles'], 'Test that the roles field was stored as empty array');
+    }
+
     public function testDeleteEmbedMany(): void
     {
         $persister = $this->getCollectionPersister();
@@ -54,6 +63,17 @@ class CollectionPersisterTest extends BaseTestCase
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
+    }
+
+    public function testDeleteEmbedManyWithStoreEmptyArray(): void
+    {
+        $persister = $this->getCollectionPersister();
+        $user      = $this->getTestUser('jwage');
+        self::assertInstanceOf(PersistentCollectionInterface::class, $user->groups);
+        $persister->delete($user, [$user->groups], []);
+
+        $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
+        self::assertSame([], $user['groups'], 'Test that the groups field was stored as empty array');
     }
 
     public function testDeleteNestedEmbedMany(): void
@@ -363,8 +383,8 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($post);
         $this->dm->flush();
 
-        self::assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.by' => 'userA']));
-        self::assertSame($post, $this->dm->getRepository(get_class($post))->findOneBy(['comments.a.comments.b.by' => 'userB']));
+        self::assertSame($post, $this->dm->getRepository($post::class)->findOneBy(['comments.a.by' => 'userA']));
+        self::assertSame($post, $this->dm->getRepository($post::class)->findOneBy(['comments.a.comments.b.by' => 'userB']));
     }
 
     public function testPersistSeveralNestedEmbedManySetStrategy(): void
@@ -395,7 +415,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "set" strategy requires one query',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManySetArrayStrategy(): void
@@ -426,7 +446,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "setArray" strategy requires one query',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyAddToSetStrategy(): void
@@ -457,7 +477,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "addToSet" strategy requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyPushAllStrategy(): void
@@ -488,7 +508,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyDifferentStrategies(): void
@@ -522,7 +542,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 
     public function testPersistSeveralNestedEmbedManyDifferentStrategiesDeepNesting(): void
@@ -562,7 +582,7 @@ class CollectionPersisterTest extends BaseTestCase
             'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
         );
 
-        self::assertSame($structure, $this->dm->getRepository(get_class($structure))->findOneBy(['id' => $structure->id]));
+        self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
     }
 }
 
@@ -591,11 +611,25 @@ class CollectionPersisterUser
     public $categories = [];
 
     /**
+     * @ODM\EmbedMany(targetDocument=CollectionPersisterGroup::class, storeEmptyArray=true)
+     *
+     * @var Collection<int, CollectionPersisterGroup>|array<CollectionPersisterGroup>
+     */
+    public $groups = [];
+
+    /**
      * @ODM\ReferenceMany(targetDocument=CollectionPersisterPhonenumber::class, cascade={"persist"})
      *
      * @var Collection<int, CollectionPersisterPhonenumber>|array<CollectionPersisterPhonenumber>
      */
     public $phonenumbers = [];
+
+    /**
+     * @ODM\ReferenceMany(targetDocument=CollectionPersisterRole::class, cascade={"persist"}, storeEmptyArray=true)
+     *
+     * @var Collection<int, CollectionPersisterRole>|array<CollectionPersisterRole>
+     */
+    public $roles = [];
 }
 
 /** @ODM\EmbeddedDocument */
@@ -641,6 +675,52 @@ class CollectionPersisterPhonenumber
     public function __construct(string $phonenumber)
     {
         $this->phonenumber = $phonenumber;
+    }
+}
+
+/** @ODM\Document(collection="role_collection_persister_test") */
+class CollectionPersisterRole
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
+    public $role;
+
+    public function __construct(string $role)
+    {
+        $this->role = $role;
+    }
+}
+
+/** @ODM\Document(collection="group_collection_persister_test") */
+class CollectionPersisterGroup
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="string")
+     *
+     * @var string
+     */
+    public $group;
+
+    public function __construct(string $group)
+    {
+        $this->group = $group;
     }
 }
 

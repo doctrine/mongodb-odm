@@ -34,7 +34,6 @@ use Throwable;
 
 use function array_search;
 use function assert;
-use function get_class;
 use function gettype;
 use function is_object;
 use function ltrim;
@@ -240,6 +239,14 @@ class DocumentManager implements ObjectManager
     public function initializeObject($obj)
     {
         $this->unitOfWork->initializeObject($obj);
+    }
+
+    /**
+     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     */
+    public function isUninitializedObject(object $obj): bool
+    {
+        return $this->unitOfWork->isUninitializedObject($obj);
     }
 
     /**
@@ -747,7 +754,7 @@ class DocumentManager implements ObjectManager
      */
     public function createReference(object $document, array $referenceMapping)
     {
-        $class = $this->getClassMetadata(get_class($document));
+        $class = $this->getClassMetadata($document::class);
         $id    = $this->unitOfWork->getDocumentIdentifier($document);
 
         if ($id === null) {
@@ -881,7 +888,7 @@ class DocumentManager implements ObjectManager
         if (self::$version === null) {
             try {
                 self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
-            } catch (Throwable $t) {
+            } catch (Throwable) {
                 return 'unknown';
             }
         }

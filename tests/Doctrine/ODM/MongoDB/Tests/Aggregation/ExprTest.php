@@ -9,6 +9,7 @@ use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use LogicException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ExprTest extends BaseTestCase
 {
@@ -17,9 +18,25 @@ class ExprTest extends BaseTestCase
     /**
      * @param array<string, string>          $expected
      * @param Closure(Expr): mixed[]|mixed[] $args
-     *
-     * @dataProvider provideAllOperators
      */
+    #[DataProvider('provideAccumulatorExpressionOperators')]
+    #[DataProvider('provideArithmeticExpressionOperators')]
+    #[DataProvider('provideArrayExpressionOperators')]
+    #[DataProvider('provideBooleanExpressionOperators')]
+    #[DataProvider('provideComparisonExpressionOperators')]
+    #[DataProvider('provideConditionalExpressionOperators')]
+    #[DataProvider('provideCustomExpressionOperators')]
+    #[DataProvider('provideDataSizeExpressionOperators')]
+    #[DataProvider('provideDateExpressionOperators')]
+    #[DataProvider('provideGroupAccumulatorExpressionOperators')]
+    #[DataProvider('provideMiscExpressionOperators')]
+    #[DataProvider('provideObjectExpressionOperators')]
+    #[DataProvider('provideSetExpressionOperators')]
+    #[DataProvider('provideStringExpressionOperators')]
+    #[DataProvider('provideTimestampExpressionOperators')]
+    #[DataProvider('provideTrigonometryExpressionOperators')]
+    #[DataProvider('provideTypeExpressionOperators')]
+    #[DataProvider('provideWindowExpressionOperators')]
     public function testGenericOperator(array $expected, string $operator, $args): void
     {
         $expr = $this->createExpr();
@@ -32,9 +49,25 @@ class ExprTest extends BaseTestCase
     /**
      * @param array<string, string>          $expected
      * @param Closure(Expr): mixed[]|mixed[] $args
-     *
-     * @dataProvider provideAllOperators
      */
+    #[DataProvider('provideAccumulatorExpressionOperators')]
+    #[DataProvider('provideArithmeticExpressionOperators')]
+    #[DataProvider('provideArrayExpressionOperators')]
+    #[DataProvider('provideBooleanExpressionOperators')]
+    #[DataProvider('provideComparisonExpressionOperators')]
+    #[DataProvider('provideConditionalExpressionOperators')]
+    #[DataProvider('provideCustomExpressionOperators')]
+    #[DataProvider('provideDataSizeExpressionOperators')]
+    #[DataProvider('provideDateExpressionOperators')]
+    #[DataProvider('provideGroupAccumulatorExpressionOperators')]
+    #[DataProvider('provideMiscExpressionOperators')]
+    #[DataProvider('provideObjectExpressionOperators')]
+    #[DataProvider('provideSetExpressionOperators')]
+    #[DataProvider('provideStringExpressionOperators')]
+    #[DataProvider('provideTimestampExpressionOperators')]
+    #[DataProvider('provideTrigonometryExpressionOperators')]
+    #[DataProvider('provideTypeExpressionOperators')]
+    #[DataProvider('provideWindowExpressionOperators')]
     public function testGenericOperatorWithField(array $expected, string $operator, $args): void
     {
         $expr = $this->createExpr();

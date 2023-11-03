@@ -11,33 +11,50 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 
+use function is_array;
+
+/**
+ * @psalm-import-type OutputCollection from Merge
+ * @psalm-type OutStageExpression = array{'$out': OutputCollection}
+ */
 class Out extends Stage
 {
-    private DocumentManager $dm;
+    /**
+     * @var array|string
+     * @psalm-var OutputCollection
+     */
+    private $out;
 
-    private string $collection;
-
-    public function __construct(Builder $builder, string $collection, DocumentManager $documentManager)
+    public function __construct(Builder $builder, string $collection, private DocumentManager $dm)
     {
         parent::__construct($builder);
 
-        $this->dm = $documentManager;
         $this->out($collection);
     }
 
     public function getExpression(): array
     {
         return [
-            '$out' => $this->collection,
+            '$out' => $this->out,
         ];
     }
 
-    public function out(string $collection): Stage\Out
+    /**
+     * @param string|array $collection
+     * @psalm-param OutputCollection $collection
+     */
+    public function out($collection): Stage\Out
     {
+        if (is_array($collection)) {
+            $this->out = $collection;
+
+            return $this;
+        }
+
         try {
             $class = $this->dm->getClassMetadata($collection);
-        } catch (BaseMappingException $e) {
-            $this->collection = $collection;
+        } catch (BaseMappingException) {
+            $this->out = $collection;
 
             return $this;
         }
@@ -53,6 +70,6 @@ class Out extends Stage
             throw MappingException::cannotUseShardedCollectionInOutStage($classMetadata->name);
         }
 
-        $this->collection = $classMetadata->getCollection();
+        $this->out = $classMetadata->getCollection();
     }
 }

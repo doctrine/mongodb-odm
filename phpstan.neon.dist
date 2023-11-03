@@ -9,8 +9,6 @@ parameters:
     - lib
     - tests
   excludePaths:
-    - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php
-    - lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php
     - tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures/User.php
     - tests/Hydrators/
     - tests/PersistentCollections/
@@ -23,6 +21,8 @@ parameters:
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
   checkMissingIterableValueType: true
+  # Disabled due to inconsistent errors upon encountering psalm types
+  reportUnmatchedIgnoredErrors: false
 
 # To be removed when reaching phpstan level 6
 rules:

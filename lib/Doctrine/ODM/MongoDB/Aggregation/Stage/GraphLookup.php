@@ -40,22 +40,16 @@ class GraphLookup extends Stage
 
     private Stage\GraphLookup\MatchStage $restrictSearchWithMatch;
 
-    private DocumentManager $dm;
-
-    private ClassMetadata $class;
-
     private ?ClassMetadata $targetClass = null;
 
     /**
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function __construct(Builder $builder, string $from, DocumentManager $documentManager, ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, private DocumentManager $dm, private ClassMetadata $class)
     {
         parent::__construct($builder);
 
-        $this->dm                      = $documentManager;
-        $this->class                   = $class;
         $this->restrictSearchWithMatch = new GraphLookup\MatchStage($this->builder, $this);
         $this->from($from);
     }
@@ -66,7 +60,7 @@ class GraphLookup extends Stage
      * Contains the documents traversed in the $graphLookup stage to reach the
      * document.
      */
-    public function alias(string $alias): self
+    public function alias(string $alias): static
     {
         $this->as = $alias;
 
@@ -80,7 +74,7 @@ class GraphLookup extends Stage
      * Optionally, connectFromField may be an array of field names, each of
      * which is individually followed through the traversal process.
      */
-    public function connectFromField(string $connectFromField): self
+    public function connectFromField(string $connectFromField): static
     {
         // No targetClass mapping - simply use field name as is
         if (! $this->targetClass) {
@@ -111,7 +105,7 @@ class GraphLookup extends Stage
      * Field name in other documents against which to match the value of the
      * field specified by the connectFromField parameter.
      */
-    public function connectToField(string $connectToField): self
+    public function connectToField(string $connectToField): static
     {
         $this->connectToField = $this->convertTargetFieldName($connectToField);
 
@@ -125,7 +119,7 @@ class GraphLookup extends Stage
      * represented as a NumberLong. Recursion depth value starts at zero, so the
      * first lookup corresponds to zero depth.
      */
-    public function depthField(string $depthField): self
+    public function depthField(string $depthField): static
     {
         $this->depthField = $depthField;
 
@@ -138,7 +132,7 @@ class GraphLookup extends Stage
      *
      * @psalm-param class-string|string $from
      */
-    public function from(string $from): self
+    public function from(string $from): static
     {
         // $from can either be
         // a) a field name indicating a reference to a different document. Currently, only REFERENCE_STORE_AS_ID is supported
@@ -152,7 +146,7 @@ class GraphLookup extends Stage
         // Check if mapped class with given name exists
         try {
             $this->targetClass = $this->dm->getClassMetadata($from);
-        } catch (BaseMappingException $e) {
+        } catch (BaseMappingException) {
             $this->from = $from;
 
             return $this;
@@ -192,7 +186,7 @@ class GraphLookup extends Stage
     /**
      * Non-negative integral number specifying the maximum recursion depth.
      */
-    public function maxDepth(int $maxDepth): self
+    public function maxDepth(int $maxDepth): static
     {
         $this->maxDepth = $maxDepth;
 
@@ -216,7 +210,7 @@ class GraphLookup extends Stage
      *
      * @param string|mixed[]|Expr $expression
      */
-    public function startWith($expression): self
+    public function startWith($expression): static
     {
         $this->startWith = $expression;
 
@@ -224,7 +218,7 @@ class GraphLookup extends Stage
     }
 
     /** @throws MappingException */
-    private function fromReference(string $fieldName): self
+    private function fromReference(string $fieldName): static
     {
         if (! $this->class->hasReference($fieldName)) {
             MappingException::referenceMappingNotFound($this->class->name, $fieldName);

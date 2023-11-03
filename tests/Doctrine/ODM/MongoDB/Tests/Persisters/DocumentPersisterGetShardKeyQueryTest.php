@@ -13,8 +13,6 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use ReflectionMethod;
 
-use function get_class;
-
 class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 {
     public function testGetShardKeyQueryScalars(): void
@@ -25,7 +23,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o->bool   = true;
         $o->float  = 1.2;
 
-        $persister = $this->uow->getDocumentPersister(get_class($o));
+        $persister = $this->uow->getDocumentPersister($o::class);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -43,7 +41,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o->bin  = 'hi';
         $o->date = new DateTime();
 
-        $persister = $this->uow->getDocumentPersister(get_class($o));
+        $persister = $this->uow->getDocumentPersister($o::class);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -69,7 +67,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o             = new ShardedById();
         $o->identifier = new ObjectId();
 
-        $persister = $this->uow->getDocumentPersister(get_class($o));
+        $persister = $this->uow->getDocumentPersister($o::class);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);
@@ -88,7 +86,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 
         $this->dm->persist($o->reference);
 
-        $persister = $this->uow->getDocumentPersister(get_class($o));
+        $persister = $this->uow->getDocumentPersister($o::class);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
         $method->setAccessible(true);

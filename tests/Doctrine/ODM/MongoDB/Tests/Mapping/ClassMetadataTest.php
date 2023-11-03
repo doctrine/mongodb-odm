@@ -20,28 +20,28 @@ use Documents\Account;
 use Documents\Address;
 use Documents\Album;
 use Documents\Bars\Bar;
+use Documents\Card;
 use Documents\CmsGroup;
 use Documents\CmsUser;
+use Documents\CustomCollection;
 use Documents\CustomRepository\Repository;
 use Documents\SpecialUser;
+use Documents\Suit;
+use Documents\SuitInt;
+use Documents\SuitNonBacked;
 use Documents\User;
 use Documents\UserName;
 use Documents\UserRepository;
-use Documents74\CustomCollection;
-use Documents74\UserTyped;
-use Documents81\Card;
-use Documents81\Suit;
-use Documents81\SuitInt;
-use Documents81\SuitNonBacked;
+use Documents\UserTyped;
 use Generator;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionException;
 use stdClass;
 
 use function array_merge;
-use function get_class;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
 use function serialize;
@@ -182,7 +182,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(CustomCollection::class, $cm->getAssociationCollectionClass('referenceMany'));
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflection(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -203,7 +202,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertFalse($cm->isNullable('nullableSuit'));
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumReflectionPropertySerialization(): void
     {
         $cm = new ClassMetadata(Card::class);
@@ -217,19 +215,17 @@ class ClassMetadataTest extends BaseTestCase
         self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeFromReflectionMustBeBacked(): void
     {
         $cm = new ClassMetadata(Card::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: Documents81\Card::suitNonBacked',
+            'Attempting to map a non-backed enum Documents\SuitNonBacked: Documents\Card::suitNonBacked',
         );
         $cm->mapField(['fieldName' => 'suitNonBacked']);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToAnEnum(): void
     {
         $object = new class {
@@ -237,11 +233,11 @@ class ClassMetadataTest extends BaseTestCase
             public $enum;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-enum type Documents81\Card as an enum: ',
+            'Attempting to map a non-enum type Documents\Card as an enum: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -249,7 +245,6 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumTypeMustPointToABackedEnum(): void
     {
         $object = new class {
@@ -257,11 +252,11 @@ class ClassMetadataTest extends BaseTestCase
             public $enum;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
-            'Attempting to map a non-backed enum Documents81\SuitNonBacked: ',
+            'Attempting to map a non-backed enum Documents\SuitNonBacked: ',
         );
         $cm->mapField([
             'fieldName' => 'enum',
@@ -388,11 +383,8 @@ class ClassMetadataTest extends BaseTestCase
         $cm->mapField(['fieldName' => 'namee', 'type' => 'string']);
     }
 
-    /**
-     * @param ClassMetadata<CmsUser> $cm
-     *
-     * @dataProvider dataProviderMetadataClasses
-     */
+    /** @param ClassMetadata<CmsUser> $cm */
+    #[DataProvider('dataProviderMetadataClasses')]
     public function testEmbeddedDocumentWithDiscriminator(ClassMetadata $cm): void
     {
         $cm->setDiscriminatorField('discriminator');
@@ -435,7 +427,7 @@ class ClassMetadataTest extends BaseTestCase
             public $assocWithDiscriminatorField;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
 
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -502,7 +494,7 @@ class ClassMetadataTest extends BaseTestCase
 
         self::assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
         self::assertInstanceOf(GhostObjectInterface::class, $proxy);
-        self::assertTrue($proxy->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($proxy));
     }
 
     public function testGetFieldValueOfIdentifierDoesNotInitializeProxy(): void
@@ -517,7 +509,7 @@ class ClassMetadataTest extends BaseTestCase
 
         self::assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
         self::assertInstanceOf(GhostObjectInterface::class, $proxy);
-        self::assertFalse($proxy->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($proxy));
     }
 
     public function testSetFieldValue(): void
@@ -661,11 +653,8 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort
-     */
+    /** @param mixed $value */
+    #[DataProvider('provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort')]
     public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, $value): void
     {
         $cm = new ClassMetadata('stdClass');
@@ -713,7 +702,7 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm                     = new ClassMetadata(get_class($object));
+        $cm                     = new ClassMetadata($object::class);
         $cm->isEmbeddedDocument = true;
 
         $this->expectException(MappingException::class);
@@ -733,7 +722,7 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm                     = new ClassMetadata(get_class($object));
+        $cm                     = new ClassMetadata($object::class);
         $cm->isEmbeddedDocument = true;
 
         $mapping = $cm->mapField([
@@ -744,11 +733,8 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(CollectionHelper::DEFAULT_STRATEGY, $mapping['strategy']);
     }
 
-    /**
-     * @param array<string, mixed> $config
-     *
-     * @dataProvider provideOwningAndInversedRefsNeedTargetDocument
-     */
+    /** @param array<string, mixed> $config */
+    #[DataProvider('provideOwningAndInversedRefsNeedTargetDocument')]
     public function testOwningAndInversedRefsNeedTargetDocument(array $config): void
     {
         $config = array_merge($config, [
@@ -894,7 +880,7 @@ class ClassMetadataTest extends BaseTestCase
             public $inc;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapField([
             'fieldName' => 'inc',
             'type' => 'int',
@@ -912,7 +898,7 @@ class ClassMetadataTest extends BaseTestCase
             public $collection;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapField([
             'fieldName' => 'collection',
             'type' => 'collection',
@@ -929,7 +915,7 @@ class ClassMetadataTest extends BaseTestCase
             public $embedMany;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
@@ -943,7 +929,7 @@ class ClassMetadataTest extends BaseTestCase
             public $referenceMany;
         };
 
-        $cm = new ClassMetadata(get_class($object));
+        $cm = new ClassMetadata($object::class);
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
@@ -957,7 +943,7 @@ class ClassMetadataTest extends BaseTestCase
             public $contentType;
         };
 
-        $cm         = new ClassMetadata(get_class($object));
+        $cm         = new ClassMetadata($object::class);
         $cm->isFile = true;
 
         $this->expectException(MappingException::class);

@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ODM\MongoDB\Performance;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsUser;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Group;
 
 use function gc_collect_cycles;
 use function memory_get_usage;
@@ -13,14 +15,13 @@ use function microtime;
 
 use const PHP_EOL;
 
-/** @group performance */
+#[Group('performance')]
 class HydrationPerformanceTest extends BaseTestCase
 {
     /**
      * [jwage: 10000 objects in ~6 seconds]
-     *
-     * @doesNotPerformAssertions
      */
+    #[DoesNotPerformAssertions]
     public function testHydrationPerformance(): void
     {
         $s = microtime(true);

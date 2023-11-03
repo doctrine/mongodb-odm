@@ -221,6 +221,7 @@
     <xs:attribute name="strategy" type="odm:storage-strategy" default="pushAll" />
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="store-empty-array" type="xs:boolean" />
     <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
 
@@ -293,6 +294,7 @@
     <xs:attribute name="orphan-removal" type="xs:boolean" />
     <xs:attribute name="not-saved" type="xs:boolean" />
     <xs:attribute name="nullable" type="xs:boolean" />
+    <xs:attribute name="store-empty-array" type="xs:boolean" />
     <xs:attribute name="also-load" type="xs:NMTOKEN" />
   </xs:complexType>
 

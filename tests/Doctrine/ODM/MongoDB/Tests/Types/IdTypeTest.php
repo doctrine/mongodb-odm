@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class IdTypeTest extends TestCase
@@ -20,11 +21,8 @@ class IdTypeTest extends TestCase
         self::assertEquals($identifier, $type->convertToDatabaseValue((string) $identifier), 'ObjectId strings are converted to ObjectId objects');
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @dataProvider provideInvalidObjectIdConstructorArguments
-     */
+    /** @param mixed $value */
+    #[DataProvider('provideInvalidObjectIdConstructorArguments')]
     public function testConvertToDatabaseValueShouldGenerateObjectIds($value): void
     {
         $type = Type::getType('id');

@@ -12,14 +12,14 @@ class LimitTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
-    public function testLimitStage(): void
+    public function testStage(): void
     {
         $limitStage = new Limit($this->getTestAggregationBuilder(), 10);
 
         self::assertSame(['$limit' => 10], $limitStage->getExpression());
     }
 
-    public function testLimitFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->limit(10);

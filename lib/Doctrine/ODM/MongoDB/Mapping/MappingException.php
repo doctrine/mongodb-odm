@@ -57,11 +57,6 @@ final class MappingException extends BaseMappingException
         return new self(sprintf("No mapping found for field by DB name '%s' in class '%s'.", $dbFieldName, $className));
     }
 
-    public static function duplicateFieldMapping(string $document, string $fieldName): self
-    {
-        return new self(sprintf('Property "%s" in "%s" was already declared, but it must be declared only once', $fieldName, $document));
-    }
-
     public static function duplicateDatabaseFieldName(string $document, string $offendingFieldName, string $databaseName, string $originalFieldName): self
     {
         return new self(sprintf('Field "%s" in class "%s" is mapped to field "%s" in the database, but that name is already in use by field "%s".', $offendingFieldName, $document, $databaseName, $originalFieldName));
@@ -115,11 +110,6 @@ final class MappingException extends BaseMappingException
     public static function identifierRequired(string $documentName): self
     {
         return new self(sprintf("No identifier/primary key specified for Document '%s'. Every Document must have an identifier/primary key.", $documentName));
-    }
-
-    public static function missingIdentifierField(string $className, string $fieldName): self
-    {
-        return new self(sprintf('The identifier %s is missing for a query of %s', $fieldName, $className));
     }
 
     public static function missingIdGeneratorClass(string $className): self
@@ -217,11 +207,6 @@ final class MappingException extends BaseMappingException
         return new self(sprintf("Cannot use class '%s' as collection for out stage. Sharded collections are not allowed.", $className));
     }
 
-    public static function cannotUseShardedCollectionInLookupStages(string $className): self
-    {
-        return new self(sprintf("Cannot use class '%s' as collection for lookup or graphLookup stage. Sharded collections are not allowed.", $className));
-    }
-
     public static function referencePrimersOnlySupportedForInverseReferenceMany(string $className, string $fieldName): self
     {
         return new self(sprintf("Cannot use reference priming on '%s' in class '%s'. Reference priming is only supported for inverse references", $fieldName, $className));
@@ -275,11 +260,6 @@ final class MappingException extends BaseMappingException
     public static function schemaValidationError(int $errorCode, string $errorMessage, string $className, string $property): self
     {
         return new self(sprintf('The following schema validation error occurred while parsing the "%s" property of the "%s" class: "%s" (code %s).', $property, $className, $errorMessage, $errorCode));
-    }
-
-    public static function enumsRequirePhp81(string $className, string $fieldName): self
-    {
-        return new self(sprintf('Enum types require PHP 8.1 in %s::%s', $className, $fieldName));
     }
 
     public static function nonEnumTypeMapped(string $className, string $fieldName, string $enumType): self

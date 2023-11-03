@@ -25,7 +25,6 @@ use function array_values;
 use function assert;
 use function count;
 use function end;
-use function get_class;
 use function implode;
 use function sort;
 use function strpos;
@@ -44,17 +43,8 @@ use function strpos;
  */
 final class CollectionPersister
 {
-    private DocumentManager $dm;
-
-    private PersistenceBuilder $pb;
-
-    private UnitOfWork $uow;
-
-    public function __construct(DocumentManager $dm, PersistenceBuilder $pb, UnitOfWork $uow)
+    public function __construct(private DocumentManager $dm, private PersistenceBuilder $pb, private UnitOfWork $uow)
     {
-        $this->dm  = $dm;
-        $this->pb  = $pb;
-        $this->uow = $uow;
     }
 
     /**
@@ -65,7 +55,7 @@ final class CollectionPersister
      */
     public function delete(object $parent, array $collections, array $options): void
     {
-        $unsetPathsMap = [];
+        $unsetPathsMap = $storeEmptyArray = [];
 
         foreach ($collections as $collection) {
             $mapping = $collection->getMapping();
@@ -77,19 +67,35 @@ final class CollectionPersister
                 throw new UnexpectedValueException($mapping['strategy'] . ' delete collection strategy should have been handled by DocumentPersister. Please report a bug in issue tracker');
             }
 
-            [$propertyPath]               = $this->getPathAndParent($collection);
+            [$propertyPath] = $this->getPathAndParent($collection);
+
+            if ($mapping['storeEmptyArray']) {
+                $storeEmptyArray[$propertyPath] = [];
+
+                continue;
+            }
+
             $unsetPathsMap[$propertyPath] = true;
         }
 
-        if (empty($unsetPathsMap)) {
+        if (empty($unsetPathsMap) && empty($storeEmptyArray)) {
             return;
         }
 
         /** @var string[] $unsetPaths */
         $unsetPaths = array_keys($unsetPathsMap);
 
+        $query      = [];
         $unsetPaths = array_fill_keys($this->excludeSubPaths($unsetPaths), true);
-        $query      = ['$unset' => $unsetPaths];
+
+        if ($unsetPathsMap) {
+            $query['$unset'] = $unsetPaths;
+        }
+
+        if ($storeEmptyArray) {
+            $query['$set'] = $storeEmptyArray;
+        }
+
         $this->executeQuery($parent, $query, $options);
     }
 
@@ -444,7 +450,7 @@ final class CollectionPersister
      */
     private function executeQuery(object $document, array $newObj, array $options): void
     {
-        $className = get_class($document);
+        $className = $document::class;
         $class     = $this->dm->getClassMetadata($className);
         $id        = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
         $query     = ['_id' => $id];

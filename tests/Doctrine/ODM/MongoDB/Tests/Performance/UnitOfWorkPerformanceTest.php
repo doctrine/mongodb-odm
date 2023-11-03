@@ -6,20 +6,21 @@ namespace Doctrine\Tests\ODM\MongoDB\Performance;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsUser;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\Group;
 
 use function microtime;
 use function str_replace;
 
 use const PHP_EOL;
 
-/** @group performance */
+#[Group('performance')]
 class UnitOfWorkPerformanceTest extends BaseTestCase
 {
     /**
      * [jwage: compute changesets for 10000 objects in ~10 seconds]
-     *
-     * @doesNotPerformAssertions
      */
+    #[DoesNotPerformAssertions]
     public function testComputeChanges(): void
     {
         $n     = 10000;

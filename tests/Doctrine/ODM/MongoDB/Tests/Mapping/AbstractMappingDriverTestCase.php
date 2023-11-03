@@ -18,11 +18,13 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
-use Documents74\CustomCollection;
-use Documents74\UserTyped;
-use Documents81\Card;
-use Documents81\Suit;
+use Documents\Card;
+use Documents\CustomCollection;
+use Documents\Suit;
+use Documents\UserTyped;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function key;
 use function sprintf;
@@ -38,11 +40,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         return static::loadDriver();
     }
 
-    /**
-     * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @doesNotPerformAssertions
-     */
+    /** @return ClassMetadata<AbstractMappingDriverUser> */
+    #[DoesNotPerformAssertions]
     public function testLoadMapping(): ClassMetadata
     {
         return $this->dm->getClassMetadata(AbstractMappingDriverUser::class);
@@ -52,9 +51,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testLoadMapping
      */
+    #[Depends('testLoadMapping')]
     public function testDocumentCollectionNameAndInheritance(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('cms_users', $class->getCollection());
@@ -67,9 +65,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testLoadMapping
      */
+    #[Depends('testLoadMapping')]
     public function testDocumentMarkedAsReadOnly(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue($class->isReadOnly);
@@ -81,9 +78,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testDocumentCollectionNameAndInheritance
      */
+    #[Depends('testDocumentCollectionNameAndInheritance')]
     public function testDocumentLevelReadPreference(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('primaryPreferred', $class->readPreference);
@@ -100,9 +96,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testDocumentCollectionNameAndInheritance
      */
+    #[Depends('testDocumentCollectionNameAndInheritance')]
     public function testDocumentLevelWriteConcern(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals(1, $class->getWriteConcern());
@@ -114,9 +109,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testDocumentLevelWriteConcern
      */
+    #[Depends('testDocumentLevelWriteConcern')]
     public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertCount(14, $class->fieldMappings);
@@ -130,11 +124,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         return $class;
     }
 
-    /**
-     * @param ClassMetadata<AbstractMappingDriverUser> $class
-     *
-     * @depends testDocumentCollectionNameAndInheritance
-     */
+    /** @param ClassMetadata<AbstractMappingDriverUser> $class */
+    #[Depends('testDocumentCollectionNameAndInheritance')]
     public function testAssociationMappings(ClassMetadata $class): void
     {
         self::assertCount(6, $class->associationMappings);
@@ -146,11 +137,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         self::assertTrue(isset($class->associationMappings['otherPhonenumbers']));
     }
 
-    /**
-     * @param ClassMetadata<AbstractMappingDriverUser> $class
-     *
-     * @depends testDocumentCollectionNameAndInheritance
-     */
+    /** @param ClassMetadata<AbstractMappingDriverUser> $class */
+    #[Depends('testDocumentCollectionNameAndInheritance')]
     public function testGetAssociationTargetClass(ClassMetadata $class): void
     {
         self::assertEquals(Address::class, $class->getAssociationTargetClass('address'));
@@ -161,11 +149,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         self::assertNull($class->getAssociationTargetClass('otherPhonenumbers'));
     }
 
-    /**
-     * @param ClassMetadata<AbstractMappingDriverUser> $class
-     *
-     * @depends testDocumentCollectionNameAndInheritance
-     */
+    /** @param ClassMetadata<AbstractMappingDriverUser> $class */
+    #[Depends('testDocumentCollectionNameAndInheritance')]
     public function testGetAssociationTargetClassThrowsExceptionWhenEmpty(ClassMetadata $class): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -176,9 +161,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testDocumentCollectionNameAndInheritance
      */
+    #[Depends('testDocumentCollectionNameAndInheritance')]
     public function testStringFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('string', $class->fieldMappings['name']['type']);
@@ -190,9 +174,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testFieldMappings
      */
+    #[Depends('testFieldMappings')]
     public function testIdentifier(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('identifier', $class->identifier);
@@ -220,9 +203,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testFieldMappings
      */
+    #[Depends('testFieldMappings')]
     public function testVersionFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('int', $class->fieldMappings['version']['type']);
@@ -235,9 +217,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testFieldMappings
      */
+    #[Depends('testFieldMappings')]
     public function testLockFieldMappings(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('int', $class->fieldMappings['lock']['type']);
@@ -250,9 +231,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testIdentifier
      */
+    #[Depends('testIdentifier')]
     public function testAssocations(ClassMetadata $class): ClassMetadata
     {
         self::assertCount(14, $class->fieldMappings);
@@ -264,9 +244,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testAssocations
      */
+    #[Depends('testAssocations')]
     public function testOwningOneToOneAssociation(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->fieldMappings['address']));
@@ -285,9 +264,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testOwningOneToOneAssociation
      */
+    #[Depends('testOwningOneToOneAssociation')]
     public function testLifecycleCallbacks(ClassMetadata $class): ClassMetadata
     {
         $expectedLifecycleCallbacks = [
@@ -304,9 +282,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testLifecycleCallbacks
      */
+    #[Depends('testLifecycleCallbacks')]
     public function testCustomFieldName(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('name', $class->fieldMappings['name']['fieldName']);
@@ -319,9 +296,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testCustomFieldName
      */
+    #[Depends('testCustomFieldName')]
     public function testCustomReferenceFieldName(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('morePhoneNumbers', $class->fieldMappings['morePhoneNumbers']['fieldName']);
@@ -334,9 +310,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testCustomReferenceFieldName
      */
+    #[Depends('testCustomReferenceFieldName')]
     public function testCustomEmbedFieldName(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('embeddedPhonenumber', $class->fieldMappings['embeddedPhonenumber']['fieldName']);
@@ -349,9 +324,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testCustomEmbedFieldName
      */
+    #[Depends('testCustomEmbedFieldName')]
     public function testDiscriminator(ClassMetadata $class): ClassMetadata
     {
         self::assertEquals('discr', $class->discriminatorField);
@@ -365,9 +339,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testDiscriminator
      */
+    #[Depends('testDiscriminator')]
     public function testEmbedDiscriminator(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->fieldMappings['otherPhonenumbers']['discriminatorField']));
@@ -387,9 +360,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testEmbedDiscriminator
      */
+    #[Depends('testEmbedDiscriminator')]
     public function testReferenceDiscriminator(ClassMetadata $class): ClassMetadata
     {
         self::assertTrue(isset($class->fieldMappings['phonenumbers']['discriminatorField']));
@@ -409,9 +381,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
      * @param ClassMetadata<AbstractMappingDriverUser> $class
      *
      * @return ClassMetadata<AbstractMappingDriverUser>
-     *
-     * @depends testCustomFieldName
      */
+    #[Depends('testCustomFieldName')]
     public function testIndexes(ClassMetadata $class): ClassMetadata
     {
         $indexes = $class->indexes;
@@ -453,11 +424,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         return $class;
     }
 
-    /**
-     * @param ClassMetadata<AbstractMappingDriverUser> $class
-     *
-     * @depends testIndexes
-     */
+    /** @param ClassMetadata<AbstractMappingDriverUser> $class */
+    #[Depends('testIndexes')]
     public function testShardKey(ClassMetadata $class): void
     {
         $shardKey = $class->getShardKey();
@@ -632,7 +600,6 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         ], $metadata->fieldMappings['name']);
     }
 
-    /** @requires PHP >= 8.1 */
     public function testEnumType(): void
     {
         $metadata = $this->dm->getClassMetadata(Card::class);
