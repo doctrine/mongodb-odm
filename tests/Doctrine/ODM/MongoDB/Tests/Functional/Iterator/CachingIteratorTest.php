@@ -114,7 +114,7 @@ class CachingIteratorTest extends TestCase
     public function testCount(): void
     {
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
-        $this->assertCount(3, $iterator);
+        self::assertCount(3, $iterator);
     }
 
     public function testCountAfterPartialIteration(): void
@@ -122,18 +122,24 @@ class CachingIteratorTest extends TestCase
         $iterator = new CachingIterator($this->getTraversable([1, 2, 3]));
 
         $iterator->rewind();
-        $this->assertTrue($iterator->valid());
-        $this->assertSame(0, $iterator->key());
-        $this->assertSame(1, $iterator->current());
+        self::assertTrue($iterator->valid());
+        self::assertSame(0, $iterator->key());
+        self::assertSame(1, $iterator->current());
 
         $iterator->next();
-        $this->assertCount(3, $iterator);
+        self::assertSame(1, $iterator->key());
+        self::assertSame(2, $iterator->current());
+
+        self::assertCount(3, $iterator);
+        self::assertTrue($iterator->valid());
+        self::assertSame(1, $iterator->key());
+        self::assertSame(2, $iterator->current());
     }
 
     public function testCountWithEmptySet(): void
     {
         $iterator = new CachingIterator($this->getTraversable([]));
-        $this->assertCount(0, $iterator);
+        self::assertCount(0, $iterator);
     }
 
     /**
@@ -172,7 +178,7 @@ class CachingIteratorTest extends TestCase
         };
 
         $iterator = new CachingIterator($nestedIterator);
-        $this->assertCount(1, $iterator);
+        self::assertCount(1, $iterator);
     }
 
     /**

@@ -58,7 +58,9 @@ final class CachingIterator implements Countable, Iterator
     /** @see https://php.net/countable.count */
     public function count(): int
     {
+        $currentKey = key($this->items);
         $this->exhaustIterator();
+        for (reset($this->items); key($this->items) !== $currentKey; next($this->items));
 
         return count($this->items);
     }
