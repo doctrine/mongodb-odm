@@ -55,7 +55,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: composer.lock
           path: composer.lock
