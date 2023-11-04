@@ -184,8 +184,8 @@ class XmlDriver extends FileDriver
             $metadata->setDefaultDiscriminatorValue((string) $xmlRoot->{'default-discriminator-value'}['value']);
         }
 
-        if (isset($xmlRoot->{'indexes'})) {
-            foreach ($xmlRoot->{'indexes'}->{'index'} as $index) {
+        if (isset($xmlRoot->indexes)) {
+            foreach ($xmlRoot->indexes->index as $index) {
                 $this->addIndex($metadata, $index);
             }
         }
@@ -475,15 +475,15 @@ class XmlDriver extends FileDriver
             $mapping['defaultDiscriminatorValue'] = (string) $reference->{'default-discriminator-value'}['value'];
         }
 
-        if (isset($reference->{'sort'})) {
-            foreach ($reference->{'sort'}->{'sort'} as $sort) {
+        if (isset($reference->sort)) {
+            foreach ($reference->sort->sort as $sort) {
                 $attr                                     = $sort->attributes();
                 $mapping['sort'][(string) $attr['field']] = (string) ($attr['order'] ?? 'asc');
             }
         }
 
-        if (isset($reference->{'criteria'})) {
-            foreach ($reference->{'criteria'}->{'criteria'} as $criteria) {
+        if (isset($reference->criteria)) {
+            foreach ($reference->criteria->criteria as $criteria) {
                 $attr                                         = $criteria->attributes();
                 $mapping['criteria'][(string) $attr['field']] = (string) $attr['value'];
             }
@@ -497,8 +497,8 @@ class XmlDriver extends FileDriver
             $mapping['alsoLoadFields'] = explode(',', (string) $attributes['also-load']);
         }
 
-        if (isset($reference->{'prime'})) {
-            foreach ($reference->{'prime'}->{'field'} as $field) {
+        if (isset($reference->prime)) {
+            foreach ($reference->prime->field as $field) {
                 $attr               = $field->attributes();
                 $mapping['prime'][] = (string) $attr['name'];
             }
@@ -514,7 +514,7 @@ class XmlDriver extends FileDriver
 
         $keys = [];
 
-        foreach ($xmlIndex->{'key'} as $key) {
+        foreach ($xmlIndex->key as $key) {
             $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
         }
 
@@ -536,8 +536,8 @@ class XmlDriver extends FileDriver
             $options['unique'] = ((string) $attributes['unique'] === 'true');
         }
 
-        if (isset($xmlIndex->{'option'})) {
-            foreach ($xmlIndex->{'option'} as $option) {
+        if (isset($xmlIndex->option)) {
+            foreach ($xmlIndex->option as $option) {
                 $options[(string) $option['name']] = $this->convertXMLElementValue((string) $option['value']);
             }
         }
@@ -636,7 +636,7 @@ class XmlDriver extends FileDriver
 
         $keys    = [];
         $options = [];
-        foreach ($xmlShardkey->{'key'} as $key) {
+        foreach ($xmlShardkey->key as $key) {
             $keys[(string) $key['name']] = (string) ($key['order'] ?? 'asc');
         }
 
@@ -648,8 +648,8 @@ class XmlDriver extends FileDriver
             $options['numInitialChunks'] = (int) $attributes['numInitialChunks'];
         }
 
-        if (isset($xmlShardkey->{'option'})) {
-            foreach ($xmlShardkey->{'option'} as $option) {
+        if (isset($xmlShardkey->option)) {
+            foreach ($xmlShardkey->option as $option) {
                 $options[(string) $option['name']] = $this->convertXMLElementValue((string) $option['value']);
             }
         }

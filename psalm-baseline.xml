@@ -80,13 +80,13 @@
     <InvalidPropertyFetch>
       <code><![CDATA[$xmlRoot->field]]></code>
       <code><![CDATA[$xmlRoot->id]]></code>
+      <code><![CDATA[$xmlRoot->indexes]]></code>
       <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
       <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
       <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
       <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
-      <code><![CDATA[$xmlRoot->{'indexes'}]]></code>
       <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
       <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
       <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
@@ -97,13 +97,13 @@
     <NoInterfaceProperties>
       <code><![CDATA[$xmlRoot->field]]></code>
       <code><![CDATA[$xmlRoot->id]]></code>
+      <code><![CDATA[$xmlRoot->indexes]]></code>
       <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
       <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
       <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
       <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
       <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
-      <code><![CDATA[$xmlRoot->{'indexes'}]]></code>
       <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
       <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
       <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
@@ -125,30 +125,30 @@
       <code><![CDATA[isset($field->{'generator-option'})]]></code>
       <code><![CDATA[isset($partialFilterExpressionMapping->and)]]></code>
       <code><![CDATA[isset($partialFilterExpressionMapping->field)]]></code>
-      <code><![CDATA[isset($reference->{'criteria'})]]></code>
+      <code><![CDATA[isset($reference->criteria)]]></code>
+      <code><![CDATA[isset($reference->prime)]]></code>
+      <code><![CDATA[isset($reference->sort)]]></code>
       <code><![CDATA[isset($reference->{'default-discriminator-value'})]]></code>
       <code><![CDATA[isset($reference->{'discriminator-field'})]]></code>
       <code><![CDATA[isset($reference->{'discriminator-map'})]]></code>
-      <code><![CDATA[isset($reference->{'prime'})]]></code>
-      <code><![CDATA[isset($reference->{'sort'})]]></code>
-      <code><![CDATA[isset($xmlIndex->{'option'})]]></code>
+      <code><![CDATA[isset($xmlIndex->option)]]></code>
       <code><![CDATA[isset($xmlIndex->{'partial-filter-expression'})]]></code>
       <code><![CDATA[isset($xmlReadPreference->{'tag-set'})]]></code>
       <code><![CDATA[isset($xmlRoot->field)]]></code>
       <code><![CDATA[isset($xmlRoot->id)]]></code>
+      <code><![CDATA[isset($xmlRoot->indexes)]]></code>
       <code><![CDATA[isset($xmlRoot->{'default-discriminator-value'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'discriminator-field'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'discriminator-map'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'embed-many'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'embed-one'})]]></code>
-      <code><![CDATA[isset($xmlRoot->{'indexes'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'lifecycle-callbacks'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'read-preference'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'reference-many'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'reference-one'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'schema-validation'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'shard-key'})]]></code>
-      <code><![CDATA[isset($xmlShardkey->{'option'})]]></code>
+      <code><![CDATA[isset($xmlShardkey->option)]]></code>
     </RedundantCondition>
     <TypeDoesNotContainType>
       <code><![CDATA[$xmlRoot->getName() === 'document']]></code>
