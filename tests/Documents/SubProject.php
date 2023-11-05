@@ -11,6 +11,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class SubProject extends Project
 {
     /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
+    private $externalId;
+
+    /**
      * @ODM\EmbedMany(targetDocument=Issue::class)
      *
      * @var Collection<int, Issue>

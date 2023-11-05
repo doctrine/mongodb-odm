@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\Driver\Exception\BulkWriteException;
 
+use function key;
+
 class IndexesTest extends BaseTestCase
 {
     /** @param class-string $class */
@@ -238,6 +240,30 @@ class IndexesTest extends BaseTestCase
         self::assertNotEmpty($indexes[0]['options']['partialFilterExpression']);
         self::assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
         self::assertTrue($indexes[0]['options']['unique']);
+    }
+
+    public function testSubclassDoesNotInheritParentIndexes(): void
+    {
+        $baseIndexes     = $this->dm->getSchemaManager()->getDocumentIndexes(QueryableBaseDocument::class);
+        $extendedIndexes = $this->dm->getSchemaManager()->getDocumentIndexes(ExtendedSubDocument::class);
+
+        self::assertCount(1, $baseIndexes);
+        self::assertSame('foo', key($baseIndexes[0]['keys']));
+
+        self::assertCount(1, $extendedIndexes);
+        self::assertSame('bar', key($extendedIndexes[0]['keys']));
+    }
+
+    public function testSubclassInheritsSuperclassIndexes(): void
+    {
+        $baseIndexes     = $this->dm->getSchemaManager()->getDocumentIndexes(NonQueryableBaseDocument::class);
+        $extendedIndexes = $this->dm->getSchemaManager()->getDocumentIndexes(ExtendedInheritedDocument::class);
+
+        self::assertCount(0, $baseIndexes);
+
+        self::assertCount(2, $extendedIndexes);
+        self::assertSame('bar', key($extendedIndexes[0]['keys']));
+        self::assertSame('foo', key($extendedIndexes[1]['keys']));
     }
 }
 
@@ -656,4 +682,67 @@ class DocumentWithIndexInDiscriminatedEmbeds
      * @var EmbeddedDocumentWithIndexes|YetAnotherEmbeddedDocumentWithIndex|null
      */
     public $embedded;
+}
+
+/** @ODM\Document */
+class QueryableBaseDocument
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
+    public $foo;
+}
+
+/** @ODM\Document */
+class ExtendedSubDocument extends QueryableBaseDocument
+{
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
+    public $bar;
+}
+
+
+/** @ODM\MappedSuperclass */
+class NonQueryableBaseDocument
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
+    public $foo;
+}
+
+/** @ODM\Document */
+class ExtendedInheritedDocument extends NonQueryableBaseDocument
+{
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
+    public $bar;
 }

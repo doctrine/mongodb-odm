@@ -16,6 +16,7 @@ use Documents\CmsComment;
 use Documents\CmsProduct;
 use Documents\Comment;
 use Documents\File;
+use Documents\Project;
 use Documents\SchemaValidated;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
@@ -41,6 +42,7 @@ use function array_count_values;
 use function array_map;
 use function assert;
 use function in_array;
+use function key;
 use function MongoDB\BSON\fromJSON;
 use function MongoDB\BSON\toPHP;
 
@@ -60,6 +62,7 @@ class SchemaManagerTest extends BaseTestCase
         SimpleReferenceUser::class,
         ShardedOne::class,
         ShardedOneWithDifferentKey::class,
+        Project::class,
     ];
 
     /** @psalm-var list<class-string> */
@@ -285,7 +288,7 @@ class SchemaManagerTest extends BaseTestCase
         $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
         $collection     = $this->documentCollections[$collectionName];
         $collection
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('createIndex')
             ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
 
@@ -315,6 +318,53 @@ class SchemaManagerTest extends BaseTestCase
             ->with($this->writeOptions($expectedWriteOptions));
 
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
+    }
+
+    public function testUpdateDocumentIndexesShouldCreateIndexesFromMappedSuperclass(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listIndexes')
+            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator([])));
+        $collection
+            ->expects($this->exactly(2))
+            ->method('createIndex')
+            ->with($this->anything(), $this->anything());
+        $collection
+            ->expects($this->never())
+            ->method('dropIndex')
+            ->with($this->anything());
+
+        $this->schemaManager->updateDocumentIndexes(CmsProduct::class);
+    }
+
+    public function testUpdateDocumentIndexesShouldCreateIndexFromSubclasses(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(Project::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listIndexes')
+            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator([])));
+
+        $matcher = $this->exactly(2);
+        $collection
+            ->expects($matcher)
+            ->method('createIndex')
+            ->willReturnCallback(static function ($key, $value) {
+                static $counter = 0;
+
+                self::assertSame(['name', 'externalId'][$counter], key($key));
+                ++$counter;
+            });
+        $collection
+            ->expects($this->never())
+            ->method('dropIndex')
+            ->with($this->anything());
+
+        $this->schemaManager->updateDocumentIndexes(Project::class);
     }
 
     /**

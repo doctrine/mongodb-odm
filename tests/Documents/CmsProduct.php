@@ -15,4 +15,12 @@ class CmsProduct extends CmsContent
      * @var string|null
      */
     public $name;
+
+    /**
+     * @ODM\Field(type="string")
+     * @ODM\Index
+     *
+     * @var string|null
+     */
+    public $productId;
 }
