@@ -25,6 +25,7 @@ class Project
 
     /**
      * @ODM\Field(type="string")
+     * @ODM\UniqueIndex
      *
      * @var string|null
      */

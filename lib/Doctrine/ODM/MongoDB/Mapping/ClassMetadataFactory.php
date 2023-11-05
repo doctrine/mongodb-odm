@@ -139,7 +139,11 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             $class->setIdGeneratorType($parent->generatorType);
             $this->addInheritedFields($class, $parent);
             $this->addInheritedRelations($class, $parent);
-            $this->addInheritedIndexes($class, $parent);
+            if ($parent->isMappedSuperclass) {
+                // only inherit indexes if parent won't apply them itself
+                $this->addInheritedIndexes($class, $parent);
+            }
+
             $this->setInheritedShardKey($class, $parent);
             $class->setIdentifier($parent->identifier);
             $class->setVersioned($parent->isVersioned);

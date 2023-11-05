@@ -92,6 +92,12 @@ final class SchemaManager
                 continue;
             }
 
+            if ($class->isInheritanceTypeSingleCollection() && count($class->parentClasses) > 0) {
+                // Skip document nodes that use the same collection as one of their parents.
+                // Indexes will be added by the parent document.
+                continue;
+            }
+
             $this->updateDocumentIndexes($class->name, $maxTimeMs, $writeConcern);
         }
     }
@@ -172,56 +178,68 @@ final class SchemaManager
             return [];
         }
 
-        $visited[$documentName] = true;
+        $class          = $this->dm->getClassMetadata($documentName);
+        $processClasses = [$class];
 
-        $class                   = $this->dm->getClassMetadata($documentName);
-        $indexes                 = $this->prepareIndexes($class);
+        if ($class->isInheritanceTypeSingleCollection()) {
+            // process all subclasses as well
+            foreach ($class->subClasses as $subClassName) {
+                $processClasses[] = $this->metadataFactory->getMetadataFor($subClassName);
+            }
+        }
+
+        $indexes                 = [];
         $embeddedDocumentIndexes = [];
+        foreach ($processClasses as $class) {
+            $visited[$class->name] = true;
 
-        // Add indexes from embedded & referenced documents
-        foreach ($class->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['embedded'])) {
-                if (isset($fieldMapping['targetDocument'])) {
-                    $possibleEmbeds = [$fieldMapping['targetDocument']];
-                } elseif (isset($fieldMapping['discriminatorMap'])) {
-                    $possibleEmbeds = array_unique($fieldMapping['discriminatorMap']);
-                } else {
-                    continue;
-                }
+            $indexes = array_merge($indexes, $this->prepareIndexes($class));
 
-                foreach ($possibleEmbeds as $embed) {
-                    if (isset($embeddedDocumentIndexes[$embed])) {
-                        $embeddedIndexes = $embeddedDocumentIndexes[$embed];
+            // Add indexes from embedded & referenced documents
+            foreach ($class->fieldMappings as $fieldMapping) {
+                if (isset($fieldMapping['embedded'])) {
+                    if (isset($fieldMapping['targetDocument'])) {
+                        $possibleEmbeds = [$fieldMapping['targetDocument']];
+                    } elseif (isset($fieldMapping['discriminatorMap'])) {
+                        $possibleEmbeds = array_unique($fieldMapping['discriminatorMap']);
                     } else {
-                        $embeddedIndexes                 = $this->doGetDocumentIndexes($embed, $visited);
-                        $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
+                        continue;
                     }
 
-                    foreach ($embeddedIndexes as $embeddedIndex) {
-                        foreach ($embeddedIndex['keys'] as $key => $value) {
-                            $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
-                            unset($embeddedIndex['keys'][$key]);
+                    foreach ($possibleEmbeds as $embed) {
+                        if (isset($embeddedDocumentIndexes[$embed])) {
+                            $embeddedIndexes = $embeddedDocumentIndexes[$embed];
+                        } else {
+                            $embeddedIndexes                 = $this->doGetDocumentIndexes($embed, $visited);
+                            $embeddedDocumentIndexes[$embed] = $embeddedIndexes;
                         }
 
-                        if (isset($embeddedIndex['options']['name'])) {
-                            $embeddedIndex['options']['name'] = sprintf('%s_%s', $fieldMapping['name'], $embeddedIndex['options']['name']);
-                        }
+                        foreach ($embeddedIndexes as $embeddedIndex) {
+                            foreach ($embeddedIndex['keys'] as $key => $value) {
+                                $embeddedIndex['keys'][$fieldMapping['name'] . '.' . $key] = $value;
+                                unset($embeddedIndex['keys'][$key]);
+                            }
 
-                        $indexes[] = $embeddedIndex;
+                            if (isset($embeddedIndex['options']['name'])) {
+                                $embeddedIndex['options']['name'] = sprintf('%s_%s', $fieldMapping['name'], $embeddedIndex['options']['name']);
+                            }
+
+                            $indexes[] = $embeddedIndex;
+                        }
                     }
-                }
-            } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
-                foreach ($indexes as $idx => $index) {
-                    $newKeys = [];
-                    foreach ($index['keys'] as $key => $v) {
-                        if ($key === $fieldMapping['name']) {
-                            $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
+                } elseif (isset($fieldMapping['reference']) && isset($fieldMapping['targetDocument'])) {
+                    foreach ($indexes as $idx => $index) {
+                        $newKeys = [];
+                        foreach ($index['keys'] as $key => $v) {
+                            if ($key === $fieldMapping['name']) {
+                                $key = ClassMetadata::getReferenceFieldName($fieldMapping['storeAs'], $key);
+                            }
+
+                            $newKeys[$key] = $v;
                         }
 
-                        $newKeys[$key] = $v;
+                        $indexes[$idx]['keys'] = $newKeys;
                     }
-
-                    $indexes[$idx]['keys'] = $newKeys;
                 }
             }
         }
