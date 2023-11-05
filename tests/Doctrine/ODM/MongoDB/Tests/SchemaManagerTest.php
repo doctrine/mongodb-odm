@@ -353,8 +353,11 @@ class SchemaManagerTest extends BaseTestCase
         $collection
             ->expects($matcher)
             ->method('createIndex')
-            ->willReturnCallback(static function ($key, $value) use ($matcher) {
-                self::assertSame(['name', 'externalId'][$matcher->numberOfInvocations() - 1], key($key));
+            ->willReturnCallback(static function ($key, $value) {
+                static $counter = 0;
+
+                self::assertSame(['name', 'externalId'][$counter], key($key));
+                ++$counter;
             });
         $collection
             ->expects($this->never())
