@@ -2318,6 +2318,14 @@ use const PHP_VERSION_ID;
             );
         }
 
+        if (isset($mapping['discriminatorMap'])) {
+            foreach ($mapping['discriminatorMap'] as $value => $class) {
+                if (! class_exists($class) && ! interface_exists($class)) {
+                    throw MappingException::invalidClassInReferenceDiscriminatorMap($class, $this->name, $mapping['fieldName']);
+                }
+            }
+        }
+
         if (isset($mapping['version'])) {
             $mapping['notSaved'] = true;
             $this->setVersionMapping($mapping);

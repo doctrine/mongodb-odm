@@ -35,6 +35,21 @@ class TargetDocumentTest extends BaseTestCase
         $test->reference = new stdClass();
         $this->dm->persist($test);
     }
+
+    public function testDiscriminatorTargetIsResolvable(): void
+    {
+        self::expectExceptionObject(
+            MappingException::invalidClassInReferenceDiscriminatorMap(
+                SomeInvalidClass::class,
+                InvalidDiscriminatorTargetsTestDocument::class,
+                'reference',
+            ),
+        );
+
+        $test            = new InvalidDiscriminatorTargetsTestDocument();
+        $test->reference = new stdClass();
+        $this->dm->persist($test);
+    }
 }
 
 /** @ODM\Document */
@@ -83,6 +98,25 @@ class InvalidTargetDocumentTestDocument
 
     /**
      * @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass")
+     *
+     * @var object|null
+     */
+    public $reference;
+}
+
+
+/** @ODM\Document */
+class InvalidDiscriminatorTargetsTestDocument
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\ReferenceOne(discriminatorField="referencedClass", discriminatorMap={"Foo"="Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass"})
      *
      * @var object|null
      */
