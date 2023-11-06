@@ -25,6 +25,7 @@ class TargetDocumentTest extends BaseTestCase
     {
         self::expectExceptionObject(
             MappingException::invalidTargetDocument(
+                // @phpstan-ignore-next-line class.notFound
                 SomeInvalidClass::class,
                 InvalidTargetDocumentTestDocument::class,
                 'reference',
@@ -40,6 +41,7 @@ class TargetDocumentTest extends BaseTestCase
     {
         self::expectExceptionObject(
             MappingException::invalidClassInReferenceDiscriminatorMap(
+                // @phpstan-ignore-next-line class.notFound
                 SomeInvalidClass::class,
                 InvalidDiscriminatorTargetsTestDocument::class,
                 'reference',
