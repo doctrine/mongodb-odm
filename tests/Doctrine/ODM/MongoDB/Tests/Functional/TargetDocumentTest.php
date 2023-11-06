@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use stdClass;
 
@@ -22,7 +23,13 @@ class TargetDocumentTest extends BaseTestCase
 
     public function testTargetDocumentIsResolvable(): void
     {
-        self::expectExceptionMessage("Target document class 'Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass' used in field 'reference' of class 'Doctrine\ODM\MongoDB\Tests\Functional\InvalidTargetDocumentTestDocument' does not exist.");
+        self::expectExceptionObject(
+            MappingException::invalidTargetDocument(
+                SomeInvalidClass::class,
+                InvalidTargetDocumentTestDocument::class,
+                'reference',
+            ),
+        );
 
         $test            = new InvalidTargetDocumentTestDocument();
         $test->reference = new stdClass();
@@ -75,7 +82,7 @@ class InvalidTargetDocumentTestDocument
     public $id;
 
     /**
-     * @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass::class)
+     * @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass")
      *
      * @var object|null
      */
