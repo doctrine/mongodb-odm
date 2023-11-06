@@ -52,6 +52,7 @@ final class SchemaManager
         'language_override',
         'textIndexVersion',
         'name',
+        '2dsphereIndexVersion',
     ];
 
     protected DocumentManager $dm;
