@@ -25,8 +25,7 @@ class TargetDocumentTest extends BaseTestCase
     {
         self::expectExceptionObject(
             MappingException::invalidTargetDocument(
-                // @phpstan-ignore-next-line class.notFound
-                SomeInvalidClass::class,
+                'Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass',
                 InvalidTargetDocumentTestDocument::class,
                 'reference',
             ),
@@ -41,8 +40,7 @@ class TargetDocumentTest extends BaseTestCase
     {
         self::expectExceptionObject(
             MappingException::invalidClassInReferenceDiscriminatorMap(
-                // @phpstan-ignore-next-line class.notFound
-                SomeInvalidClass::class,
+                'Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass',
                 InvalidDiscriminatorTargetsTestDocument::class,
                 'reference',
             ),
