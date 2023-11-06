@@ -239,6 +239,16 @@ class IndexesTest extends BaseTestCase
         self::assertSame(['counter' => ['$gt' => 5]], $indexes[0]['options']['partialFilterExpression']);
         self::assertTrue($indexes[0]['options']['unique']);
     }
+
+    public function testGeoIndexCreation(): void
+    {
+        $className = GeoIndexDocument::class;
+        $this->dm->getSchemaManager()->ensureDocumentIndexes(GeoIndexDocument::class);
+
+        $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);
+        self::assertSame(['coordinatesWith2DIndex' => '2d'], $indexes[0]['keys']);
+        self::assertSame(['coordinatesWithSphereIndex' => '2dsphere'], $indexes[1]['keys']);
+    }
 }
 
 /** @ODM\Document */
@@ -656,4 +666,33 @@ class DocumentWithIndexInDiscriminatedEmbeds
      * @var EmbeddedDocumentWithIndexes|YetAnotherEmbeddedDocumentWithIndex|null
      */
     public $embedded;
+}
+
+/**
+ * @ODM\Document
+ * @ODM\Index(keys={"coordinatesWith2DIndex"="2d"})
+ * @ODM\Index(keys={"coordinatesWithSphereIndex"="2dsphere"})
+ */
+class GeoIndexDocument
+{
+    /**
+     * @ODM\Id
+     *
+     * @var string|null
+     */
+    public $id;
+
+    /**
+     * @ODM\Field(type="hash")
+     *
+     * @var array<float>
+     */
+    public $coordinatesWith2DIndex;
+
+    /**
+     * @ODM\Field(type="hash")
+     *
+     * @var array<float>
+     */
+    public $coordinatesWithSphereIndex;
 }
