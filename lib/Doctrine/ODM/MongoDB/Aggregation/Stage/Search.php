@@ -17,6 +17,8 @@ use function strtolower;
 
 /**
  * @psalm-type CountType = 'lowerBound'|'total'
+ * @psalm-type SortMetaKeywords = 'searchScore'
+ * @psalm-type SortMeta = array{'$meta': SortMetaKeywords}
  * @psalm-type SearchStageExpression = array{
  *     '$search': object{
  *         index?: string,
@@ -58,7 +60,9 @@ class Search extends Stage implements SupportsAllSearchOperators
     private ?object $highlight        = null;
     private ?bool $returnStoredSource = null;
     private ?SearchOperator $operator = null;
-    private array $sort               = [];
+
+    /** @var array<string, -1|1|SortMeta> */
+    private array $sort = [];
 
     public function __construct(Builder $builder)
     {

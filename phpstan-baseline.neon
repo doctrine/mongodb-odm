@@ -51,16 +51,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Densify\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
-
-		-
-			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Densify.php
-
-		-
 			message: "#^Circular definition detected in type alias FacetStageExpression\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Facet.php
@@ -96,6 +86,11 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
 		-
+			message: "#^Circular definition detected in type alias MergeStageExpression\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
+
+		-
 			message: "#^Circular definition detected in type alias WhenMatchedParamType\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
@@ -106,17 +101,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
-
-		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:whenMatched\\(\\) has parameter \\$whenMatched with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
-
-		-
-			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
@@ -141,19 +126,19 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
-
-		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:near\\(\\) has parameter \\$origin with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
 
 		-
-			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
+			message: "#^Return type \\(static\\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\)\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:sort\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Sort\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:sort\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
+
+		-
+			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\\\AbstractSearchOperator\\:\\:sort\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Sort\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:sort\\(\\)$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/AbstractSearchOperator.php
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\\\Compound\\:\\:geoShape\\(\\) has parameter \\$geometry with no value type specified in iterable type array\\.$#"
@@ -471,27 +456,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/SupportsNearOperator.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\SetWindowFields\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/SetWindowFields.php
-
-		-
-			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/SetWindowFields.php
-
-		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
-
-		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\UnionWith\\:\\:pipeline\\(\\) has parameter \\$pipeline with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
-
-		-
-			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
@@ -707,6 +672,11 @@ parameters:
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SearchTest\\:\\:testSearchOperators\\(\\) has parameter \\$expectedOperator with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SearchTest\\:\\:testSearchOperatorsWithSort\\(\\) has parameter \\$expectedOperator with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
 
