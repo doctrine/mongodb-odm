@@ -27,4 +27,17 @@ class ConfigurationTest extends BaseTestCase
         self::assertInstanceOf(PersistentCollectionGenerator::class, $generator);
         self::assertSame($generator, $c->getPersistentCollectionGenerator());
     }
+
+    public function testEnableTransactionalFlush(): void
+    {
+        $c = new Configuration();
+
+        self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled by default');
+
+        $c->enableTransactionalFlush();
+        self::assertTrue($c->isTransactionalFlushEnabled(), 'Transactional flush is enabled after enableTransactionalFlush()');
+
+        $c->disableTransactionalFlush();
+        self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled after disableTransactionalFlush()');
+    }
 }

@@ -94,6 +94,7 @@ class Configuration
      *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository<object>>,
      *      defaultDB?: string,
      *      documentNamespaces?: array<string, string>,
+     *      enableTransactionalFlush?: bool,
      *      filters?: array<string, array{
      *          class: class-string,
      *          parameters: array<string, mixed>
@@ -116,6 +117,8 @@ class Configuration
     private ProxyManagerConfiguration $proxyManagerConfiguration;
 
     private int $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
+
+    private bool $enableTransactionalFlush = false;
 
     public function __construct()
     {
@@ -595,6 +598,21 @@ class Configuration
     public function getProxyManagerConfiguration(): ProxyManagerConfiguration
     {
         return $this->proxyManagerConfiguration;
+    }
+
+    public function disableTransactionalFlush(): void
+    {
+        $this->enableTransactionalFlush = false;
+    }
+
+    public function enableTransactionalFlush(): void
+    {
+        $this->enableTransactionalFlush = true;
+    }
+
+    public function isTransactionalFlushEnabled(): bool
+    {
+        return $this->enableTransactionalFlush;
     }
 }
 
