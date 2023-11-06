@@ -87,6 +87,11 @@ final class MappingException extends BaseMappingException
         return new self(sprintf("Discriminator value '%s' used in the declaration of class '%s' does not exist.", $value, $owningClass));
     }
 
+    public static function invalidTargetDocument(string $targetDocument, string $owningClass, string $owningField): self
+    {
+        return new self(sprintf("Target document class '%s' used in field '%s' of class '%s' does not exist.", $targetDocument, $owningField, $owningClass));
+    }
+
     public static function missingFieldName(string $className): self
     {
         return new self(sprintf("The Document class '%s' field mapping misses the 'fieldName' attribute.", $className));
