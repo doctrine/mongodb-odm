@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Circular definition detected in type alias PipelineExpression\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
-
-		-
 			message: "#^PHPDoc tag @param references unknown parameter\\: \\$applyFilters$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
@@ -51,24 +46,9 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Bucket/AbstractOutput.php
 
 		-
-			message: "#^Circular definition detected in type alias FacetStageExpression\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Facet.php
-
-		-
-			message: "#^Return type \\(static\\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\)\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\GeoNear\\:\\:limit\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Limit\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:limit\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GeoNear.php
-
-		-
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
-
-		-
-			message: "#^Circular definition detected in type alias PipelineParamType\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Lookup\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
@@ -84,21 +64,6 @@ parameters:
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
-			message: "#^Circular definition detected in type alias MergeStageExpression\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
-
-		-
-			message: "#^Circular definition detected in type alias WhenMatchedParamType\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
-
-		-
-			message: "#^Circular definition detected in type alias WhenMatchedType\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:whenMatched\\(\\) has parameter \\$whenMatched with no value type specified in iterable type array\\.$#"
@@ -129,16 +94,6 @@ parameters:
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:near\\(\\) has parameter \\$origin with no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
-
-		-
-			message: "#^Return type \\(static\\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\)\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\:\\:sort\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Sort\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:sort\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
-
-		-
-			message: "#^Return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\\\AbstractSearchOperator\\:\\:sort\\(\\) should be compatible with return type \\(Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Sort\\) of method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\:\\:sort\\(\\)$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/AbstractSearchOperator.php
 
 		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Search\\\\Compound\\:\\:geoShape\\(\\) has parameter \\$geometry with no value type specified in iterable type array\\.$#"
