@@ -236,10 +236,8 @@ abstract class Stage
      * Limits the number of documents passed to the next stage in the pipeline.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/limit/
-     *
-     * @return Stage\Limit
      */
-    public function limit(int $limit)
+    public function limit(int $limit): self
     {
         return $this->builder->limit($limit);
     }
@@ -434,10 +432,8 @@ abstract class Stage
      *
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
-     *
-     * @return Stage\Sort
      */
-    public function sort($fieldName, $order = null)
+    public function sort($fieldName, $order = null): self
     {
         return $this->builder->sort($fieldName, $order);
     }
