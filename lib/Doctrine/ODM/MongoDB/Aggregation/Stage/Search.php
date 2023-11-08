@@ -16,9 +16,11 @@ use function is_string;
 use function strtolower;
 
 /**
+ * @psalm-import-type SortDirectionKeywords from Sort
  * @psalm-type CountType = 'lowerBound'|'total'
  * @psalm-type SortMetaKeywords = 'searchScore'
  * @psalm-type SortMeta = array{'$meta': SortMetaKeywords}
+ * @psalm-type SortShape = array<string, int|SortMeta|SortDirectionKeywords>
  * @psalm-type SearchStageExpression = array{
  *     '$search': object{
  *         index?: string,
@@ -143,6 +145,12 @@ class Search extends Stage implements SupportsAllSearchOperators
         return $this;
     }
 
+    /**
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
+     * @psalm-param SortShape|string $fieldName
+     * @psalm-param int|SortMeta|SortDirectionKeywords|null $order
+     */
     public function sort($fieldName, $order = null): static
     {
         $allowedMetaSort = ['searchScore'];

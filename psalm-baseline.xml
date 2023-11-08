@@ -5,6 +5,18 @@
       <code>IteratorAggregate</code>
     </MissingTemplateParam>
   </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php">
+    <MoreSpecificImplementedParamType>
+      <code>$fieldName</code>
+      <code>$order</code>
+    </MoreSpecificImplementedParamType>
+  </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/AbstractSearchOperator.php">
+    <MoreSpecificImplementedParamType>
+      <code>$fieldName</code>
+      <code>$order</code>
+    </MoreSpecificImplementedParamType>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Configuration.php">
     <TypeDoesNotContainType>
       <code><![CDATA[$reflectionClass->implementsInterface(ClassMetadataFactoryInterface::class)]]></code>
