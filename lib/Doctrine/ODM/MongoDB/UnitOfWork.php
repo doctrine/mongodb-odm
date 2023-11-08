@@ -31,6 +31,7 @@ use ReflectionProperty;
 use UnexpectedValueException;
 
 use function array_filter;
+use function array_key_exists;
 use function assert;
 use function count;
 use function get_class;
@@ -42,6 +43,7 @@ use function preg_match;
 use function serialize;
 use function spl_object_hash;
 use function sprintf;
+use function trigger_deprecation;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -87,6 +89,9 @@ final class UnitOfWork implements PropertyChangedListener
      * deleted (or is scheduled for deletion).
      */
     public const STATE_REMOVED = 4;
+
+    /** @internal */
+    public const DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
 
     /**
      * The identity map holds references to all managed documents.
@@ -393,6 +398,19 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function commit(array $options = []): void
     {
+        foreach (self::DEPRECATED_WRITE_OPTIONS as $deprecatedOption) {
+            if (! array_key_exists($deprecatedOption, $options)) {
+                continue;
+            }
+
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.6',
+                'The "%s" commit option is deprecated.',
+                $deprecatedOption,
+            );
+        }
+
         // Raise preFlush
         $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
 

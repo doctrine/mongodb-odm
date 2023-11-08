@@ -42,6 +42,12 @@
         <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat.DisallowedShortNullable" />
     </rule>
 
+    <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit">
+        <properties>
+            <property name="ignoreStandaloneIfInScope" value="true"/>
+        </properties>
+    </rule>
+
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
     </rule>
