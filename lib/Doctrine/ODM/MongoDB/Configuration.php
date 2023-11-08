@@ -451,16 +451,14 @@ class Configuration
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
         foreach (UnitOfWork::DEPRECATED_WRITE_OPTIONS as $deprecatedOption) {
-            if (! array_key_exists($deprecatedOption, $defaultCommitOptions)) {
-                continue;
+            if (array_key_exists($deprecatedOption, $defaultCommitOptions)) {
+                trigger_deprecation(
+                    'doctrine/mongodb-odm',
+                    '2.6',
+                    'The "%s" commit option used in the configuration is deprecated.',
+                    $deprecatedOption,
+                );
             }
-
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.6',
-                'The "%s" commit option used in the configuration is deprecated.',
-                $deprecatedOption,
-            );
         }
 
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
