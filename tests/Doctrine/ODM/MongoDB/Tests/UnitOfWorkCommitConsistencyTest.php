@@ -57,11 +57,10 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
         );
 
-        // Wrong behaviour: the insertions should still be scheduled
-        self::assertFalse($this->uow->isScheduledForInsert($firstUser));
+        self::assertTrue($this->uow->isScheduledForInsert($firstUser));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
 
-        self::assertFalse($this->uow->isScheduledForInsert($secondUser));
+        self::assertTrue($this->uow->isScheduledForInsert($secondUser));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($secondUser));
 
         self::assertTrue($this->uow->isScheduledForInsert($friendUser));
@@ -98,17 +97,17 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
         );
 
-        // First user was inserted and changeset cleared
-        self::assertFalse($this->uow->isScheduledForInsert($firstUser));
+        // Wrong behaviour: user was saved and should no longer be scheduled for insertion
+        self::assertTrue($this->uow->isScheduledForInsert($firstUser));
         // Wrong behaviour: changeset should be empty
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
 
         // Wrong behaviour: user should still be scheduled for insertion
-        self::assertFalse($this->uow->isScheduledForInsert($secondUser));
+        self::assertTrue($this->uow->isScheduledForInsert($secondUser));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($secondUser));
 
         // Wrong behaviour: user should still be scheduled for insertion
-        self::assertFalse($this->uow->isScheduledForInsert($thirdUser));
+        self::assertTrue($this->uow->isScheduledForInsert($thirdUser));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($thirdUser));
     }
 
@@ -142,16 +141,15 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         // First document inserted, second failed due to index error
         self::assertSame(1, $collection->countDocuments());
 
-        $this->assertFalse($this->uow->isScheduledForInsert($firstUser));
-        // Wrong behaviour: changeset should be cleared but isn't
+        // Wrong behaviour: document should no longer be scheduled and changeset should be cleared
+        $this->assertTrue($this->uow->isScheduledForInsert($firstUser));
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
 
         // Wrong behaviour: document should no longer be scheduled for insertion and changeset cleared
         $this->assertTrue($this->uow->isScheduledForInsert($firstAddress));
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($firstAddress));
 
-        // Wrong behaviour: document should still be scheduled for insertion
-        $this->assertFalse($this->uow->isScheduledForInsert($secondUser));
+        $this->assertTrue($this->uow->isScheduledForInsert($secondUser));
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($secondUser));
         $this->assertTrue($this->uow->isScheduledForInsert($secondAddress));
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($secondAddress));
@@ -185,8 +183,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
         );
 
-        // Wrong behaviour: document should still be scheduled
-        self::assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertTrue($this->uow->isScheduledForUpsert($user));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
@@ -465,8 +462,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         );
 
         self::assertTrue($this->uow->isScheduledForDelete($user));
-        // Wrong behaviour: embedded document should be scheduled for deletion
-        self::assertFalse($this->uow->isScheduledForDelete($address));
+        self::assertTrue($this->uow->isScheduledForDelete($address));
     }
 
     public function testSuccessfulDeleteWithEmbeddedDocumentClearsChangeset(): void

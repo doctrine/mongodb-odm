@@ -1161,9 +1161,8 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $persister = $this->getDocumentPersister($class->name);
 
-        foreach ($documents as $oid => $document) {
+        foreach ($documents as $document) {
             $persister->addInsert($document);
-            unset($this->documentInsertions[$oid]);
         }
 
         $persister->executeInserts($options);
@@ -1186,9 +1185,8 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $persister = $this->getDocumentPersister($class->name);
 
-        foreach ($documents as $oid => $document) {
+        foreach ($documents as $document) {
             $persister->addUpsert($document);
-            unset($this->documentUpserts[$oid]);
         }
 
         $persister->executeUpserts($options);
@@ -1223,8 +1221,6 @@ final class UnitOfWork implements PropertyChangedListener
                 $persister->update($document, $options);
             }
 
-            unset($this->documentUpdates[$oid]);
-
             $this->lifecycleEventManager->postUpdate($class, $document);
         }
     }
@@ -1248,7 +1244,6 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             unset(
-                $this->documentDeletions[$oid],
                 $this->documentIdentifiers[$oid],
                 $this->originalDocumentData[$oid],
             );
@@ -1267,10 +1262,6 @@ final class UnitOfWork implements PropertyChangedListener
 
                 $value->clearSnapshot();
             }
-
-            // Document with this $oid after deletion treated as NEW, even if the $oid
-            // is obtained by a new document because the old one went out of scope.
-            $this->documentStates[$oid] = self::STATE_NEW;
 
             $this->lifecycleEventManager->postRemove($class, $document);
         }
