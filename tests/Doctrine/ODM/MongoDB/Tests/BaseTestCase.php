@@ -16,10 +16,17 @@ use PHPUnit\Framework\TestCase;
 
 use function array_key_exists;
 use function array_map;
+use function count;
+use function explode;
 use function getenv;
+use function implode;
 use function in_array;
 use function iterator_to_array;
+use function parse_url;
 use function preg_match;
+use function strlen;
+use function strpos;
+use function substr_replace;
 use function version_compare;
 
 use const DOCTRINE_MONGODB_DATABASE;
@@ -108,7 +115,7 @@ abstract class BaseTestCase extends TestCase
     protected static function createTestDocumentManager(): DocumentManager
     {
         $config = static::getConfiguration();
-        $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+        $client = new Client(self::getUri(), [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         return DocumentManager::create($client, $config);
     }
@@ -161,5 +168,44 @@ abstract class BaseTestCase extends TestCase
     protected function requireMongoDB42(string $message): void
     {
         $this->requireVersion($this->getServerVersion(), '4.2.0', '<', $message);
+    }
+
+    protected static function getUri(bool $useMultipleMongoses = true): string
+    {
+        $uri = getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER;
+
+        return $useMultipleMongoses ? $uri : self::removeMultipleHosts($uri);
+    }
+
+    /**
+     * Removes any hosts beyond the first in a URI. This function should only be
+     * used with a sharded cluster URI, but that is not enforced.
+     */
+    protected static function removeMultipleHosts(string $uri): string
+    {
+        $parts = parse_url($uri);
+
+        self::assertIsArray($parts);
+
+        $hosts = explode(',', $parts['host']);
+
+        // Nothing to do if the URI already has a single mongos host
+        if (count($hosts) === 1) {
+            return $uri;
+        }
+
+        // Re-append port to last host
+        if (isset($parts['port'])) {
+            $hosts[count($hosts) - 1] .= ':' . $parts['port'];
+        }
+
+        $singleHost    = $hosts[0];
+        $multipleHosts = implode(',', $hosts);
+
+        $pos = strpos($uri, $multipleHosts);
+
+        self::assertNotFalse($pos);
+
+        return substr_replace($uri, $singleHost, $pos, strlen($multipleHosts));
     }
 }

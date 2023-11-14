@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Documents\Address;
 use Documents\ForumUser;
 use Documents\FriendUser;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Client;
 use Throwable;
 
 class UnitOfWorkCommitConsistencyTest extends BaseTestCase
@@ -486,5 +488,14 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         self::assertFalse($this->uow->isScheduledForDelete($user));
         self::assertFalse($this->uow->isScheduledForDelete($address));
+    }
+
+    /** Create a document manager with a single host to ensure failpoints target the correct server */
+    protected static function createTestDocumentManager(): DocumentManager
+    {
+        $config = static::getConfiguration();
+        $client = new Client(self::getUri(false), [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+
+        return DocumentManager::create($client, $config);
     }
 }
