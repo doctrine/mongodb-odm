@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
+use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 
@@ -125,6 +126,20 @@ abstract class BaseTestCase extends TestCase
         $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1])->toArray()[0];
 
         return $result['version'];
+    }
+
+    protected function getPrimaryServer(): Server
+    {
+        return $this->dm->getClient()->getManager()->selectServer();
+    }
+
+    protected function skipTestIfNoTransactionSupport(): void
+    {
+        if ($this->getPrimaryServer()->getType() !== Server::TYPE_STANDALONE) {
+            return;
+        }
+
+        $this->markTestSkipped('Test requires a topology that supports transactions');
     }
 
     /** @psalm-param class-string $className */

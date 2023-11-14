@@ -35,6 +35,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
+use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use stdClass;
@@ -1562,6 +1563,10 @@ final class DocumentPersister
      */
     private function getWriteOptions(array $options = []): array
     {
+        if ($this->isInTransaction($options)) {
+            return $options;
+        }
+
         $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();
         $documentOptions = [];
         if ($this->class->hasWriteConcern()) {
@@ -1581,6 +1586,20 @@ final class DocumentPersister
         }
 
         return $writeOptions;
+    }
+
+    private function isInTransaction(array $options): bool
+    {
+        if (! isset($options['session'])) {
+            return false;
+        }
+
+        $session = $options['session'];
+        if (! $session instanceof Session) {
+            return false;
+        }
+
+        return $session->isInTransaction();
     }
 
     /**

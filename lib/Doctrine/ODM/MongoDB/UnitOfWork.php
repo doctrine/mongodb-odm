@@ -25,6 +25,7 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
@@ -39,6 +40,7 @@ use function in_array;
 use function is_array;
 use function is_object;
 use function method_exists;
+use function MongoDB\with_transaction;
 use function preg_match;
 use function serialize;
 use function spl_object_hash;
@@ -61,6 +63,7 @@ use function trigger_deprecation;
  *      fsync?: bool,
  *      safe?: int,
  *      w?: int,
+ *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
  */
@@ -442,7 +445,18 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
-            $this->doCommit($options);
+
+            if ($this->useTransaction($options)) {
+                $session = $this->dm->getClient()->startSession();
+
+                with_transaction($session, function (Session $session) use ($options): void {
+                    $this->doCommit(['session' => $session] + $options);
+                });
+            } else {
+                $this->doCommit($options);
+            }
+
+            // Raise postFlush
             $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
 
             // Clear up
@@ -3115,5 +3129,15 @@ final class UnitOfWork implements PropertyChangedListener
             [$class, $documents] = $classAndDocuments;
             $this->executeDeletions($class, $documents, $options);
         }
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function useTransaction(array $options): bool
+    {
+        if (isset($options['withTransaction'])) {
+            return $options['withTransaction'];
+        }
+
+        return $this->dm->getConfiguration()->isTransactionalFlushEnabled();
     }
 }
