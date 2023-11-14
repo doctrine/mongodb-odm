@@ -41,7 +41,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['insert'],
             ],
         ]);
@@ -164,7 +164,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['update'],
             ],
         ]);
@@ -199,7 +199,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['update'],
             ],
         ]);
@@ -236,7 +236,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['update'],
             ],
         ]);
@@ -291,7 +291,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['update'],
             ],
         ]);
@@ -348,7 +348,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['update'],
             ],
         ]);
@@ -403,7 +403,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['delete'],
             ],
         ]);
@@ -442,7 +442,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
-                'errorCode' => 10107, // Not primary
+                'errorCode' => 192, // FailPointEnabled
                 'failCommands' => ['delete'],
             ],
         ]);
