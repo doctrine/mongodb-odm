@@ -441,30 +441,8 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            // Raise onFlush
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpserts($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentInsertions) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeInserts($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpdates) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpdates($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentDeletions, true) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeDeletions($class, $documents, $options);
-            }
-
-            // Raise postFlush
+            $this->doCommit($options);
             $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
 
             // Clear up
@@ -3113,5 +3091,29 @@ final class UnitOfWork implements PropertyChangedListener
     private function objToStr(object $obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : $obj::class . '@' . spl_object_hash($obj);
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function doCommit(array $options): void
+    {
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentInsertions) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeInserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpdates) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpdates($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentDeletions, true) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeDeletions($class, $documents, $options);
+        }
     }
 }
