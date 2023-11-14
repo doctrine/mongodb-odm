@@ -24,9 +24,11 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionProperty;
 use Throwable;
 
 use function spl_object_hash;
@@ -547,6 +549,31 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
         }
 
         $this->fail('This should never be reached, an exception should have been thrown.');
+    }
+
+    public function testTransactionalCommitWithCustomWriteOptions(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        // Force transaction config to be enabled
+        $this->dm->getConfiguration()->setUseTransactionalFlush(true);
+
+        $collection = $this->createMock(\MongoDB\Collection::class);
+        $collection->expects($this->once())
+            ->method('insertMany')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+
+        $documentPersister = $this->uow->getDocumentPersister(ForumUser::class);
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $user           = new ForumUser();
+        $user->username = '12345';
+        $this->uow->persist($user);
+
+        $this->uow->commit(['writeConcern' => new WriteConcern(1)]);
     }
 }
 

@@ -31,8 +31,12 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use UnexpectedValueException;
 
+use function array_diff_key;
 use function array_filter;
+use function array_flip;
+use function array_intersect_key;
 use function array_key_exists;
+use function array_merge;
 use function assert;
 use function count;
 use function get_class;
@@ -95,6 +99,7 @@ final class UnitOfWork implements PropertyChangedListener
 
     /** @internal */
     public const DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
+    private const TRANSACTION_OPTIONS     = ['maxCommitTimeMS', 'readConcern', 'readPreference', 'writeConcern'];
 
     /**
      * The identity map holds references to all managed documents.
@@ -447,11 +452,13 @@ final class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
             if ($this->useTransaction($options)) {
-                $session = $this->dm->getClient()->startSession();
-
-                with_transaction($session, function (Session $session) use ($options): void {
-                    $this->doCommit(['session' => $session] + $options);
-                });
+                with_transaction(
+                    $this->dm->getClient()->startSession(),
+                    function (Session $session) use ($options): void {
+                        $this->doCommit(['session' => $session] + $this->stripTransactionOptions($options));
+                    },
+                    $this->getTransactionOptions($options),
+                );
             } else {
                 $this->doCommit($options);
             }
@@ -3139,5 +3146,26 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         return $this->dm->getConfiguration()->isTransactionalFlushEnabled();
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function getTransactionOptions(array $options): array
+    {
+        return array_intersect_key(
+            array_merge(
+                $this->dm->getConfiguration()->getDefaultCommitOptions(),
+                $options,
+            ),
+            array_flip(self::TRANSACTION_OPTIONS),
+        );
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function stripTransactionOptions(array $options): array
+    {
+        return array_diff_key(
+            $options,
+            array_flip(self::TRANSACTION_OPTIONS),
+        );
     }
 }

@@ -15,6 +15,9 @@ use Throwable;
 
 class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 {
+    // This test requires transactions to be disabled
+    protected static bool $allowsTransactions = false;
+
     public function tearDown(): void
     {
         $this->dm->getClient()->selectDatabase('admin')->command([
