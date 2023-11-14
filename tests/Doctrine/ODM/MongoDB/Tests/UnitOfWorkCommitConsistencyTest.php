@@ -102,11 +102,9 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         // Wrong behaviour: changeset should be empty
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
 
-        // Wrong behaviour: user should still be scheduled for insertion
         self::assertTrue($this->uow->isScheduledForInsert($secondUser));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($secondUser));
 
-        // Wrong behaviour: user should still be scheduled for insertion
         self::assertTrue($this->uow->isScheduledForInsert($thirdUser));
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($thirdUser));
     }
