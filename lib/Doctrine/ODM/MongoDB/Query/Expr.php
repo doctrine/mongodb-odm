@@ -15,6 +15,7 @@ use LogicException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
 
+use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -822,17 +823,34 @@ class Expr
      * @param float|array<string, mixed>|Point $x
      * @param float                            $y
      */
-    public function near($x, $y = null): self
+    public function near($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();
         }
 
         if (is_array($x)) {
-            return $this->operator('$near', ['$geometry' => $x]);
+            return $this->operator(
+                '$near',
+                array_filter([
+                    '$geometry' => $x,
+                    '$minDistance' => $minDistance,
+                    '$maxDistance' => $maxDistance,
+                ]),
+            );
         }
 
-        return $this->operator('$near', [$x, $y]);
+        $this->operator('$near', [$x, $y]);
+
+        if ($minDistance !== null) {
+            $this->operator('$minDistance', $minDistance);
+        }
+
+        if ($maxDistance !== null) {
+            $this->operator('$maxDistance', $maxDistance);
+        }
+
+        return $this;
     }
 
     /**
@@ -848,17 +866,34 @@ class Expr
      * @param float|array<string, mixed>|Point $x
      * @param float                            $y
      */
-    public function nearSphere($x, $y = null): self
+    public function nearSphere($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();
         }
 
         if (is_array($x)) {
-            return $this->operator('$nearSphere', ['$geometry' => $x]);
+            return $this->operator(
+                '$nearSphere',
+                array_filter([
+                    '$geometry' => $x,
+                    '$minDistance' => $minDistance,
+                    '$maxDistance' => $maxDistance,
+                ]),
+            );
         }
 
-        return $this->operator('$nearSphere', [$x, $y]);
+        $this->operator('$nearSphere', [$x, $y]);
+
+        if ($minDistance !== null) {
+            $this->operator('$minDistance', $minDistance);
+        }
+
+        if ($maxDistance !== null) {
+            $this->operator('$maxDistance', $maxDistance);
+        }
+
+        return $this;
     }
 
     /**
