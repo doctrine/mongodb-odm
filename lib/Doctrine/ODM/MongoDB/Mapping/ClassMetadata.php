@@ -42,6 +42,7 @@ use function enum_exists;
 use function extension_loaded;
 use function get_class;
 use function in_array;
+use function interface_exists;
 use function is_array;
 use function is_string;
 use function is_subclass_of;
@@ -2307,6 +2308,22 @@ use const PHP_VERSION_ID;
 
         if (isset($mapping['association']) && ! isset($mapping['targetDocument']) && ! isset($mapping['discriminatorField'])) {
             $mapping['discriminatorField'] = self::DEFAULT_DISCRIMINATOR_FIELD;
+        }
+
+        if (isset($mapping['targetDocument']) && ! class_exists($mapping['targetDocument']) && ! interface_exists($mapping['targetDocument'])) {
+            throw MappingException::invalidTargetDocument(
+                $mapping['targetDocument'],
+                $this->name,
+                $mapping['fieldName'],
+            );
+        }
+
+        if (isset($mapping['discriminatorMap'])) {
+            foreach ($mapping['discriminatorMap'] as $value => $class) {
+                if (! class_exists($class) && ! interface_exists($class)) {
+                    throw MappingException::invalidClassInReferenceDiscriminatorMap($class, $this->name, $mapping['fieldName']);
+                }
+            }
         }
 
         if (isset($mapping['version'])) {
