@@ -10,8 +10,17 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperatorsTrait;
 
+use function in_array;
+use function is_array;
+use function is_string;
+use function strtolower;
+
 /**
+ * @psalm-import-type SortDirectionKeywords from Sort
  * @psalm-type CountType = 'lowerBound'|'total'
+ * @psalm-type SortMetaKeywords = 'searchScore'
+ * @psalm-type SortMeta = array{'$meta': SortMetaKeywords}
+ * @psalm-type SortShape = array<string, int|SortMeta|SortDirectionKeywords>
  * @psalm-type SearchStageExpression = array{
  *     '$search': object{
  *         index?: string,
@@ -25,6 +34,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperatorsTrai
  *             maxNumPassages?: int,
  *         },
  *         returnStoredSource?: bool,
+ *         sort?: object,
  *         autocomplete?: object,
  *         compound?: object,
  *         embeddedDocument?: object,
@@ -53,6 +63,9 @@ class Search extends Stage implements SupportsAllSearchOperators
     private ?bool $returnStoredSource = null;
     private ?SearchOperator $operator = null;
 
+    /** @var array<string, -1|1|SortMeta> */
+    private array $sort = [];
+
     public function __construct(Builder $builder)
     {
         parent::__construct($builder);
@@ -77,6 +90,10 @@ class Search extends Stage implements SupportsAllSearchOperators
 
         if ($this->returnStoredSource !== null) {
             $params->returnStoredSource = $this->returnStoredSource;
+        }
+
+        if ($this->sort) {
+            $params->sort = (object) $this->sort;
         }
 
         if ($this->operator !== null) {
@@ -124,6 +141,33 @@ class Search extends Stage implements SupportsAllSearchOperators
     public function returnStoredSource(bool $returnStoredSource = true): static
     {
         $this->returnStoredSource = $returnStoredSource;
+
+        return $this;
+    }
+
+    /**
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
+     * @psalm-param SortShape|string $fieldName
+     * @psalm-param int|SortMeta|SortDirectionKeywords|null $order
+     */
+    public function sort($fieldName, $order = null): static
+    {
+        $allowedMetaSort = ['searchScore'];
+
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+
+        foreach ($fields as $fieldName => $order) {
+            if (is_string($order)) {
+                if (in_array($order, $allowedMetaSort, true)) {
+                    $order = ['$meta' => $order];
+                } else {
+                    $order = strtolower($order) === 'asc' ? 1 : -1;
+                }
+            }
+
+            $this->sort[$fieldName] = $order;
+        }
 
         return $this;
     }

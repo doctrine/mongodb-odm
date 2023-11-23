@@ -6,8 +6,16 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @psalm-import-type SortDirectionKeywords from Sort
+ * @psalm-import-type SortMetaKeywords from Search
+ * @psalm-import-type SortMeta from Search
+ * @psalm-import-type SortShape from Search
+ */
 abstract class AbstractSearchOperator extends Stage implements SearchOperator
 {
     public function __construct(private Search $search)
@@ -33,6 +41,17 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
     public function returnStoredSource(bool $returnStoredSource): Search
     {
         return $this->search->returnStoredSource($returnStoredSource);
+    }
+
+    /**
+     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
+     * @param int|string                       $order     Field order (if one field is specified)
+     * @psalm-param SortShape|string $fieldName
+     * @psalm-param int|SortMeta|SortDirectionKeywords|null $order
+     */
+    public function sort($fieldName, $order = null): Search
+    {
+        return $this->search->sort($fieldName, $order);
     }
 
     /**
