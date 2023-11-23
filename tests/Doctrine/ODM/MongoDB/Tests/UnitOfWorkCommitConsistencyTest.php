@@ -25,7 +25,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         parent::tearDown();
     }
 
-    public function testErrorDuringInsertKeepsFailingInsertions(): void
+    public function testInsertErrorKeepsFailingInsertions(): void
     {
         $firstUser           = new ForumUser();
         $firstUser->username = 'alcaeus';
@@ -69,7 +69,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($friendUser));
     }
 
-    public function testErrorDuringInsertKeepsFailingInsertionsForDocument(): void
+    public function testInsertErrorKeepsFailingInsertionsForDocumentClass(): void
     {
         // Create a unique index on the collection to let the second insert fail
         $collection = $this->dm->getDocumentCollection(ForumUser::class);
@@ -111,7 +111,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($thirdUser));
     }
 
-    public function testErrorDuringInsertWithEmbeddedDocumentKeepsInsertions(): void
+    public function testInsertErrorWithEmbeddedDocumentKeepsInsertions(): void
     {
         // Create a unique index on the collection to let the second insert fail
         $collection = $this->dm->getDocumentCollection(User::class);
@@ -155,7 +155,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($secondAddress));
     }
 
-    public function testErrorDuringUpsertDropsFailingUpserts(): void
+    public function testUpsertErrorDropsFailingUpserts(): void
     {
         $user           = new ForumUser();
         $user->id       = new ObjectId(); // Specifying an identifier makes this an upsert
@@ -187,7 +187,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testErrorDuringUpdateKeepsFailingUpdate(): void
+    public function testUpdateErrorKeepsFailingUpdate(): void
     {
         $user           = new ForumUser();
         $user->username = 'alcaeus';
@@ -222,7 +222,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testErrorDuringUpdateWithNewEmbeddedDocumentKeepsFailingChangeset(): void
+    public function testUpdateErrorWithNewEmbeddedDocumentKeepsFailingChangeset(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -255,7 +255,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testSuccessfulUpdateWithNewEmbeddedDocumentClearsChangesets(): void
+    public function testUpdateWithNewEmbeddedDocumentClearsChangesets(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -275,7 +275,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testErrorDuringUpdateOfEmbeddedDocumentKeepsFailingChangeset(): void
+    public function testUpdateErrorWithEmbeddedDocumentKeepsFailingChangeset(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -310,7 +310,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testSuccessfulUpdateOfEmbeddedDocumentClearsChangesets(): void
+    public function testUpdateWithEmbeddedDocumentClearsChangesets(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -332,7 +332,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testErrorDuringUpdateWithRemovedEmbeddedDocumentKeepsFailingChangeset(): void
+    public function testUpdateErrorWithRemovedEmbeddedDocumentKeepsFailingChangeset(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -369,7 +369,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isInIdentityMap($address));
     }
 
-    public function testSuccessfulUpdateWithRemovedEmbeddedDocumentClearsChangesets(): void
+    public function testUpdateWithRemovedEmbeddedDocumentClearsChangesets(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -391,7 +391,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isInIdentityMap($address));
     }
 
-    public function testErrorDuringDeleteKeepsFailingDelete(): void
+    public function testDeleteErrorKeepsFailingDelete(): void
     {
         $user           = new ForumUser();
         $user->username = 'alcaeus';
@@ -425,7 +425,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertTrue($this->uow->isScheduledForDelete($user));
     }
 
-    public function testFailingDeleteWithEmbeddedDocumentKeepsChangeset(): void
+    public function testDeleteErrorWithEmbeddedDocumentKeepsChangeset(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -465,7 +465,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertTrue($this->uow->isScheduledForDelete($address));
     }
 
-    public function testSuccessfulDeleteWithEmbeddedDocumentClearsChangeset(): void
+    public function testDeleteWithEmbeddedDocumentClearsChangeset(): void
     {
         $address = new Address();
         $address->setCity('Olching');
