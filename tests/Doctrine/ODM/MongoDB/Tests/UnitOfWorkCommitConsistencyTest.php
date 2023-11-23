@@ -39,14 +39,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->uow->persist($friendUser);
 
         // Add failpoint to let the first insert command fail. This affects the ForumUser documents
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['insert'],
-            ],
-        ]);
+        $this->createFailpoint('insert');
 
         try {
             $this->uow->commit();
@@ -163,14 +156,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $user->username = 'alcaeus';
         $this->uow->persist($user);
 
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['update'],
-            ],
-        ]);
+        $this->createFailpoint('update');
 
         try {
             $this->uow->commit();
@@ -198,14 +184,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $user->username = 'jmikola';
 
         // Make sure update command fails once
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['update'],
-            ],
-        ]);
+        $this->createFailpoint('update');
 
         try {
             $this->uow->commit();
@@ -235,14 +214,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $address->setCity('Olching');
         $user->setAddress($address);
 
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['update'],
-            ],
-        ]);
+        $this->createFailpoint('update');
 
         try {
             $this->uow->commit();
@@ -290,14 +262,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $address->setCity('Munich');
 
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['update'],
-            ],
-        ]);
+        $this->createFailpoint('update');
 
         try {
             $this->uow->commit();
@@ -347,14 +312,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $user->removeAddress();
 
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['update'],
-            ],
-        ]);
+        $this->createFailpoint('update');
 
         try {
             $this->uow->commit();
@@ -402,14 +360,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->uow->remove($user);
 
         // Make sure delete command fails once
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['delete'],
-            ],
-        ]);
+        $this->createFailpoint('delete');
 
         try {
             $this->uow->commit();
@@ -441,14 +392,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->uow->remove($user);
 
         // Make sure delete command fails once
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => ['delete'],
-            ],
-        ]);
+        $this->createFailpoint('delete');
 
         try {
             $this->uow->commit();
@@ -498,5 +442,17 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $client = new Client(self::getUri(false), [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         return DocumentManager::create($client, $config);
+    }
+
+    private function createFailpoint(string $commandName): void
+    {
+        $this->dm->getClient()->selectDatabase('admin')->command([
+            'configureFailPoint' => 'failCommand',
+            'mode' => ['times' => 1],
+            'data' => [
+                'errorCode' => 192, // FailPointEnabled
+                'failCommands' => [$commandName],
+            ],
+        ]);
     }
 }
