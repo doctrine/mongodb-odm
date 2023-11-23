@@ -71,7 +71,8 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
     public function testInsertErrorKeepsFailingInsertionsForDocumentClass(): void
     {
-        // Create a unique index on the collection to let the second insert fail
+        // Create a unique index on the collection to let the second document fail, as using a fail point would also
+        // affect the first document.
         $collection = $this->dm->getDocumentCollection(ForumUser::class);
         $collection->createIndex(['username' => 1], ['unique' => true]);
 
