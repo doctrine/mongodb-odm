@@ -29,9 +29,10 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
+use Iterator as SplIterator;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
-use MongoDB\Driver\Cursor;
+use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Driver\WriteConcern;
@@ -581,7 +582,7 @@ final class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      */
-    private function wrapCursor(Cursor $baseCursor): Iterator
+    private function wrapCursor(SplIterator&CursorInterface $baseCursor): Iterator
     {
         return new CachingIterator(new HydratingIterator($baseCursor, $this->dm->getUnitOfWork(), $this->class));
     }
