@@ -9,8 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class GH1225Test extends BaseTestCase
 {
     public function testRemoveAddEmbeddedDocToExistingDocumentWithPreUpdateHook(): void
@@ -21,14 +19,14 @@ class GH1225Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc         = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc         = $this->dm->getRepository($doc::class)->find($doc->id);
         $embeddedDoc = $doc->embeds->first();
         $doc->embeds->clear();
         $doc->embeds->add($embeddedDoc);
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->getRepository(get_class($doc))->find($doc->id);
+        $doc = $this->dm->getRepository($doc::class)->find($doc->id);
         self::assertCount(1, $doc->embeds);
     }
 }

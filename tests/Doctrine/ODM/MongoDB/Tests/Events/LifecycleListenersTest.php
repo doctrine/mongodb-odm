@@ -15,8 +15,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Assert;
 
-use function get_class;
-
 class LifecycleListenersTest extends BaseTestCase
 {
     private MyEventListener $listener;
@@ -175,8 +173,8 @@ class LifecycleListenersTest extends BaseTestCase
             Events::postUpdate => [TestDocument::class],
         ];
 
-        $document               = $dm->getRepository(get_class($document))->find($document->id);
-        $profile                = $dm->getRepository(get_class($profile))->find($profile->id);
+        $document               = $dm->getRepository($document::class)->find($document->id);
+        $profile                = $dm->getRepository($profile::class)->find($profile->id);
         $this->listener->called = [];
         $document->profile      = $profile;
         $dm->flush();
@@ -184,8 +182,8 @@ class LifecycleListenersTest extends BaseTestCase
         self::assertEquals($called, $this->listener->called, 'Changing ReferenceOne field did not dispatched proper events.');
         $this->listener->called = [];
 
-        $document               = $dm->getRepository(get_class($document))->find($document->id);
-        $profile                = $dm->getRepository(get_class($profile))->find($profile->id);
+        $document               = $dm->getRepository($document::class)->find($document->id);
+        $profile                = $dm->getRepository($profile::class)->find($profile->id);
         $this->listener->called = [];
         $document->profiles[]   = $profile;
         $dm->flush();
@@ -204,7 +202,7 @@ class LifecycleListenersTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository(get_class($document))->find($document->id);
+        $document = $this->dm->getRepository($document::class)->find($document->id);
         self::assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->add(new TestEmbeddedDocument('For mock at 1'));
         // mock at 0, despite adding postCollectionLoad will have empty collection
@@ -212,7 +210,7 @@ class LifecycleListenersTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->getRepository(get_class($document))->find($document->id);
+        $document = $this->dm->getRepository($document::class)->find($document->id);
         self::assertInstanceOf(PersistentCollectionInterface::class, $document->embedded);
         $document->embedded->add(new TestEmbeddedDocument('Will not be seen'));
         // mock at 1, collection should have 1 element after
@@ -229,7 +227,7 @@ class MyEventListener
     public function __call(string $method, array $args): void
     {
         $document                = $args[0]->getDocument();
-        $className               = get_class($document);
+        $className               = $document::class;
         $this->called[$method][] = $className;
     }
 }

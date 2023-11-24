@@ -5,31 +5,68 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use BadMethodCallException;
-use Doctrine\ODM\MongoDB\Aggregation\Operator\GenericOperatorsInterface;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\AccumulatorOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ArithmeticOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ArrayOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\BooleanOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ComparisonOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ConditionalOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\CustomOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\DataSizeOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\DateOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\GroupAccumulatorOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\MiscOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\ObjectOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\SetOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\StringOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TimestampOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TrigonometryOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\TypeOperators;
+use Doctrine\ODM\MongoDB\Aggregation\Operator\WindowOperators;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use LogicException;
 
+use function array_filter;
 use function array_map;
 use function array_merge;
-use function assert;
+use function count;
 use function func_get_args;
+use function in_array;
 use function is_array;
 use function is_string;
+use function sprintf;
 use function substr;
+
+use const ARRAY_FILTER_USE_BOTH;
 
 /**
  * Fluent interface for building aggregation pipelines.
+ *
+ * @psalm-type OperatorExpression = array<string, mixed>|object
  */
-class Expr implements GenericOperatorsInterface
+class Expr implements
+    AccumulatorOperators,
+    ArithmeticOperators,
+    ArrayOperators,
+    BooleanOperators,
+    ComparisonOperators,
+    ConditionalOperators,
+    CustomOperators,
+    DataSizeOperators,
+    DateOperators,
+    GroupAccumulatorOperators,
+    MiscOperators,
+    ObjectOperators,
+    SetOperators,
+    StringOperators,
+    TimestampOperators,
+    TrigonometryOperators,
+    TypeOperators,
+    WindowOperators
 {
-    private DocumentManager $dm;
-
-    private ClassMetadata $class;
-
     /** @var array<string, mixed> */
     private array $expr = [];
 
@@ -41,43 +78,35 @@ class Expr implements GenericOperatorsInterface
     /** @var array{case: mixed|self, then?: mixed|self}|null */
     private ?array $switchBranch = null;
 
-    public function __construct(DocumentManager $dm, ClassMetadataInterface $class)
+    public function __construct(private DocumentManager $dm, private ClassMetadata $class)
     {
-        assert($class instanceof ClassMetadata);
-        $this->dm    = $dm;
-        $this->class = $class;
     }
 
-    /**
-     * Returns the absolute value of a number.
-     *
-     * The <number> argument can be any valid expression as long as it resolves
-     * to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/abs/
-     *
-     * @param mixed|self $number
-     */
-    public function abs($number): self
+    public function abs($number): static
     {
         return $this->operator('$abs', $number);
     }
 
-    /**
-     * Adds numbers together or adds numbers and a date. If one of the arguments
-     * is a date, $add treats the other arguments as milliseconds to add to the
-     * date.
-     *
-     * The arguments can be any valid expression as long as they resolve to
-     * either all numbers or to numbers and a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/add/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     * @param mixed|self ...$expressions Additional expressions
-     */
-    public function add($expression1, $expression2, ...$expressions): self
+    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): static
+    {
+        return $this->operator(
+            '$accumulator',
+            $this->filterOptionalNullArguments(
+                [
+                    'init' => $init,
+                    'initArgs' => $initArgs,
+                    'accumulate' => $accumulate,
+                    'accumulateArgs' => $accumulateArgs,
+                    'merge' => $merge,
+                    'finalize' => $finalize,
+                    'lang' => $lang,
+                ],
+                ['initArgs', 'finalize'],
+            ),
+        );
+    }
+
+    public function add($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$add', func_get_args());
     }
@@ -87,16 +116,16 @@ class Expr implements GenericOperatorsInterface
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/and/
      *
-     * @param array<string, mixed>|self $expression
-     * @param array<string, mixed>|self ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd($expression, ...$expressions): static
     {
         if (! isset($this->expr['$and'])) {
             $this->expr['$and'] = [];
         }
 
-        $this->expr['$and'] = array_merge($this->expr['$and'], array_map([$this, 'ensureArray'], func_get_args()));
+        $this->expr['$and'] = array_merge($this->expr['$and'], array_map([$this, 'prepareArgument'], func_get_args()));
 
         return $this;
     }
@@ -106,108 +135,71 @@ class Expr implements GenericOperatorsInterface
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/or/
      *
-     * @param array<string, mixed>|self $expression
-     * @param array<string, mixed>|self ...$expressions
+     * @param array<string, mixed>|Expr $expression
+     * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr($expression, ...$expressions): static
     {
         if (! isset($this->expr['$or'])) {
             $this->expr['$or'] = [];
         }
 
-        $this->expr['$or'] = array_merge($this->expr['$or'], array_map([$this, 'ensureArray'], func_get_args()));
+        $this->expr['$or'] = array_merge($this->expr['$or'], array_map([$this, 'prepareArgument'], func_get_args()));
 
         return $this;
     }
 
-    /**
-     * Returns an array of all unique values that results from applying an
-     * expression to each document in a group of documents that share the same
-     * group by key. Order of the elements in the output array is unspecified.
-     *
-     * AddToSet is an accumulator operation only available in the group stage.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/addToSet/
-     *
-     * @param mixed|self $expression
-     */
-    public function addToSet($expression): self
+    public function addToSet($expression): static
     {
         return $this->operator('$addToSet', $expression);
     }
 
-    /**
-     * Evaluates an array as a set and returns true if no element in the array
-     * is false. Otherwise, returns false. An empty array returns true.
-     *
-     * The expression must resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/allElementsTrue/
-     *
-     * @param mixed|self $expression
-     */
-    public function allElementsTrue($expression): self
+    public function allElementsTrue($expression): static
     {
         return $this->operator('$allElementsTrue', $expression);
     }
 
-    /**
-     * Evaluates an array as a set and returns true if any of the elements are
-     * true and false otherwise. An empty array returns false.
-     *
-     * The expression must resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/anyElementTrue/
-     *
-     * @param mixed[]|self $expression
-     */
-    public function anyElementTrue($expression): self
+    public function and($expression, ...$expressions): static
+    {
+        return $this->operator('$and', func_get_args());
+    }
+
+    public function anyElementTrue($expression): static
     {
         return $this->operator('$anyElementTrue', $expression);
     }
 
-    /**
-     * Returns the element at the specified array index.
-     *
-     * The <array> expression can be any valid expression as long as it resolves
-     * to an array.
-     * The <idx> expression can be any valid expression as long as it resolves
-     * to an integer.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayElemAt/
-     *
-     * @param mixed|self $array
-     * @param mixed|self $index
-     */
-    public function arrayElemAt($array, $index): self
+    public function arrayElemAt($array, $index): static
     {
-        return $this->operator('$arrayElemAt', [$array, $index]);
+        return $this->operator('$arrayElemAt', func_get_args());
     }
 
-    /**
-     * Returns the average value of the numeric values that result from applying
-     * a specified expression to each document in a group of documents that
-     * share the same group by key. Ignores nun-numeric values.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
-     *
-     * @param mixed|self $expression
-     */
-    public function avg($expression): self
+    public function avg($expression, ...$expressions): static
     {
-        return $this->operator('$avg', $expression);
+        return $this->accumulatorOperator('$avg', ...func_get_args());
     }
 
-    /**
-     * Adds a case statement for a branch of the $switch operator.
-     *
-     * Requires {@link switch()} to be called first. The argument can be any
-     * valid expression that resolves to a boolean. If the result is not a
-     * boolean, it is coerced to a boolean value.
-     *
-     * @param mixed|self $expression
-     */
-    public function case($expression): self
+    public function binarySize($expression): static
+    {
+        return $this->operator('$binarySize', $expression);
+    }
+
+    public function bottom($output, $sortBy): static
+    {
+        return $this->operator('$bottom', ['output' => $output, 'sortBy' => $sortBy]);
+    }
+
+    public function bottomN($output, $sortBy, $n): static
+    {
+        return $this->operator('$bottomN', ['output' => $output, 'sortBy' => $sortBy, 'n' => $n]);
+    }
+
+    public function bsonSize($expression): static
+    {
+        return $this->operator('$bsonSize', $expression);
+    }
+
+    public function case($expression): static
     {
         $this->requiresSwitchStatement(static::class . '::case');
 
@@ -216,85 +208,27 @@ class Expr implements GenericOperatorsInterface
         return $this;
     }
 
-    /**
-     * Returns the smallest integer greater than or equal to the specified number.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ceil/
-     *
-     * @param mixed|self $number
-     */
-    public function ceil($number): self
+    public function ceil($number): static
     {
         return $this->operator('$ceil', $number);
     }
 
-    /**
-     * Compares two values and returns:
-     * -1 if the first value is less than the second.
-     * 1 if the first value is greater than the second.
-     * 0 if the two values are equivalent.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cmp/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function cmp($expression1, $expression2): self
+    public function cmp($expression1, $expression2): static
     {
-        return $this->operator('$cmp', [$expression1, $expression2]);
+        return $this->operator('$cmp', func_get_args());
     }
 
-    /**
-     * Concatenates strings and returns the concatenated string.
-     *
-     * The arguments can be any valid expression as long as they resolve to
-     * strings. If the argument resolves to a value of null or refers to a field
-     * that is missing, $concat returns null.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/concat/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     * @param mixed|self ...$expressions Additional expressions
-     */
-    public function concat($expression1, $expression2, ...$expressions): self
+    public function concat($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$concat', func_get_args());
     }
 
-    /**
-     * Concatenates arrays to return the concatenated array.
-     *
-     * The <array> expressions can be any valid expression as long as they
-     * resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/concatArrays/
-     *
-     * @param mixed|self $array1
-     * @param mixed|self $array2
-     * @param mixed|self ...$arrays Additional expressions
-     */
-    public function concatArrays($array1, $array2, ...$arrays): self
+    public function concatArrays($array1, $array2, ...$arrays): static
     {
         return $this->operator('$concatArrays', func_get_args());
     }
 
-    /**
-     * Evaluates a boolean expression to return one of the two specified return
-     * expressions.
-     *
-     * The arguments can be any valid expression.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cond/
-     *
-     * @param mixed|self $if
-     * @param mixed|self $then
-     * @param mixed|self $else
-     */
-    public function cond($if, $then, $else): self
+    public function cond($if, $then, $else): static
     {
         return $this->operator('$cond', ['if' => $if, 'then' => $then, 'else' => $else]);
     }
@@ -325,152 +259,258 @@ class Expr implements GenericOperatorsInterface
         return $expression;
     }
 
-    /**
-     * Converts a date object to a string according to a user-specified format.
-     *
-     * The format string can be any string literal, containing 0 or more format
-     * specifiers.
-     * The date argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dateToString/
-     *
-     * @param mixed|self $expression
-     */
-    public function dateToString(string $format, $expression): self
+    public function countDocuments(): static
     {
-        return $this->operator('$dateToString', ['format' => $format, 'date' => $expression]);
+        return $this->operator('$count', []);
     }
 
-    /**
-     * Returns the day of the month for a date as a number between 1 and 31.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfMonth/
-     *
-     * @param mixed|self $expression
-     */
-    public function dayOfMonth($expression): self
+    public function covariancePop($expression1, $expression2): static
+    {
+        return $this->operator('$covariancePop', func_get_args());
+    }
+
+    public function covarianceSamp($expression1, $expression2): static
+    {
+        return $this->operator('$covarianceSamp', func_get_args());
+    }
+
+    public function dateAdd($startDate, $unit, $amount, $timezone = null): static
+    {
+        return $this->operator(
+            '$dateAdd',
+            $this->filterOptionalNullArguments(
+                [
+                    'startDate' => $startDate,
+                    'unit' => $unit,
+                    'amount' => $amount,
+                    'timezone' => $timezone,
+                ],
+                ['timezone'],
+            ),
+        );
+    }
+
+    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): static
+    {
+        return $this->operator(
+            '$dateDiff',
+            $this->filterOptionalNullArguments(
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate,
+                    'unit' => $unit,
+                    'timezone' => $timezone,
+                    'startOfWeek' => $startOfWeek,
+                ],
+                ['timezone', 'startOfWeek'],
+            ),
+        );
+    }
+
+    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): static
+    {
+        return $this->operator(
+            '$dateFromParts',
+            $this->filterOptionalNullArguments(
+                [
+                    'year' => $year,
+                    'isoWeekYear' => $isoWeekYear,
+                    'month' => $month,
+                    'isoWeek' => $isoWeek,
+                    'day' => $day,
+                    'isoDayOfWeek' => $isoDayOfWeek,
+                    'hour' => $hour,
+                    'minute' => $minute,
+                    'second' => $second,
+                    'millisecond' => $millisecond,
+                    'timezone' => $timezone,
+                ],
+                [
+                    'year',
+                    'isoWeekYear',
+                    'month',
+                    'isoWeek',
+                    'day',
+                    'isoDayOfWeek',
+                    'hour',
+                    'minute',
+                    'second',
+                    'millisecond',
+                    'timezone',
+                ],
+            ),
+        );
+    }
+
+    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): static
+    {
+        return $this->operator(
+            '$dateFromString',
+            $this->filterOptionalNullArguments(
+                [
+                    'dateString' => $dateString,
+                    'format' => $format,
+                    'timezone' => $timezone,
+                    'onError' => $onError,
+                    'onNull' => $onNull,
+                ],
+                ['format', 'timezone', 'onError', 'onNull'],
+            ),
+        );
+    }
+
+    public function dateSubtract($startDate, $unit, $amount, $timezone = null): static
+    {
+        return $this->operator(
+            '$dateSubtract',
+            $this->filterOptionalNullArguments(
+                [
+                    'startDate' => $startDate,
+                    'unit' => $unit,
+                    'amount' => $amount,
+                    'timezone' => $timezone,
+                ],
+                ['timezone'],
+            ),
+        );
+    }
+
+    public function dateToParts($date, $timezone = null, $iso8601 = null): static
+    {
+        return $this->operator(
+            '$dateToParts',
+            $this->filterOptionalNullArguments(
+                [
+                    'date' => $date,
+                    'timezone' => $timezone,
+                    'iso8601' => $iso8601,
+                ],
+                ['timezone', 'iso8601'],
+            ),
+        );
+    }
+
+    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): static
+    {
+        return $this->operator(
+            '$dateToString',
+            $this->filterOptionalNullArguments(
+                [
+                    'date' => $expression,
+                    'format' => $format,
+                    'timezone' => $timezone,
+                    'onNull' => $onNull,
+                ],
+                ['timezone', 'onNull'],
+            ),
+        );
+    }
+
+    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): static
+    {
+        return $this->operator(
+            '$dateTrunc',
+            $this->filterOptionalNullArguments(
+                [
+                    'date' => $date,
+                    'unit' => $unit,
+                    'binSize' => $binSize,
+                    'timezone' => $timezone,
+                    'startOfWeek' => $startOfWeek,
+                ],
+                ['binSize', 'timezone', 'startOfWeek'],
+            ),
+        );
+    }
+
+    public function dayOfMonth($expression): static
     {
         return $this->operator('$dayOfMonth', $expression);
     }
 
-    /**
-     * Returns the day of the week for a date as a number between 1 (Sunday) and
-     * 7 (Saturday).
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfWeek/
-     *
-     * @param mixed|self $expression
-     */
-    public function dayOfWeek($expression): self
+    public function dayOfWeek($expression): static
     {
         return $this->operator('$dayOfWeek', $expression);
     }
 
-    /**
-     * Returns the day of the year for a date as a number between 1 and 366.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/dayOfYear/
-     *
-     * @param mixed|self $expression
-     */
-    public function dayOfYear($expression): self
+    public function dayOfYear($expression): static
     {
         return $this->operator('$dayOfYear', $expression);
     }
 
-    /**
-     * Adds a default statement for the current $switch operator.
-     *
-     * Requires {@link switch()} to be called first. The argument can be any
-     * valid expression.
-     *
-     * Note: if no default is specified and no branch evaluates to true, the
-     * $switch operator throws an error.
-     *
-     * @param mixed|self $expression
-     */
-    public function default($expression): self
+    public function default($expression): static
     {
         $this->requiresSwitchStatement(static::class . '::default');
 
         if ($this->currentField) {
-            $this->expr[$this->currentField]['$switch']['default'] = $this->ensureArray($expression);
+            $this->expr[$this->currentField]['$switch']['default'] = $this->prepareArgument($expression);
         } else {
-            $this->expr['$switch']['default'] = $this->ensureArray($expression);
+            $this->expr['$switch']['default'] = $this->prepareArgument($expression);
         }
 
         return $this;
     }
 
-    /**
-     * Divides one number by another and returns the result. The first argument
-     * is divided by the second argument.
-     *
-     * The arguments can be any valid expression as long as the resolve to numbers.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/divide/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function divide($expression1, $expression2): self
+    public function denseRank(): static
     {
-        return $this->operator('$divide', [$expression1, $expression2]);
+        return $this->operator('$denseRank', []);
     }
 
-    /**
-     * Compares two values and returns whether the are equivalent.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/eq/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function eq($expression1, $expression2): self
+    public function derivative($input, string $unit): static
     {
-        return $this->operator('$eq', [$expression1, $expression2]);
+        return $this->operator('$derivative', ['input' => $input, 'unit' => $unit]);
     }
 
-    /**
-     * Raises Euler’s number to the specified exponent and returns the result.
-     *
-     * The <exponent> expression can be any valid expression as long as it
-     * resolves to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/exp/
-     *
-     * @param mixed|self $exponent
-     */
-    public function exp($exponent): self
+    public function divide($expression1, $expression2): static
+    {
+        return $this->operator('$divide', func_get_args());
+    }
+
+    public function documentNumber(): static
+    {
+        return $this->operator('$documentNumber', []);
+    }
+
+    public function eq($expression1, $expression2): static
+    {
+        return $this->operator('$eq', func_get_args());
+    }
+
+    public function exp($exponent): static
     {
         return $this->operator('$exp', $exponent);
+    }
+
+    public function expMovingAvg($input, ?int $n = null, ?float $alpha = null): static
+    {
+        return $this->operator(
+            '$expMovingAvg',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'N' => $n,
+                    'alpha' => $alpha,
+                ],
+                ['N', 'alpha'],
+            ),
+        );
     }
 
     /**
      * Returns a new expression object.
      */
-    public function expr(): self
+    public function expr(): static
     {
         return new static($this->dm, $this->class);
     }
 
-    /**
-     * Allows any expression to be used as a field value.
-     *
-     * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
-     *
-     * @param mixed|self $value
-     */
-    public function expression($value): self
+    public function expression($value): static
     {
-        $this->requiresCurrentField(__METHOD__);
-        $this->expr[$this->currentField] = $this->ensureArray($value);
+        if (! $this->currentField) {
+            throw new LogicException(sprintf('%s requires setting a current field using field().', __METHOD__));
+        }
+
+        $this->expr[$this->currentField] = $this->prepareArgument($value);
 
         return $this;
     }
@@ -478,7 +518,7 @@ class Expr implements GenericOperatorsInterface
     /**
      * Set the current field for building the expression.
      */
-    public function field(string $fieldName): self
+    public function field(string $fieldName): static
     {
         $fieldName          = $this->getDocumentPersister()->prepareFieldName($fieldName);
         $this->currentField = $fieldName;
@@ -486,48 +526,30 @@ class Expr implements GenericOperatorsInterface
         return $this;
     }
 
-    /**
-     * Selects a subset of the array to return based on the specified condition.
-     *
-     * Returns an array with only those elements that match the condition. The
-     * returned elements are in the original order.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/filter/
-     *
-     * @param mixed|self $input
-     * @param mixed|self $as
-     * @param mixed|self $cond
-     */
-    public function filter($input, $as, $cond): self
+    public function filter($input, $as, $cond): static
     {
         return $this->operator('$filter', ['input' => $input, 'as' => $as, 'cond' => $cond]);
     }
 
-    /**
-     * Returns the value that results from applying an expression to the first
-     * document in a group of documents that share the same group by key. Only
-     * meaningful when documents are in a defined order.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/first/
-     *
-     * @param mixed|self $expression
-     */
-    public function first($expression): self
+    public function first($expression): static
     {
         return $this->operator('$first', $expression);
     }
 
-    /**
-     * Returns the largest integer less than or equal to the specified number.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/floor/
-     *
-     * @param mixed|self $number
-     */
-    public function floor($number): self
+    public function firstN($expression, $n): static
+    {
+        return $this->operator('$firstN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    public function function($body, $args, $lang = 'js'): static
+    {
+        return $this->operator('$function', ['body' => $body, 'args' => $args, 'lang' => $lang]);
+    }
+
+    public function floor($number): static
     {
         return $this->operator('$floor', $number);
     }
@@ -538,99 +560,46 @@ class Expr implements GenericOperatorsInterface
         return $this->expr;
     }
 
-    /**
-     * Compares two values and returns:
-     * true when the first value is greater than the second value.
-     * false when the first value is less than or equivalent to the second
-     * value.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/gt/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function gt($expression1, $expression2): self
+    public function getField($field, $input = null): static
     {
-        return $this->operator('$gt', [$expression1, $expression2]);
+        return $this->operator(
+            '$getField',
+            $this->filterOptionalNullArguments(
+                [
+                    'field' => $field,
+                    'input' => $input,
+                ],
+                ['input'],
+            ),
+        );
     }
 
-    /**
-     * Compares two values and returns:
-     * true when the first value is greater than or equivalent to the second
-     * value.
-     * false when the first value is less than the second value.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/gte/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function gte($expression1, $expression2): self
+    public function gt($expression1, $expression2): static
     {
-        return $this->operator('$gte', [$expression1, $expression2]);
+        return $this->operator('$gt', func_get_args());
     }
 
-    /**
-     * Returns the hour portion of a date as a number between 0 and 23.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/hour/
-     *
-     * @param mixed|self $expression
-     */
-    public function hour($expression): self
+    public function gte($expression1, $expression2): static
+    {
+        return $this->operator('$gte', func_get_args());
+    }
+
+    public function hour($expression): static
     {
         return $this->operator('$hour', $expression);
     }
 
-    /**
-     * Evaluates an expression and returns the value of the expression if the
-     * expression evaluates to a non-null value. If the expression evaluates to
-     * a null value, including instances of undefined values or missing fields,
-     * returns the value of the replacement expression.
-     *
-     * The arguments can be any valid expression.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ifNull/
-     *
-     * @param mixed|self $expression
-     * @param mixed|self $replacementExpression
-     */
-    public function ifNull($expression, $replacementExpression): self
+    public function ifNull($expression, $replacementExpression): static
     {
-        return $this->operator('$ifNull', [$expression, $replacementExpression]);
+        return $this->operator('$ifNull', func_get_args());
     }
 
-    /**
-     * Returns a boolean indicating whether a specified value is in an array.
-     *
-     * Unlike the $in query operator, the aggregation $in operator does not
-     * support matching by regular expressions.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/in/
-     *
-     * @param mixed|self $expression
-     * @param mixed|self $arrayExpression
-     */
-    public function in($expression, $arrayExpression): self
+    public function in($expression, $arrayExpression): static
     {
-        return $this->operator('$in', [$expression, $arrayExpression]);
+        return $this->operator('$in', func_get_args());
     }
 
-    /**
-     * Searches an array for an occurrence of a specified value and returns the
-     * array index (zero-based) of the first occurrence. If the value is not
-     * found, returns -1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfArray/
-     *
-     * @param mixed|self $arrayExpression  can be any valid expression as long as it resolves to an array
-     * @param mixed|self $searchExpression can be any valid expression
-     * @param mixed|self $start            Optional. An integer, or a number that can be represented as integers (such as 2.0), that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     * @param mixed|self $end              An integer, or a number that can be represented as integers (such as 2.0), that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     */
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): self
+    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): static
     {
         $args = [$arrayExpression, $searchExpression];
         if ($start !== null) {
@@ -644,19 +613,7 @@ class Expr implements GenericOperatorsInterface
         return $this->operator('$indexOfArray', $args);
     }
 
-    /**
-     * Searches a string for an occurrence of a substring and returns the UTF-8
-     * byte index (zero-based) of the first occurrence. If the substring is not
-     * found, returns -1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfBytes/
-     *
-     * @param mixed|self      $stringExpression    can be any valid expression as long as it resolves to a string
-     * @param mixed|self      $substringExpression can be any valid expression as long as it resolves to a string
-     * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     */
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): static
     {
         $args = [$stringExpression, $substringExpression];
         if ($start !== null) {
@@ -670,19 +627,7 @@ class Expr implements GenericOperatorsInterface
         return $this->operator('$indexOfBytes', $args);
     }
 
-    /**
-     * Searches a string for an occurrence of a substring and returns the UTF-8
-     * code point index (zero-based) of the first occurrence. If the substring is
-     * not found, returns -1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/indexOfCP/
-     *
-     * @param mixed|self      $stringExpression    can be any valid expression as long as it resolves to a string
-     * @param mixed|self      $substringExpression can be any valid expression as long as it resolves to a string
-     * @param string|int|null $start               An integral number that specifies the starting index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     * @param string|int|null $end                 An integral number that specifies the ending index position for the search. Can be any valid expression that resolves to a non-negative integral number.
-     */
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): self
+    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): static
     {
         $args = [$stringExpression, $substringExpression];
         if ($start !== null) {
@@ -696,935 +641,433 @@ class Expr implements GenericOperatorsInterface
         return $this->operator('$indexOfCP', $args);
     }
 
-    /**
-     * Determines if the operand is an array. Returns a boolean.
-     *
-     * The <expression> can be any valid expression.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isArray/
-     *
-     * @param mixed|self $expression
-     */
-    public function isArray($expression): self
+    public function integral($input, string $unit): static
+    {
+        return $this->operator('$integral', ['input' => $input, 'unit' => $unit]);
+    }
+
+    public function isArray($expression): static
     {
         return $this->operator('$isArray', $expression);
     }
 
-    /**
-     * Returns the weekday number in ISO 8601 format, ranging from 1 (for Monday)
-     * to 7 (for Sunday).
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoDayOfWeek/
-     *
-     * @param mixed|self $expression
-     */
-    public function isoDayOfWeek($expression): self
+    public function isoDayOfWeek($expression): static
     {
         return $this->operator('$isoDayOfWeek', $expression);
     }
 
-    /**
-     * Returns the week number in ISO 8601 format, ranging from 1 to 53.
-     *
-     * Week numbers start at 1 with the week (Monday through Sunday) that
-     * contains the year’s first Thursday.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
-     *
-     * @param mixed|self $expression
-     */
-    public function isoWeek($expression): self
+    public function isoWeek($expression): static
     {
         return $this->operator('$isoWeek', $expression);
     }
 
-    /**
-     * Returns the year number in ISO 8601 format.
-     *
-     * The year starts with the Monday of week 1 (ISO 8601) and ends with the
-     * Sunday of the last week (ISO 8601).
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isoWeek/
-     *
-     * @param mixed|self $expression
-     */
-    public function isoWeekYear($expression): self
+    public function isoWeekYear($expression): static
     {
         return $this->operator('$isoWeekYear', $expression);
     }
 
-    /**
-     * Returns the value that results from applying an expression to the last
-     * document in a group of documents that share the same group by a field.
-     * Only meaningful when documents are in a defined order.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/last/
-     *
-     * @param mixed|self $expression
-     */
-    public function last($expression): self
+    public function last($expression): static
     {
         return $this->operator('$last', $expression);
     }
 
-    /**
-     * Binds variables for use in the specified expression, and returns the
-     * result of the expression.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/let/
-     *
-     * @param mixed|self $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
-     * @param mixed|self $in   the expression to evaluate
-     */
-    public function let($vars, $in): self
+    public function lastN($expression, $n): static
+    {
+        return $this->operator('$lastN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    public function let($vars, $in): static
     {
         return $this->operator('$let', ['vars' => $vars, 'in' => $in]);
     }
 
-    /**
-     * Returns a value without parsing. Use for values that the aggregation
-     * pipeline may interpret as an expression.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/literal/
-     *
-     * @param mixed|self $value
-     */
-    public function literal($value): self
+    public function linearFill($expression): static
+    {
+        return $this->operator('$linearFill', $expression);
+    }
+
+    public function literal($value): static
     {
         return $this->operator('$literal', $value);
     }
 
-    /**
-     * Calculates the natural logarithm ln (i.e loge) of a number and returns
-     * the result as a double.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a non-negative number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     *
-     * @param mixed|self $number
-     */
-    public function ln($number): self
+    public function ln($number): static
     {
         return $this->operator('$ln', $number);
     }
 
-    /**
-     * Calculates the log of a number in the specified base and returns the
-     * result as a double.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a non-negative number.
-     * The <base> expression can be any valid expression as long as it resolves
-     * to a positive number greater than 1.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     *
-     * @param mixed|self $number
-     * @param mixed|self $base
-     */
-    public function log($number, $base): self
+    public function locf($expression): static
     {
-        return $this->operator('$log', [$number, $base]);
+        return $this->operator('$locf', $expression);
     }
 
-    /**
-     * Calculates the log base 10 of a number and returns the result as a double.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a non-negative number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log10/
-     *
-     * @param mixed|self $number
-     */
-    public function log10($number): self
+    public function log($number, $base): static
+    {
+        return $this->operator('$log', func_get_args());
+    }
+
+    public function log10($number): static
     {
         return $this->operator('$log10', $number);
     }
 
-    /**
-     * Compares two values and returns:
-     * true when the first value is less than the second value.
-     * false when the first value is greater than or equivalent to the second
-     * value.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lt/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function lt($expression1, $expression2): self
+    public function lt($expression1, $expression2): static
     {
-        return $this->operator('$lt', [$expression1, $expression2]);
+        return $this->operator('$lt', func_get_args());
     }
 
-    /**
-     * Compares two values and returns:
-     * true when the first value is less than or equivalent to the second value.
-     * false when the first value is greater than the second value.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lte/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function lte($expression1, $expression2): self
+    public function lte($expression1, $expression2): static
     {
-        return $this->operator('$lte', [$expression1, $expression2]);
+        return $this->operator('$lte', func_get_args());
     }
 
-    /**
-     * Applies an expression to each item in an array and returns an array with
-     * the applied results.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/map/
-     *
-     * @param mixed|self $input an expression that resolves to an array
-     * @param string     $as    The variable name for the items in the input array. The in expression accesses each item in the input array by this variable.
-     * @param mixed|self $in    The expression to apply to each item in the input array. The expression accesses the item by its variable name.
-     */
-    public function map($input, $as, $in): self
+    public function map($input, $as, $in): static
     {
         return $this->operator('$map', ['input' => $input, 'as' => $as, 'in' => $in]);
     }
 
-    /**
-     * Returns the highest value that results from applying an expression to
-     * each document in a group of documents that share the same group by key.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
-     *
-     * @param mixed|self $expression
-     */
-    public function max($expression): self
+    public function max($expression, ...$expressions): static
     {
-        return $this->operator('$max', $expression);
+        return $this->accumulatorOperator('$max', ...func_get_args());
     }
 
-    /**
-     * Returns the metadata associated with a document in a pipeline operations.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/meta/
-     *
-     * @param mixed|self $metaDataKeyword
-     */
-    public function meta($metaDataKeyword): self
+    public function maxN($expression, $n): static
+    {
+        return $this->operator('$maxN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    public function mergeObjects($expression, ...$expressions): static
+    {
+        return $this->accumulatorOperator('$mergeObjects', ...func_get_args());
+    }
+
+    public function meta($metaDataKeyword): static
     {
         return $this->operator('$meta', $metaDataKeyword);
     }
 
-    /**
-     * Returns the millisecond portion of a date as an integer between 0 and 999.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/millisecond/
-     *
-     * @param mixed|self $expression
-     */
-    public function millisecond($expression): self
+    public function millisecond($expression): static
     {
         return $this->operator('$millisecond', $expression);
     }
 
-    /**
-     * Returns the lowest value that results from applying an expression to each
-     * document in a group of documents that share the same group by key.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
-     *
-     * @param mixed|self $expression
-     */
-    public function min($expression): self
+    public function min($expression, ...$expressions): static
     {
-        return $this->operator('$min', $expression);
+        return $this->accumulatorOperator('$min', ...func_get_args());
     }
 
-    /**
-     * Returns the minute portion of a date as a number between 0 and 59.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minute/
-     *
-     * @param mixed|self $expression
-     */
-    public function minute($expression): self
+    public function minN($expression, $n): static
+    {
+        return $this->operator('$minN', [
+            'input' => $expression,
+            'n' => $n,
+        ]);
+    }
+
+    public function minute($expression): static
     {
         return $this->operator('$minute', $expression);
     }
 
-    /**
-     * Divides one number by another and returns the remainder. The first
-     * argument is divided by the second argument.
-     *
-     * The arguments can be any valid expression as long as they resolve to numbers.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mod/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function mod($expression1, $expression2): self
+    public function mod($expression1, $expression2): static
     {
-        return $this->operator('$mod', [$expression1, $expression2]);
+        return $this->operator('$mod', func_get_args());
     }
 
-    /**
-     * Returns the month of a date as a number between 1 and 12.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/month/
-     *
-     * @param mixed|self $expression
-     */
-    public function month($expression): self
+    public function month($expression): static
     {
         return $this->operator('$month', $expression);
     }
 
-    /**
-     * Multiplies numbers together and returns the result.
-     *
-     * The arguments can be any valid expression as long as they resolve to numbers.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/multiply/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     * @param mixed|self ...$expressions Additional expressions
-     */
-    public function multiply($expression1, $expression2, ...$expressions): self
+    public function multiply($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$multiply', func_get_args());
     }
 
-    /**
-     * Compares two values and returns:
-     * true when the values are not equivalent.
-     * false when the values are equivalent.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ne/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function ne($expression1, $expression2): self
+    public function ne($expression1, $expression2): static
     {
-        return $this->operator('$ne', [$expression1, $expression2]);
+        return $this->operator('$ne', func_get_args());
     }
 
-    /**
-     * Evaluates a boolean and returns the opposite boolean value.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/not/
-     *
-     * @param mixed|self $expression
-     */
-    public function not($expression): self
+    public function not($expression): static
     {
         return $this->operator('$not', $expression);
     }
 
-    /**
-     * Raises a number to the specified exponent and returns the result.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a non-negative number.
-     * The <exponent> expression can be any valid expression as long as it
-     * resolves to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/pow/
-     *
-     * @param mixed|self $number
-     * @param mixed|self $exponent
-     */
-    public function pow($number, $exponent): self
+    public function pow($number, $exponent): static
     {
-        return $this->operator('$pow', [$number, $exponent]);
+        return $this->operator('$pow', func_get_args());
     }
 
-    /**
-     * Returns an array of all values that result from applying an expression to
-     * each document in a group of documents that share the same group by key.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/push/
-     *
-     * @param mixed|self $expression
-     */
-    public function push($expression): self
+    public function push($expression): static
     {
         return $this->operator('$push', $expression);
     }
 
-    /**
-     * Returns an array whose elements are a generated sequence of numbers.
-     *
-     * $range generates the sequence from the specified starting number by successively incrementing the starting number by the specified step value up to but not including the end point.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/range/
-     *
-     * @param mixed|self $start An integer that specifies the start of the sequence. Can be any valid expression that resolves to an integer.
-     * @param mixed|self $end   An integer that specifies the exclusive upper limit of the sequence. Can be any valid expression that resolves to an integer.
-     * @param mixed|self $step  Optional. An integer that specifies the increment value. Can be any valid expression that resolves to a non-zero integer. Defaults to 1.
-     */
-    public function range($start, $end, $step = 1): self
+    public function rand(): static
     {
-        return $this->operator('$range', [$start, $end, $step]);
+        return $this->operator('$rand', []);
     }
 
-    /**
-     * Applies an expression to each element in an array and combines them into
-     * a single value.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reduce/
-     *
-     * @param mixed|self $input        can be any valid expression that resolves to an array
-     * @param mixed|self $initialValue the initial cumulative value set before in is applied to the first element of the input array
-     * @param mixed|self $in           A valid expression that $reduce applies to each element in the input array in left-to-right order. Wrap the input value with $reverseArray to yield the equivalent of applying the combining expression from right-to-left.
-     */
-    public function reduce($input, $initialValue, $in): self
+    public function range($start, $end, $step = null): static
+    {
+        return $this->operator('$range', func_get_args());
+    }
+
+    public function rank(): static
+    {
+        return $this->operator('$rank', []);
+    }
+
+    public function reduce($input, $initialValue, $in): static
     {
         return $this->operator('$reduce', ['input' => $input, 'initialValue' => $initialValue, 'in' => $in]);
     }
 
-    /**
-     * Accepts an array expression as an argument and returns an array with the
-     * elements in reverse order.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/reverseArray/
-     *
-     * @param mixed|self $expression
-     */
-    public function reverseArray($expression): self
+    public function reverseArray($expression): static
     {
         return $this->operator('$reverseArray', $expression);
     }
 
-    /**
-     * Returns the second portion of a date as a number between 0 and 59, but
-     * can be 60 to account for leap seconds.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/second/
-     *
-     * @param mixed|self $expression
-     */
-    public function second($expression): self
+    public function sampleRate(float $rate): static
+    {
+        return $this->operator('$sampleRate', $rate);
+    }
+
+    public function second($expression): static
     {
         return $this->operator('$second', $expression);
     }
 
-    /**
-     * Takes two sets and returns an array containing the elements that only
-     * exist in the first set.
-     *
-     * The arguments can be any valid expression as long as they each resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setDifference/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function setDifference($expression1, $expression2): self
+    public function setDifference($expression1, $expression2): static
     {
-        return $this->operator('$setDifference', [$expression1, $expression2]);
+        return $this->operator('$setDifference', func_get_args());
     }
 
-    /**
-     * Compares two or more arrays and returns true if they have the same
-     * distinct elements and false otherwise.
-     *
-     * The arguments can be any valid expression as long as they each resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setEquals/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     * @param mixed|self ...$expressions Additional sets
-     */
-    public function setEquals($expression1, $expression2, ...$expressions): self
+    public function setEquals($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$setEquals', func_get_args());
     }
 
-    /**
-     * Takes two or more arrays and returns an array that contains the elements
-     * that appear in every input array.
-     *
-     * The arguments can be any valid expression as long as they each resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setIntersection/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     * @param mixed|self ...$expressions Additional sets
-     */
-    public function setIntersection($expression1, $expression2, ...$expressions): self
+    public function setField($field, $input, $value): static
+    {
+        return $this->operator('$setField', ['field' => $field, 'input' => $input, 'value' => $value]);
+    }
+
+    public function setIntersection($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$setIntersection', func_get_args());
     }
 
-    /**
-     * Takes two arrays and returns true when the first array is a subset of the
-     * second, including when the first array equals the second array, and false otherwise.
-     *
-     * The arguments can be any valid expression as long as they each resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setIsSubset/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function setIsSubset($expression1, $expression2): self
+    public function setIsSubset($expression1, $expression2): static
     {
-        return $this->operator('$setIsSubset', [$expression1, $expression2]);
+        return $this->operator('$setIsSubset', func_get_args());
     }
 
-    /**
-     * Takes two or more arrays and returns an array containing the elements
-     * that appear in any input array.
-     *
-     * The arguments can be any valid expression as long as they each resolve to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setUnion/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     * @param mixed|self ...$expressions Additional sets
-     */
-    public function setUnion($expression1, $expression2, ...$expressions): self
+    public function setUnion($expression1, $expression2, ...$expressions): static
     {
         return $this->operator('$setUnion', func_get_args());
     }
 
-    /**
-     * Counts and returns the total the number of items in an array.
-     *
-     * The argument can be any expression as long as it resolves to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/size/
-     *
-     * @param mixed|self $expression
-     */
-    public function size($expression): self
+    public function shift($output, int $by, $default = null): static
+    {
+        return $this->operator(
+            '$shift',
+            $this->filterOptionalNullArguments(
+                [
+                    'output' => $output,
+                    'by' => $by,
+                    'default' => $default,
+                ],
+                ['default'],
+            ),
+        );
+    }
+
+    public function size($expression): static
     {
         return $this->operator('$size', $expression);
     }
 
-    /**
-     * Returns a subset of an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/slice/
-     *
-     * @param mixed|self      $array
-     * @param mixed|self      $n
-     * @param mixed|self|null $position
-     */
-    public function slice($array, $n, $position = null): self
+    public function slice($array, $n, $position = null): static
     {
-        if ($position === null) {
-            return $this->operator('$slice', [$array, $n]);
+        // With two args provided, the order of parameters is <array>, <n>.
+        // With three args provided, the order of parameters is <array>,
+        // <position>, <n>.
+        if ($position !== null) {
+            $args = [$array, $position, $n];
+        } else {
+            $args = [$array, $n];
         }
 
-        return $this->operator('$slice', [$array, $position, $n]);
+        return $this->operator('$slice', $args);
     }
 
-    /**
-     * Divides a string into an array of substrings based on a delimiter.
-     *
-     * $split removes the delimiter and returns the resulting substrings as
-     * elements of an array. If the delimiter is not found in the string, $split
-     * returns the original string as the only element of an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/split/
-     *
-     * @param mixed|self $string    The string to be split. Can be any valid expression as long as it resolves to a string.
-     * @param mixed|self $delimiter The delimiter to use when splitting the string expression. Can be any valid expression as long as it resolves to a string.
-     */
-    public function split($string, $delimiter): self
+    public function sortArray($input, $sortBy): static
     {
-        return $this->operator('$split', [$string, $delimiter]);
+        return $this->operator('$sortArray', [
+            'input' => $input,
+            'sortBy' => $sortBy,
+        ]);
     }
 
-    /**
-     * Calculates the square root of a positive number and returns the result as
-     * a double.
-     *
-     * The argument can be any valid expression as long as it resolves to a
-     * non-negative number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sqrt/
-     *
-     * @param mixed|self $expression
-     */
-    public function sqrt($expression): self
+    public function split($string, $delimiter): static
+    {
+        return $this->operator('$split', func_get_args());
+    }
+
+    public function sqrt($expression): static
     {
         return $this->operator('$sqrt', $expression);
     }
 
-    /**
-     * Calculates the population standard deviation of the input values.
-     *
-     * The arguments can be any expression as long as it resolves to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self ...$expressions Additional samples
-     */
-    public function stdDevPop($expression1, ...$expressions): self
+    public function stdDevPop($expression, ...$expressions): static
     {
-        $expression = empty($expressions) ? $expression1 : func_get_args();
-
-        return $this->operator('$stdDevPop', $expression);
+        return $this->accumulatorOperator('$stdDevPop', ...func_get_args());
     }
 
-    /**
-     * Calculates the sample standard deviation of the input values.
-     *
-     * The arguments can be any expression as long as it resolves to an array.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self ...$expressions Additional samples
-     */
-    public function stdDevSamp($expression1, ...$expressions): self
+    public function stdDevSamp($expression, ...$expressions): static
     {
-        $expression = empty($expressions) ? $expression1 : func_get_args();
-
-        return $this->operator('$stdDevSamp', $expression);
+        return $this->accumulatorOperator('$stdDevSamp', ...func_get_args());
     }
 
-    /**
-     * Performs case-insensitive comparison of two strings. Returns
-     * 1 if first string is “greater than” the second string.
-     * 0 if the two strings are equal.
-     * -1 if the first string is “less than” the second string.
-     *
-     * The arguments can be any valid expression as long as they resolve to strings.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strcasecmp/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function strcasecmp($expression1, $expression2): self
+    public function strcasecmp($expression1, $expression2): static
     {
-        return $this->operator('$strcasecmp', [$expression1, $expression2]);
+        return $this->operator('$strcasecmp', func_get_args());
     }
 
-    /**
-     * Returns the number of UTF-8 encoded bytes in the specified string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenBytes/
-     *
-     * @param mixed|self $string
-     */
-    public function strLenBytes($string): self
+    public function strLenBytes($string): static
     {
         return $this->operator('$strLenBytes', $string);
     }
 
-    /**
-     * Returns the number of UTF-8 code points in the specified string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/strLenCP/
-     *
-     * @param mixed|self $string
-     */
-    public function strLenCP($string): self
+    public function strLenCP($string): static
     {
         return $this->operator('$strLenCP', $string);
     }
 
-    /**
-     * Returns a substring of a string, starting at a specified index position
-     * and including the specified number of characters. The index is zero-based.
-     *
-     * The arguments can be any valid expression as long as long as the first argument resolves to a string, and the second and third arguments resolve to integers.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substr/
-     *
-     * @param mixed|self $string
-     * @param mixed|self $start
-     * @param mixed|self $length
-     */
-    public function substr($string, $start, $length): self
+    public function substr($string, $start, $length): static
     {
-        return $this->operator('$substr', [$string, $start, $length]);
+        return $this->operator('$substr', func_get_args());
     }
 
-    /**
-     * Returns the substring of a string.
-     *
-     * The substring starts with the character at the specified UTF-8 byte index
-     * (zero-based) in the string and continues for the number of bytes
-     * specified.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substrBytes/
-     *
-     * @param mixed|self $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
-     * @param mixed|self $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     * @param mixed|self $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
-     */
-    public function substrBytes($string, $start, $count): self
+    public function substrBytes($string, $start, $count): static
     {
-        return $this->operator('$substrBytes', [$string, $start, $count]);
+        return $this->operator('$substrBytes', func_get_args());
     }
 
-    /**
-     * Returns the substring of a string.
-     *
-     * The substring starts with the character at the specified UTF-8 code point
-     * (CP) index (zero-based) in the string for the number of code points
-     * specified.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/substrBytes/
-     *
-     * @param mixed|self $string The string from which the substring will be extracted. Can be any valid expression as long as it resolves to a string.
-     * @param mixed|self $start  Indicates the starting point of the substring. Can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer.
-     * @param mixed|self $count  can be any valid expression as long as it resolves to a non-negative integer or number that can be represented as an integer
-     */
-    public function substrCP($string, $start, $count): self
+    public function substrCP($string, $start, $count): static
     {
-        return $this->operator('$substrCP', [$string, $start, $count]);
+        return $this->operator('$substrCP', func_get_args());
     }
 
-    /**
-     * Subtracts two numbers to return the difference. The second argument is
-     * subtracted from the first argument.
-     *
-     * The arguments can be any valid expression as long as they resolve to numbers and/or dates.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/subtract/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function subtract($expression1, $expression2): self
+    public function subtract($expression1, $expression2): static
     {
-        return $this->operator('$subtract', [$expression1, $expression2]);
+        return $this->operator('$subtract', func_get_args());
     }
 
-    /**
-     * Calculates and returns the sum of all the numeric values that result from
-     * applying a specified expression to each document in a group of documents
-     * that share the same group by key. Ignores nun-numeric values.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
-     *
-     * @param mixed|self $expression
-     */
-    public function sum($expression): self
+    public function sum($expression, ...$expressions): static
     {
-        return $this->operator('$sum', $expression);
+        return $this->accumulatorOperator('$sum', ...func_get_args());
     }
 
-    /**
-     * Converts value to a boolean.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toBool/
-     *
-     * @param mixed|self $expression
-     */
-    public function toBool($expression): self
+    public function toBool($expression): static
     {
         return $this->operator('$toBool', $expression);
     }
 
-    /**
-     * Converts value to a Date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDate/
-     *
-     * @param mixed|self $expression
-     */
-    public function toDate($expression): self
+    public function toDate($expression): static
     {
         return $this->operator('$toDate', $expression);
     }
 
-    /**
-     * Converts value to a Decimal128.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDecimal/
-     *
-     * @param mixed|self $expression
-     */
-    public function toDecimal($expression): self
+    public function toDecimal($expression): static
     {
         return $this->operator('$toDecimal', $expression);
     }
 
-    /**
-     * Converts value to a double.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDouble/
-     *
-     * @param mixed|self $expression
-     */
-    public function toDouble($expression): self
+    public function toDouble($expression): static
     {
         return $this->operator('$toDouble', $expression);
     }
 
-    /**
-     * Converts value to an integer.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toInt/
-     *
-     * @param mixed|self $expression
-     */
-    public function toInt($expression): self
+    public function toInt($expression): static
     {
         return $this->operator('$toInt', $expression);
     }
 
-    /**
-     * Converts value to a long.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLong/
-     *
-     * @param mixed|self $expression
-     */
-    public function toLong($expression): self
+    public function toLong($expression): static
     {
         return $this->operator('$toLong', $expression);
     }
 
-    /**
-     * Converts a string to lowercase, returning the result.
-     *
-     * The argument can be any expression as long as it resolves to a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLower/
-     *
-     * @param mixed|self $expression
-     */
-    public function toLower($expression): self
+    public function toLower($expression): static
     {
         return $this->operator('$toLower', $expression);
     }
 
-    /**
-     * Converts value to an ObjectId.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toObjectId/
-     *
-     * @param mixed|self $expression
-     */
-    public function toObjectId($expression): self
+    public function toObjectId($expression): static
     {
         return $this->operator('$toObjectId', $expression);
     }
 
-    /**
-     * Converts value to a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
-     *
-     * @param mixed|self $expression
-     */
-    public function toString($expression): self
+    public function top($output, $sortBy): static
+    {
+        return $this->operator('$top', ['output' => $output, 'sortBy' => $sortBy]);
+    }
+
+    public function topN($output, $sortBy, $n): static
+    {
+        return $this->operator('$topN', ['output' => $output, 'sortBy' => $sortBy, 'n' => $n]);
+    }
+
+    public function toString($expression): static
     {
         return $this->operator('$toString', $expression);
     }
 
-    /**
-     * Converts a string to uppercase, returning the result.
-     *
-     * The argument can be any expression as long as it resolves to a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toUpper/
-     *
-     * @param mixed|self $expression
-     */
-    public function toUpper($expression): self
+    public function toUpper($expression): static
     {
         return $this->operator('$toUpper', $expression);
     }
 
-    /**
-     * Truncates a number to its integer.
-     *
-     * The <number> expression can be any valid expression as long as it
-     * resolves to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trunc/
-     *
-     * @param mixed|self $number
-     */
-    public function trunc($number): self
+    public function trunc($number): static
     {
         return $this->operator('$trunc', $number);
     }
 
-    /**
-     * Returns a string that specifies the BSON type of the argument.
-     *
-     * The argument can be any valid expression.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/type/
-     *
-     * @param mixed|self $expression
-     */
-    public function type($expression): self
+    public function tsIncrement($expression): static
+    {
+        return $this->operator('$tsIncrement', $expression);
+    }
+
+    public function tsSecond($expression): static
+    {
+        return $this->operator('$tsSecond', $expression);
+    }
+
+    public function type($expression): static
     {
         return $this->operator('$type', $expression);
     }
 
-    /**
-     * Returns the week of the year for a date as a number between 0 and 53.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/week/
-     *
-     * @param mixed|self $expression
-     */
-    public function week($expression): self
+    public function week($expression): static
     {
         return $this->operator('$week', $expression);
     }
 
-    /**
-     * Returns the year portion of a date.
-     *
-     * The argument can be any expression as long as it resolves to a date.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/year/
-     *
-     * @param mixed|self $expression
-     */
-    public function year($expression): self
+    public function year($expression): static
     {
         return $this->operator('$year', $expression);
     }
 
-    /**
-     * Transposes an array of input arrays so that the first element of the
-     * output array would be an array containing, the first element of the first
-     * input array, the first element of the second input array, etc.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/zip/
-     *
-     * @param mixed|self      $inputs           An array of expressions that resolve to arrays. The elements of these input arrays combine to form the arrays of the output array.
-     * @param bool|null       $useLongestLength a boolean which specifies whether the length of the longest array determines the number of arrays in the output array
-     * @param mixed|self|null $defaults         An array of default element values to use if the input arrays have different lengths. You must specify useLongestLength: true along with this field, or else $zip will return an error.
-     */
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): self
+    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): static
     {
         $args = ['inputs' => $inputs];
         if ($useLongestLength !== null) {
@@ -1639,18 +1082,40 @@ class Expr implements GenericOperatorsInterface
     }
 
     /**
+     * Wrapper for accumulator operators that exist in forms with one and multiple arguments
+     *
+     * @see Expr::operator()
+     *
+     * @param mixed|self ...$expressions
+     */
+    private function accumulatorOperator(string $operator, ...$expressions): static
+    {
+        if (count($expressions) === 1) {
+            return $this->operator($operator, $expressions[0]);
+        }
+
+        return $this->operator($operator, $expressions);
+    }
+
+    /**
+     * Prepares an argument for an operator. It follows these ruls:
+     * - If the argument is a string starting with a $, it is considered a field name and is transformed according to mapping information.
+     * - If the argument is an array, it is recursively prepared.
+     * - If the argument is an Expr instance, its expression is returned.
+     * - Otherwise, the argument is converted to a MongoDB type according to the ODM type information.
+     *
      * @param mixed|self $expression
      *
      * @return mixed
      */
-    private function ensureArray($expression)
+    private function prepareArgument($expression)
     {
         if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 
         if (is_array($expression)) {
-            return array_map([$this, 'ensureArray'], $expression);
+            return array_map([$this, 'prepareArgument'], $expression);
         }
 
         if ($expression instanceof self) {
@@ -1672,29 +1137,22 @@ class Expr implements GenericOperatorsInterface
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
      *
-     * @param mixed[]|self $expression
+     * @param mixed|mixed[]|self $expression
      */
-    private function operator(string $operator, $expression): self
+    private function operator(string $operator, $expression): static
     {
         if ($this->currentField) {
-            $this->expr[$this->currentField][$operator] = $this->ensureArray($expression);
+            $this->expr[$this->currentField][$operator] = $this->prepareArgument($expression);
         } else {
-            $this->expr[$operator] = $this->ensureArray($expression);
+            $this->expr[$operator] = $this->prepareArgument($expression);
         }
 
         return $this;
     }
 
-    /**
-     * Ensure that a current field has been set.
-     *
-     * @throws LogicException if a current field has not been set.
-     */
-    private function requiresCurrentField(?string $method = null): void
+    public function or($expression, ...$expressions): static
     {
-        if (! $this->currentField) {
-            throw new LogicException(($method ?: 'This method') . ' requires you set a current field using field().');
-        }
+        return $this->operator('$or', func_get_args());
     }
 
     /** @throws BadMethodCallException if there is no current switch operator. */
@@ -1711,30 +1169,14 @@ class Expr implements GenericOperatorsInterface
         }
     }
 
-    /**
-     * Evaluates a series of case expressions. When it finds an expression which
-     * evaluates to true, $switch executes a specified expression and breaks out
-     * of the control flow.
-     *
-     * To add statements, use the {@link case()}, {@link then()} and
-     * {@link default()} methods.
-     */
-    public function switch(): self
+    public function switch(): static
     {
         $this->operator('$switch', []);
 
         return $this;
     }
 
-    /**
-     * Adds a case statement for the current branch of the $switch operator.
-     *
-     * Requires {@link case()} to be called first. The argument can be any valid
-     * expression.
-     *
-     * @param mixed|self $expression
-     */
-    public function then($expression): self
+    public function then($expression): static
     {
         if (! is_array($this->switchBranch)) {
             throw new BadMethodCallException(static::class . '::then requires a valid case statement (call case() first).');
@@ -1743,9 +1185,9 @@ class Expr implements GenericOperatorsInterface
         $this->switchBranch['then'] = $expression;
 
         if ($this->currentField) {
-            $this->expr[$this->currentField]['$switch']['branches'][] = $this->ensureArray($this->switchBranch);
+            $this->expr[$this->currentField]['$switch']['branches'][] = $this->prepareArgument($this->switchBranch);
         } else {
-            $this->expr['$switch']['branches'][] = $this->ensureArray($this->switchBranch);
+            $this->expr['$switch']['branches'][] = $this->prepareArgument($this->switchBranch);
         }
 
         $this->switchBranch = null;
@@ -1753,310 +1195,211 @@ class Expr implements GenericOperatorsInterface
         return $this;
     }
 
-    /**
-     * Converts an array into a single document.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/arrayToObject/
-     *
-     * @param mixed|self $array
-     */
-    public function arrayToObject($array): self
+    public function arrayToObject($array): static
     {
         return $this->operator('$arrayToObject', $array);
     }
 
-    /**
-     * Converts a document to an array. The return array contains an element for each field/value pair
-     * in the original document. Each element in the return array is a document that contains
-     * two fields k and v:.
-     *      The k field contains the field name in the original document.
-     *      The v field contains the value of the field in the original document.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/objectToArray/
-     *
-     * @param mixed|self $object
-     */
-    public function objectToArray($object): self
+    public function objectToArray($object): static
     {
         return $this->operator('$objectToArray', $object);
     }
 
-    /**
-     * Rounds a number to a whole integer or to a specified decimal place.
-     *
-     * The <number> argument can be any valid expression as long as it resolves
-     * to a number.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/round/
-     *
-     * @param mixed|self      $number
-     * @param mixed|self|null $place
-     */
-    public function round($number, $place = null): self
+    public function regexFind($input, $regex, $options = null): static
     {
-        return $this->operator('$round', [$number, $place]);
+        return $this->operator(
+            '$regexFind',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'regex' => $regex,
+                    'options' => $options,
+                ],
+                ['options'],
+            ),
+        );
     }
 
-    /**
-     * Removes whitespace characters, including null, or the specified characters from
-     * the beginning and end of a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trim/
-     *
-     * @param mixed|self $input
-     * @param mixed|self $chars
-     */
-    public function trim($input, $chars = null): self
+    public function regexFindAll($input, $regex, $options = null): static
     {
-        return $this->operator('$trim', [$input, $chars]);
+        return $this->operator(
+            '$regexFindAll',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'regex' => $regex,
+                    'options' => $options,
+                ],
+                ['options'],
+            ),
+        );
     }
 
-    /**
-     * Removes whitespace characters, including null, or the specified characters from
-     * the beginning and end of a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ltrim/
-     *
-     * @param mixed|self $input
-     * @param mixed|self $chars
-     */
-    public function ltrim($input, $chars = null): self
+    public function regexMatch($input, $regex, $options = null): static
     {
-        return $this->operator('$ltrim', [$input, $chars]);
+        return $this->operator(
+            '$regexMatch',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'regex' => $regex,
+                    'options' => $options,
+                ],
+                ['options'],
+            ),
+        );
     }
 
-    /**
-     * Removes whitespace characters, including null, or the specified characters from the end of a string.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/rtrim/
-     *
-     * @param mixed|self $input
-     * @param mixed|self $chars
-     */
-    public function rtrim($input, $chars = null): self
+    public function replaceAll($input, $find, $replacement): static
     {
-        return $this->operator('$rtrim', [$input, $chars]);
+        return $this->operator('$replaceAll', [
+            'input' => $input,
+            'find' => $find,
+            'replacement' => $replacement,
+        ]);
     }
 
-    /**
-     * Returns the sine of a value that is measured in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sin/
-     *
-     * @param mixed|self $expression
-     */
-    public function sin($expression): self
+    public function replaceOne($input, $find, $replacement): static
+    {
+        return $this->operator('$replaceOne', [
+            'input' => $input,
+            'find' => $find,
+            'replacement' => $replacement,
+        ]);
+    }
+
+    public function round($number, $place = null): static
+    {
+        return $this->operator('$round', func_get_args());
+    }
+
+    public function trim($input, $chars = null): static
+    {
+        return $this->operator('$trim', func_get_args());
+    }
+
+    public function ltrim($input, $chars = null): static
+    {
+        return $this->operator('$ltrim', func_get_args());
+    }
+
+    public function rtrim($input, $chars = null): static
+    {
+        return $this->operator('$rtrim', func_get_args());
+    }
+
+    public function sin($expression): static
     {
         return $this->operator('$sin', $expression);
     }
 
-    /**
-     * Returns the cosine of a value that is measured in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cos/
-     *
-     * @param mixed|self $expression
-     */
-    public function cos($expression): self
+    public function cos($expression): static
     {
         return $this->operator('$cos', $expression);
     }
 
-    /**
-     * Returns the tangent of a value that is measured in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tan/
-     *
-     * @param mixed|self $expression
-     */
-    public function tan($expression): self
+    public function tan($expression): static
     {
         return $this->operator('$tan', $expression);
     }
 
-    /**
-     * Returns the inverse sin (arc sine) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asin/
-     *
-     * @param mixed|self $expression
-     */
-    public function asin($expression): self
+    public function asin($expression): static
     {
         return $this->operator('$asin', $expression);
     }
 
-    /**
-     * Returns the inverse cosine (arc cosine) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acos/
-     *
-     * @param mixed|self $expression
-     */
-    public function acos($expression): self
+    public function acos($expression): static
     {
         return $this->operator('$acos', $expression);
     }
 
-    /**
-     * Returns the inverse tangent (arc tangent) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan/
-     *
-     * @param mixed|self $expression
-     */
-    public function atan($expression): self
+    public function atan($expression): static
     {
         return $this->operator('$atan', $expression);
     }
 
-    /**
-     * Returns the inverse tangent (arc tangent) of y / x in radians, where y and x are the first and second values passed to the expression respectively.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan2/
-     *
-     * @param mixed|self $expression1
-     * @param mixed|self $expression2
-     */
-    public function atan2($expression1, $expression2): self
+    public function atan2($expression1, $expression2): static
     {
-        return $this->operator('$atan2', [$expression1, $expression2]);
+        return $this->operator('$atan2', func_get_args());
     }
 
-    /**
-     * Returns the inverse hyperbolic sine (hyperbolic arc sine) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asinh/
-     *
-     * @param mixed|self $expression
-     */
-    public function asinh($expression): self
+    public function asinh($expression): static
     {
         return $this->operator('$asinh', $expression);
     }
 
-    /**
-     * Returns the inverse hyperbolic cosine (hyperbolic arc cosine) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acosh/
-     *
-     * @param mixed|self $expression
-     */
-    public function acosh($expression): self
+    public function acosh($expression): static
     {
         return $this->operator('$acosh', $expression);
     }
 
-    /**
-     * Returns the inverse hyperbolic tangent (hyperbolic arc tangent) of a value in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atanh/
-     *
-     * @param mixed|self $expression
-     */
-    public function atanh($expression): self
+    public function atanh($expression): static
     {
         return $this->operator('$atanh', $expression);
     }
 
-    /**
-     * Returns the hyperbolic sine of a value that is measured in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sinh/
-     *
-     * @param mixed|self $expression
-     */
-    public function sinh($expression): self
+    public function sinh($expression): static
     {
         return $this->operator('$sinh', $expression);
     }
 
-    /**
-     * Returns the hyperbolic cosine of a value that is measured in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cosh/
-     *
-     * @param mixed|self $expression
-     */
-    public function cosh($expression): self
+    public function cosh($expression): static
     {
         return $this->operator('$cosh', $expression);
     }
 
-    /**
-     * Returns the hyperbolic tangent of a value that is measured in radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tanh/
-     *
-     * @param mixed|self $expression
-     */
-    public function tanh($expression): self
+    public function tanh($expression): static
     {
         return $this->operator('$tanh', $expression);
     }
 
-    /**
-     * Converts a value from degrees to radians.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/degreesToRadians/
-     *
-     * @param mixed|self $expression
-     */
-    public function degreesToRadians($expression): self
+    public function degreesToRadians($expression): static
     {
         return $this->operator('$degreesToRadians', $expression);
     }
 
-    /**
-     * Converts a value from radians to degrees.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/radiansToDegrees/
-     *
-     * @param mixed|self $expression
-     */
-    public function radiansToDegrees($expression): self
+    public function radiansToDegrees($expression): static
     {
         return $this->operator('$radiansToDegrees', $expression);
     }
 
-    /**
-     * Converts a value to a specified type.
-     *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/convert/
-     *
-     * @param mixed|self      $input
-     * @param mixed|self      $to
-     * @param mixed|self|null $onError
-     * @param mixed|self|null $onNull
-     */
-    public function convert($input, $to, $onError = null, $onNull = null): self
+    public function convert($input, $to, $onError = null, $onNull = null): static
     {
-        $params = [
-            'input' => $input,
-            'to' => $to,
-        ];
+        return $this->operator(
+            '$convert',
+            $this->filterOptionalNullArguments(
+                [
+                    'input' => $input,
+                    'to' => $to,
+                    'onError' => $onError,
+                    'onNull' => $onNull,
+                ],
+                ['onError', 'onNull'],
+            ),
+        );
+    }
 
-        if ($onError !== null) {
-            $params['onError'] = $onError;
-        }
-
-        if ($onNull !== null) {
-            $params['onNull'] = $onNull;
-        }
-
-        return $this->operator('$convert', $params);
+    public function isNumber($expression): static
+    {
+        return $this->operator('$isNumber', $expression);
     }
 
     /**
-     * Returns boolean true if the specified expression resolves to an integer, decimal, double, or long.
-     * Returns boolean false if the expression resolves to any other BSON type, null, or a missing field.
+     * @param array<string, mixed> $args
+     * @param list<string>         $optionalArgNames
      *
-     * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isNumber/
-     *
-     * @param mixed|self $expression
+     * @return array<string, mixed>
      */
-    public function isNumber($expression): self
+    private function filterOptionalNullArguments(array $args, array $optionalArgNames): array
     {
-        return $this->operator('$isNumber', $expression);
+        return array_filter(
+            $args,
+            /**
+             * @param mixed $value
+             * @param array-key $key
+             */
+            static fn ($value, $key): bool => $value !== null || ! in_array($key, $optionalArgNames),
+            ARRAY_FILTER_USE_BOTH,
+        );
     }
 }

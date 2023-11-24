@@ -12,14 +12,14 @@ class SkipTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
-    public function testSkipStage(): void
+    public function testStage(): void
     {
         $skipStage = new Skip($this->getTestAggregationBuilder(), 10);
 
         self::assertSame(['$skip' => 10], $skipStage->getExpression());
     }
 
-    public function testSkipFromBuilder(): void
+    public function testFromBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->skip(10);

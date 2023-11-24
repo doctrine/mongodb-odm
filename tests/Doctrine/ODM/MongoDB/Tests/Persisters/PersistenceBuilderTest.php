@@ -9,14 +9,16 @@ use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use Documents\CmsComment;
+use Documents\Ecommerce\Basket;
 use Documents\Ecommerce\ConfigurableProduct;
 use Documents\Ecommerce\Currency;
+use Documents\Ecommerce\Order;
 use Documents\Functional\SameCollection1;
 use Documents\Functional\SameCollection2;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_keys;
-use function get_class;
 
 class PersistenceBuilderTest extends BaseTestCase
 {
@@ -118,7 +120,7 @@ class PersistenceBuilderTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $article        = $this->dm->getRepository(get_class($article))->find($article->id);
+        $article        = $this->dm->getRepository($article::class)->find($article->id);
         $article->id    = null;
         $article->topic = 'test';
 
@@ -157,7 +159,7 @@ class PersistenceBuilderTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $article          = $this->dm->find(get_class($article), $article->id);
+        $article          = $this->dm->find($article::class, $article->id);
         $comment          = new CmsComment();
         $comment->article = $article;
 
@@ -182,7 +184,7 @@ class PersistenceBuilderTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $article          = $this->dm->find(get_class($article), $article->id);
+        $article          = $this->dm->find($article::class, $article->id);
         $comment          = new CmsComment();
         $comment->topic   = 'test';
         $comment->text    = 'text';
@@ -206,11 +208,8 @@ class PersistenceBuilderTest extends BaseTestCase
         self::assertEquals($expectedData, $this->pb->prepareUpsertData($comment));
     }
 
-    /**
-     * @param array<string, mixed> $expectedData
-     *
-     * @dataProvider getDocumentsAndExpectedData
-     */
+    /** @param array<string, mixed> $expectedData */
+    #[DataProvider('getDocumentsAndExpectedData')]
     public function testPrepareInsertData(object $document, array $expectedData): void
     {
         $this->dm->persist($document);
@@ -229,6 +228,8 @@ class PersistenceBuilderTest extends BaseTestCase
         return [
             [new ConfigurableProduct('Test Product'), ['name' => 'Test Product']],
             [new Currency('USD', 1), ['name' => 'USD', 'multiplier' => 1]],
+            [new Order(), ['products' => []]],
+            [new Basket(), []],
         ];
     }
 

@@ -21,7 +21,7 @@
         { "name": "Fran Moreno", "email": "franmomu@gmail.com" }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "ext-mongodb": "^1.11",
         "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
@@ -33,19 +33,20 @@
         "jean85/pretty-package-versions": "^1.3.0 || ^2.0.1",
         "mongodb/mongodb": "^1.10.0",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
-        "symfony/console": "^3.4 || ^4.1 || ^5.0 || ^6.0",
+        "symfony/console": "^5.4 || ^6.0 || ^7.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",
-        "symfony/var-dumper": "^3.4 || ^4.1 || ^5.0 || ^6.0"
+        "symfony/var-dumper": "^5.4 || ^6.0 || ^7.0"
     },
     "require-dev": {
         "ext-bcmath": "*",
         "doctrine/coding-standard": "^12.0",
         "jmikola/geojson": "^1.0",
-        "phpbench/phpbench": "^1.0.0@dev",
+        "phpbench/phpbench": "^1.0.0",
         "phpstan/phpstan": "^1.10.11",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": "^9.5.5 || ^10.0.15",
-        "symfony/cache": "^4.4 || ^5.0 || ^6.0",
+        "phpunit/phpunit": "^10.4",
+        "squizlabs/php_codesniffer": "^3.5",
+        "symfony/cache": "^5.4 || ^6.0 || ^7.0",
         "vimeo/psalm": "^5.9.0"
     },
     "suggest": {
@@ -59,7 +60,6 @@
             "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
             "Documents\\": "tests/Documents",
-            "Documents74\\": "tests/Documents74",
             "Documents81\\": "tests/Documents81",
             "Stubs\\": "tests/Stubs",
             "TestDocuments\\" :"tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures"

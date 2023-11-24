@@ -9,7 +9,7 @@
     <!-- Ignore warnings and show progress of the run -->
     <arg value="np"/>
 
-    <config name="php_version" value="70400"/>
+    <config name="php_version" value="80100"/>
 
     <file>benchmark</file>
     <file>lib</file>
@@ -19,12 +19,6 @@
     <exclude-pattern>tests/Proxies*</exclude-pattern>
     <exclude-pattern>tests/Hydrators*</exclude-pattern>
     <exclude-pattern>tests/PersistentCollections*</exclude-pattern>
-    <!-- Figure out what to do with "Scope keyword "static" must be followed by a single space; found newline" -->
-    <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP80Types.php</exclude-pattern>
-    <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup/Match.php</exclude-pattern>
-    <exclude-pattern>lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Match.php</exclude-pattern>
-    <!-- Figure out what to do with PHP 8.1 errors in coding standard -->
-    <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/PersistentCollection/CollWithPHP81Types.php</exclude-pattern>
 
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
@@ -43,6 +37,15 @@
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming" />
+
+        <!-- Allow short nullable syntax for non-union types -->
+        <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat.DisallowedShortNullable" />
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit">
+        <properties>
+            <property name="ignoreStandaloneIfInScope" value="true"/>
+        </properties>
     </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
@@ -63,10 +66,13 @@
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>lib/Doctrine/ODM/MongoDB/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Command/CommandCompatibility.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Helper/DocumentManagerHelper.php</exclude-pattern>
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>lib/Doctrine/ODM/MongoDB/Tools/Console/Helper/DocumentManagerHelper.php</exclude-pattern>
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 

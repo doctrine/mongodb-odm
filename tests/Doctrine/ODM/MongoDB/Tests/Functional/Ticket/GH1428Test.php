@@ -6,10 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 class GH1428Test extends BaseTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testShortNameLossOnReplacingMiddleEmbeddedDocOfNestedEmbedding(): void
     {
         $owner          = new GH1428Document();

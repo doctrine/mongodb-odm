@@ -23,6 +23,7 @@ use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\Driver\ReadPreference;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
 
@@ -187,11 +188,8 @@ class BuilderTest extends BaseTestCase
             ->getQuery();
     }
 
-    /**
-     * @param class-string $class
-     *
-     * @dataProvider provideArrayUpdateOperatorsOnReferenceMany
-     */
+    /** @param class-string $class */
+    #[DataProvider('provideArrayUpdateOperatorsOnReferenceMany')]
     public function testArrayUpdateOperatorsOnReferenceMany(string $class, string $field): void
     {
         $f = new Feature('Smarter references');
@@ -213,11 +211,8 @@ class BuilderTest extends BaseTestCase
         yield [ChildC::class, 'featurePartialMany'];
     }
 
-    /**
-     * @param class-string $class
-     *
-     * @dataProvider provideArrayUpdateOperatorsOnReferenceOne
-     */
+    /** @param class-string $class */
+    #[DataProvider('provideArrayUpdateOperatorsOnReferenceOne')]
     public function testArrayUpdateOperatorsOnReferenceOne(string $class, string $field): void
     {
         $f = new Feature('Smarter references');
@@ -473,7 +468,7 @@ class BuilderTest extends BaseTestCase
         self::assertCount(1, $qb->getQueryArray());
     }
 
-    /** @dataProvider provideProxiedExprMethods */
+    #[DataProvider('provideProxiedExprMethods')]
     public function testProxiedExprMethods(string $method, array $args = []): void
     {
         $expr = $this->getMockExpr();
@@ -509,8 +504,8 @@ class BuilderTest extends BaseTestCase
             'type()' => ['type', [7]],
             'all()' => ['all', [['value1', 'value2']]],
             'mod()' => ['mod', [2, 0]],
-            'near()' => ['near', [1, 2]],
-            'nearSphere()' => ['nearSphere', [1, 2]],
+            'near()' => ['near', [1, 2], null, 5, 10],
+            'nearSphere()' => ['nearSphere', [1, 2], null, 5, 10],
             'geoIntersects()' => ['geoIntersects', [self::createGeometry()]],
             'geoWithin()' => ['geoWithin', [self::createGeometry()]],
             'geoWithinBox()' => ['geoWithinBox', [1, 2, 3, 4]],
@@ -564,11 +559,8 @@ class BuilderTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param string[] $args
-     *
-     * @dataProvider provideSelectProjections
-     */
+    /** @param string[] $args */
+    #[DataProvider('provideSelectProjections')]
     public function testSelect(array $args, array $expected): void
     {
         $qb = $this->getTestQueryBuilder();
@@ -582,11 +574,8 @@ class BuilderTest extends BaseTestCase
         return self::provideProjections(true);
     }
 
-    /**
-     * @param string[] $args
-     *
-     * @dataProvider provideExcludeProjections
-     */
+    /** @param string[] $args */
+    #[DataProvider('provideExcludeProjections')]
     public function testExclude(array $args, array $expected): void
     {
         $qb = $this->getTestQueryBuilder();
@@ -700,11 +689,8 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => 1], $qb->debug('sort'));
     }
 
-    /**
-     * @param string|int $order
-     *
-     * @dataProvider provideSortOrders
-     */
+    /** @param string|int $order */
+    #[DataProvider('provideSortOrders')]
     public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
@@ -755,7 +741,7 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['score' => ['$meta' => 'textScore']], $qb->debug('sort'));
     }
 
-    /** @dataProvider provideCurrentDateOptions */
+    #[DataProvider('provideCurrentDateOptions')]
     public function testCurrentDateUpdateQuery(string $type): void
     {
         $qb = $this->getTestQueryBuilder()

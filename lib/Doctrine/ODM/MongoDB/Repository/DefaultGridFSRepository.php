@@ -28,7 +28,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     {
         try {
             return $this->getDocumentBucket()->openDownloadStream($this->class->getDatabaseIdentifierValue($id));
-        } catch (FileNotFoundException $e) {
+        } catch (FileNotFoundException) {
             throw DocumentNotFoundException::documentNotFound($this->getClassName(), $id);
         }
     }
@@ -38,7 +38,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     {
         try {
             $this->getDocumentBucket()->downloadToStream($this->class->getDatabaseIdentifierValue($id), $destination);
-        } catch (FileNotFoundException $e) {
+        } catch (FileNotFoundException) {
             throw DocumentNotFoundException::documentNotFound($this->getClassName(), $id);
         }
     }

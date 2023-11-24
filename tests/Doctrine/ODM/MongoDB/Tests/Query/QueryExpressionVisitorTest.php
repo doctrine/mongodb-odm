@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Bars\Bar;
 use MongoDB\BSON\Regex;
+use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 
 class QueryExpressionVisitorTest extends BaseTestCase
@@ -30,11 +31,8 @@ class QueryExpressionVisitorTest extends BaseTestCase
         $this->visitor      = new QueryExpressionVisitor($this->queryBuilder);
     }
 
-    /**
-     * @param array<string, mixed> $expectedQuery
-     *
-     * @dataProvider provideComparisons
-     */
+    /** @param array<string, mixed> $expectedQuery */
+    #[DataProvider('provideComparisons')]
     public function testWalkComparison(Comparison $comparison, array $expectedQuery): void
     {
         $expr = $this->visitor->dispatch($comparison);

@@ -9,8 +9,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-use function get_class;
 use function time;
 
 use const PHP_INT_SIZE;
@@ -40,9 +40,8 @@ class DateTest extends BaseTestCase
     /**
      * @param DateTime|UTCDateTime $oldValue
      * @param DateTime|UTCDateTime $newValue
-     *
-     * @dataProvider provideEquivalentDates
      */
+    #[DataProvider('provideEquivalentDates')]
     public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue): void
     {
         $user = new User();
@@ -51,7 +50,7 @@ class DateTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
+        $user = $this->dm->getRepository($user::class)->findOneBy([]);
         $user->setCreatedAt($newValue);
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
@@ -78,9 +77,10 @@ class DateTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $user = $this->dm->getRepository(get_class($user))->findOneBy([]);
-        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
-        $user->getCreatedAt()->setTimestamp(time() - 3600);
+        $user      = $this->dm->getRepository($user::class)->findOneBy([]);
+        $createdAt = $user->getCreatedAt();
+        self::assertInstanceOf(DateTime::class, $createdAt);
+        $createdAt->setTimestamp(time() - 3600);
 
         $this->dm->getUnitOfWork()->computeChangeSets();
         $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);

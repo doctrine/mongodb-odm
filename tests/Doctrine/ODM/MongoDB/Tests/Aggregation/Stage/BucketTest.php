@@ -4,19 +4,31 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Closure;
+use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsComment;
 use Documents\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BucketTest extends BaseTestCase
 {
+    use AggregationOperatorsProviderTrait;
     use AggregationTestTrait;
 
-    public function testBucketStage(): void
+    /**
+     * @param array<string, string>          $expected
+     * @param mixed[]|Closure(Expr): mixed[] $args
+     */
+    #[DataProvider('provideGroupAccumulatorExpressionOperators')]
+    public function testGroupAccumulators(array $expected, string $operator, $args): void
     {
+        $args = $this->resolveArgs($args);
+
         $bucketStage = new Bucket($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
         $bucketStage
             ->groupBy('$someField')
@@ -24,19 +36,19 @@ class BucketTest extends BaseTestCase
             ->defaultBucket(0)
             ->output()
             ->field('averageValue')
-            ->avg('$value');
+            ->$operator(...$args);
 
         self::assertSame([
             '$bucket' => [
                 'groupBy' => '$someField',
                 'boundaries' => [1, 2, 3],
                 'default' => 0,
-                'output' => ['averageValue' => ['$avg' => '$value']],
+                'output' => ['averageValue' => $expected],
             ],
         ], $bucketStage->getExpression());
     }
 
-    public function testBucketFromBuilder(): void
+    public function testBuilder(): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->bucket()
@@ -59,7 +71,7 @@ class BucketTest extends BaseTestCase
         ], $builder->getPipeline());
     }
 
-    public function testBucketSkipsUndefinedProperties(): void
+    public function testSkipsUndefinedProperties(): void
     {
         $bucketStage = new Bucket($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
         $bucketStage

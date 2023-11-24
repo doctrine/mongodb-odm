@@ -17,7 +17,6 @@ use Documents\Product;
 use Documents\Tag;
 
 use function assert;
-use function get_class;
 use function strtotime;
 
 class OwningAndInverseReferencesTest extends BaseTestCase
@@ -47,7 +46,7 @@ class OwningAndInverseReferencesTest extends BaseTestCase
         self::assertInstanceOf(Cart::class, $customer->cart);
         self::assertEquals($customer->cart->id, $customer->cart->id);
 
-        $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
+        $check = $this->dm->getDocumentCollection($customer::class)->findOne();
         self::assertArrayHasKey('cartTest', $check);
         self::assertEquals('test', $check['cartTest']);
 
@@ -56,7 +55,7 @@ class OwningAndInverseReferencesTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($customer))->findOne();
+        $check = $this->dm->getDocumentCollection($customer::class)->findOne();
         self::assertArrayHasKey('cartTest', $check);
         self::assertEquals('ok', $check['cartTest']);
 
@@ -74,13 +73,13 @@ class OwningAndInverseReferencesTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($product))->findOne();
+        $check = $this->dm->getDocumentCollection($product::class)->findOne();
         self::assertArrayNotHasKey('tags', $check);
 
         $check = $this->dm->getDocumentCollection(Feature::class)->findOne();
         self::assertArrayHasKey('product', $check);
 
-        $product = $this->dm->createQueryBuilder(get_class($product))
+        $product = $this->dm->createQueryBuilder($product::class)
             ->getQuery()
             ->getSingleResult();
         assert($product instanceof Product);
@@ -100,11 +99,11 @@ class OwningAndInverseReferencesTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($node))->findOne(['parent' => ['$exists' => false]]);
+        $check = $this->dm->getDocumentCollection($node::class)->findOne(['parent' => ['$exists' => false]]);
         self::assertNotNull($check);
         self::assertArrayNotHasKey('children', $check);
 
-        $root = $this->dm->createQueryBuilder(get_class($node))
+        $root = $this->dm->createQueryBuilder($node::class)
             ->field('children')->exists(false)
             ->getQuery()
             ->getSingleResult();
@@ -132,7 +131,7 @@ class OwningAndInverseReferencesTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $check = $this->dm->getDocumentCollection(get_class($blogPost))->findOne();
+        $check = $this->dm->getDocumentCollection($blogPost::class)->findOne();
         self::assertCount(1, $check['tags']);
 
         $check = $this->dm->getDocumentCollection(Tag::class)->findOne();

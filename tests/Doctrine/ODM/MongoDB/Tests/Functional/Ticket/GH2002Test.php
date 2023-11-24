@@ -7,22 +7,19 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-use function get_class;
 use function sprintf;
 
 class GH2002Test extends BaseTestCase
 {
-    /**
-     * @param array<string, mixed> $expectedReference
-     *
-     * @dataProvider getValidReferenceData
-     */
+    /** @param array<string, mixed> $expectedReference */
+    #[DataProvider('getValidReferenceData')]
     public function testBuildingReferenceCreatesCorrectStructure(array $expectedReference, object $document): void
     {
         $this->dm->persist($document);
 
-        $metadata = $this->dm->getClassMetadata(get_class($document));
+        $metadata = $this->dm->getClassMetadata($document::class);
         $this->dm->getUnitOfWork()->computeChangeSet($metadata, $document);
 
         $data = $this->dm->getUnitOfWork()->getPersistenceBuilder()->prepareInsertData($document);
@@ -60,12 +57,12 @@ class GH2002Test extends BaseTestCase
         ];
     }
 
-    /** @dataProvider getInvalidReferenceData */
+    #[DataProvider('getInvalidReferenceData')]
     public function testBuildingReferenceForUnlistedClassCausesException(string $expectedExceptionMessage, object $document): void
     {
         $this->dm->persist($document);
 
-        $metadata = $this->dm->getClassMetadata(get_class($document));
+        $metadata = $this->dm->getClassMetadata($document::class);
         $this->dm->getUnitOfWork()->computeChangeSet($metadata, $document);
 
         $this->expectException(MappingException::class);

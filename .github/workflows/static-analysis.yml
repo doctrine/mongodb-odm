@@ -50,7 +50,7 @@ jobs:
         uses: "ramsey/composer-install@v2"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: composer.lock
           path: composer.lock
@@ -82,10 +82,10 @@ jobs:
         uses: "ramsey/composer-install@v2"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: composer.lock
           path: composer.lock
 
       - name: "Run a static analysis with vimeo/psalm"
-        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc) --php-version=${{ matrix.php-version }}"
+        run: "vendor/bin/psalm --show-info=false --stats --output-format=github --threads=$(nproc)"

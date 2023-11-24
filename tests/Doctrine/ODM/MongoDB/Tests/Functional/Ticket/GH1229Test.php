@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function count;
@@ -41,7 +42,7 @@ class GH1229Test extends BaseTestCase
         $this->secondParentId = $secondParent->id;
     }
 
-    /** @group m */
+    #[Group('m')]
     public function testMethodAWithoutClone(): void
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);
@@ -87,7 +88,7 @@ class GH1229Test extends BaseTestCase
         self::assertInstanceOf(GH1229ChildTypeB::CLASSNAME, $children[1]);
     }
 
-    /** @group m */
+    #[Group('m')]
     public function testMethodAWithClone(): void
     {
         $firstParent = $this->dm->find(GH1229Parent::CLASSNAME, $this->firstParentId);

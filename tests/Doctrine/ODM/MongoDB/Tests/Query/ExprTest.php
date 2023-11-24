@@ -12,6 +12,7 @@ use Documents\User;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ExprTest extends BaseTestCase
 {
@@ -411,15 +412,72 @@ class ExprTest extends BaseTestCase
     /**
      * @param Point|array<string, mixed> $point
      * @param array<string, mixed>       $expected
-     *
-     * @dataProvider provideGeoJsonPoint
      */
+    #[DataProvider('provideGeoJsonPoint')]
     public function testNearWithGeoJsonPoint($point, array $expected): void
     {
         $expr = $this->createExpr();
 
         self::assertSame($expr, $expr->near($point));
         self::assertEquals(['$near' => $expected], $expr->getQuery());
+    }
+
+    public function testNearWithGeoJsonPointAndMinDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        $coordinates = [1, 2];
+        $point       = new Point($coordinates);
+
+        self::assertSame($expr, $expr->near($point, null, 5));
+        self::assertEquals(
+            [
+                '$near' => [
+                    '$geometry' => ['type' => 'Point', 'coordinates' => $coordinates],
+                    '$minDistance' => 5,
+                ],
+            ],
+            $expr->getQuery(),
+        );
+    }
+
+    public function testNearWithGeoJsonPointAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        $coordinates = [1, 2];
+        $point       = new Point($coordinates);
+
+        self::assertSame($expr, $expr->near($point, null, null, 10));
+        self::assertEquals(
+            [
+                '$near' => [
+                    '$geometry' => ['type' => 'Point', 'coordinates' => $coordinates],
+                    '$maxDistance' => 10,
+                ],
+            ],
+            $expr->getQuery(),
+        );
+    }
+
+    public function testNearWithGeoJsonPointAndMinAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        $coordinates = [1, 2];
+        $point       = new Point($coordinates);
+
+        self::assertSame($expr, $expr->near($point, null, 5, 10));
+        self::assertEquals(
+            [
+                '$near' => [
+                    '$geometry' => ['type' => 'Point', 'coordinates' => $coordinates],
+                    '$minDistance' => 5,
+                    '$maxDistance' => 10,
+                ],
+            ],
+            $expr->getQuery(),
+        );
     }
 
     public function testNearWithLegacyCoordinates(): void
@@ -430,12 +488,35 @@ class ExprTest extends BaseTestCase
         self::assertEquals(['$near' => [1, 2]], $expr->getQuery());
     }
 
+    public function testNearWithLegacyCoordinatesAndMinDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        self::assertSame($expr, $expr->near(1, 2, 5));
+        self::assertEquals(['$near' => [1, 2], '$minDistance' => 5], $expr->getQuery());
+    }
+
+    public function testNearWithLegacyCoordinatesAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        self::assertSame($expr, $expr->near(1, 2, null, 10));
+        self::assertEquals(['$near' => [1, 2], '$maxDistance' => 10], $expr->getQuery());
+    }
+
+    public function testNearWithLegacyCoordinatesAndMinAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        self::assertSame($expr, $expr->near(1, 2, 5, 10));
+        self::assertEquals(['$near' => [1, 2], '$minDistance' => 5, '$maxDistance' => 10], $expr->getQuery());
+    }
+
     /**
      * @param Point|array<string, mixed> $point
      * @param array<string, mixed>       $expected
-     *
-     * @dataProvider provideGeoJsonPoint
      */
+    #[DataProvider('provideGeoJsonPoint')]
     public function testNearSphereWithGeoJsonPoint($point, array $expected): void
     {
         $expr = $this->createExpr();
@@ -444,12 +525,94 @@ class ExprTest extends BaseTestCase
         self::assertEquals(['$nearSphere' => $expected], $expr->getQuery());
     }
 
+    public function testNearSphereWithGeoJsonPointAndMinDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        $coordinates = [1, 2];
+        $point       = new Point($coordinates);
+
+        self::assertSame($expr, $expr->nearSphere($point, null, 5));
+        self::assertEquals(
+            [
+                '$nearSphere' => [
+                    '$geometry' => ['type' => 'Point', 'coordinates' => $coordinates],
+                    '$minDistance' => 5,
+                ],
+            ],
+            $expr->getQuery(),
+        );
+    }
+
+    public function testNearSphereWithGeoJsonPointAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        $coordinates = [1, 2];
+        $point       = new Point($coordinates);
+
+        self::assertSame($expr, $expr->nearSphere($point, null, null, 10));
+        self::assertEquals(
+            [
+                '$nearSphere' => [
+                    '$geometry' => ['type' => 'Point', 'coordinates' => $coordinates],
+                    '$maxDistance' => 10,
+                ],
+            ],
+            $expr->getQuery(),
+        );
+    }
+
+    public function testNearSphereWithGeoJsonPointAndMinAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        $coordinates = [1, 2];
+        $point       = new Point($coordinates);
+
+        self::assertSame($expr, $expr->nearSphere($point, null, 5, 10));
+        self::assertEquals(
+            [
+                '$nearSphere' => [
+                    '$geometry' => ['type' => 'Point', 'coordinates' => $coordinates],
+                    '$minDistance' => 5,
+                    '$maxDistance' => 10,
+                ],
+            ],
+            $expr->getQuery(),
+        );
+    }
+
     public function testNearSphereWithLegacyCoordinates(): void
     {
         $expr = $this->createExpr();
 
         self::assertSame($expr, $expr->nearSphere(1, 2));
         self::assertEquals(['$nearSphere' => [1, 2]], $expr->getQuery());
+    }
+
+    public function testNearSphereWithLegacyCoordinatesAndMinDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        self::assertSame($expr, $expr->nearSphere(1, 2, 5));
+        self::assertEquals(['$nearSphere' => [1, 2], '$minDistance' => 5], $expr->getQuery());
+    }
+
+    public function testNearSphereWithLegacyCoordinatesAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        self::assertSame($expr, $expr->nearSphere(1, 2, null, 10));
+        self::assertEquals(['$nearSphere' => [1, 2], '$maxDistance' => 10], $expr->getQuery());
+    }
+
+    public function testNearSphereWithLegacyCoordinatesAndMinAndMaxDistance(): void
+    {
+        $expr = $this->createExpr();
+
+        self::assertSame($expr, $expr->nearSphere(1, 2, 5, 10));
+        self::assertEquals(['$nearSphere' => [1, 2], '$minDistance' => 5, '$maxDistance' => 10], $expr->getQuery());
     }
 
     public function testPullWithValue(): void
@@ -548,9 +711,8 @@ class ExprTest extends BaseTestCase
     /**
      * @param Polygon|array<string, array<string, mixed>> $geometry
      * @param array<string, mixed>                        $expected
-     *
-     * @dataProvider provideGeoJsonPolygon
      */
+    #[DataProvider('provideGeoJsonPolygon')]
     public function testGeoIntersects($geometry, array $expected): void
     {
         $expr = $this->createExpr();
@@ -579,9 +741,8 @@ class ExprTest extends BaseTestCase
     /**
      * @param Polygon|array<string, array<string, mixed>> $geometry
      * @param array<string, mixed>                        $expected
-     *
-     * @dataProvider provideGeoJsonPolygon
      */
+    #[DataProvider('provideGeoJsonPolygon')]
     public function testGeoWithin($geometry, array $expected): void
     {
         $expr = $this->createExpr();

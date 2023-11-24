@@ -9,12 +9,12 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\Group;
 
 use function assert;
 use function end;
-use function get_class;
 
-/** @group sharding */
+#[Group('sharding')]
 class ShardKeyTest extends BaseTestCase
 {
     private CommandLogger $logger;
@@ -45,7 +45,7 @@ class ShardKeyTest extends BaseTestCase
         $this->dm->persist($o);
         $this->dm->flush();
 
-        $o = $this->dm->find(get_class($o), $o->id);
+        $o = $this->dm->find($o::class, $o->id);
         assert($o instanceof ShardedOne);
         $o->title = 'test2';
         $this->dm->flush();

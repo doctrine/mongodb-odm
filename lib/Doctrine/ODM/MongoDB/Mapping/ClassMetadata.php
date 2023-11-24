@@ -40,7 +40,6 @@ use function constant;
 use function count;
 use function enum_exists;
 use function extension_loaded;
-use function get_class;
 use function in_array;
 use function interface_exists;
 use function is_array;
@@ -153,6 +152,7 @@ use const PHP_VERSION_ID;
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
  *      enumType?: class-string<BackedEnum>,
+ *      storeEmptyArray?: bool,
  * }
  * @psalm-type AssociationFieldMapping = array{
  *      type?: string,
@@ -197,6 +197,7 @@ use const PHP_VERSION_ID;
  *      index?: bool,
  *      criteria?: array<string, string>,
  *      alsoLoadFields?: list<string>,
+ *      storeEmptyArray?: bool,
  * }
  * @psalm-type IndexKeys = array<string, mixed>
  * @psalm-type IndexOptions = array{
@@ -903,7 +904,7 @@ use const PHP_VERSION_ID;
         }
 
         if (! $document instanceof $this->name) {
-            throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, get_class($document)));
+            throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, $document::class));
         }
 
         if (empty($this->lifecycleCallbacks[$event])) {
@@ -2395,10 +2396,6 @@ use const PHP_VERSION_ID;
         assert($reflProp instanceof ReflectionProperty);
 
         if (isset($mapping['enumType'])) {
-            if (PHP_VERSION_ID < 80100) {
-                throw MappingException::enumsRequirePhp81($this->name, $mapping['fieldName']);
-            }
-
             if (! enum_exists($mapping['enumType'])) {
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }

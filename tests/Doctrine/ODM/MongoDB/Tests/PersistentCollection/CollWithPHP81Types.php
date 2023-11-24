@@ -14,16 +14,12 @@ use Doctrine\Common\Collections\Collection;
  */
 class CollWithPHP81Types extends ArrayCollection
 {
-    /**
-     * @param Collection<TKey, TElement>&ArrayCollection<TKey, TElement> $param
-     * @return Collection<TKey, TElement>&ArrayCollection<TKey, TElement>
-     */
-    public function intersection(Collection&ArrayCollection $param) : Collection&ArrayCollection
+    public function intersection(Collection&ArrayCollection $param): Collection&ArrayCollection
     {
         return $param;
     }
 
-    public function never() : never
+    public function never(): never
     {
         die('You shall not pass');
     }

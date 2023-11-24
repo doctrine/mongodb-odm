@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use function assert;
 
-/** @method Bucket groupBy($expression) */
 class Bucket extends AbstractBucket
 {
     /** @var mixed[] */
@@ -26,7 +25,7 @@ class Bucket extends AbstractBucket
      *
      * @param mixed $boundaries
      */
-    public function boundaries(...$boundaries): self
+    public function boundaries(...$boundaries): static
     {
         $this->boundaries = $boundaries;
 
@@ -40,7 +39,7 @@ class Bucket extends AbstractBucket
      *
      * @param mixed $default
      */
-    public function defaultBucket($default): self
+    public function defaultBucket($default): static
     {
         $this->default = $default;
 

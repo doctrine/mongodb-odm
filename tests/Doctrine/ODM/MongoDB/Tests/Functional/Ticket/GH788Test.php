@@ -10,8 +10,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
-use function get_class;
-
 class GH788Test extends BaseTestCase
 {
     public function testDocumentWithDiscriminatorMap(): void
@@ -26,7 +24,7 @@ class GH788Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($listed), $listed->id);
+        $doc = $this->dm->find($listed::class, $listed->id);
         self::assertInstanceOf(GH788DocumentListed::class, $doc);
         self::assertEquals('listed', $doc->name);
 

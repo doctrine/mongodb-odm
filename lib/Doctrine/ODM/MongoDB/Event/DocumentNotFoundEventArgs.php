@@ -11,17 +11,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
  */
 final class DocumentNotFoundEventArgs extends LifecycleEventArgs
 {
-    /** @var mixed */
-    private $identifier;
-
     private bool $disableException = false;
 
     /** @param mixed $identifier */
-    public function __construct(object $document, DocumentManager $dm, $identifier)
+    public function __construct(object $document, DocumentManager $dm, private $identifier)
     {
         parent::__construct($document, $dm);
-
-        $this->identifier = $identifier;
     }
 
     /**

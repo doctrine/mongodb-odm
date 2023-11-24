@@ -133,8 +133,8 @@ Flush Options
 -------------
 
 When committing your documents you can specify an array of options to the
-``flush`` method. With it you can send options to the underlying database
-like ``safe``, ``fsync``, etc.
+``flush`` method. You can use this to pass a write options to the underlying
+operations, e.g. a custom write concern.
 
 Example:
 
@@ -145,7 +145,7 @@ Example:
     $user = $dm->getRepository(User::class)->find($userId);
     // ...
     $user->setPassword('changeme');
-    $dm->flush(null, ['safe' => true, 'fsync' => true]);
+    $dm->flush(['writeConcern' => new \MongoDB\Driver\WriteConcern(1)]);
 
 You can configure the default flush options on your ``Configuration`` object
 if you want to set them globally for all flushes.
@@ -157,15 +157,8 @@ Example:
     <?php
 
     $config->setDefaultCommitOptions(
-      [
-        'safe' => true,
-        'fsync' => true
-      ]
+      ['writeConcern' => new \MongoDB\Driver\WriteConcern(1)]
     );
-
-.. note::
-
-    Safe is set to true by default for all writes when using the ODM.
 
 Removing documents
 ------------------

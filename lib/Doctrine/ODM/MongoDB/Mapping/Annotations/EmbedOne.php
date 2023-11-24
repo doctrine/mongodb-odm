@@ -42,7 +42,7 @@ final class EmbedOne extends AbstractField
         ?string $targetDocument = null,
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
-        ?string $defaultDiscriminatorValue = null
+        ?string $defaultDiscriminatorValue = null,
     ) {
         parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
 

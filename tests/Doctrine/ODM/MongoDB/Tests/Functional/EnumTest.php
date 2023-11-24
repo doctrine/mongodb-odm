@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Documents81\Card;
-use Documents81\Suit;
+use Documents\Card;
+use Documents\Suit;
 use Error;
 use Jean85\PrettyVersions;
 use MongoDB\BSON\ObjectId;
@@ -18,7 +16,6 @@ use function preg_quote;
 use function sprintf;
 use function version_compare;
 
-/** @requires PHP >= 8.1 */
 class EnumTest extends BaseTestCase
 {
     public function testPersistNew(): void
@@ -115,10 +112,5 @@ class EnumTest extends BaseTestCase
         $qb = $this->dm->createQueryBuilder(Card::class)->field('_id')->equals(Suit::Clubs);
 
         self::assertSame(['_id' => 'C'], $qb->getQuery()->debug('query'));
-    }
-
-    protected static function createMetadataDriverImpl(): MappingDriver
-    {
-        return AttributeDriver::create(__DIR__ . '/../../../Documents');
     }
 }

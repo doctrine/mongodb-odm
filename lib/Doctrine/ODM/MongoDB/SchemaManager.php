@@ -55,14 +55,8 @@ final class SchemaManager
         '2dsphereIndexVersion',
     ];
 
-    protected DocumentManager $dm;
-
-    protected ClassMetadataFactoryInterface $metadataFactory;
-
-    public function __construct(DocumentManager $dm, ClassMetadataFactoryInterface $cmf)
+    public function __construct(protected DocumentManager $dm, protected ClassMetadataFactoryInterface $metadataFactory)
     {
-        $this->dm              = $dm;
-        $this->metadataFactory = $cmf;
     }
 
     /**

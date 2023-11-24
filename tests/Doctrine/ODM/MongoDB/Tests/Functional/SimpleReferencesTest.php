@@ -88,9 +88,9 @@ class SimpleReferencesTest extends BaseTestCase
         self::assertNotNull($user);
         self::assertInstanceOf(User::class, $user);
         self::assertInstanceOf(GhostObjectInterface::class, $user);
-        self::assertFalse($user->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($user));
         self::assertEquals('jwage', $user->getUsername());
-        self::assertTrue($user->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($user));
     }
 
     public function testPersistentCollectionOwningSide(): void

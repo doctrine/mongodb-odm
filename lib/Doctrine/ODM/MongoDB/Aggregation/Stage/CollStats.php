@@ -9,6 +9,13 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 /**
  * Fluent interface for adding a $collStats stage to an aggregation pipeline.
+ *
+ * @psalm-type CollStatsStageExpression = array{
+ *     '$collStats': array{
+ *         latencyStats?: array{histograms?: bool},
+ *         storageStats?: array{},
+ *     }
+ * }
  */
 class CollStats extends Stage
 {
@@ -28,7 +35,7 @@ class CollStats extends Stage
     /**
      * Adds latency statistics to the return document.
      */
-    public function showLatencyStats(bool $histograms = false): self
+    public function showLatencyStats(bool $histograms = false): static
     {
         $this->latencyStats = $histograms ? self::LATENCY_STATS_HISTOGRAMS : self::LATENCY_STATS_SIMPLE;
 
@@ -38,13 +45,14 @@ class CollStats extends Stage
     /**
      * Adds storage statistics to the return document.
      */
-    public function showStorageStats(): self
+    public function showStorageStats(): static
     {
         $this->storageStats = true;
 
         return $this;
     }
 
+    /** @psalm-return CollStatsStageExpression */
     public function getExpression(): array
     {
         $collStats = [];

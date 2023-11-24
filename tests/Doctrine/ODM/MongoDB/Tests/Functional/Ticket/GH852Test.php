@@ -12,13 +12,12 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ProxyManager\Proxy\GhostObjectInterface;
-
-use function get_class;
 
 class GH852Test extends BaseTestCase
 {
-    /** @dataProvider provideIdGenerators */
+    #[DataProvider('provideIdGenerators')]
     public function testA(Closure $idGenerator): void
     {
         $parent       = new GH852Document();
@@ -45,17 +44,17 @@ class GH852Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $parent = $this->dm->find(get_class($parent), $idGenerator('parent'));
+        $parent = $this->dm->find($parent::class, $idGenerator('parent'));
         self::assertNotNull($parent);
         self::assertEquals($idGenerator('parent'), $parent->id);
         self::assertEquals('parent', $parent->name);
 
         self::assertInstanceOf(GhostObjectInterface::class, $parent->refOne);
         self::assertInstanceOf(GH852Document::class, $parent->refOne);
-        self::assertFalse($parent->refOne->isProxyInitialized());
+        self::assertTrue($this->uow->isUninitializedObject($parent->refOne));
         self::assertEquals($idGenerator('childA'), $parent->refOne->id);
         self::assertEquals('childA', $parent->refOne->name);
-        self::assertTrue($parent->refOne->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($parent->refOne));
 
         self::assertCount(2, $parent->refMany);
 
@@ -64,19 +63,19 @@ class GH852Test extends BaseTestCase
          */
         self::assertInstanceOf(GhostObjectInterface::class, $parent->refMany[0]);
         self::assertInstanceOf(GH852Document::class, $parent->refMany[0]);
-        self::assertTrue($parent->refMany[0]->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($parent->refMany[0]));
         self::assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
         self::assertEquals('childB', $parent->refMany[0]->name);
 
         self::assertInstanceOf(GhostObjectInterface::class, $parent->refMany[1]);
         self::assertInstanceOf(GH852Document::class, $parent->refMany[1]);
-        self::assertTrue($parent->refMany[1]->isProxyInitialized());
+        self::assertFalse($this->uow->isUninitializedObject($parent->refMany[1]));
         self::assertEquals($idGenerator('childC'), $parent->refMany[1]->id);
         self::assertEquals('childC', $parent->refMany[1]->name);
 
         // these lines are relevant for $useKeys = false in ReferencePrimer::__construct()
         $this->dm->clear();
-        $docs = $this->dm->createQueryBuilder(get_class($parent))
+        $docs = $this->dm->createQueryBuilder($parent::class)
                 ->field('name')->equals('parent')
                 ->field('refMany')->prime()
                 ->getQuery()->execute();
@@ -85,13 +84,13 @@ class GH852Test extends BaseTestCase
         self::assertCount(2, $docs->current()->refMany);
 
         $this->dm->clear();
-        $docs = $this->dm->createQueryBuilder(get_class($parent))
+        $docs = $this->dm->createQueryBuilder($parent::class)
                 ->getQuery()->execute();
         self::assertCount(4, $docs);
 
         // these lines are relevant for $useKeys = false in DocumentRepository::matching()
         $this->dm->clear();
-        $docs = $this->dm->getRepository(get_class($parent))
+        $docs = $this->dm->getRepository($parent::class)
                 ->matching(new Criteria());
         self::assertCount(4, $docs);
     }

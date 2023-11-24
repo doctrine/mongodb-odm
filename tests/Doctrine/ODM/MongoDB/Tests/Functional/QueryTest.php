@@ -18,10 +18,10 @@ use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function array_values;
 use function assert;
-use function get_class;
 use function iterator_to_array;
 use function strtotime;
 
@@ -174,7 +174,7 @@ class QueryTest extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $results = $this->dm->createQueryBuilder(get_class($c1))
+        $results = $this->dm->createQueryBuilder($c1::class)
             ->distinct('authorIp')
             ->getQuery()
             ->execute();
@@ -380,7 +380,7 @@ class QueryTest extends BaseTestCase
         $query = $qb->getQuery();
         self::assertInstanceOf(IteratorAggregate::class, $query);
         foreach ($query as $article) {
-            self::assertEquals(Article::class, get_class($article));
+            self::assertEquals(Article::class, $article::class);
         }
     }
 
@@ -533,9 +533,8 @@ class QueryTest extends BaseTestCase
 
     /**
      * Checks that the query class runs a ReplaceOne operation internally
-     *
-     * @doesNotPerformAssertions
      */
+    #[DoesNotPerformAssertions]
     public function testReplaceDocumentRunsReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)
@@ -564,7 +563,7 @@ class QueryTest extends BaseTestCase
             ->execute();
     }
 
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testFindAndReplaceDocumentRunsFindAndReplaceOperation(): void
     {
         $this->dm->createQueryBuilder(Article::class)

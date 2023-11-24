@@ -10,12 +10,13 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 use function assert;
 
 class GH1232Test extends BaseTestCase
 {
-    /** @doesNotPerformAssertions */
+    #[DoesNotPerformAssertions]
     public function testRemoveDoesNotCauseErrors(): void
     {
         $post = new GH1232Post();

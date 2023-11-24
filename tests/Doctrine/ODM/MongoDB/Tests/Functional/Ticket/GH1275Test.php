@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_map;
 
@@ -145,7 +146,7 @@ class GH1275Test extends BaseTestCase
         ];
     }
 
-    /** @dataProvider getCollectionStrategies */
+    #[DataProvider('getCollectionStrategies')]
     public function testResortEmbedManyCollection(string $strategy): void
     {
         $getNameCallback = static fn (Element $element) => $element->name;

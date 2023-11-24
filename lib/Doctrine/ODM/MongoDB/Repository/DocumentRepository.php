@@ -23,6 +23,7 @@ use Doctrine\Persistence\ObjectRepository;
 use function assert;
 use function count;
 use function is_array;
+use function trigger_deprecation;
 
 /**
  * A DocumentRepository serves as a repository for documents with generic as well as
@@ -89,9 +90,18 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Clears the repository, causing all managed documents to become detached.
+     *
+     * @deprecated Deprecated in 2.6, will be removed in 3.0
      */
     public function clear(): void
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.6',
+            'The %s() method is deprecated and will be removed in Doctrine ODM 3.0.',
+            __METHOD__,
+        );
+
         $this->dm->clear($this->class->rootDocumentName);
     }
 

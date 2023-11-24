@@ -18,9 +18,6 @@ abstract class AbstractIndex implements Annotation
     /** @var int|null */
     public $expireAfterSeconds;
 
-    /** @var string|int|null */
-    public $order;
-
     /** @var bool */
     public $unique;
 
@@ -44,17 +41,16 @@ abstract class AbstractIndex implements Annotation
         ?string $name = null,
         ?bool $background = null,
         ?int $expireAfterSeconds = null,
-        $order = null,
+        public $order = null,
         bool $unique = false,
         bool $sparse = false,
         array $options = [],
-        array $partialFilterExpression = []
+        array $partialFilterExpression = [],
     ) {
         $this->keys                    = $keys;
         $this->name                    = $name;
         $this->background              = $background;
         $this->expireAfterSeconds      = $expireAfterSeconds;
-        $this->order                   = $order;
         $this->unique                  = $unique;
         $this->sparse                  = $sparse;
         $this->options                 = $options;

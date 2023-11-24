@@ -31,6 +31,7 @@ use MongoDB\GridFS\Bucket;
 use MongoDB\Model\CollectionInfo;
 use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIteratorIterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
@@ -160,11 +161,8 @@ class SchemaManagerTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getIndexCreationWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $indexedCollections = array_map(
@@ -209,11 +207,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getIndexCreationWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -231,11 +226,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getIndexCreationWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         foreach ($this->documentCollections as $class => $collection) {
@@ -275,11 +267,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureDocumentIndexes(File::class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getIndexCreationWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
@@ -292,11 +281,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentIndexesShouldCreateMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -317,11 +303,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -350,11 +333,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $views = array_map(
@@ -376,11 +356,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->deleteIndexes($maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDeleteDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -419,11 +396,8 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateValidators();
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $class                 = $this->dm->getClassMetadata(SchemaValidated::class);
@@ -470,11 +444,8 @@ EOT;
         $this->schemaManager->updateDocumentValidator($class->name);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentValidatorReset(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $class    = $this->dm->getClassMetadata(CmsArticle::class);
@@ -494,11 +465,8 @@ EOT;
         $this->schemaManager->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $cm                   = $this->dm->getClassMetadata(CmsArticle::class);
@@ -523,11 +491,8 @@ EOT;
         $this->schemaManager->createDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollectionForFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $database = $this->documentDatabases[$this->getDatabaseName($this->dm->getClassMetadata(File::class))];
@@ -539,11 +504,8 @@ EOT;
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollectionWithValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $expectedValidatorJson = <<<'EOT'
@@ -584,11 +546,8 @@ EOT;
         $this->schemaManager->createDocumentCollection($cm->name, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testCreateView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $cm = $this->dm->getClassMetadata(UserName::class);
@@ -623,11 +582,8 @@ EOT;
         $this->schemaManager->createDocumentCollection(UserName::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $class = $this->dm->getClassMetadata(Tournament::class);
@@ -653,11 +609,8 @@ EOT;
         self::assertSame(1, array_count_values($createdCollections)['Tournament']);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDropCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         foreach ($this->documentCollections as $collection) {
@@ -669,11 +622,8 @@ EOT;
         $this->schemaManager->dropCollections($maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDropDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -690,11 +640,8 @@ EOT;
         $this->schemaManager->dropDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDropDocumentCollectionForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         foreach ($this->documentCollections as $collection) {
@@ -727,11 +674,8 @@ EOT;
         $this->schemaManager->dropDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDropView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $viewName = $this->dm->getClassMetadata(UserName::class)->getCollection();
@@ -748,11 +692,8 @@ EOT;
         $this->schemaManager->dropDocumentCollection(UserName::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDropDocumentDatabase(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $cmsArticleDatabaseName = $this->getDatabaseName($this->dm->getClassMetadata(CmsArticle::class));
@@ -770,11 +711,8 @@ EOT;
         $this->schemaManager->dropDocumentDatabase(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /**
-     * @psalm-param IndexOptions $expectedWriteOptions
-     *
-     * @dataProvider getWriteOptions
-     */
+    /** @psalm-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDropDatabases(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         foreach ($this->documentDatabases as $database) {
@@ -790,9 +728,8 @@ EOT;
     /**
      * @param array<string, mixed> $mongoIndex
      * @psalm-param IndexMapping $documentIndex
-     *
-     * @dataProvider dataIsMongoIndexEquivalentToDocumentIndex
      */
+    #[DataProvider('dataIsMongoIndexEquivalentToDocumentIndex')]
     public function testIsMongoIndexEquivalentToDocumentIndex(bool $expected, array $mongoIndex, array $documentIndex): void
     {
         $defaultMongoIndex    = [
@@ -1009,9 +946,8 @@ EOT;
     /**
      * @param array<string, mixed> $mongoIndex
      * @psalm-param IndexMapping $documentIndex
-     *
-     * @dataProvider dataIsMongoTextIndexEquivalentToDocumentIndex
      */
+    #[DataProvider('dataIsMongoTextIndexEquivalentToDocumentIndex')]
     public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes(bool $expected, array $mongoIndex, array $documentIndex): void
     {
         $defaultMongoIndex    = [

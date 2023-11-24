@@ -9,10 +9,11 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedByUser;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
+use PHPUnit\Framework\Attributes\Group;
 
 use function iterator_to_array;
 
-/** @group sharding */
+#[Group('sharding')]
 class EnsureShardingTest extends BaseTestCase
 {
     public function setUp(): void

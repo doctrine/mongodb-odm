@@ -8,8 +8,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 
-use function get_class;
-
 class GH529Test extends BaseTestCase
 {
     public function testAutoIdWithConsistentValues(): void
@@ -22,7 +20,7 @@ class GH529Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertNotNull($doc);
         self::assertEquals($identifier, $doc->id);
@@ -40,7 +38,7 @@ class GH529Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertNotNull($doc);
         self::assertSame('foo', $doc->id);
@@ -55,7 +53,7 @@ class GH529Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertNotNull($doc);
         self::assertSame(1, $doc->id);
@@ -70,7 +68,7 @@ class GH529Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $doc = $this->dm->find(get_class($doc), $doc->id);
+        $doc = $this->dm->find($doc::class, $doc->id);
 
         self::assertNotNull($doc);
         self::assertNotEquals(3.14, $doc->id);

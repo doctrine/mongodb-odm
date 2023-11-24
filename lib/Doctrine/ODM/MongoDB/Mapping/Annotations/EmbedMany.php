@@ -36,6 +36,9 @@ final class EmbedMany extends AbstractField
     /** @var string|null */
     public $collectionClass;
 
+    /** @var bool */
+    public $storeEmptyArray;
+
     /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         ?string $name = null,
@@ -47,7 +50,8 @@ final class EmbedMany extends AbstractField
         ?string $discriminatorField = null,
         ?array $discriminatorMap = null,
         ?string $defaultDiscriminatorValue = null,
-        ?string $collectionClass = null
+        ?string $collectionClass = null,
+        bool $storeEmptyArray = false,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
 
@@ -56,5 +60,6 @@ final class EmbedMany extends AbstractField
         $this->discriminatorMap          = $discriminatorMap;
         $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
         $this->collectionClass           = $collectionClass;
+        $this->storeEmptyArray           = $storeEmptyArray;
     }
 }
