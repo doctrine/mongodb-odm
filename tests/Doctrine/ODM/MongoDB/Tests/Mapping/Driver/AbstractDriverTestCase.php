@@ -125,6 +125,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['address']);
 
         self::assertEquals([
@@ -144,6 +145,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'isOwningSide' => true,
             'nullable' => false,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['phonenumbers']);
 
         self::assertEquals([
@@ -439,6 +441,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'isOwningSide' => true,
             'nullable' => true,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_SET,
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['address']);
 
         self::assertEquals([
@@ -458,6 +461,7 @@ abstract class AbstractDriverTestCase extends TestCase
             'isOwningSide' => true,
             'nullable' => true,
             'strategy' => ClassMetadata::STORAGE_STRATEGY_PUSH_ALL,
+            'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['phonenumbers']);
 
         self::assertEquals([
