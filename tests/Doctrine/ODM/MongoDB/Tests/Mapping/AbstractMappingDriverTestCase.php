@@ -439,6 +439,17 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         self::assertEquals(4096, $shardKey['options']['numInitialChunks'], 'Shard key option has wrong value');
     }
 
+    /** @param ClassMetadata<AbstractMappingDriverUser> $class */
+    #[Depends('testLoadMapping')]
+    public function testStoreEmptyArray(ClassMetadata $class): void
+    {
+        $referenceMapping = $class->getFieldMapping('phonenumbers');
+        $embeddedMapping  = $class->getFieldMapping('otherPhonenumbers');
+
+        self::assertFalse($referenceMapping['storeEmptyArray']);
+        self::assertFalse($embeddedMapping['storeEmptyArray']);
+    }
+
     public function testGridFSMapping(): void
     {
         $class = $this->dm->getClassMetadata(AbstractMappingDriverFile::class);
