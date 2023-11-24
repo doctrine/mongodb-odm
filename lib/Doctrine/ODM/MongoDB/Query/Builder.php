@@ -991,9 +991,9 @@ class Builder
      * @param float|array<string, mixed>|Point $x
      * @param float                            $y
      */
-    public function near($x, $y = null): self
+    public function near($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
-        $this->expr->near($x, $y);
+        $this->expr->near($x, $y, $minDistance, $maxDistance);
 
         return $this;
     }
@@ -1011,9 +1011,9 @@ class Builder
      * @param float|array<string, mixed>|Point $x
      * @param float                            $y
      */
-    public function nearSphere($x, $y = null): self
+    public function nearSphere($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
-        $this->expr->nearSphere($x, $y);
+        $this->expr->nearSphere($x, $y, $minDistance, $maxDistance);
 
         return $this;
     }

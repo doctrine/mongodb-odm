@@ -279,11 +279,6 @@
       <code>$datetime instanceof DateTime</code>
     </RedundantCondition>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Types/Type.php">
-    <MethodSignatureMustProvideReturnType>
-      <code>__toString</code>
-    </MethodSignatureMustProvideReturnType>
-  </file>
   <file src="lib/Doctrine/ODM/MongoDB/UnitOfWork.php">
     <InvalidArgument>
       <code>$assoc</code>
