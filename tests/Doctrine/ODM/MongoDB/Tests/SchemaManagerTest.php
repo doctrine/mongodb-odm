@@ -934,6 +934,12 @@ EOT;
                 'mongoIndex' => ['background' => true],
                 'documentIndex' => ['options' => ['background' => true]],
             ],
+            // 2dsphereIndexVersion index options
+            '2dsphereIndexVersionOptionsDifferent' => [
+                'expected' => true,
+                'mongoIndex' => ['2dsphereIndexVersion' => 3],
+                'documentIndex' => [],
+            ],
         ];
     }
 

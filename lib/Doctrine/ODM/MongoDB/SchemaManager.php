@@ -52,6 +52,7 @@ final class SchemaManager
         'language_override',
         'textIndexVersion',
         'name',
+        '2dsphereIndexVersion',
     ];
 
     public function __construct(protected DocumentManager $dm, protected ClassMetadataFactoryInterface $metadataFactory)
