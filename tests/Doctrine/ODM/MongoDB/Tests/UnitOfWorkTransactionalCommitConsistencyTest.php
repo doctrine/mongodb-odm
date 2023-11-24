@@ -34,7 +34,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         parent::tearDown();
     }
 
-    public function testFatalErrorDuringInsert(): void
+    public function testFatalInsertError(): void
     {
         $firstUser           = new ForumUser();
         $firstUser->username = 'alcaeus';
@@ -77,7 +77,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($friendUser));
     }
 
-    public function testTransientErrorDuringInsert(): void
+    public function testTransientInsertError(): void
     {
         $firstUser           = new ForumUser();
         $firstUser->username = 'alcaeus';
@@ -115,7 +115,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertEquals([], $this->uow->getDocumentChangeSet($friendUser));
     }
 
-    public function testDuplicateKeyErrorDuringInsert(): void
+    public function testDuplicateKeyError(): void
     {
         // Create a unique index on the collection to let the second insert fail
         $collection = $this->dm->getDocumentCollection(ForumUser::class);
@@ -157,7 +157,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($thirdUser));
     }
 
-    public function testFatalErrorDuringInsertWithEmbeddedDocument(): void
+    public function testFatalInsertErrorWithEmbeddedDocument(): void
     {
         // Create a unique index on the collection to let the second insert fail
         $collection = $this->dm->getDocumentCollection(User::class);
@@ -199,7 +199,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($secondAddress));
     }
 
-    public function testFatalErrorDuringUpsert(): void
+    public function testFatalUpsertError(): void
     {
         $user           = new ForumUser();
         $user->id       = new ObjectId(); // Specifying an identifier makes this an upsert
@@ -226,7 +226,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testTransientErrorDuringUpsert(): void
+    public function testTransientUpsertError(): void
     {
         $user           = new ForumUser();
         $user->id       = new ObjectId(); // Specifying an identifier makes this an upsert
@@ -246,7 +246,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testFatalErrorDuringUpdate(): void
+    public function testFatalUpdateError(): void
     {
         $user           = new ForumUser();
         $user->username = 'alcaeus';
@@ -274,7 +274,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testTransientErrorDuringUpdate(): void
+    public function testTransientUpdateError(): void
     {
         $user           = new ForumUser();
         $user->username = 'alcaeus';
@@ -296,7 +296,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testFatalErrorDuringUpdateWithNewEmbeddedDocument(): void
+    public function testFatalUpdateErrorWithNewEmbeddedDocument(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -324,7 +324,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testTransientErrorDuringUpdateWithNewEmbeddedDocument(): void
+    public function testTransientUpdateErrorWithNewEmbeddedDocument(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -346,7 +346,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testFatalErrorDuringUpdateOfEmbeddedDocument(): void
+    public function testFatalUpdateErrorOfEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -376,7 +376,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testTransientErrorDuringUpdateOfEmbeddedDocument(): void
+    public function testTransientUpdateErrorOfEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -400,7 +400,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testFatalErrorDuringUpdateWithRemovedEmbeddedDocument(): void
+    public function testFatalUpdateErrorWithRemovedEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -432,7 +432,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isInIdentityMap($address));
     }
 
-    public function testTransientErrorDuringUpdateWithRemovedEmbeddedDocument(): void
+    public function testTransientUpdateErrorWithRemovedEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -456,7 +456,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isInIdentityMap($address));
     }
 
-    public function testFatalErrorDuringDeleteWithEmbeddedDocument(): void
+    public function testFatalDeleteErrorWithEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -490,7 +490,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertTrue($this->uow->isScheduledForDelete($address));
     }
 
-    public function testTransientErrorDuringDeleteWithEmbeddedDocument(): void
+    public function testTransientDeleteErrorWithEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
