@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
+use MongoDB\Driver\Session;
 
 use function get_class;
 use function sprintf;
@@ -22,9 +23,9 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     private array $documentChangeSet;
 
     /** @psalm-param array<string, ChangeSet> $changeSet */
-    public function __construct(object $document, DocumentManager $dm, array $changeSet)
+    public function __construct(object $document, DocumentManager $dm, array $changeSet, bool $isInTransaction = false, ?Session $session = null)
     {
-        parent::__construct($document, $dm);
+        parent::__construct($document, $dm, $isInTransaction, $session);
 
         $this->documentChangeSet = $changeSet;
     }

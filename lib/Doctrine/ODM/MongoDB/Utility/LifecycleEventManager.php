@@ -15,6 +15,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use MongoDB\Driver\Session;
 
 /** @internal */
 final class LifecycleEventManager
@@ -55,11 +56,14 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    public function postPersist(ClassMetadata $class, object $document): void
+    public function postPersist(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        $class->invokeLifecycleCallbacks(Events::postPersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->dispatchEvent($class, Events::postPersist, new LifecycleEventArgs($document, $this->dm));
-        $this->cascadePostPersist($class, $document);
+        $isInTransaction = $session ? $session->isInTransaction() : false;
+        $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
+
+        $class->invokeLifecycleCallbacks(Events::postPersist, $document, [$eventArgs]);
+        $this->dispatchEvent($class, Events::postPersist, $eventArgs);
+        $this->cascadePostPersist($class, $document, $session);
     }
 
     /**
@@ -70,10 +74,13 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    public function postRemove(ClassMetadata $class, object $document): void
+    public function postRemove(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        $class->invokeLifecycleCallbacks(Events::postRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->dispatchEvent($class, Events::postRemove, new LifecycleEventArgs($document, $this->dm));
+        $isInTransaction = $session ? $session->isInTransaction() : false;
+        $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
+
+        $class->invokeLifecycleCallbacks(Events::postRemove, $document, [$eventArgs]);
+        $this->dispatchEvent($class, Events::postRemove, $eventArgs);
     }
 
     /**
@@ -85,11 +92,14 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    public function postUpdate(ClassMetadata $class, object $document): void
+    public function postUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        $class->invokeLifecycleCallbacks(Events::postUpdate, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->dispatchEvent($class, Events::postUpdate, new LifecycleEventArgs($document, $this->dm));
-        $this->cascadePostUpdate($class, $document);
+        $isInTransaction = $session ? $session->isInTransaction() : false;
+        $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
+
+        $class->invokeLifecycleCallbacks(Events::postUpdate, $document, [$eventArgs]);
+        $this->dispatchEvent($class, Events::postUpdate, $eventArgs);
+        $this->cascadePostUpdate($class, $document, $session);
     }
 
     /**
@@ -128,15 +138,17 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    public function preUpdate(ClassMetadata $class, object $document): void
+    public function preUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
+        $isInTransaction = $session ? $session->isInTransaction() : false;
+
         if (! empty($class->lifecycleCallbacks[Events::preUpdate])) {
-            $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document))]);
+            $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $isInTransaction, $session)]);
             $this->uow->recomputeSingleDocumentChangeSet($class, $document);
         }
 
-        $this->dispatchEvent($class, Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document)));
-        $this->cascadePreUpdate($class, $document);
+        $this->dispatchEvent($class, Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $isInTransaction, $session));
+        $this->cascadePreUpdate($class, $document, $session);
     }
 
     /**
@@ -147,7 +159,7 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    private function cascadePreUpdate(ClassMetadata $class, object $document): void
+    private function cascadePreUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -162,7 +174,7 @@ final class LifecycleEventManager
                     continue;
                 }
 
-                $this->preUpdate($this->dm->getClassMetadata($entry::class), $entry);
+                $this->preUpdate($this->dm->getClassMetadata($entry::class), $entry, $session);
             }
         }
     }
@@ -175,8 +187,10 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    private function cascadePostUpdate(ClassMetadata $class, object $document): void
+    private function cascadePostUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
+        $isInTransaction = $session ? $session->isInTransaction() : false;
+
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
             if ($value === null) {
@@ -192,8 +206,11 @@ final class LifecycleEventManager
 
                 $entryClass = $this->dm->getClassMetadata($entry::class);
                 $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
-                $entryClass->invokeLifecycleCallbacks($event, $entry, [new LifecycleEventArgs($entry, $this->dm)]);
-                $this->dispatchEvent($entryClass, $event, new LifecycleEventArgs($entry, $this->dm));
+
+                $eventArgs = new LifecycleEventArgs($entry, $this->dm, $isInTransaction, $session);
+
+                $entryClass->invokeLifecycleCallbacks($event, $entry, [$eventArgs]);
+                $this->dispatchEvent($entryClass, $event, $eventArgs);
 
                 $this->cascadePostUpdate($entryClass, $entry);
             }
@@ -208,7 +225,7 @@ final class LifecycleEventManager
      *
      * @template T of object
      */
-    private function cascadePostPersist(ClassMetadata $class, object $document): void
+    private function cascadePostPersist(ClassMetadata $class, object $document, ?Session $session = null): void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
@@ -218,7 +235,7 @@ final class LifecycleEventManager
 
             $values = $mapping['type'] === ClassMetadata::ONE ? [$value] : $value;
             foreach ($values as $embeddedDocument) {
-                $this->postPersist($this->dm->getClassMetadata($embeddedDocument::class), $embeddedDocument);
+                $this->postPersist($this->dm->getClassMetadata($embeddedDocument::class), $embeddedDocument, $session);
             }
         }
     }

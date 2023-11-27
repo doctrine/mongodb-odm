@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MongoDB\Driver\Session;
 
 /**
  * Class that holds event arguments for a preLoad event.
@@ -15,9 +16,9 @@ final class PreLoadEventArgs extends LifecycleEventArgs
     private array $data;
 
     /** @param array<string, mixed> $data */
-    public function __construct(object $document, DocumentManager $dm, array &$data)
+    public function __construct(object $document, DocumentManager $dm, array &$data, bool $isInTransaction = false, ?Session $session = null)
     {
-        parent::__construct($document, $dm);
+        parent::__construct($document, $dm, $isInTransaction, $session);
 
         $this->data =& $data;
     }
