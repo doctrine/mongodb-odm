@@ -11,6 +11,7 @@ use Documents\Sharded\ShardedOne;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\Attributes\Group;
 
+use function array_shift;
 use function assert;
 use function end;
 
@@ -48,13 +49,15 @@ class ShardKeyTest extends BaseTestCase
         $o = $this->dm->find($o::class, $o->id);
         assert($o instanceof ShardedOne);
         $o->title = 'test2';
+
+        $this->logger->clear();
         $this->dm->flush();
 
-        $queries   = $this->logger->getAll();
-        $lastQuery = end($queries);
-        self::assertSame('update', $lastQuery->getCommandName());
+        $queries     = $this->logger->getAll();
+        $updateQuery = array_shift($queries);
+        self::assertSame('update', $updateQuery->getCommandName());
 
-        $command = $lastQuery->getCommand();
+        $command = $updateQuery->getCommand();
         self::assertIsArray($command->updates);
         self::assertCount(1, $command->updates);
         self::assertEquals($o->key, $command->updates[0]->q->k);
@@ -67,11 +70,11 @@ class ShardKeyTest extends BaseTestCase
         $this->dm->persist($o);
         $this->dm->flush();
 
-        $queries   = $this->logger->getAll();
-        $lastQuery = end($queries);
-        self::assertSame('update', $lastQuery->getCommandName());
+        $queries     = $this->logger->getAll();
+        $upsertQuery = array_shift($queries);
+        self::assertSame('update', $upsertQuery->getCommandName());
 
-        $command = $lastQuery->getCommand();
+        $command = $upsertQuery->getCommand();
         self::assertIsArray($command->updates);
         self::assertCount(1, $command->updates);
         self::assertEquals($o->key, $command->updates[0]->q->k);
@@ -83,14 +86,17 @@ class ShardKeyTest extends BaseTestCase
         $o = new ShardedOne();
         $this->dm->persist($o);
         $this->dm->flush();
+
         $this->dm->remove($o);
+
+        $this->logger->clear();
         $this->dm->flush();
 
-        $queries   = $this->logger->getAll();
-        $lastQuery = end($queries);
-        self::assertSame('delete', $lastQuery->getCommandName());
+        $queries     = $this->logger->getAll();
+        $removeQuery = array_shift($queries);
+        self::assertSame('delete', $removeQuery->getCommandName());
 
-        $command = $lastQuery->getCommand();
+        $command = $removeQuery->getCommand();
         self::assertIsArray($command->deletes);
         self::assertCount(1, $command->deletes);
         self::assertEquals($o->key, $command->deletes[0]->q->k);
