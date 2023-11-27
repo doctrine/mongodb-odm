@@ -118,7 +118,7 @@ class Configuration
 
     private int $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
 
-    private bool $enableTransactionalFlush = false;
+    private bool $useTransactionalFlush = false;
 
     public function __construct()
     {
@@ -600,19 +600,14 @@ class Configuration
         return $this->proxyManagerConfiguration;
     }
 
-    public function disableTransactionalFlush(): void
+    public function setUseTransactionalFlush(bool $useTransactionalFlush): void
     {
-        $this->enableTransactionalFlush = false;
-    }
-
-    public function enableTransactionalFlush(): void
-    {
-        $this->enableTransactionalFlush = true;
+        $this->useTransactionalFlush = $useTransactionalFlush;
     }
 
     public function isTransactionalFlushEnabled(): bool
     {
-        return $this->enableTransactionalFlush;
+        return $this->useTransactionalFlush;
     }
 }
 

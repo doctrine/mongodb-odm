@@ -34,10 +34,10 @@ class ConfigurationTest extends BaseTestCase
 
         self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled by default');
 
-        $c->enableTransactionalFlush();
-        self::assertTrue($c->isTransactionalFlushEnabled(), 'Transactional flush is enabled after enableTransactionalFlush()');
+        $c->setUseTransactionalFlush(true);
+        self::assertTrue($c->isTransactionalFlushEnabled(), 'Transactional flush is enabled after setTransactionalFlush(true)');
 
-        $c->disableTransactionalFlush();
-        self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled after disableTransactionalFlush()');
+        $c->setUseTransactionalFlush(false);
+        self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled after setTransactionalFlush(false)');
     }
 }
