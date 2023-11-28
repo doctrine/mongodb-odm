@@ -3113,6 +3113,15 @@ final class UnitOfWork implements PropertyChangedListener
         };
     }
 
+    /** @internal */
+    public function stripTransactionOptions(array $options): array
+    {
+        return array_diff_key(
+            $options,
+            self::TRANSACTION_OPTIONS,
+        );
+    }
+
     private function objToStr(object $obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : $obj::class . '@' . spl_object_hash($obj);
@@ -3160,15 +3169,6 @@ final class UnitOfWork implements PropertyChangedListener
                 $this->dm->getConfiguration()->getDefaultCommitOptions(),
                 $options,
             ),
-            self::TRANSACTION_OPTIONS,
-        );
-    }
-
-    /** @psalm-param CommitOptions $options */
-    private function stripTransactionOptions(array $options): array
-    {
-        return array_diff_key(
-            $options,
             self::TRANSACTION_OPTIONS,
         );
     }

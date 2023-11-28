@@ -1563,10 +1563,6 @@ final class DocumentPersister
      */
     private function getWriteOptions(array $options = []): array
     {
-        if ($this->isInTransaction($options)) {
-            return $options;
-        }
-
         $defaultOptions  = $this->dm->getConfiguration()->getDefaultCommitOptions();
         $documentOptions = [];
         if ($this->class->hasWriteConcern()) {
@@ -1585,7 +1581,9 @@ final class DocumentPersister
             unset($writeOptions['w']);
         }
 
-        return $writeOptions;
+        return $this->isInTransaction($options)
+            ? $this->uow->stripTransactionOptions($writeOptions)
+            : $writeOptions;
     }
 
     private function isInTransaction(array $options): bool

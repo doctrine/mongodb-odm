@@ -601,6 +601,11 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:stripTransactionOptions\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:stripTransactionOptions\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
