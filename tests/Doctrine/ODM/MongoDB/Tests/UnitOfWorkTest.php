@@ -24,6 +24,7 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
@@ -558,7 +559,7 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
         // Force transaction config to be enabled
         $this->dm->getConfiguration()->setUseTransactionalFlush(true);
 
-        $collection = $this->createMock(\MongoDB\Collection::class);
+        $collection = $this->createMock(MongoDBCollection::class);
         $collection->expects($this->once())
             ->method('insertMany')
             ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));

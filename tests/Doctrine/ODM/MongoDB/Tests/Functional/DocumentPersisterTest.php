@@ -652,7 +652,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteInsertsDoesNotUseWriteConcernInTransaction(string $class): void
+    public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
