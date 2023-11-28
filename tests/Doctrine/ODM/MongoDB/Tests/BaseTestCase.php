@@ -141,11 +141,9 @@ abstract class BaseTestCase extends TestCase
 
     protected function skipTestIfNoTransactionSupport(): void
     {
-        if ($this->getPrimaryServer()->getType() !== Server::TYPE_STANDALONE) {
-            return;
+        if (! self::supportsTransactions()) {
+            $this->markTestSkipped('Test requires a topology that supports transactions');
         }
-
-        $this->markTestSkipped('Test requires a topology that supports transactions');
     }
 
     protected function skipTestIfTransactionalFlushDisabled(): void
