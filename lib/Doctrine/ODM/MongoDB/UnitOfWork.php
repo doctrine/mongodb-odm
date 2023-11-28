@@ -33,7 +33,6 @@ use UnexpectedValueException;
 
 use function array_diff_key;
 use function array_filter;
-use function array_flip;
 use function array_intersect_key;
 use function array_key_exists;
 use function array_merge;
@@ -99,7 +98,12 @@ final class UnitOfWork implements PropertyChangedListener
 
     /** @internal */
     public const DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
-    private const TRANSACTION_OPTIONS     = ['maxCommitTimeMS', 'readConcern', 'readPreference', 'writeConcern'];
+    private const TRANSACTION_OPTIONS     = [
+        'maxCommitTimeMS' => 1,
+        'readConcern' => 1,
+        'readPreference' => 1,
+        'writeConcern' => 1,
+    ];
 
     /**
      * The identity map holds references to all managed documents.
@@ -3156,7 +3160,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $this->dm->getConfiguration()->getDefaultCommitOptions(),
                 $options,
             ),
-            array_flip(self::TRANSACTION_OPTIONS),
+            self::TRANSACTION_OPTIONS,
         );
     }
 
@@ -3165,7 +3169,7 @@ final class UnitOfWork implements PropertyChangedListener
     {
         return array_diff_key(
             $options,
-            array_flip(self::TRANSACTION_OPTIONS),
+            self::TRANSACTION_OPTIONS,
         );
     }
 }
