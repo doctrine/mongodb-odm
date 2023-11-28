@@ -8,6 +8,7 @@ use Closure;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -32,6 +33,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use Throwable;
 
+use function end;
 use function spl_object_hash;
 use function sprintf;
 
@@ -552,7 +554,7 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
         $this->fail('This should never be reached, an exception should have been thrown.');
     }
 
-    public function testTransactionalCommitWithCustomWriteOptions(): void
+    public function testTransactionalCommitOmitsWriteConcernInOperation(): void
     {
         $this->skipTestIfNoTransactionSupport();
 
@@ -575,6 +577,32 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
         $this->uow->persist($user);
 
         $this->uow->commit(['writeConcern' => new WriteConcern(1)]);
+    }
+
+    public function testTransactionalCommitUsesWriteConcernInCommitCommand(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        // Force transaction config to be enabled
+        $this->dm->getConfiguration()->setUseTransactionalFlush(true);
+
+        $user           = new ForumUser();
+        $user->username = '12345';
+        $this->uow->persist($user);
+
+        $logger = new CommandLogger();
+        $logger->register();
+
+        $this->uow->commit(['writeConcern' => new WriteConcern(2)]);
+
+        $logger->unregister();
+
+        $commands      = $logger->getAll();
+        $commitCommand = end($commands);
+
+        $this->assertSame('commitTransaction', $commitCommand->getCommandName());
+        $this->assertObjectHasProperty('writeConcern', $commitCommand->getCommand());
+        $this->assertEquals((object) ['w' => 2], $commitCommand->getCommand()->writeConcern);
     }
 }
 
