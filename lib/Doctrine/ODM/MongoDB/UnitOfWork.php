@@ -456,6 +456,8 @@ final class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
             if ($this->useTransaction($options)) {
+                $this->lifecycleEventManager->enableTransactionalMode();
+
                 with_transaction(
                     $this->dm->getClient()->startSession(),
                     function (Session $session) use ($options): void {
@@ -484,6 +486,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->hasScheduledCollections      = [];
         } finally {
             $this->commitsInProgress--;
+            $this->lifecycleEventManager->clearTransactionalState();
         }
     }
 

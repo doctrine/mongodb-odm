@@ -17,11 +17,29 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Driver\Session;
 
+use function spl_object_hash;
+
 /** @internal */
 final class LifecycleEventManager
 {
+    private bool $transactionalModeEnabled = false;
+
+    /** @var array<string, array<string, true>> */
+    private array $transactionalEvents = [];
+
     public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager $evm)
     {
+    }
+
+    public function clearTransactionalState(): void
+    {
+        $this->transactionalModeEnabled = false;
+        $this->transactionalEvents      = [];
+    }
+
+    public function enableTransactionalMode(): void
+    {
+        $this->transactionalModeEnabled = true;
     }
 
     /**
@@ -58,6 +76,10 @@ final class LifecycleEventManager
      */
     public function postPersist(ClassMetadata $class, object $document, ?Session $session = null): void
     {
+        if (! $this->shouldDispatchEvent($document, Events::postPersist)) {
+            return;
+        }
+
         $isInTransaction = $session ? $session->isInTransaction() : false;
         $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
 
@@ -76,6 +98,10 @@ final class LifecycleEventManager
      */
     public function postRemove(ClassMetadata $class, object $document, ?Session $session = null): void
     {
+        if (! $this->shouldDispatchEvent($document, Events::postRemove)) {
+            return;
+        }
+
         $isInTransaction = $session ? $session->isInTransaction() : false;
         $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
 
@@ -94,6 +120,10 @@ final class LifecycleEventManager
      */
     public function postUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
+        if (! $this->shouldDispatchEvent($document, Events::postUpdate)) {
+            return;
+        }
+
         $isInTransaction = $session ? $session->isInTransaction() : false;
         $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
 
@@ -112,6 +142,10 @@ final class LifecycleEventManager
      */
     public function prePersist(ClassMetadata $class, object $document): void
     {
+        if (! $this->shouldDispatchEvent($document, Events::prePersist)) {
+            return;
+        }
+
         $class->invokeLifecycleCallbacks(Events::prePersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->dispatchEvent($class, Events::prePersist, new LifecycleEventArgs($document, $this->dm));
     }
@@ -126,6 +160,10 @@ final class LifecycleEventManager
      */
     public function preRemove(ClassMetadata $class, object $document): void
     {
+        if (! $this->shouldDispatchEvent($document, Events::preRemove)) {
+            return;
+        }
+
         $class->invokeLifecycleCallbacks(Events::preRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
         $this->dispatchEvent($class, Events::preRemove, new LifecycleEventArgs($document, $this->dm));
     }
@@ -140,6 +178,10 @@ final class LifecycleEventManager
      */
     public function preUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
+        if (! $this->shouldDispatchEvent($document, Events::preUpdate)) {
+            return;
+        }
+
         $isInTransaction = $session ? $session->isInTransaction() : false;
 
         if (! empty($class->lifecycleCallbacks[Events::preUpdate])) {
@@ -207,6 +249,10 @@ final class LifecycleEventManager
                 $entryClass = $this->dm->getClassMetadata($entry::class);
                 $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
 
+                if (! $this->shouldDispatchEvent($entry, $event)) {
+                    continue;
+                }
+
                 $eventArgs = new LifecycleEventArgs($entry, $this->dm, $isInTransaction, $session);
 
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [$eventArgs]);
@@ -248,5 +294,25 @@ final class LifecycleEventManager
         }
 
         $this->evm->dispatchEvent($eventName, $eventArgs);
+    }
+
+    private function shouldDispatchEvent(object $document, string $eventName): bool
+    {
+        if (! $this->transactionalModeEnabled) {
+            return true;
+        }
+
+        // Check whether the event has already been dispatched.
+        $hasDispatched = isset($this->transactionalEvents[$this->getObjectId($document)][$eventName]);
+
+        // Mark the event as dispatched - no problem doing this if it already was dispatched
+        $this->transactionalEvents[$this->getObjectId($document)][$eventName] = true;
+
+        return ! $hasDispatched;
+    }
+
+    private function getObjectId(object $document): string
+    {
+        return spl_object_hash($document);
     }
 }
