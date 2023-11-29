@@ -573,6 +573,8 @@ EOT;
             'validator' => $expectedValidator,
             'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
             'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+            'timeseries' => null,
+            'expireAfterSeconds' => null
         ];
         $cm                    = $this->dm->getClassMetadata(SchemaValidated::class);
         $database              = $this->documentDatabases[$this->getDatabaseName($cm)];
