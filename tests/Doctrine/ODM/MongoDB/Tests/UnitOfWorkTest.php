@@ -593,7 +593,7 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
         $logger = new CommandLogger();
         $logger->register();
 
-        $this->uow->commit(['writeConcern' => new WriteConcern(2)]);
+        $this->uow->commit(['writeConcern' => new WriteConcern('majority')]);
 
         $logger->unregister();
 
@@ -602,7 +602,7 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
         $this->assertSame('commitTransaction', $commitCommand->getCommandName());
         $this->assertObjectHasProperty('writeConcern', $commitCommand->getCommand());
-        $this->assertEquals((object) ['w' => 2], $commitCommand->getCommand()->writeConcern);
+        $this->assertEquals((object) ['w' => 'majority'], $commitCommand->getCommand()->writeConcern);
     }
 }
 
