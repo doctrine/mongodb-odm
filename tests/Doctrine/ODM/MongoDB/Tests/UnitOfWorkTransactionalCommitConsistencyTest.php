@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Documents\Address;
 use Documents\ForumUser;
@@ -11,12 +12,17 @@ use Documents\FriendUser;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use MongoDB\Driver\Exception\BulkWriteException;
 use Throwable;
 
-class UnitOfWorkCommitConsistencyTest extends BaseTestCase
+class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 {
-    // This test requires transactions to be disabled
-    protected static bool $allowsTransactions = false;
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->skipTestIfNoTransactionSupport();
+    }
 
     public function tearDown(): void
     {
@@ -28,7 +34,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         parent::tearDown();
     }
 
-    public function testInsertErrorKeepsFailingInsertions(): void
+    public function testFatalInsertError(): void
     {
         $firstUser           = new ForumUser();
         $firstUser->username = 'alcaeus';
@@ -41,18 +47,24 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $friendUser = new FriendUser('GromNaN');
         $this->uow->persist($friendUser);
 
-        // Add failpoint to let the first insert command fail. This affects the ForumUser documents
-        $this->createFailpoint('insert');
+        $this->createFatalFailPoint('insert');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
         self::assertSame(
             0,
             $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertSame(
+            0,
+            $this->dm->getDocumentCollection(FriendUser::class)->countDocuments(),
         );
 
         self::assertTrue($this->uow->isScheduledForInsert($firstUser));
@@ -65,10 +77,47 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($friendUser));
     }
 
-    public function testInsertErrorKeepsFailingInsertionsForDocumentClass(): void
+    public function testTransientInsertError(): void
     {
-        // Create a unique index on the collection to let the second document fail, as using a fail point would also
-        // affect the first document.
+        $firstUser           = new ForumUser();
+        $firstUser->username = 'alcaeus';
+        $this->uow->persist($firstUser);
+
+        $secondUser           = new ForumUser();
+        $secondUser->username = 'jmikola';
+        $this->uow->persist($secondUser);
+
+        $friendUser = new FriendUser('GromNaN');
+        $this->uow->persist($friendUser);
+
+        // Add a failpoint that triggers a transient error. The transaction will be retried and succeeds
+        $this->createTransientFailPoint('insert');
+
+        $this->uow->commit();
+
+        self::assertSame(
+            2,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertSame(
+            1,
+            $this->dm->getDocumentCollection(FriendUser::class)->countDocuments(),
+        );
+
+        self::assertFalse($this->uow->isScheduledForInsert($firstUser));
+        self::assertEquals([], $this->uow->getDocumentChangeSet($firstUser));
+
+        self::assertFalse($this->uow->isScheduledForInsert($secondUser));
+        self::assertEquals([], $this->uow->getDocumentChangeSet($secondUser));
+
+        self::assertFalse($this->uow->isScheduledForInsert($friendUser));
+        self::assertEquals([], $this->uow->getDocumentChangeSet($friendUser));
+    }
+
+    public function testDuplicateKeyError(): void
+    {
+        // Create a unique index on the collection to let the second insert fail
         $collection = $this->dm->getDocumentCollection(ForumUser::class);
         $collection->createIndex(['username' => 1], ['unique' => true]);
 
@@ -87,18 +136,18 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(11000, $e->getCode()); // Duplicate key
         }
 
-        // One user inserted, the second insert failed, the last was skipped
+        // No users inserted
         self::assertSame(
-            1,
+            0,
             $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
         );
 
-        // Wrong behaviour: user was saved and should no longer be scheduled for insertion
         self::assertTrue($this->uow->isScheduledForInsert($firstUser));
-        // Wrong behaviour: changeset should be empty
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
 
         self::assertTrue($this->uow->isScheduledForInsert($secondUser));
@@ -108,7 +157,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($thirdUser));
     }
 
-    public function testInsertErrorWithEmbeddedDocumentKeepsInsertions(): void
+    public function testFatalInsertErrorWithEmbeddedDocument(): void
     {
         // Create a unique index on the collection to let the second insert fail
         $collection = $this->dm->getDocumentCollection(User::class);
@@ -132,17 +181,15 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(11000, $e->getCode());
         }
 
-        // First document inserted, second failed due to index error
-        self::assertSame(1, $collection->countDocuments());
+        self::assertSame(0, $collection->countDocuments());
 
-        // Wrong behaviour: document should no longer be scheduled and changeset should be cleared
         $this->assertTrue($this->uow->isScheduledForInsert($firstUser));
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
-
-        // Wrong behaviour: document should no longer be scheduled for insertion and changeset cleared
         $this->assertTrue($this->uow->isScheduledForInsert($firstAddress));
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($firstAddress));
 
@@ -152,19 +199,21 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($secondAddress));
     }
 
-    public function testUpsertErrorDropsFailingUpserts(): void
+    public function testFatalUpsertError(): void
     {
         $user           = new ForumUser();
         $user->id       = new ObjectId(); // Specifying an identifier makes this an upsert
         $user->username = 'alcaeus';
         $this->uow->persist($user);
 
-        $this->createFailpoint('update');
+        $this->createFatalFailPoint('update');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
         // No document was inserted
@@ -177,7 +226,27 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testUpdateErrorKeepsFailingUpdate(): void
+    public function testTransientUpsertError(): void
+    {
+        $user           = new ForumUser();
+        $user->id       = new ObjectId(); // Specifying an identifier makes this an upsert
+        $user->username = 'alcaeus';
+        $this->uow->persist($user);
+
+        $this->createTransientFailPoint('update');
+
+        $this->uow->commit();
+
+        self::assertSame(
+            1,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertFalse($this->uow->isScheduledForUpsert($user));
+        self::assertEquals([], $this->uow->getDocumentChangeSet($user));
+    }
+
+    public function testFatalUpdateError(): void
     {
         $user           = new ForumUser();
         $user->username = 'alcaeus';
@@ -186,16 +255,16 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $user->username = 'jmikola';
 
-        // Make sure update command fails once
-        $this->createFailpoint('update');
+        $this->createFatalFailPoint('update');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
-        // The update is kept, user data is not changed
         self::assertSame(
             1,
             $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(['username' => 'alcaeus']),
@@ -205,7 +274,29 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertNotEquals([], $this->uow->getDocumentChangeSet($user));
     }
 
-    public function testUpdateErrorWithNewEmbeddedDocumentKeepsFailingChangeset(): void
+    public function testTransientUpdateError(): void
+    {
+        $user           = new ForumUser();
+        $user->username = 'alcaeus';
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $user->username = 'jmikola';
+
+        $this->createTransientFailPoint('update');
+
+        $this->uow->commit();
+
+        self::assertSame(
+            1,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(['username' => 'jmikola']),
+        );
+
+        self::assertFalse($this->uow->isScheduledForUpdate($user));
+        self::assertEquals([], $this->uow->getDocumentChangeSet($user));
+    }
+
+    public function testFatalUpdateErrorWithNewEmbeddedDocument(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -217,12 +308,14 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $address->setCity('Olching');
         $user->setAddress($address);
 
-        $this->createFailpoint('update');
+        $this->createFatalFailPoint('update');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
         $this->assertTrue($this->uow->isScheduledForUpdate($user));
@@ -231,7 +324,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testUpdateWithNewEmbeddedDocumentClearsChangesets(): void
+    public function testTransientUpdateErrorWithNewEmbeddedDocument(): void
     {
         $user = new User();
         $user->setUsername('alcaeus');
@@ -242,6 +335,8 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $address = new Address();
         $address->setCity('Olching');
         $user->setAddress($address);
+
+        $this->createTransientFailPoint('update');
 
         $this->uow->commit();
 
@@ -251,7 +346,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testUpdateErrorWithEmbeddedDocumentKeepsFailingChangeset(): void
+    public function testFatalUpdateErrorOfEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -265,12 +360,14 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $address->setCity('Munich');
 
-        $this->createFailpoint('update');
+        $this->createFatalFailPoint('update');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
         $this->assertTrue($this->uow->isScheduledForUpdate($user));
@@ -279,7 +376,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertNotEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testUpdateWithEmbeddedDocumentClearsChangesets(): void
+    public function testTransientUpdateErrorOfEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -292,6 +389,8 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->uow->commit();
 
         $address->setCity('Munich');
+
+        $this->createTransientFailPoint('update');
 
         $this->uow->commit();
 
@@ -301,7 +400,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertEquals([], $this->uow->getDocumentChangeSet($address));
     }
 
-    public function testUpdateErrorWithRemovedEmbeddedDocumentKeepsFailingChangeset(): void
+    public function testFatalUpdateErrorWithRemovedEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -315,12 +414,14 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $user->removeAddress();
 
-        $this->createFailpoint('update');
+        $this->createFatalFailPoint('update');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
         $this->assertTrue($this->uow->isScheduledForUpdate($user));
@@ -331,7 +432,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isInIdentityMap($address));
     }
 
-    public function testUpdateWithRemovedEmbeddedDocumentClearsChangesets(): void
+    public function testTransientUpdateErrorWithRemovedEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -345,6 +446,8 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $user->removeAddress();
 
+        $this->createTransientFailPoint('update');
+
         $this->uow->commit();
 
         $this->assertFalse($this->uow->isScheduledForUpdate($user));
@@ -353,34 +456,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isInIdentityMap($address));
     }
 
-    public function testDeleteErrorKeepsFailingDelete(): void
-    {
-        $user           = new ForumUser();
-        $user->username = 'alcaeus';
-        $this->uow->persist($user);
-        $this->uow->commit();
-
-        $this->uow->remove($user);
-
-        // Make sure delete command fails once
-        $this->createFailpoint('delete');
-
-        try {
-            $this->uow->commit();
-            self::fail('Expected exception when committing');
-        } catch (Throwable) {
-        }
-
-        // The document still exists, the deletion is still scheduled
-        self::assertSame(
-            1,
-            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(['username' => 'alcaeus']),
-        );
-
-        self::assertTrue($this->uow->isScheduledForDelete($user));
-    }
-
-    public function testDeleteErrorWithEmbeddedDocumentKeepsChangeset(): void
+    public function testFatalDeleteErrorWithEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -394,13 +470,14 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $this->uow->remove($user);
 
-        // Make sure delete command fails once
-        $this->createFailpoint('delete');
+        $this->createFatalFailPoint('delete');
 
         try {
             $this->uow->commit();
             self::fail('Expected exception when committing');
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
         }
 
         // The document still exists, the deletion is still scheduled
@@ -413,7 +490,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         self::assertTrue($this->uow->isScheduledForDelete($address));
     }
 
-    public function testDeleteWithEmbeddedDocumentClearsChangeset(): void
+    public function testTransientDeleteErrorWithEmbeddedDocument(): void
     {
         $address = new Address();
         $address->setCity('Olching');
@@ -427,6 +504,8 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
 
         $this->uow->remove($user);
 
+        $this->createTransientFailPoint('delete');
+
         $this->uow->commit();
 
         self::assertSame(
@@ -434,8 +513,8 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
             $this->dm->getDocumentCollection(User::class)->countDocuments(['username' => 'alcaeus']),
         );
 
-        self::assertFalse($this->uow->isScheduledForDelete($user));
         self::assertFalse($this->uow->isScheduledForDelete($address));
+        self::assertFalse($this->uow->isScheduledForDelete($user));
     }
 
     /** Create a document manager with a single host to ensure failpoints target the correct server */
@@ -447,14 +526,36 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         return DocumentManager::create($client, $config);
     }
 
-    private function createFailpoint(string $commandName): void
+    protected static function getConfiguration(): Configuration
+    {
+        $configuration = parent::getConfiguration();
+        $configuration->setUseTransactionalFlush(true);
+
+        return $configuration;
+    }
+
+    private function createTransientFailPoint(string $failCommand): void
+    {
+        $this->dm->getClient()->selectDatabase('admin')->command([
+            'configureFailPoint' => 'failCommand',
+            // Trigger the error twice, working around retryable writes
+            'mode' => ['times' => 2],
+            'data' => [
+                'errorCode' => 192, // FailPointEnabled
+                'errorLabels' => ['TransientTransactionError'],
+                'failCommands' => [$failCommand],
+            ],
+        ]);
+    }
+
+    private function createFatalFailPoint(string $failCommand): void
     {
         $this->dm->getClient()->selectDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [
                 'errorCode' => 192, // FailPointEnabled
-                'failCommands' => [$commandName],
+                'failCommands' => [$failCommand],
             ],
         ]);
     }

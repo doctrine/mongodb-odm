@@ -11,6 +11,8 @@ use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 
@@ -34,6 +36,8 @@ use const DOCTRINE_MONGODB_SERVER;
 
 abstract class BaseTestCase extends TestCase
 {
+    protected static ?bool $supportsTransactions;
+    protected static bool $allowsTransactions = true;
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
 
@@ -87,6 +91,9 @@ abstract class BaseTestCase extends TestCase
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
 
+        // Enable transactions if supported
+        $config->setUseTransactionalFlush(static::$allowsTransactions && self::supportsTransactions());
+
         return $config;
     }
 
@@ -125,6 +132,32 @@ abstract class BaseTestCase extends TestCase
         $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         return $result['version'];
+    }
+
+    protected function getPrimaryServer(): Server
+    {
+        return $this->dm->getClient()->getManager()->selectServer();
+    }
+
+    protected function skipTestIfNoTransactionSupport(): void
+    {
+        if (! self::supportsTransactions()) {
+            $this->markTestSkipped('Test requires a topology that supports transactions');
+        }
+    }
+
+    protected function skipTestIfTransactionalFlushDisabled(): void
+    {
+        if (! $this->dm?->getConfiguration()->isTransactionalFlushEnabled()) {
+            $this->markTestSkipped('Test only applies when transactional flush is enabled');
+        }
+    }
+
+    protected function skipTestIfTransactionalFlushEnabled(): void
+    {
+        if ($this->dm?->getConfiguration()->isTransactionalFlushEnabled()) {
+            $this->markTestSkipped('Test is not compatible with transactional flush');
+        }
     }
 
     /** @psalm-param class-string $className */
@@ -207,5 +240,17 @@ abstract class BaseTestCase extends TestCase
         self::assertNotFalse($pos);
 
         return substr_replace($uri, $singleHost, $pos, strlen($multipleHosts));
+    }
+
+    protected static function supportsTransactions(): bool
+    {
+        return self::$supportsTransactions ??= self::detectTransactionSupport();
+    }
+
+    private static function detectTransactionSupport(): bool
+    {
+        $manager = new Manager(self::getUri());
+
+        return $manager->selectServer()->getType() !== Server::TYPE_STANDALONE;
     }
 }

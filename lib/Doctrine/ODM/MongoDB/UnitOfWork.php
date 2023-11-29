@@ -25,13 +25,17 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use UnexpectedValueException;
 
+use function array_diff_key;
 use function array_filter;
+use function array_intersect_key;
 use function array_key_exists;
+use function array_merge;
 use function assert;
 use function count;
 use function get_class;
@@ -39,6 +43,7 @@ use function in_array;
 use function is_array;
 use function is_object;
 use function method_exists;
+use function MongoDB\with_transaction;
 use function preg_match;
 use function serialize;
 use function spl_object_hash;
@@ -61,6 +66,7 @@ use function trigger_deprecation;
  *      fsync?: bool,
  *      safe?: int,
  *      w?: int,
+ *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
  */
@@ -92,6 +98,12 @@ final class UnitOfWork implements PropertyChangedListener
 
     /** @internal */
     public const DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
+    private const TRANSACTION_OPTIONS     = [
+        'maxCommitTimeMS' => 1,
+        'readConcern' => 1,
+        'readPreference' => 1,
+        'writeConcern' => 1,
+    ];
 
     /**
      * The identity map holds references to all managed documents.
@@ -441,27 +453,18 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            // Raise onFlush
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpserts($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentInsertions) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeInserts($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpdates) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpdates($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->scheduledDocumentDeletions, true) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeDeletions($class, $documents, $options);
+            if ($this->useTransaction($options)) {
+                with_transaction(
+                    $this->dm->getClient()->startSession(),
+                    function (Session $session) use ($options): void {
+                        $this->doCommit(['session' => $session] + $this->stripTransactionOptions($options));
+                    },
+                    $this->getTransactionOptions($options),
+                );
+            } else {
+                $this->doCommit($options);
             }
 
             // Raise postFlush
@@ -3110,8 +3113,63 @@ final class UnitOfWork implements PropertyChangedListener
         };
     }
 
+    /** @internal */
+    public function stripTransactionOptions(array $options): array
+    {
+        return array_diff_key(
+            $options,
+            self::TRANSACTION_OPTIONS,
+        );
+    }
+
     private function objToStr(object $obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : $obj::class . '@' . spl_object_hash($obj);
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function doCommit(array $options): void
+    {
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentInsertions) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeInserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpdates) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpdates($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentDeletions, true) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeDeletions($class, $documents, $options);
+        }
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function useTransaction(array $options): bool
+    {
+        if (isset($options['withTransaction'])) {
+            return $options['withTransaction'];
+        }
+
+        return $this->dm->getConfiguration()->isTransactionalFlushEnabled();
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function getTransactionOptions(array $options): array
+    {
+        return array_intersect_key(
+            array_merge(
+                $this->dm->getConfiguration()->getDefaultCommitOptions(),
+                $options,
+            ),
+            self::TRANSACTION_OPTIONS,
+        );
     }
 }

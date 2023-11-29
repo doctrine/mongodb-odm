@@ -18,6 +18,9 @@ use Documents\VersionedUser;
 
 class CommitImprovementTest extends BaseTestCase
 {
+    // This test counts executed commands and thus doesn't work with transactions
+    protected static bool $allowsTransactions = false;
+
     private CommandLogger $logger;
 
     public function setUp(): void

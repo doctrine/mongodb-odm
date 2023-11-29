@@ -8,6 +8,7 @@ use Closure;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
@@ -24,11 +25,15 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection as MongoDBCollection;
+use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionProperty;
 use Throwable;
 
+use function end;
 use function spl_object_hash;
 use function sprintf;
 
@@ -547,6 +552,57 @@ $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
         }
 
         $this->fail('This should never be reached, an exception should have been thrown.');
+    }
+
+    public function testTransactionalCommitOmitsWriteConcernInOperation(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        // Force transaction config to be enabled
+        $this->dm->getConfiguration()->setUseTransactionalFlush(true);
+
+        $collection = $this->createMock(MongoDBCollection::class);
+        $collection->expects($this->once())
+            ->method('insertMany')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+
+        $documentPersister = $this->uow->getDocumentPersister(ForumUser::class);
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $user           = new ForumUser();
+        $user->username = '12345';
+        $this->uow->persist($user);
+
+        $this->uow->commit(['writeConcern' => new WriteConcern(1)]);
+    }
+
+    public function testTransactionalCommitUsesWriteConcernInCommitCommand(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        // Force transaction config to be enabled
+        $this->dm->getConfiguration()->setUseTransactionalFlush(true);
+
+        $user           = new ForumUser();
+        $user->username = '12345';
+        $this->uow->persist($user);
+
+        $logger = new CommandLogger();
+        $logger->register();
+
+        $this->uow->commit(['writeConcern' => new WriteConcern('majority')]);
+
+        $logger->unregister();
+
+        $commands      = $logger->getAll();
+        $commitCommand = end($commands);
+
+        $this->assertSame('commitTransaction', $commitCommand->getCommandName());
+        $this->assertObjectHasProperty('writeConcern', $commitCommand->getCommand());
+        $this->assertEquals((object) ['w' => 'majority'], $commitCommand->getCommand()->writeConcern);
     }
 }
 
