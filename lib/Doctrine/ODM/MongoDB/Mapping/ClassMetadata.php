@@ -2617,8 +2617,6 @@ use const PHP_VERSION_ID;
         }
 
         if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
-            $mapping['enumType'] = $type->getName();
-
             $reflection = new ReflectionEnum($type->getName());
             $type       = $reflection->getBackingType();
 
@@ -2627,6 +2625,7 @@ use const PHP_VERSION_ID;
             }
 
             assert($type instanceof ReflectionNamedType);
+            $mapping['enumType'] = $type->getName();
         }
 
         switch ($type->getName()) {
