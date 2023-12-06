@@ -51,8 +51,6 @@ use function strtolower;
 use function strtoupper;
 use function trigger_deprecation;
 
-use const PHP_VERSION_ID;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
  * of a document and it's references.
@@ -2616,16 +2614,16 @@ use const PHP_VERSION_ID;
             return $mapping;
         }
 
-        if (PHP_VERSION_ID >= 80100 && ! $type->isBuiltin() && enum_exists($type->getName())) {
+        if (! $type->isBuiltin() && enum_exists($type->getName())) {
             $reflection = new ReflectionEnum($type->getName());
-            $type       = $reflection->getBackingType();
 
-            if ($type === null) {
-                throw MappingException::nonBackedEnumMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
+            if (! $reflection->isBacked()) {
+                throw MappingException::nonBackedEnumMapped($this->name, $mapping['fieldName'], $reflection->getName());
             }
 
+            $type = $reflection->getBackingType();
             assert($type instanceof ReflectionNamedType);
-            $mapping['enumType'] = $type->getName();
+            $mapping['enumType'] = $reflection->getName();
         }
 
         switch ($type->getName()) {
