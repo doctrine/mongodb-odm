@@ -8,11 +8,15 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\CmsUser;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
+
+use function assert;
 
 abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTestCase
 {
@@ -159,11 +163,10 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         $this->expectException(MappingException::class);
         $this->expectExceptionMessageMatches($messageRegExp);
 
-        $cm               = new ClassMetadata($wrong::class);
-        $reader           = new AnnotationReader();
-        $annotationDriver = new AnnotationDriver($reader);
+        $cm     = new ClassMetadata($wrong::class);
+        $driver = static::loadDriver();
 
-        $annotationDriver->loadMetadataForClass($wrong::class, $cm);
+        $driver->loadMetadataForClass($wrong::class, $cm);
     }
 
     public static function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
@@ -173,7 +176,9 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
              * @ODM\Document()
              * @ODM\EmbeddedDocument
              */
-            new class () {
+            new #[ODM\Document]
+                #[ODM\EmbeddedDocument]
+            class () {
             },
             '/as EmbeddedDocument because it was already mapped as Document\.$/',
         ];
@@ -183,7 +188,9 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
              * @ODM\Document()
              * @ODM\File
              */
-            new class () {
+            new #[ODM\Document]
+                #[ODM\File]
+            class () {
             },
             '/as File because it was already mapped as Document\.$/',
         ];
@@ -193,7 +200,9 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
              * @ODM\Document()
              * @ODM\QueryResultDocument
              */
-            new class () {
+            new #[ODM\Document]
+                #[ODM\QueryResultDocument]
+            class () {
             },
             '/as QueryResultDocument because it was already mapped as Document\.$/',
         ];
@@ -203,7 +212,9 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
              * @ODM\Document()
              * @ODM\View
              */
-            new class () {
+            new #[ODM\Document]
+                #[ODM\View]
+            class () {
             },
             '/as View because it was already mapped as Document\.$/',
         ];
@@ -213,7 +224,9 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
              * @ODM\Document()
              * @ODM\MappedSuperclass
              */
-            new class () {
+            new #[ODM\Document]
+                #[ODM\MappedSuperclass]
+            class () {
             },
             '/as MappedSuperclass because it was already mapped as Document\.$/',
         ];
@@ -223,7 +236,9 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
              * @ODM\MappedSuperclass()
              * @ODM\Document
              */
-            new class () {
+            new #[ODM\MappedSuperclass]
+                #[ODM\Document]
+            class () {
             },
             '/as Document because it was already mapped as MappedSuperclass\.$/',
         ];
@@ -231,17 +246,17 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
 
     public function testWrongValueForValidationValidatorShouldThrowException(): void
     {
-        $annotationDriver = $this->loadDriver();
-        $classMetadata    = new ClassMetadata(WrongValueForValidationValidator::class);
+        $driver        = static::loadDriver();
+        $classMetadata = new ClassMetadata(WrongValueForValidationValidator::class);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('The following schema validation error occurred while parsing the "validator" property of the "Doctrine\ODM\MongoDB\Tests\Mapping\WrongValueForValidationValidator" class: "Got parse error at "w", position 0: "SPECIAL_EXPECTED"" (code 0).');
-        $annotationDriver->loadMetadataForClass($classMetadata->name, $classMetadata);
+        $driver->loadMetadataForClass($classMetadata->name, $classMetadata);
     }
 
-    protected function loadDriverForCMSDocuments(): AnnotationDriver
+    protected function loadDriverForCMSDocuments(): MappingDriver
     {
-        $annotationDriver = $this->loadDriver();
-        self::assertInstanceOf(AnnotationDriver::class, $annotationDriver);
+        $annotationDriver = static::loadDriver();
+        assert($annotationDriver instanceof AnnotationDriver || $annotationDriver instanceof AttributeDriver);
         $annotationDriver->addPaths([__DIR__ . '/../../../../../Documents']);
 
         return $annotationDriver;

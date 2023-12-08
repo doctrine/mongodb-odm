@@ -85,6 +85,12 @@
       <code>$options</code>
     </InvalidArgument>
   </file>
+  <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/AttributeDriver.php">
+    <InvalidArgument>
+      <code>$mapping</code>
+      <code>$options</code>
+    </InvalidArgument>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php">
     <InvalidArgument>
       <code>$mapping</code>
