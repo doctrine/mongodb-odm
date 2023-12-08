@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Benchmark;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
@@ -80,8 +80,8 @@ abstract class BaseBench
         }
     }
 
-    protected static function createMetadataDriverImpl(): AnnotationDriver
+    protected static function createMetadataDriverImpl(): AttributeDriver
     {
-        return AnnotationDriver::create(__DIR__ . '/../tests/Documents');
+        return AttributeDriver::create(__DIR__ . '/../tests/Documents');
     }
 }
