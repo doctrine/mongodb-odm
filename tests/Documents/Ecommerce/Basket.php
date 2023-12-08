@@ -7,21 +7,15 @@ namespace Documents\Ecommerce;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Basket
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Documents\Ecommerce\ConfigurableProduct::class)
-     *
-     * @var Collection<int, ConfigurableProduct>|array<ConfigurableProduct>
-     */
+    /** @var Collection<int, ConfigurableProduct>|array<ConfigurableProduct> */
+    #[ODM\ReferenceMany(targetDocument: ConfigurableProduct::class)]
     protected $products = [];
 
     public function getId(): ?string

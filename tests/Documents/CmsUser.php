@@ -49,6 +49,7 @@ class CmsUser
      *
      * @var Collection<int, CmsPhonenumber>
      */
+    #[ODM\ReferenceMany(targetDocument: CmsPhonenumber::class, mappedBy: 'user', cascade: ['persist', 'remove', 'merge'])]
     public $phonenumbers;
 
     /**
@@ -56,6 +57,7 @@ class CmsUser
      *
      * @var Collection<int, CmsArticle>
      */
+    #[ODM\ReferenceMany(targetDocument: CmsArticle::class)]
     public $articles;
 
     /**
@@ -63,6 +65,7 @@ class CmsUser
      *
      * @var CmsAddress
      */
+    #[ODM\ReferenceOne(targetDocument: CmsAddress::class, cascade: ['persist'])]
     public $address;
 
     /**
@@ -70,6 +73,7 @@ class CmsUser
      *
      * @var Collection<int, CmsGroup>
      */
+    #[ODM\ReferenceMany(targetDocument: CmsGroup::class, cascade: ['persist', 'merge'])]
     public $groups;
 
     public function __construct()

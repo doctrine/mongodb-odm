@@ -5,26 +5,17 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\Indexes({
- *   @ODM\Index(keys={"slug"="asc"}, options={"unique"="true"})
- * })
- */
+#[Index(keys: ['slug' => 'asc'], options: ['unique' => 'true'])]
+#[ODM\MappedSuperclass]
 abstract class CmsPage
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $slug;
 }

@@ -36,21 +36,15 @@ class GH499Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH499Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH499Document::class, storeAs="id", strategy="set")
-     *
-     * @var Collection<array-key, GH499Document>
-     */
+    /** @var Collection<array-key, GH499Document> */
+    #[ODM\ReferenceMany(targetDocument: self::class, storeAs: 'id', strategy: 'set')]
     protected $refMany;
 
     public function __construct(?ObjectId $id = null)

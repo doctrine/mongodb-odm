@@ -179,120 +179,78 @@ class HydratorTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HydrationClosureUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string", nullable=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string', nullable: true)]
     public $title = 'Mr.';
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Field(type: 'date')]
     public $birthdate;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=HydrationClosureReferenceOne::class)
-     *
-     * @var HydrationClosureReferenceOne|null
-     */
+    /** @var HydrationClosureReferenceOne|null */
+    #[ODM\ReferenceOne(targetDocument: HydrationClosureReferenceOne::class)]
     public $referenceOne;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=HydrationClosureReferenceMany::class)
-     *
-     * @var Collection<int, HydrationClosureReferenceMany>|array<HydrationClosureReferenceMany>
-     */
+    /** @var Collection<int, HydrationClosureReferenceMany>|array<HydrationClosureReferenceMany> */
+    #[ODM\ReferenceMany(targetDocument: HydrationClosureReferenceMany::class)]
     public $referenceMany = [];
 
-    /**
-     * @ODM\EmbedOne(targetDocument=HydrationClosureEmbedOne::class)
-     *
-     * @var HydrationClosureEmbedOne|null
-     */
+    /** @var HydrationClosureEmbedOne|null */
+    #[ODM\EmbedOne(targetDocument: HydrationClosureEmbedOne::class)]
     public $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=HydrationClosureEmbedMany::class)
-     *
-     * @var Collection<int, HydrationClosureEmbedMany>|array<HydrationClosureReferenceMany>
-     */
+    /** @var Collection<int, HydrationClosureEmbedMany>|array<HydrationClosureReferenceMany> */
+    #[ODM\EmbedMany(targetDocument: HydrationClosureEmbedMany::class)]
     public $embedMany = [];
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HydrationClosureReferenceOne
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HydrationClosureReferenceMany
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class HydrationClosureEmbedMany
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class HydrationClosureEmbedOne
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

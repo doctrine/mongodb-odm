@@ -7,28 +7,19 @@ namespace Documents;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectId;
 
-/** @ODM\Document */
+#[ODM\Document]
 class ForumUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|int|null
-     */
+    /** @var ObjectId|int|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=ForumAvatar::class, cascade={"persist"})
-     *
-     * @var ForumAvatar|null
-     */
+    /** @var ForumAvatar|null */
+    #[ODM\ReferenceOne(targetDocument: ForumAvatar::class, cascade: ['persist'])]
     public $avatar;
 
     /** @return int|ObjectId|null */

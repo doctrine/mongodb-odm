@@ -8,35 +8,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Airport
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $code;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Airport::class, cascade={"persist"}, storeAs="ref")
-     *
-     * @var Collection<int, Airport>
-     */
+    /** @var Collection<int, Airport> */
+    #[ODM\ReferenceMany(targetDocument: self::class, cascade: ['persist'], storeAs: 'ref')]
     protected $connections;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Airport::class, cascade={"persist"}, storeAs="id")
-     *
-     * @var Collection<int, Airport>
-     */
+    /** @var Collection<int, Airport> */
+    #[ODM\ReferenceMany(targetDocument: self::class, cascade: ['persist'], storeAs: 'id')]
     protected $connectionIds;
 
     public function __construct(string $code)

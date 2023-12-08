@@ -43,53 +43,35 @@ class GH1572Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1572Blog
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog")
-     *
-     * @var Collection<int, GH1572Post>|array<GH1572Post>
-     */
+    /** @var Collection<int, GH1572Post>|array<GH1572Post> */
+    #[ODM\ReferenceMany(targetDocument: GH1572Post::class, mappedBy: 'blog')]
     public $allPosts = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, mappedBy="blog", sort={"id"="asc"}, limit=2)
-     *
-     * @var Collection<int, GH1572Post>|array<GH1572Post>
-     */
+    /** @var Collection<int, GH1572Post>|array<GH1572Post> */
+    #[ODM\ReferenceMany(targetDocument: GH1572Post::class, mappedBy: 'blog', sort: ['id' => 'asc'], limit: 2)]
     public $latestPosts = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1572Post::class, repositoryMethod="getPostsForBlog")
-     *
-     * @var Collection<int, GH1572Post>|array<GH1572Post>
-     */
+    /** @var Collection<int, GH1572Post>|array<GH1572Post> */
+    #[ODM\ReferenceMany(targetDocument: GH1572Post::class, repositoryMethod: 'getPostsForBlog')]
     public $latestPostsRepositoryMethod = [];
 }
 
-/** @ODM\Document(repositoryClass=GH1572PostRepository::class) */
+#[ODM\Document(repositoryClass: GH1572PostRepository::class)]
 class GH1572Post
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH1572Blog::class)
-     *
-     * @var GH1572Blog
-     */
+    /** @var GH1572Blog */
+    #[ODM\ReferenceOne(targetDocument: GH1572Blog::class)]
     public $blog;
 
     public function __construct(GH1572Blog $blog)

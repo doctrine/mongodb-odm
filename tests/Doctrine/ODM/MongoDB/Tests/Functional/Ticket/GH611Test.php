@@ -119,39 +119,27 @@ class GH611Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH611Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH611EmbeddedDocument::class)
-     *
-     * @var GH611EmbeddedDocument|null
-     */
+    /** @var GH611EmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: GH611EmbeddedDocument::class)]
     public $embedded;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH611EmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $id;
 
-    /**
-     * @ODM\Field(name="n", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 'n', type: 'string')]
     public $name;
 
     public function __construct(int $id, string $name)

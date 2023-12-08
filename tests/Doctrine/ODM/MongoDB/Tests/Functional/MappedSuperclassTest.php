@@ -38,28 +38,19 @@ class MappedSuperclassTest extends BaseTestCase
     }
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 class MappedSuperclassBase
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var int|string|null
-     */
+    /** @var int|string|null */
+    #[ODM\Field(type: 'string')]
     private $mapped1;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $mapped2;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class)
-     *
-     * @var MappedSuperclassRelated1|null
-     */
+    /** @var MappedSuperclassRelated1|null */
+    #[ODM\ReferenceOne(targetDocument: MappedSuperclassRelated1::class)]
     private $mappedRelated1;
 
     /** @param int|string $val */
@@ -95,21 +86,15 @@ class MappedSuperclassBase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MappedSuperclassRelated1
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'none')]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function setName(string $name): void
@@ -133,21 +118,15 @@ class MappedSuperclassRelated1
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentSubClass extends MappedSuperclassBase
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'none')]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function setName(string $name): void

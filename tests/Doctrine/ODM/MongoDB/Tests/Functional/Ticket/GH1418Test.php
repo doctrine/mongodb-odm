@@ -102,46 +102,31 @@ class GH1418Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1418Document
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'none')]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1418Embedded::class)
-     *
-     * @var GH1418Embedded|null
-     */
+    /** @var GH1418Embedded|null */
+    #[ODM\EmbedOne(targetDocument: GH1418Embedded::class)]
     public $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH1418Embedded::class)
-     *
-     * @var Collection<int, GH1418Embedded>
-     */
+    /** @var Collection<int, GH1418Embedded> */
+    #[ODM\EmbedMany(targetDocument: GH1418Embedded::class)]
     public $embedMany;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1418Embedded
 {
-    /**
-     * @ODM\Id(strategy="none", type="int")
-     * @ODM\AlsoLoad("sourceId")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'none', type: 'int')]
+    #[ODM\AlsoLoad('sourceId')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

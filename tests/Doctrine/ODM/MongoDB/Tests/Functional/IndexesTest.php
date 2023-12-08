@@ -251,448 +251,283 @@ class IndexesTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class UniqueOnFieldTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\UniqueIndex()
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\UniqueIndex]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/**
- * @ODM\Document
- * @ODM\UniqueIndex(keys={"username"="asc"})
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc'])]
 class UniqueOnDocumentTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/**
- * @ODM\Document
- * @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}))
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc'])]
 class IndexesOnDocumentTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/**
- * @ODM\Document
- * @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"},partialFilterExpression={"counter"={"$gt"=5}}))
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc'], partialFilterExpression: ['counter' => ['$gt' => 5]])]
 class PartialIndexOnDocumentTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Field(type: 'int')]
     public $counter;
 }
 
-/**
- * @ODM\Document
- * @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"})
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc', 'email' => 'asc'])]
 class MultipleFieldsUniqueIndexTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class UniqueSparseOnFieldTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\UniqueIndex(sparse=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\UniqueIndex(sparse: true)]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/**
- * @ODM\Document
- * @ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true})
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc'], options: ['sparse' => true])]
 class UniqueSparseOnDocumentTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/**
- * @ODM\Document
- * @ODM\Indexes(@ODM\UniqueIndex(keys={"username"="asc"}, options={"sparse"=true}))
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc'], options: ['sparse' => true])]
 class SparseIndexesOnDocumentTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/**
- * @ODM\Document
- * @ODM\UniqueIndex(keys={"username"="asc", "email"="asc"}, options={"sparse"=true})
- */
+#[ODM\Document]
+#[ODM\UniqueIndex(keys: ['username' => 'asc', 'email' => 'asc'], options: ['sparse' => true])]
 class MultipleFieldsUniqueSparseIndexTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $email;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MultipleFieldIndexes
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\UniqueIndex(name="test")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\UniqueIndex(name: 'test')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\Index(unique=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index(unique: true)]
     public $email;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithEmbeddedIndexes
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class)
-     *
-     * @var EmbeddedDocumentWithIndexes|null
-     */
+    /** @var EmbeddedDocumentWithIndexes|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithIndexes::class)]
     public $embedded;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithIndexes::class)
-     *
-     * @var EmbeddedDocumentWithIndexes|null
-     */
+    /** @var EmbeddedDocumentWithIndexes|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithIndexes::class)]
     public $embeddedSecondary;
 }
 
-/**
- * @ODM\Document
- * @ODM\DiscriminatorField("type")
- * @ODM\Index(keys={"type"="asc"})
- */
+#[ODM\Document]
+#[ODM\DiscriminatorField('type')]
+#[ODM\Index(keys: ['type' => 'asc'])]
 class DocumentWithDiscriminatorIndex
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/**
- * @ODM\Document
- * @ODM\Index(keys={"name"="asc"})
- * @ODM\Index(keys={"name"="desc"})
- * @ODM\UniqueIndex(keys={"name"="asc"}, options={"sparse"=true})
- */
+#[ODM\Document]
+#[ODM\Index(keys: ['name' => 'asc'])]
+#[ODM\Index(keys: ['name' => 'desc'])]
+#[ODM\UniqueIndex(keys: ['name' => 'asc'], options: ['sparse' => true])]
 class DocumentWithMultipleIndexAnnotations
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentWithIndexes
 {
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\Index
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedManyDocumentWithIndexes::class)
-     *
-     * @var Collection<int, EmbeddedManyDocumentWithIndexes>
-     */
+    /** @var Collection<int, EmbeddedManyDocumentWithIndexes> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedManyDocumentWithIndexes::class)]
     public $embeddedMany;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedManyDocumentWithIndexes
 {
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\Index
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index]
     public $name;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class YetAnotherEmbeddedDocumentWithIndex
 {
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\Index
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\Index]
     public $value;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithIndexInDiscriminatedEmbeds
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(
-     *  discriminatorMap={
-     *   "d1"=EmbeddedDocumentWithIndexes::class,
-     *   "d2"=YetAnotherEmbeddedDocumentWithIndex::class,
-     * })
-     *
-     * @var EmbeddedDocumentWithIndexes|YetAnotherEmbeddedDocumentWithIndex|null
-     */
+    /** @var EmbeddedDocumentWithIndexes|YetAnotherEmbeddedDocumentWithIndex|null */
+    #[ODM\EmbedOne(discriminatorMap: ['d1' => EmbeddedDocumentWithIndexes::class, 'd2' => YetAnotherEmbeddedDocumentWithIndex::class])]
     public $embedded;
 }
 
-/**
- * @ODM\Document
- * @ODM\Index(keys={"coordinatesWith2DIndex"="2d"})
- * @ODM\Index(keys={"coordinatesWithSphereIndex"="2dsphere"})
- */
+#[ODM\Document]
+#[ODM\Index(keys: ['coordinatesWith2DIndex' => '2d'])]
+#[ODM\Index(keys: ['coordinatesWithSphereIndex' => '2dsphere'])]
 class GeoIndexDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="hash")
-     *
-     * @var array<float>
-     */
+    /** @var array<float> */
+    #[ODM\Field(type: 'hash')]
     public $coordinatesWith2DIndex;
 
-    /**
-     * @ODM\Field(type="hash")
-     *
-     * @var array<float>
-     */
+    /** @var array<float> */
+    #[ODM\Field(type: 'hash')]
     public $coordinatesWithSphereIndex;
 }

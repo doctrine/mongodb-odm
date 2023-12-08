@@ -8,35 +8,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class BrowseNode
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=BrowseNode::class, inversedBy="children", cascade={"all"})
-     *
-     * @var BrowseNode|null
-     */
+    /** @var BrowseNode|null */
+    #[ODM\ReferenceOne(targetDocument: self::class, inversedBy: 'children', cascade: ['all'])]
     public $parent;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=BrowseNode::class, mappedBy="parent", cascade={"all"})
-     *
-     * @var Collection<int, BrowseNode>
-     */
+    /** @var Collection<int, BrowseNode> */
+    #[ODM\ReferenceMany(targetDocument: self::class, mappedBy: 'parent', cascade: ['all'])]
     public $children;
 
     public function __construct(?string $name = null)

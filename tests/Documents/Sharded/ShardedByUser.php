@@ -6,23 +6,15 @@ namespace Documents\Sharded;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document(collection="sharded.users")
- * @ODM\ShardKey(keys={"user"="asc"})
- */
+#[ODM\Document(collection: 'sharded.users')]
+#[ODM\ShardKey(keys: ['user' => 'asc'])]
 class ShardedByUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Documents\Sharded\ShardedUser", name="db_user")
-     *
-     * @var ShardedUser|null
-     */
+    /** @var ShardedUser|null */
+    #[ODM\ReferenceOne(targetDocument: 'Documents\Sharded\ShardedUser', name: 'db_user')]
     public $user;
 }

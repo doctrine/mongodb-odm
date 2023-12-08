@@ -162,77 +162,50 @@ class OrphanRemovalEmbedTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class OrphanRemovalCascadeUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=OrphanRemovalCascadeProfile::class)
-     *
-     * @var OrphanRemovalCascadeProfile|null
-     */
+    /** @var OrphanRemovalCascadeProfile|null */
+    #[ODM\EmbedOne(targetDocument: OrphanRemovalCascadeProfile::class)]
     public $profile;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=OrphanRemovalCascadeProfile::class)
-     *
-     * @var Collection<int, OrphanRemovalCascadeProfile>|array<OrphanRemovalCascadeProfile>
-     */
+    /** @var Collection<int, OrphanRemovalCascadeProfile>|array<OrphanRemovalCascadeProfile> */
+    #[ODM\EmbedMany(targetDocument: OrphanRemovalCascadeProfile::class)]
     public $profileMany = [];
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class OrphanRemovalCascadeProfile
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"})
-     *
-     * @var OrphanRemovalCascadeAddress|null
-     */
+    /** @var OrphanRemovalCascadeAddress|null */
+    #[ODM\ReferenceOne(targetDocument: OrphanRemovalCascadeAddress::class, orphanRemoval: true, cascade: ['all'])]
     public $address;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=OrphanRemovalCascadeAddress::class, orphanRemoval=true, cascade={"all"})
-     *
-     * @var Collection<int, OrphanRemovalCascadeAddress>
-     */
+    /** @var Collection<int, OrphanRemovalCascadeAddress> */
+    #[ODM\ReferenceMany(targetDocument: OrphanRemovalCascadeAddress::class, orphanRemoval: true, cascade: ['all'])]
     public $addressMany;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class OrphanRemovalCascadeAddress
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

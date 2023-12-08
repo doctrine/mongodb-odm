@@ -31,38 +31,23 @@ class MODM70Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Avatar
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(name="na", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 'na', type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\Field(name="sex", type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(name: 'sex', type: 'int')]
     protected $sex;
 
-    /**
-     * @ODM\EmbedMany(
-     *  targetDocument=AvatarPart::class,
-     *  name="aP"
-     * )
-     *
-     * @var Collection<int, AvatarPart>|array<AvatarPart>
-     */
+    /** @var Collection<int, AvatarPart>|array<AvatarPart> */
+    #[ODM\EmbedMany(targetDocument: AvatarPart::class, name: 'aP')]
     protected $avatarParts;
 
     /** @param AvatarPart[] $avatarParts */
@@ -126,14 +111,11 @@ class Avatar
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class AvatarPart
 {
-    /**
-     * @ODM\Field(name="col", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 'col', type: 'string')]
     protected $color;
 
     public function __construct(string $color)

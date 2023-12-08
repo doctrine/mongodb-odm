@@ -6,7 +6,7 @@ namespace Documents\Tournament;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class TournamentTennis extends Tournament
 {
 }

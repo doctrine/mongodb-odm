@@ -862,100 +862,65 @@ class BuilderTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"ca"=ChildA::class, "cb"=ChildB::class, "cc"=ChildC::class})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['ca' => ChildA::class, 'cb' => ChildB::class, 'cc' => ChildC::class])]
 class ParentClass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ChildA extends ParentClass
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class)
-     *
-     * @var Feature|null
-     */
+    /** @var Feature|null */
+    #[ODM\ReferenceOne(targetDocument: Feature::class)]
     public $featureFull;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class)
-     *
-     * @var Collection<int, Feature>
-     */
+    /** @var Collection<int, Feature> */
+    #[ODM\ReferenceMany(targetDocument: Feature::class)]
     public $featureFullMany;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class)
-     *
-     * @var Feature|null
-     */
+    /** @var Feature|null */
+    #[ODM\ReferenceOne(targetDocument: Feature::class)]
     public $conflict;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class)
-     *
-     * @var Collection<int, Feature>
-     */
+    /** @var Collection<int, Feature> */
+    #[ODM\ReferenceMany(targetDocument: Feature::class)]
     public $conflictMany;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ChildB extends ParentClass
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id")
-     *
-     * @var Feature|null
-     */
+    /** @var Feature|null */
+    #[ODM\ReferenceOne(targetDocument: Feature::class, storeAs: 'id')]
     public $featureSimple;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id")
-     *
-     * @var Collection<int, Feature>
-     */
+    /** @var Collection<int, Feature> */
+    #[ODM\ReferenceMany(targetDocument: Feature::class, storeAs: 'id')]
     public $featureSimpleMany;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Feature::class, storeAs="id")
-     *
-     * @var Feature|null
-     */
+    /** @var Feature|null */
+    #[ODM\ReferenceOne(targetDocument: Feature::class, storeAs: 'id')]
     public $conflict;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Documents\Feature::class, storeAs="id")
-     *
-     * @var Collection<int, Feature>
-     */
+    /** @var Collection<int, Feature> */
+    #[ODM\ReferenceMany(targetDocument: Feature::class, storeAs: 'id')]
     public $conflictMany;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ChildC extends ParentClass
 {
-    /**
-     * @ODM\ReferenceOne(storeAs="dbRef")
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\ReferenceOne(storeAs: 'dbRef')]
     public $featurePartial;
 
-    /**
-     * @ODM\ReferenceMany(storeAs="dbRef")
-     *
-     * @var Collection<int, object>
-     */
+    /** @var Collection<int, object> */
+    #[ODM\ReferenceMany(storeAs: 'dbRef')]
     public $featurePartialMany;
 }

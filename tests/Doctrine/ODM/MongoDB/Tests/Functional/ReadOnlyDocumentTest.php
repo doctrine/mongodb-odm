@@ -78,21 +78,15 @@ class ReadOnlyDocumentTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document(readOnly=true) */
+#[ODM\Document(readOnly: true)]
 class ReadOnlyDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $value;
 
     public function __construct(string $value)

@@ -34,21 +34,15 @@ class GH1674Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1674Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH1674Embedded::class)
-     *
-     * @var Collection<int, GH1674Embedded>
-     */
+    /** @var Collection<int, GH1674Embedded> */
+    #[ODM\EmbedMany(targetDocument: GH1674Embedded::class)]
     protected $embedded;
 
     public function __construct()
@@ -58,13 +52,10 @@ class GH1674Document
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1674Embedded
 {
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     public $id;
 }

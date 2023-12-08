@@ -75,35 +75,26 @@ class GH529Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH529AutoIdDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH529CustomIdDocument
 {
-    /**
-     * @ODM\Id(strategy="none", type="custom_id")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'none', type: 'custom_id')]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH529IntIdDocument
 {
-    /**
-     * @ODM\Id(strategy="none", type="int")
-     *
-     * @var float|int|null
-     */
+    /** @var float|int|null */
+    #[ODM\Id(strategy: 'none', type: 'int')]
     public $id;
 }

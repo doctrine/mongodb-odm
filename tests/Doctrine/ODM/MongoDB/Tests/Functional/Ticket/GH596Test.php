@@ -48,27 +48,18 @@ class GH596Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH596Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[ODM\Field(type: 'bool')]
     public $deleted = false;
 }

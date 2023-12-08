@@ -6,50 +6,29 @@ namespace Documents;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 
-/**
- * @ODM\Document
- * @ODM\Indexes({
- *   @ODM\Index(keys={"topic"="asc"})
- * })
- */
+#[Index(keys: ['topic' => 'asc'])]
+#[ODM\Document]
 class CmsArticle
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $topic;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $title;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $text;
-    /**
-     * @ODM\ReferenceOne(targetDocument=CmsUser::class)
-     *
-     * @var CmsUser|null
-     */
+    /** @var CmsUser|null */
+    #[ODM\ReferenceOne(targetDocument: CmsUser::class)]
     public $user;
-    /**
-     * @ODM\ReferenceMany(targetDocument=CmsComment::class)
-     *
-     * @var Collection<int, CmsComment>
-     */
+    /** @var Collection<int, CmsComment> */
+    #[ODM\ReferenceMany(targetDocument: CmsComment::class)]
     public $comments;
 
     public function setAuthor(CmsUser $author): void

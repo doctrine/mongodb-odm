@@ -6,13 +6,10 @@ namespace Documents\Functional\Ticket\MODM160;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM160Level2
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

@@ -89,42 +89,27 @@ abstract class AbstractResolveTarget implements ResolveTargetInterface
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTargetInterface
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class)
-     *
-     * @var ResolveTargetInterface|null
-     */
+    /** @var ResolveTargetInterface|null */
+    #[ODM\ReferenceOne(targetDocument: ResolveTargetInterface::class)]
     private $refOne;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class)
-     *
-     * @var Collection<int, TargetInterface>
-     */
+    /** @var Collection<int, TargetInterface> */
+    #[ODM\ReferenceMany(targetDocument: TargetInterface::class)]
     private $refMany;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\ResolveTargetInterface::class)
-     *
-     * @var ResolveTargetInterface|null
-     */
+    /** @var ResolveTargetInterface|null */
+    #[ODM\EmbedOne(targetDocument: ResolveTargetInterface::class)]
     private $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Doctrine\ODM\MongoDB\Tests\Tools\TargetInterface::class)
-     *
-     * @var Collection<int, TargetInterface>
-     */
+    /** @var Collection<int, TargetInterface> */
+    #[ODM\EmbedMany(targetDocument: TargetInterface::class)]
     private $embedMany;
 
     public function getId(): ?string
@@ -133,14 +118,11 @@ class ResolveTargetDocument extends AbstractResolveTarget implements ResolveTarg
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class TargetDocument implements TargetInterface
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
     public function getId(): ?string

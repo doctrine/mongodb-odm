@@ -87,42 +87,27 @@ class UpsertTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class UpsertTestUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(nullable=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(nullable: true)]
     public $nullableField;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=UpsertTestUserEmbedded::class, nullable=true)
-     *
-     * @var UpsertTestUserEmbedded|null
-     */
+    /** @var UpsertTestUserEmbedded|null */
+    #[ODM\EmbedOne(targetDocument: UpsertTestUserEmbedded::class, nullable: true)]
     public $nullableEmbedOne;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=UpsertTestUser::class, cascade="persist", nullable=true)
-     *
-     * @var UpsertTestUser|null
-     */
+    /** @var UpsertTestUser|null */
+    #[ODM\ReferenceOne(targetDocument: self::class, cascade: 'persist', nullable: true)]
     public $nullableReferenceOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=UpsertTestUserEmbedded::class)
-     *
-     * @var Collection<int, UpsertTestUserEmbedded>
-     */
+    /** @var Collection<int, UpsertTestUserEmbedded> */
+    #[ODM\EmbedMany(targetDocument: UpsertTestUserEmbedded::class)]
     public $embedMany;
 
     public function __construct()
@@ -131,13 +116,10 @@ class UpsertTestUser
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class UpsertTestUserEmbedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $test;
 }

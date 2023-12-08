@@ -8,38 +8,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Book
 {
     public const CLASSNAME = self::class;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="int")
-     * @ODM\Version
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Field(type: 'int')]
+    #[ODM\Version]
     public $version = 1;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Chapter::class, strategy="atomicSet")
-     *
-     * @var Collection<int, Chapter>
-     */
+    /** @var Collection<int, Chapter> */
+    #[ODM\EmbedMany(targetDocument: Chapter::class, strategy: 'atomicSet')]
     public $chapters;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=IdentifiedChapter::class, strategy="atomicSet")
-     *
-     * @var Collection<int, IdentifiedChapter>
-     */
+    /** @var Collection<int, IdentifiedChapter> */
+    #[ODM\EmbedMany(targetDocument: IdentifiedChapter::class, strategy: 'atomicSet')]
     public $identifiedChapters;
 
     public function __construct()

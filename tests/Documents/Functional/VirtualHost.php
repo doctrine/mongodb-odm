@@ -6,21 +6,15 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="test_functional_virtual_host") */
+#[ODM\Document(collection: 'test_functional_virtual_host')]
 class VirtualHost
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Documents\Functional\VirtualHostDirective::class)
-     *
-     * @var VirtualHostDirective|null
-     */
+    /** @var VirtualHostDirective|null */
+    #[ODM\EmbedOne(targetDocument: VirtualHostDirective::class)]
     protected $vhostDirective;
 
     public function getId(): ?string

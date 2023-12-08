@@ -8,21 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Phonebook
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $title;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Phonenumber::class)
-     *
-     * @var Collection<int, Phonenumber>
-     */
+    /** @var Collection<int, Phonenumber> */
+    #[ODM\EmbedMany(targetDocument: Phonenumber::class)]
     private $phonenumbers;
 
     public function __construct(string $title)

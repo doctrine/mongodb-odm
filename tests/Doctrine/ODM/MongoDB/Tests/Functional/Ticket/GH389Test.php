@@ -31,21 +31,15 @@ class GH389Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class RootDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmptyMappedSuperClass::class)
-     *
-     * @var EmptyEmbeddedDocument
-     */
+    /** @var EmptyEmbeddedDocument */
+    #[ODM\EmbedOne(targetDocument: EmptyMappedSuperClass::class)]
     protected $emptyEmbeddedDocument;
 
     public function __construct()
@@ -64,18 +58,14 @@ class RootDocument
     }
 }
 
-/**
- * @ODM\MappedSuperClass
- * @ODM\DiscriminatorField("foobar")
- * @ODM\DiscriminatorMap({
- *     "empty"=EmptyEmbeddedDocument::class
- * })
- */
+#[ODM\MappedSuperclass]
+#[ODM\DiscriminatorField('foobar')]
+#[ODM\DiscriminatorMap(['empty' => EmptyEmbeddedDocument::class])]
 class EmptyMappedSuperClass
 {
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmptyEmbeddedDocument extends EmptyMappedSuperClass
 {
 }

@@ -7,35 +7,23 @@ namespace Documents;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectId;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Profile
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|string|null
-     */
+    /** @var ObjectId|string|null */
+    #[ODM\Id]
     private $profileId;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     private $firstName;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     private $lastName;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"})
-     *
-     * @var File|null
-     */
+    /** @var File|null */
+    #[ODM\ReferenceOne(targetDocument: File::class, cascade: ['all'])]
     private $image;
 
     public function setProfileId(ObjectId $profileId): void

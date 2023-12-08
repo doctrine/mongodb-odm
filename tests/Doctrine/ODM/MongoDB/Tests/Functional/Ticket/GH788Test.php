@@ -240,120 +240,59 @@ class GH788Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH788Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH788ExternEmbedListed::class)
-     *
-     * @var Collection<int, GH788ExternEmbedListed>
-     */
+    /** @var Collection<int, GH788ExternEmbedListed> */
+    #[ODM\EmbedMany(targetDocument: GH788ExternEmbedListed::class)]
     public $externEmbedMany;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH788ExternEmbedListed::class)
-     *
-     * @var GH788ExternEmbedListed|null
-     */
+    /** @var GH788ExternEmbedListed|null */
+    #[ODM\EmbedOne(targetDocument: GH788ExternEmbedListed::class)]
     public $externEmbedOne;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH788ExternRefListed::class, cascade="all")
-     *
-     * @var Collection<int, GH788ExternRefListed>
-     */
+    /** @var Collection<int, GH788ExternRefListed> */
+    #[ODM\ReferenceMany(targetDocument: GH788ExternRefListed::class, cascade: 'all')]
     public $externRefMany;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH788ExternRefListed::class, cascade="all")
-     *
-     * @var GH788ExternRefListed
-     */
+    /** @var GH788ExternRefListed */
+    #[ODM\ReferenceOne(targetDocument: GH788ExternRefListed::class, cascade: 'all')]
     public $externRefOne;
 
-    /**
-     * @ODM\EmbedMany(
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "b"=GH788InlineEmbedListed::class
-     *   }
-     * )
-     *
-     * @var Collection<int, GH788InlineEmbedListed>
-     */
+    /** @var Collection<int, GH788InlineEmbedListed> */
+    #[ODM\EmbedMany(discriminatorField: 'type', discriminatorMap: ['b' => GH788InlineEmbedListed::class])]
     public $inlineEmbedMany;
 
-    /**
-     * @ODM\EmbedOne(
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "b"=GH788InlineEmbedListed::class
-     *   }
-     * )
-     *
-     * @var GH788InlineEmbedListed|null
-     */
+    /** @var GH788InlineEmbedListed|null */
+    #[ODM\EmbedOne(discriminatorField: 'type', discriminatorMap: ['b' => GH788InlineEmbedListed::class])]
     public $inlineEmbedOne;
 
-    /**
-     * @ODM\ReferenceMany(
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "c"=GH788InlineRefListed::class
-     *   },
-     *   cascade="all"
-     * )
-     *
-     * @var Collection<int, GH788InlineRefListed>
-     */
+    /** @var Collection<int, GH788InlineRefListed> */
+    #[ODM\ReferenceMany(discriminatorField: 'type', discriminatorMap: ['c' => GH788InlineRefListed::class], cascade: 'all')]
     public $inlineRefMany;
 
-    /**
-     * @ODM\ReferenceOne(
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "c"=GH788InlineRefListed::class
-     *   },
-     *   cascade="all"
-     * )
-     *
-     * @var GH788InlineRefListed|null
-     */
+    /** @var GH788InlineRefListed|null */
+    #[ODM\ReferenceOne(discriminatorField: 'type', discriminatorMap: ['c' => GH788InlineRefListed::class], cascade: 'all')]
     public $inlineRefOne;
 
-    /**
-     * @ODM\EmbedMany
-     *
-     * @var Collection<int, object>
-     */
+    /** @var Collection<int, object> */
+    #[ODM\EmbedMany]
     public $noTargetEmbedMany;
 
-    /**
-     * @ODM\EmbedOne
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\EmbedOne]
     public $noTargetEmbedOne;
 
-    /**
-     * @ODM\ReferenceMany(cascade="all")
-     *
-     * @var Collection<int, object>
-     */
+    /** @var Collection<int, object> */
+    #[ODM\ReferenceMany(cascade: 'all')]
     public $noTargetRefMany;
 
-    /**
-     * @ODM\ReferenceOne(cascade="all")
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\ReferenceOne(cascade: 'all')]
     public $noTargetRefOne;
 
     public function __construct()
@@ -367,124 +306,91 @@ class GH788Document
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"a"=GH788DocumentListed::class})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['a' => GH788DocumentListed::class])]
 class GH788DocumentListed extends GH788Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH788DocumentUnlisted extends GH788DocumentListed
 {
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH788InlineEmbedListed
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH788InlineEmbedUnlisted extends GH788InlineEmbedListed
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH788InlineRefListed
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH788InlineRefUnlisted extends GH788InlineRefListed
 {
 }
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"d"=GH788ExternEmbedListed::class})
- */
+#[ODM\EmbeddedDocument]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['d' => GH788ExternEmbedListed::class])]
 class GH788ExternEmbedListed
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH788ExternEmbedUnlisted extends GH788ExternEmbedListed
 {
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"e"=GH788ExternRefListed::class})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['e' => GH788ExternRefListed::class])]
 class GH788ExternRefListed
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH788ExternRefUnlisted extends GH788ExternRefListed
 {
 }

@@ -31,24 +31,16 @@ class GH1225Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class GH1225Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=GH1225EmbeddedDocument::class)
-     *
-     * @var Collection<int, GH1225EmbeddedDocument>
-     */
+    /** @var Collection<int, GH1225EmbeddedDocument> */
+    #[ODM\EmbedMany(strategy: 'atomicSet', targetDocument: GH1225EmbeddedDocument::class)]
     public $embeds;
 
     public function __construct()
@@ -56,20 +48,17 @@ class GH1225Document
         $this->embeds = new ArrayCollection();
     }
 
-    /** @ODM\PreUpdate */
+    #[ODM\PreUpdate]
     public function exampleHook(): void
     {
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1225EmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $value;
 
     public function __construct(string $value)

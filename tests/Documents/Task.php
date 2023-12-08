@@ -6,21 +6,15 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="tasks") */
+#[ODM\Document(collection: 'tasks')]
 class Task
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function __construct(string $name)

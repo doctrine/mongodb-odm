@@ -6,20 +6,14 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class NotSavedEmbedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $notSaved;
 }

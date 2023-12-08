@@ -65,85 +65,64 @@ class GH1962Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\MappedSuperclass()
- * @ODM\DiscriminatorField("type")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorMap({
- *     "foo"=GH1962FooDocument::class,
- *     "bar"=GH1962BarDocument::class,
- *     "baz"=GH1962BazDocument::class
- * })
- */
+#[ODM\MappedSuperclass]
+#[ODM\DiscriminatorField('type')]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorMap(['foo' => GH1962FooDocument::class, 'bar' => GH1962BarDocument::class, 'baz' => GH1962BazDocument::class])]
 class GH1962Superclass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1962FooDocument extends GH1962Superclass
 {
 }
 
-/**
- * @ODM\MappedSuperclass()
- * @ODM\DiscriminatorMap({
- *     "bar"=GH1962BarDocument::class,
- *     "baz"=GH1962BazDocument::class
- * })
- */
+#[ODM\MappedSuperclass]
+#[ODM\DiscriminatorMap(['bar' => GH1962BarDocument::class, 'baz' => GH1962BazDocument::class])]
 class GH1962BarSuperclass extends GH1962Superclass
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1962BarDocument extends GH1962BarSuperclass
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1962BazDocument extends GH1962BarSuperclass
 {
 }
-/**
- * @ODM\MappedSuperclass()
- * @ODM\DiscriminatorField("type")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- */
+#[ODM\MappedSuperclass]
+#[ODM\DiscriminatorField('type')]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
 class GH1962SuperclassWithoutDiscriminatorMap
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1962FooDocumentWithoutDiscriminatorMap extends GH1962SuperclassWithoutDiscriminatorMap
 {
 }
 
-/** @ODM\MappedSuperclass() */
+#[ODM\MappedSuperclass]
 class GH1962BarSuperclassWithoutDiscriminatorMap extends GH1962SuperclassWithoutDiscriminatorMap
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1962BarDocumentWithoutDiscriminatorMap extends GH1962BarSuperclassWithoutDiscriminatorMap
 {
 }
 
-/**
- * @ODM\Document
- * @ODM\DiscriminatorValue(GH1962BazDocumentWithoutDiscriminatorMap::class)
- */
+#[ODM\Document]
+#[ODM\DiscriminatorValue(GH1962BazDocumentWithoutDiscriminatorMap::class)]
 class GH1962BazDocumentWithoutDiscriminatorMap extends GH1962BarSuperclassWithoutDiscriminatorMap
 {
 }

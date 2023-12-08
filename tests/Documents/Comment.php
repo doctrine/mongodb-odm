@@ -7,50 +7,32 @@ namespace Documents;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(repositoryClass=CommentRepository::class) */
+#[ODM\Document(repositoryClass: CommentRepository::class)]
 class Comment
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $text;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, cascade={"all"})
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(targetDocument: User::class, cascade: ['all'])]
     public $author;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=BlogPost::class, inversedBy="comments", cascade={"all"})
-     *
-     * @var BlogPost|null
-     */
+    /** @var BlogPost|null */
+    #[ODM\ReferenceOne(targetDocument: BlogPost::class, inversedBy: 'comments', cascade: ['all'])]
     public $parent;
 
-    /**
-     * @ODM\Field(type="date")
-     * @ODM\Index(order="1")
-     *
-     * @var DateTime
-     */
+    /** @var DateTime */
+    #[ODM\Field(type: 'date')]
+    #[ODM\Index(order: '1')]
     public $date;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool
-     */
+    /** @var bool */
+    #[ODM\Field(type: 'bool')]
     public $isByAdmin = false;
 
     public function __construct(string $text, DateTime $date, bool $isByAdmin = false)

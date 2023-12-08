@@ -51,25 +51,19 @@ class GH1017Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1017Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1017EmbeddedDocument::class)
-     *
-     * @var GH1017EmbeddedDocument|null
-     */
+    /** @var GH1017EmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: GH1017EmbeddedDocument::class)]
     public $embedded;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1017EmbeddedDocument
 {
 }

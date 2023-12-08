@@ -6,14 +6,11 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Employee extends BaseEmployee
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=Manager::class)
-     *
-     * @var Manager|null
-     */
+    /** @var Manager|null */
+    #[ODM\ReferenceOne(targetDocument: Manager::class)]
     private $manager;
 
     public function getManager(): ?Manager

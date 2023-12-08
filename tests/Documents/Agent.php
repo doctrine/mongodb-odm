@@ -6,23 +6,14 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="agents") */
+#[ODM\Document(collection: 'agents')]
 class Agent
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(discriminatorMap={
-     * "server"=Server::class,
-     * "server_guest"=GuestServer::class
-     * })
-     *
-     * @var Server|GuestServer|null
-     */
+    /** @var Server|GuestServer|null */
+    #[ODM\ReferenceOne(discriminatorMap: ['server' => Server::class, 'server_guest' => GuestServer::class])]
     public $server;
 }

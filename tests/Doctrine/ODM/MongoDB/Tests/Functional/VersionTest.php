@@ -44,36 +44,24 @@ class VersionTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class VersionedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="int", name="_version")
-     * @ODM\Version
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int', name: '_version')]
+    #[ODM\Version]
     public $version = 1;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class)
-     *
-     * @var Collection<int, VersionedEmbeddedDocument>|array<VersionedEmbeddedDocument>|null
-     */
+    /** @var Collection<int, VersionedEmbeddedDocument>|array<VersionedEmbeddedDocument>|null */
+    #[ODM\EmbedMany(targetDocument: VersionedEmbeddedDocument::class)]
     public $embedMany = [];
 
     public function __construct()
@@ -82,21 +70,15 @@ class VersionedDocument
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class VersionedEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $value;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=VersionedEmbeddedDocument::class)
-     *
-     * @var Collection<int, VersionedEmbeddedDocument>
-     */
+    /** @var Collection<int, VersionedEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: self::class)]
     public $embedMany;
 
     public function __construct(string $value)

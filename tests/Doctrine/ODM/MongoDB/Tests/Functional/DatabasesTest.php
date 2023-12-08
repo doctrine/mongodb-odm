@@ -30,24 +30,18 @@ class DatabasesTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document(db="test_custom") */
+#[ODM\Document(db: 'test_custom')]
 class CustomDatabaseTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 }
 
-/** @ODM\Document() */
+#[ODM\Document]
 class DefaultDatabaseTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 }

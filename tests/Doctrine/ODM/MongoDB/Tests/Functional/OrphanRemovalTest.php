@@ -303,59 +303,38 @@ class OrphanRemovalTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class OrphanRemovalUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true)
-     *
-     * @var OrphanRemovalProfile|null
-     */
+    /** @var OrphanRemovalProfile|null */
+    #[ODM\ReferenceOne(targetDocument: OrphanRemovalProfile::class, orphanRemoval: true)]
     public $profile;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false)
-     *
-     * @var OrphanRemovalProfile|null
-     */
+    /** @var OrphanRemovalProfile|null */
+    #[ODM\ReferenceOne(targetDocument: OrphanRemovalProfile::class, orphanRemoval: false)]
     public $profileNoOrphanRemoval;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=true)
-     *
-     * @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile>
-     */
+    /** @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile> */
+    #[ODM\ReferenceMany(targetDocument: OrphanRemovalProfile::class, orphanRemoval: true)]
     public $profileMany = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=OrphanRemovalProfile::class, orphanRemoval=false)
-     *
-     * @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile>
-     */
+    /** @var Collection<int, OrphanRemovalProfile>|array<OrphanRemovalProfile> */
+    #[ODM\ReferenceMany(targetDocument: OrphanRemovalProfile::class, orphanRemoval: false)]
     public $profileManyNoOrphanRemoval = [];
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class OrphanRemovalProfile
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

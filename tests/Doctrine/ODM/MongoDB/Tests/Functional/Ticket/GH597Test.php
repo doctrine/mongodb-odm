@@ -120,28 +120,19 @@ class GH597Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document() */
+#[ODM\Document]
 class GH597Post
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH597Comment::class)
-     *
-     * @var Collection<int, GH597Comment>
-     */
+    /** @var Collection<int, GH597Comment> */
+    #[ODM\EmbedMany(targetDocument: GH597Comment::class)]
     public $comments;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH597ReferenceMany::class, storeAs="id")
-     *
-     * @var Collection<int, GH597ReferenceMany>
-     */
+    /** @var Collection<int, GH597ReferenceMany> */
+    #[ODM\ReferenceMany(targetDocument: GH597ReferenceMany::class, storeAs: 'id')]
     public $referenceMany;
 
     public function __construct()
@@ -168,14 +159,11 @@ class GH597Post
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH597Comment
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $comment;
 
     public function __construct(string $comment)
@@ -185,21 +173,15 @@ class GH597Comment
 }
 
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH597ReferenceMany
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $field;
 
     public function __construct(string $field)

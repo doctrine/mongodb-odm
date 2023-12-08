@@ -6,19 +6,13 @@ namespace Documents\Functional\Ticket\MODM160;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbedOneLevel1
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
-    /**
-     * @ODM\EmbedOne(targetDocument=MODM160Level2::class)
-     *
-     * @var MODM160Level2|null
-     */
+    /** @var MODM160Level2|null */
+    #[ODM\EmbedOne(targetDocument: MODM160Level2::class)]
     public $level2;
 }

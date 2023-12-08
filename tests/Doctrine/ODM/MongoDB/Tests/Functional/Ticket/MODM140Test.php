@@ -122,28 +122,19 @@ class MODM140Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Category
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Post::class)
-     *
-     * @var Collection<int, Post>
-     */
+    /** @var Collection<int, Post> */
+    #[ODM\EmbedMany(targetDocument: Post::class)]
     public $posts;
 
     public function __construct()
@@ -152,21 +143,15 @@ class Category
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Post
 {
-    /**
-     * @ODM\EmbedMany(targetDocument=PostVersion::class)
-     *
-     * @var Collection<int, PostVersion>
-     */
+    /** @var Collection<int, PostVersion> */
+    #[ODM\EmbedMany(targetDocument: PostVersion::class)]
     public $versions;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class)
-     *
-     * @var Collection<int, Comment>
-     */
+    /** @var Collection<int, Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class)]
     public $comments;
 
     public function __construct()
@@ -176,14 +161,11 @@ class Post
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class PostVersion
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -192,20 +174,14 @@ class PostVersion
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Comment
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $content;
 }

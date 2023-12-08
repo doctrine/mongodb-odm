@@ -8,21 +8,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbedManyInArrayCollectionLevel1
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=MODM160Level2::class)
-     *
-     * @var Collection<int, MODM160Level2>
-     */
+    /** @var Collection<int, MODM160Level2> */
+    #[ODM\EmbedMany(targetDocument: MODM160Level2::class)]
     public $level2;
 
     public function __construct()

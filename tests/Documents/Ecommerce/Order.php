@@ -7,21 +7,15 @@ namespace Documents\Ecommerce;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Order
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=ConfigurableProduct::class, strategy="addToSet", storeEmptyArray=true)
-     *
-     * @var Collection<int, ConfigurableProduct>|array<ConfigurableProduct>
-     */
+    /** @var Collection<int, ConfigurableProduct>|array<ConfigurableProduct> */
+    #[ODM\ReferenceMany(targetDocument: ConfigurableProduct::class, strategy: 'addToSet', storeEmptyArray: true)]
     protected $products = [];
 
     public function getId(): ?string

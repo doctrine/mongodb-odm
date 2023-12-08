@@ -71,47 +71,36 @@ class GH971Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"car"=Car::class, "bicycle"=Bicycle::class, "tandem"=Tandem::class})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['car' => Car::class, 'bicycle' => Bicycle::class, 'tandem' => Tandem::class])]
 class Vehicle
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany
-     *
-     * @var Collection<int, object>
-     */
+    /** @var Collection<int, object> */
+    #[ODM\EmbedMany]
     public $features;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Car extends Vehicle
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Bicycle extends Vehicle
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Tandem extends Bicycle
 {
 }

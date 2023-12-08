@@ -300,112 +300,70 @@ class GH453Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH453Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="hash")
-     *
-     * @var array<string>
-     */
+    /** @var array<string> */
+    #[ODM\Field(type: 'hash')]
     public $hash;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     public $colPush;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     public $colSet;
 
-    /**
-     * @ODM\EmbedMany(strategy="pushAll"))
-     *
-     * @var Collection<int, GH453EmbeddedDocument>
-     */
+    /** @var Collection<int, GH453EmbeddedDocument> */
+    #[ODM\EmbedMany(strategy: 'pushAll')]
     public $embedManyPush;
 
-    /**
-     * @ODM\EmbedMany(strategy="set")
-     *
-     * @var Collection<int, GH453EmbeddedDocument>
-     */
+    /** @var Collection<int, GH453EmbeddedDocument> */
+    #[ODM\EmbedMany(strategy: 'set')]
     public $embedManySet;
 
-    /**
-     * @ODM\EmbedMany(strategy="setArray")
-     *
-     * @var Collection<int, GH453EmbeddedDocument>
-     */
+    /** @var Collection<int, GH453EmbeddedDocument> */
+    #[ODM\EmbedMany(strategy: 'setArray')]
     public $embedManySetArray;
 
-    /**
-     * @ODM\EmbedMany(strategy="addToSet")
-     *
-     * @var Collection<int, GH453EmbeddedDocument>
-     */
+    /** @var Collection<int, GH453EmbeddedDocument> */
+    #[ODM\EmbedMany(strategy: 'addToSet')]
     public $embedManyAddToSet;
 
-    /**
-     * @ODM\ReferenceMany(strategy="pushAll"))
-     *
-     * @var Collection<int, GH453ReferencedDocument>
-     */
+    /** @var Collection<int, GH453ReferencedDocument> */
+    #[ODM\ReferenceMany(strategy: 'pushAll')]
     public $referenceManyPush;
 
-    /**
-     * @ODM\ReferenceMany(strategy="set")
-     *
-     * @var Collection<int, GH453ReferencedDocument>
-     */
+    /** @var Collection<int, GH453ReferencedDocument> */
+    #[ODM\ReferenceMany(strategy: 'set')]
     public $referenceManySet;
 
-    /**
-     * @ODM\ReferenceMany(strategy="setArray")
-     *
-     * @var Collection<int, GH453ReferencedDocument>
-     */
+    /** @var Collection<int, GH453ReferencedDocument> */
+    #[ODM\ReferenceMany(strategy: 'setArray')]
     public $referenceManySetArray;
 
-    /**
-     * @ODM\ReferenceMany(strategy="addToSet")
-     *
-     * @var Collection<int, GH453ReferencedDocument>
-     */
+    /** @var Collection<int, GH453ReferencedDocument> */
+    #[ODM\ReferenceMany(strategy: 'addToSet')]
     public $referenceManyAddToSet;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH453EmbeddedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH453ReferencedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }

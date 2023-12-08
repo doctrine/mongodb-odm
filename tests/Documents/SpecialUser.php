@@ -6,14 +6,11 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class SpecialUser extends User
 {
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     private $rules = [];
 
     /** @param string[] $rules */

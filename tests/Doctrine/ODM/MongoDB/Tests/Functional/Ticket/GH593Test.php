@@ -100,35 +100,23 @@ class GH593Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH593User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="d", type="bool")
-     *
-     * @var bool
-     */
+    /** @var bool */
+    #[ODM\Field(name: 'd', type: 'bool')]
     public $deleted = false;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH593User::class, inversedBy="followedBy", storeAs="id")
-     *
-     * @var Collection<int, GH593User>
-     */
+    /** @var Collection<int, GH593User> */
+    #[ODM\ReferenceMany(targetDocument: self::class, inversedBy: 'followedBy', storeAs: 'id')]
     public $following;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH593User::class, mappedBy="following")
-     *
-     * @var Collection<int, GH593User>
-     */
+    /** @var Collection<int, GH593User> */
+    #[ODM\ReferenceMany(targetDocument: self::class, mappedBy: 'following')]
     public $followedBy;
 
     public function __construct()

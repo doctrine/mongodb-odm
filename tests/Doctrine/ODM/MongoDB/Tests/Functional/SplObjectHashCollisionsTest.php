@@ -82,46 +82,31 @@ class SplObjectHashCollisionsTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class SplColDoc
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\EmbedOne]
     public $one;
 
-    /**
-     * @ODM\EmbedMany
-     *
-     * @var Collection<int, object>|array<object>
-     */
+    /** @var Collection<int, object>|array<object> */
+    #[ODM\EmbedMany]
     public $many = [];
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class SplColEmbed
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

@@ -8,23 +8,16 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * Documents\VersionedDocument
- *
- * @ODM\Document
  */
+#[ODM\Document]
 class VersionedDocument extends BaseDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Version]
+    #[ODM\Field(type: 'int')]
     public $version;
 }

@@ -47,28 +47,19 @@ class GH665Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH665Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH665Embedded::class, strategy="pushAll")
-     *
-     * @var Collection<int, GH665Embedded>
-     */
+    /** @var Collection<int, GH665Embedded> */
+    #[ODM\EmbedMany(targetDocument: GH665Embedded::class, strategy: 'pushAll')]
     public $embeddedPushAll;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH665Embedded::class, strategy="addToSet")
-     *
-     * @var Collection<int, GH665Embedded>
-     */
+    /** @var Collection<int, GH665Embedded> */
+    #[ODM\EmbedMany(targetDocument: GH665Embedded::class, strategy: 'addToSet')]
     public $embeddedAddToSet;
 
     public function __construct()
@@ -78,14 +69,11 @@ class GH665Document
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH665Embedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

@@ -29,56 +29,38 @@ class GH467Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH467Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var mixed[]
-     */
+    /** @var mixed[] */
+    #[ODM\Field(type: 'collection')]
     public $col;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH467EmbeddedDocument::class)
-     *
-     * @var Collection<int, GH467EmbeddedDocument>
-     */
+    /** @var Collection<int, GH467EmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: GH467EmbeddedDocument::class)]
     public $embedMany;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH467EmbeddedDocument::class)
-     *
-     * @var Collection<int, GH467EmbeddedDocument>
-     */
+    /** @var Collection<int, GH467EmbeddedDocument> */
+    #[ODM\ReferenceMany(targetDocument: GH467EmbeddedDocument::class)]
     public $refMany;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH467EmbeddedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH467ReferencedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }

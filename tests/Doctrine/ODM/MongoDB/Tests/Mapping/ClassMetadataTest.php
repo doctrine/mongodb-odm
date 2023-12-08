@@ -982,27 +982,18 @@ class EmbedWithCascadeTest
     public $address;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class EmbeddedAssociationsCascadeTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Documents\Address::class)
-     *
-     * @var Address|null
-     */
+    /** @var Address|null */
+    #[ODM\EmbedOne(targetDocument: Address::class)]
     public $address;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Documents\Address::class)
-     *
-     * @var Address|null
-     */
+    /** @var Address|null */
+    #[ODM\EmbedOne(targetDocument: Address::class)]
     public $addresses;
 }

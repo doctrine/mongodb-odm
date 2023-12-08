@@ -23,24 +23,18 @@ class MODM47Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM47A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $b = 'tmp';
 
-    /** @ODM\AlsoLoad("c") */
+    #[ODM\AlsoLoad('c')]
     public function renameC(string $c): void
     {
         $this->b = $c;

@@ -22,20 +22,14 @@ class GH628Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH628Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="f", type="raw")
-     *
-     * @var mixed
-     */
+    /** @var mixed */
+    #[ODM\Field(name: 'f', type: 'raw')]
     public $foo;
 }

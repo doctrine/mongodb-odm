@@ -107,59 +107,38 @@ class MODM67TestEventListener
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM67DerivedClass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=MODM67EmbeddedObject::class)
-     *
-     * @var MODM67EmbeddedObject|null
-     */
+    /** @var MODM67EmbeddedObject|null */
+    #[ODM\EmbedOne(targetDocument: MODM67EmbeddedObject::class)]
     public $embedOne;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM67EmbeddedObject
 {
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Field(type: 'int')]
     public $numAccesses = 0;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[ODM\Field(type: 'bool')]
     public $prePersist = false;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[ODM\Field(type: 'bool')]
     public $postPersist = false;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[ODM\Field(type: 'bool')]
     public $preUpdate = false;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[ODM\Field(type: 'bool')]
     public $postUpdate = false;
 }

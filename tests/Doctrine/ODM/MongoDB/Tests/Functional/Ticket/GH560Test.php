@@ -114,21 +114,15 @@ class GH560EventSubscriber implements EventSubscriber
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH560Document
 {
-    /**
-     * @ODM\Id(strategy="NONE")
-     *
-     * @var int|string|null
-     */
+    /** @var int|string|null */
+    #[ODM\Id(strategy: 'NONE')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     /** @param int|string $id */

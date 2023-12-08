@@ -57,21 +57,15 @@ class GH1058Listener
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1058PersistDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $value;
 
     public function getId(): ?string
@@ -85,21 +79,15 @@ class GH1058PersistDocument
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1058UpsertDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $value;
 
     public function getId(): ?string

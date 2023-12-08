@@ -58,32 +58,23 @@ class GH1775Test extends BaseTestCase
     }
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 class GH1775MetaDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $version = 5;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1775Image
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
     public function __construct()
@@ -91,39 +82,27 @@ class GH1775Image
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1775Blog
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1775Post::class, inversedBy="blogs")
-     *
-     * @var Collection<int, GH1775Post>|array<GH1775Post>
-     */
+    /** @var Collection<int, GH1775Post>|array<GH1775Post> */
+    #[ODM\ReferenceMany(targetDocument: GH1775Post::class, inversedBy: 'blogs')]
     public $posts = [];
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1775Post extends GH1775MetaDocument
 {
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1775Image::class, storeAs=ClassMetadata::REFERENCE_STORE_AS_ID)
-     *
-     * @var Collection<int, GH1775Image>
-     */
+    /** @var Collection<int, GH1775Image> */
+    #[ODM\ReferenceMany(targetDocument: GH1775Image::class, storeAs: ClassMetadata::REFERENCE_STORE_AS_ID)]
     protected $images;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1775Blog::class, mappedBy="posts")
-     *
-     * @var Collection<int, GH1775Blog>
-     */
+    /** @var Collection<int, GH1775Blog> */
+    #[ODM\ReferenceMany(targetDocument: GH1775Blog::class, mappedBy: 'posts')]
     protected $blogs;
 
     /**

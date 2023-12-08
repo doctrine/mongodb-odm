@@ -8,42 +8,27 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\QueryResultDocument */
+#[ODM\QueryResultDocument]
 class ReportingHierarchy
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Employee::class, cascade={"persist"}, storeAs="ref")
-     *
-     * @var Employee|null
-     */
+    /** @var Employee|null */
+    #[ODM\ReferenceOne(targetDocument: Employee::class, cascade: ['persist'], storeAs: 'ref')]
     public $reportsTo;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Employee::class, cascade={"persist"}, storeAs="id")
-     *
-     * @var Employee|null
-     */
+    /** @var Employee|null */
+    #[ODM\ReferenceOne(targetDocument: Employee::class, cascade: ['persist'], storeAs: 'id')]
     public $reportsToId;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Employee::class)
-     *
-     * @var Collection<int, Employee>
-     */
+    /** @var Collection<int, Employee> */
+    #[ODM\EmbedMany(targetDocument: Employee::class)]
     public $reportingHierarchy;
 
     public function __construct()

@@ -6,20 +6,14 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\QueryResultDocument */
+#[ODM\QueryResultDocument]
 class BlogTagAggregation
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=Tag::class, name="_id")
-     *
-     * @var Tag|null
-     */
+    /** @var Tag|null */
+    #[ODM\ReferenceOne(targetDocument: Tag::class, name: '_id')]
     public $tag;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Field(type: 'int')]
     public $numPosts;
 }

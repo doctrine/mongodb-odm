@@ -38,35 +38,23 @@ class GH232Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Product
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Price::class)
-     *
-     * @var Collection<int, Price>|array<Price>
-     */
+    /** @var Collection<int, Price>|array<Price> */
+    #[ODM\EmbedMany(targetDocument: Price::class)]
     public $prices = [];
 
-    /**
-     * @ODM\EmbedMany(targetDocument=SubProduct::class)
-     *
-     * @var Collection<int, SubProduct>|array<SubProduct>
-     */
+    /** @var Collection<int, SubProduct>|array<SubProduct> */
+    #[ODM\EmbedMany(targetDocument: SubProduct::class)]
     public $subproducts = [];
 
     public function __construct(string $name)
@@ -76,14 +64,11 @@ class Product
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class SubProduct
 {
-    /**
-     * @ODM\EmbedMany(targetDocument=Price::class)
-     *
-     * @var Collection<int, Price>|array<Price>
-     */
+    /** @var Collection<int, Price>|array<Price> */
+    #[ODM\EmbedMany(targetDocument: Price::class)]
     public $prices = [];
 
     public function __construct()
@@ -92,13 +77,10 @@ class SubProduct
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Price
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $price;
 }

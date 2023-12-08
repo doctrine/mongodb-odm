@@ -6,21 +6,15 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Page
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $number;
 
     public function __construct(int $number)

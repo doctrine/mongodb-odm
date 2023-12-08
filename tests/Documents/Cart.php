@@ -6,27 +6,18 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Cart
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $numItems = 0;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
-     *
-     * @var Customer|null
-     */
+    /** @var Customer|null */
+    #[ODM\ReferenceOne(targetDocument: Customer::class, inversedBy: 'cart')]
     public $customer;
 }

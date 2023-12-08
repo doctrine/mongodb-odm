@@ -7,21 +7,15 @@ namespace Documents\Ecommerce;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use InvalidArgumentException;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Money
 {
-    /**
-     * @ODM\Field(type="float")
-     *
-     * @var float
-     */
+    /** @var float */
+    #[ODM\Field(type: 'float')]
     protected $amount;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\Currency::class, cascade="all")
-     *
-     * @var Currency
-     */
+    /** @var Currency */
+    #[ODM\ReferenceOne(targetDocument: Currency::class, cascade: 'all')]
     protected $currency;
 
     public function __construct(float $amount, Currency $currency)

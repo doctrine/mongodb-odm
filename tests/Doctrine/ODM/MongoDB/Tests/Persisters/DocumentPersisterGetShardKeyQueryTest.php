@@ -96,114 +96,70 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\ShardKey(keys={"int"="asc","string"="asc","bool"="asc","float"="asc"})
- */
+#[ODM\Document]
+#[ODM\ShardKey(keys: ['int' => 'asc', 'string' => 'asc', 'bool' => 'asc', 'float' => 'asc'])]
 class ShardedByScalars
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $int;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $string;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool|null
-     */
+    /** @var bool|null */
+    #[ODM\Field(type: 'bool')]
     public $bool;
 
-    /**
-     * @ODM\Field(type="float")
-     *
-     * @var float|null
-     */
+    /** @var float|null */
+    #[ODM\Field(type: 'float')]
     public $float;
 }
 
-/**
- * @ODM\Document
- * @ODM\ShardKey(keys={"oid"="asc","bin"="asc","date"="asc"})
- */
+#[ODM\Document]
+#[ODM\ShardKey(keys: ['oid' => 'asc', 'bin' => 'asc', 'date' => 'asc'])]
 class ShardedByObjects
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="object_id")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'object_id')]
     public $oid;
 
-    /**
-     * @ODM\Field(type="bin")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin')]
     public $bin;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Field(type: 'date')]
     public $date;
 }
 
-/**
- * @ODM\Document
- * @ODM\ShardKey(keys={"_id"="asc"})
- */
+#[ODM\Document]
+#[ODM\ShardKey(keys: ['_id' => 'asc'])]
 class ShardedById
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     public $identifier;
 }
 
-/**
- * @ODM\Document
- * @ODM\ShardKey(keys={"reference"="asc"})
- */
+#[ODM\Document]
+#[ODM\ShardKey(keys: ['reference' => 'asc'])]
 class ShardedByReferenceOne
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class)
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(targetDocument: User::class)]
     public $reference;
 }

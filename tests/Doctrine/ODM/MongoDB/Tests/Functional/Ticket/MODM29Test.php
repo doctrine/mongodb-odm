@@ -55,21 +55,15 @@ class MODM29Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM29Doc
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=MODM29Embedded::class, strategy="set")
-     *
-     * @var Collection<int, MODM29Embedded>
-     */
+    /** @var Collection<int, MODM29Embedded> */
+    #[ODM\EmbedMany(targetDocument: MODM29Embedded::class, strategy: 'set')]
     protected $collection;
 
     /** @param Collection<int, MODM29Embedded> $c */
@@ -91,14 +85,11 @@ class MODM29Doc
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM29Embedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $val;
 
     public function __construct(string $val)

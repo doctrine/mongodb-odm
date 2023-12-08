@@ -9,45 +9,28 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 
-/**
- * @ODM\Document
- * @ODM\ChangeTrackingPolicy("NOTIFY")
- */
+#[ODM\Document]
+#[ODM\ChangeTrackingPolicy('NOTIFY')]
 class ProfileNotify implements NotifyPropertyChanged
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $profileId;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     private $firstName;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     private $lastName;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=File::class, cascade={"all"})
-     *
-     * @var File|null
-     */
+    /** @var File|null */
+    #[ODM\ReferenceOne(targetDocument: File::class, cascade: ['all'])]
     private $image;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=File::class, cascade={"all"}, collectionClass=ProfileNotifyImagesCollection::class)
-     *
-     * @var ProfileNotifyImagesCollection<int, File>
-     */
+    /** @var ProfileNotifyImagesCollection<int, File> */
+    #[ODM\ReferenceMany(targetDocument: File::class, cascade: ['all'], collectionClass: ProfileNotifyImagesCollection::class)]
     private $images;
 
     /** @var PropertyChangedListener[] */

@@ -19,34 +19,23 @@ class GH1107Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
 class GH1107ParentClass
 {
-    /**
-     * @ODM\Id(strategy="NONE")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'NONE')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1107ChildClass extends GH1107ParentClass
 {
-    /**
-     * @ODM\Id(strategy="AUTO")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'AUTO')]
     public $id;
 }

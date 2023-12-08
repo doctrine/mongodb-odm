@@ -100,20 +100,14 @@ class CustomFieldNameTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class CustomFieldName
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="login", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'login', type: 'string')]
     public $username;
 }

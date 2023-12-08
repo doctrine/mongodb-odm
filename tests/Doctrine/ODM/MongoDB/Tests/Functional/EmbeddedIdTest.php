@@ -59,74 +59,50 @@ class EmbeddedIdTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class EmbeddedIdTestUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=DefaultIdEmbeddedDocument::class)
-     *
-     * @var DefaultIdEmbeddedDocument|null
-     */
+    /** @var DefaultIdEmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: DefaultIdEmbeddedDocument::class)]
     public $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=DefaultIdEmbeddedDocument::class)
-     *
-     * @var Collection<int, DefaultIdEmbeddedDocument>|array<DefaultIdEmbeddedDocument>
-     */
+    /** @var Collection<int, DefaultIdEmbeddedDocument>|array<DefaultIdEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: DefaultIdEmbeddedDocument::class)]
     public $embedMany = [];
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class EmbeddedStrategyNoneIdTestUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class)
-     *
-     * @var DefaultIdStrategyNoneEmbeddedDocument|null
-     */
+    /** @var DefaultIdStrategyNoneEmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: DefaultIdStrategyNoneEmbeddedDocument::class)]
     public $embedOne;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=DefaultIdStrategyNoneEmbeddedDocument::class)
-     *
-     * @var Collection<int, DefaultIdStrategyNoneEmbeddedDocument>|array<DefaultIdStrategyNoneEmbeddedDocument>
-     */
+    /** @var Collection<int, DefaultIdStrategyNoneEmbeddedDocument>|array<DefaultIdStrategyNoneEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: DefaultIdStrategyNoneEmbeddedDocument::class)]
     public $embedMany = [];
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class DefaultIdEmbeddedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class DefaultIdStrategyNoneEmbeddedDocument
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'none')]
     public $id;
 }

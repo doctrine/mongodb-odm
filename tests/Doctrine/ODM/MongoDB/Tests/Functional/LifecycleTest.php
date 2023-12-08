@@ -52,38 +52,24 @@ class LifecycleTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class ParentObject
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=ChildObject::class, cascade="all")
-     *
-     * @var Collection<int, ChildObject>|array<ChildObject>
-     */
+    /** @var Collection<int, ChildObject>|array<ChildObject> */
+    #[ODM\ReferenceMany(targetDocument: ChildObject::class, cascade: 'all')]
     private $children;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=ChildEmbeddedObject::class)
-     *
-     * @var ChildEmbeddedObject
-     */
+    /** @var ChildEmbeddedObject */
+    #[ODM\EmbedOne(targetDocument: ChildEmbeddedObject::class)]
     private $childEmbedded;
 
     /** @var ChildObject */
@@ -106,16 +92,14 @@ class ParentObject
         return $this->name;
     }
 
-    /**
-     * @ODM\PrePersist
-     * @ODM\PreUpdate
-     */
+    #[ODM\PrePersist]
+    #[ODM\PreUpdate]
     public function prePersistPreUpdate(): void
     {
         $this->children = [$this->child];
     }
 
-    /** @ODM\PreUpdate */
+    #[ODM\PreUpdate]
     public function preUpdate(): void
     {
         $this->childEmbedded->setName('changed');
@@ -138,21 +122,15 @@ class ParentObject
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ChildObject
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function __construct(string $name)
@@ -171,14 +149,11 @@ class ChildObject
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class ChildEmbeddedObject
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function __construct(string $name)

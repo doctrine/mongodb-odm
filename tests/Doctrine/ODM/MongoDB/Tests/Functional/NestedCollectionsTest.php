@@ -77,55 +77,34 @@ class NestedCollectionsTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocWithNestedCollections
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'atomicSet', targetDocument: Phonebook::class)]
     public $atomicSet;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'atomicSetArray', targetDocument: Phonebook::class)]
     public $atomicSetArray;
 
-    /**
-     * @ODM\EmbedMany(strategy="set", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'set', targetDocument: Phonebook::class)]
     public $set;
 
-    /**
-     * @ODM\EmbedMany(strategy="setArray", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'setArray', targetDocument: Phonebook::class)]
     public $setArray;
 
-    /**
-     * @ODM\EmbedMany(strategy="pushAll", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'pushAll', targetDocument: Phonebook::class)]
     public $pushAll;
 
-    /**
-     * @ODM\EmbedMany(strategy="addToSet", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'addToSet', targetDocument: Phonebook::class)]
     public $addToSet;
 }

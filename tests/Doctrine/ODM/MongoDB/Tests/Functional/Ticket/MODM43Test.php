@@ -26,34 +26,23 @@ class MODM43Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class Person
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $firstName;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $lastName;
 
-    /** @ODM\PreLoad */
+    #[ODM\PreLoad]
     public function preLoad(PreLoadEventArgs $e): void
     {
         $data =& $e->getData();

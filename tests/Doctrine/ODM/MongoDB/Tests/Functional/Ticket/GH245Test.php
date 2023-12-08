@@ -31,31 +31,22 @@ class GH245Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH245Order
 {
-    /**
-     * @ODM\Id(strategy="NONE")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'NONE')]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH245OrderLog
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH245Order::class)
-     *
-     * @var GH245Order|null
-     */
+    /** @var GH245Order|null */
+    #[ODM\ReferenceOne(targetDocument: GH245Order::class)]
     public $order;
 }

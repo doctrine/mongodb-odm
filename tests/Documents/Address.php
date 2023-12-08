@@ -6,56 +6,35 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Address
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $address;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $city;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $state;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $zipcode;
 
-    /**
-     * @ODM\Field(type="int", strategy="increment")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int', strategy: 'increment')]
     public $count = 0;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Address::class)
-     *
-     * @var Address|null
-     */
+    /** @var Address|null */
+    #[ODM\EmbedOne(targetDocument: self::class)]
     private $subAddress;
 
-    /**
-     * @ODM\Field(name="testFieldName", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'testFieldName', type: 'string')]
     private $test;
 
     public function setSubAddress(Address $subAddress): void

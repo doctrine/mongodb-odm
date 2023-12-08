@@ -8,35 +8,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class FriendUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=FriendUser::class, mappedBy="myFriends", cascade={"all"})
-     *
-     * @var Collection<int, FriendUser>
-     */
+    /** @var Collection<int, FriendUser> */
+    #[ODM\ReferenceMany(targetDocument: self::class, mappedBy: 'myFriends', cascade: ['all'])]
     public $friendsWithMe;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=FriendUser::class, inversedBy="friendsWithMe", cascade={"all"})
-     *
-     * @var Collection<int, FriendUser>
-     */
+    /** @var Collection<int, FriendUser> */
+    #[ODM\ReferenceMany(targetDocument: self::class, inversedBy: 'friendsWithMe', cascade: ['all'])]
     public $myFriends;
 
     public function __construct(string $name)

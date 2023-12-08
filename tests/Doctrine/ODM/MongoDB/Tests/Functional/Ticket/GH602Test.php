@@ -103,28 +103,19 @@ class GH602Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH602User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="user_deleted", type="bool")
-     *
-     * @var bool
-     */
+    /** @var bool */
+    #[ODM\Field(name: 'user_deleted', type: 'bool')]
     public $deleted = false;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH602Thing::class, inversedBy="likedBy", storeAs="id")
-     *
-     * @var Collection<int, GH602Thing>
-     */
+    /** @var Collection<int, GH602Thing> */
+    #[ODM\ReferenceMany(targetDocument: GH602Thing::class, inversedBy: 'likedBy', storeAs: 'id')]
     public $likes;
 
     public function __construct()
@@ -139,28 +130,19 @@ class GH602User
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH602Thing
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="thing_deleted", type="bool")
-     *
-     * @var bool
-     */
+    /** @var bool */
+    #[ODM\Field(name: 'thing_deleted', type: 'bool')]
     public $deleted = false;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH602User::class, mappedBy="likes")
-     *
-     * @var Collection<int, GH602User>
-     */
+    /** @var Collection<int, GH602User> */
+    #[ODM\ReferenceMany(targetDocument: GH602User::class, mappedBy: 'likes')]
     public $likedBy;
 
     public function __construct()

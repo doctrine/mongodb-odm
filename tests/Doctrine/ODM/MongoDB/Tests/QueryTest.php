@@ -585,70 +585,43 @@ class QueryTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="people") */
+#[ODM\Document(collection: 'people')]
 class Person
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $firstName;
 
-    /**
-     * @ODM\ReferenceOne(storeAs="dbRefWithDb")
-     *
-     * @var Person|null
-     */
+    /** @var Person|null */
+    #[ODM\ReferenceOne(storeAs: 'dbRefWithDb')]
     public $bestFriend;
 
-    /**
-     * @ODM\ReferenceOne(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
-     *
-     * @var Person|null
-     */
+    /** @var Person|null */
+    #[ODM\ReferenceOne(storeAs: 'id', targetDocument: self::class)]
     public $bestFriendSimple;
 
-    /**
-     * @ODM\ReferenceOne
-     *
-     * @var Person|null
-     */
+    /** @var Person|null */
+    #[ODM\ReferenceOne]
     public $bestFriendPartial;
 
-    /**
-     * @ODM\ReferenceMany(storeAs="dbRefWithDb")
-     *
-     * @var DoctrineCollection<int, Person>|array<Person>
-     */
+    /** @var DoctrineCollection<int, Person>|array<Person> */
+    #[ODM\ReferenceMany(storeAs: 'dbRefWithDb')]
     public $friends = [];
 
-    /**
-     * @ODM\ReferenceMany(storeAs="id", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
-     *
-     * @var DoctrineCollection<int, Person>|array<Person>
-     */
+    /** @var DoctrineCollection<int, Person>|array<Person> */
+    #[ODM\ReferenceMany(storeAs: 'id', targetDocument: self::class)]
     public $friendsSimple = [];
 
-    /**
-     * @ODM\ReferenceMany
-     *
-     * @var DoctrineCollection<int, Person>|array<Person>
-     */
+    /** @var DoctrineCollection<int, Person>|array<Person> */
+    #[ODM\ReferenceMany]
     public $friendsPartial = [];
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Pet::class)
-     *
-     * @var Pet|null
-     */
+    /** @var Pet|null */
+    #[ODM\EmbedOne(targetDocument: Pet::class)]
     public $pet;
 
     public function __construct(string $firstName)
@@ -657,21 +630,15 @@ class Person
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Pet
 {
-    /**
-     * @ODM\ReferenceOne(name="pO", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
-     *
-     * @var Person|null
-     */
+    /** @var Person|null */
+    #[ODM\ReferenceOne(name: 'pO', targetDocument: Person::class)]
     public $owner;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name, Person $owner)
@@ -681,41 +648,26 @@ class Pet
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbedTest
 {
-    /**
-     * @ODM\EmbedOne(name="eO", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class)
-     *
-     * @var EmbedTest|null
-     */
+    /** @var EmbedTest|null */
+    #[ODM\EmbedOne(name: 'eO', targetDocument: self::class)]
     public $embeddedOne;
 
-    /**
-     * @ODM\EmbedMany(name="e1", targetDocument=Doctrine\ODM\MongoDB\Tests\EmbedTest::class)
-     *
-     * @var DoctrineCollection<int, EmbedTest>
-     */
+    /** @var DoctrineCollection<int, EmbedTest> */
+    #[ODM\EmbedMany(name: 'e1', targetDocument: self::class)]
     public $embeddedMany;
 
-    /**
-     * @ODM\Field(name="n", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'n', type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(name="p", targetDocument=Doctrine\ODM\MongoDB\Tests\Person::class)
-     *
-     * @var Person|null
-     */
+    /** @var Person|null */
+    #[ODM\ReferenceOne(name: 'p', targetDocument: Person::class)]
     public $person;
 
-    /**
-     * @ODM\EmbedOne(name="eP", targetDocument=Doctrine\ODM\MongoDB\Tests\Pet::class)
-     *
-     * @var Pet|null
-     */
+    /** @var Pet|null */
+    #[ODM\EmbedOne(name: 'eP', targetDocument: Pet::class)]
     public $pet;
 }

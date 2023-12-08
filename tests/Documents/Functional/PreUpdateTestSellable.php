@@ -6,21 +6,15 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class PreUpdateTestSellable
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=PreUpdateTestProduct::class)
-     *
-     * @var PreUpdateTestProduct|null
-     */
+    /** @var PreUpdateTestProduct|null */
+    #[ODM\ReferenceOne(targetDocument: PreUpdateTestProduct::class)]
     public $product;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=PreUpdateTestSeller::class)
-     *
-     * @var PreUpdateTestSeller|null
-     */
+    /** @var PreUpdateTestSeller|null */
+    #[ODM\ReferenceOne(targetDocument: PreUpdateTestSeller::class)]
     public $seller;
 
     public function getProduct(): ?PreUpdateTestProduct

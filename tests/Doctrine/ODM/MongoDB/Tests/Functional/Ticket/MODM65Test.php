@@ -29,42 +29,24 @@ class MODM65Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="modm65_users") */
+#[ODM\Document(collection: 'modm65_users')]
 class MODM65User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
-    /**
-     * @ODM\EmbedOne(
-     *  discriminatorField="php",
-     *  discriminatorMap={
-     *      "fbu"=Doctrine\ODM\MongoDB\Tests\Functional\Ticket\MODM65SocialNetworkUser::class
-     *  },
-     *  name="snu"
-     * )
-     *
-     * @var MODM65SocialNetworkUser|null
-     */
+    /** @var MODM65SocialNetworkUser|null */
+    #[ODM\EmbedOne(discriminatorField: 'php', discriminatorMap: ['fbu' => MODM65SocialNetworkUser::class], name: 'snu')]
     public $socialNetworkUser;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM65SocialNetworkUser
 {
-    /**
-     * @ODM\Field(name="fN", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 'fN', type: 'string')]
     public $firstName;
-    /**
-     * @ODM\Field(name="lN", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 'lN', type: 'string')]
     public $lastName;
 }

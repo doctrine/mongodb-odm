@@ -7,28 +7,19 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class CmsGroup
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=CmsUser::class)
-     *
-     * @var Collection<int, CmsUser>
-     */
+    /** @var Collection<int, CmsUser> */
+    #[ODM\ReferenceMany(targetDocument: CmsUser::class)]
     public $users;
 
     public function setName(string $name): void

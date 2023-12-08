@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -116,7 +116,7 @@ abstract class BaseTestCase extends TestCase
 
     protected static function createMetadataDriverImpl(): MappingDriver
     {
-        return AnnotationDriver::create(__DIR__ . '/../../../../Documents');
+        return AttributeDriver::create(__DIR__ . '/../../../../Documents');
     }
 
     protected static function createTestDocumentManager(): DocumentManager

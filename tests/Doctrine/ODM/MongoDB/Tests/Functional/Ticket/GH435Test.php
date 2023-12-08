@@ -24,31 +24,22 @@ class GH435Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH435Parent
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|string|null
-     */
+    /** @var int|string|null */
+    #[ODM\Field(type: 'int')]
     protected $test;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH435Child extends GH435Parent
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $test;
 }

@@ -8,28 +8,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="bars") */
+#[ODM\Document(collection: 'bars')]
 class Bar
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Documents\Bars\Location::class)
-     *
-     * @var Collection<int, Location>
-     */
+    /** @var Collection<int, Location> */
+    #[ODM\EmbedMany(targetDocument: Location::class)]
     private $locations;
 
     public function __construct(?string $name = null)

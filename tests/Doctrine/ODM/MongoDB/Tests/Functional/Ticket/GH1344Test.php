@@ -46,94 +46,61 @@ class GH1344Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1344Main
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1344Embedded::class)
-     *
-     * @var GH1344Embedded|null
-     */
+    /** @var GH1344Embedded|null */
+    #[ODM\EmbedOne(targetDocument: GH1344Embedded::class)]
     public $embedded1;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1344Embedded::class)
-     *
-     * @var GH1344Embedded|null
-     */
+    /** @var GH1344Embedded|null */
+    #[ODM\EmbedOne(targetDocument: GH1344Embedded::class)]
     public $embedded2;
 }
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\Index(keys={"property"="asc"}, name="embedded")
- */
+#[ODM\EmbeddedDocument]
+#[ODM\Index(keys: ['property' => 'asc'], name: 'embedded')]
 class GH1344Embedded
 {
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     public $property;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1344EmbeddedNested::class)
-     *
-     * @var GH1344EmbeddedNested|null
-     */
+    /** @var GH1344EmbeddedNested|null */
+    #[ODM\EmbedOne(targetDocument: GH1344EmbeddedNested::class)]
     public $embedded;
 }
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\Index(keys={"property"="asc"}, name="nested")
- */
+#[ODM\EmbeddedDocument]
+#[ODM\Index(keys: ['property' => 'asc'], name: 'nested')]
 class GH1344EmbeddedNested
 {
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     public $property;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1344LongIndexName
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1344LongIndexNameEmbedded::class)
-     *
-     * @var GH1344LongIndexNameEmbedded|null
-     */
+    /** @var GH1344LongIndexNameEmbedded|null */
+    #[ODM\EmbedOne(targetDocument: GH1344LongIndexNameEmbedded::class)]
     public $embedded1;
 }
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\Index(keys={"property"="asc"}, name="this_is_a_really_long_name_that_will_cause_problems_for_whoever_tries_to_use_it_whether_in_an_embedded_field_or_not")
- */
+#[ODM\EmbeddedDocument]
+#[ODM\Index(keys: ['property' => 'asc'], name: 'this_is_a_really_long_name_that_will_cause_problems_for_whoever_tries_to_use_it_whether_in_an_embedded_field_or_not')]
 class GH1344LongIndexNameEmbedded
 {
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     public $property;
 }

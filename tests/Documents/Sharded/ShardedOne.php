@@ -7,40 +7,24 @@ namespace Documents\Sharded;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectId;
 
-/**
- * @ODM\Document(collection="sharded.one")
- * @ODM\Indexes(
- *     @ODM\Index(keys={"k"="asc"})
- * )
- * @ODM\ShardKey(keys={"k"="asc"})
- */
+#[ODM\Document(collection: 'sharded.one')]
+#[ODM\ShardKey(keys: ['k' => 'asc'])]
+#[ODM\Index(keys: ['k' => 'asc'])]
 class ShardedOne
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $title = 'test';
 
-    /**
-     * @ODM\Field(name="k", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 'k', type: 'string')]
     public $key = 'testing';
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=ShardedUser::class)
-     *
-     * @var ShardedUser|null
-     */
+    /** @var ShardedUser|null */
+    #[ODM\ReferenceOne(targetDocument: ShardedUser::class)]
     public $user;
 }

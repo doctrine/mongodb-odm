@@ -6,13 +6,10 @@ namespace Documents\CustomRepository;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(repositoryClass="Documents\CustomRepository\Repository") */
+#[ODM\Document(repositoryClass: 'Documents\CustomRepository\Repository')]
 class Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 }

@@ -38,21 +38,15 @@ class GH944Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH944Document
 {
-    /**
-     * @ODM\Id(strategy="auto")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'auto')]
     public $id;
 
-    /**
-     * @ODM\EmbedMany
-     *
-     * @var Collection<int, GH944Embedded>
-     */
+    /** @var Collection<int, GH944Embedded> */
+    #[ODM\EmbedMany]
     public $data;
 
     public function __construct()
@@ -72,14 +66,11 @@ class GH944Document
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH944Embedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $text;
 
     public function __construct(string $text)

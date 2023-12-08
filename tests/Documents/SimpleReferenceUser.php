@@ -7,36 +7,24 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class SimpleReferenceUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id", name="userId", inversedBy="simpleReferenceManyInverse")
-     * @ODM\Index
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'id', name: 'userId', inversedBy: 'simpleReferenceManyInverse')]
+    #[ODM\Index]
     public $user;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="id")
-     *
-     * @var Collection<int, User>|array<User>
-     */
+    /** @var Collection<int, User>|array<User> */
+    #[ODM\ReferenceMany(targetDocument: User::class, storeAs: 'id')]
     public $users = [];
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function setUser(User $user): void

@@ -7,14 +7,11 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Manager extends BaseEmployee
 {
-    /**
-     * @ODM\ReferenceMany(targetDocument=Project::class)
-     *
-     * @var Collection<int, Project>|array<Project>
-     */
+    /** @var Collection<int, Project>|array<Project> */
+    #[ODM\ReferenceMany(targetDocument: Project::class)]
     private $projects = [];
 
     /** @return Collection<int, Project>|array<Project> */

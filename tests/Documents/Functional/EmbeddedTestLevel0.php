@@ -7,26 +7,17 @@ namespace Documents\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="embedded_test") */
+#[ODM\Document(collection: 'embedded_test')]
 class EmbeddedTestLevel0
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedTestLevel1::class)
-     *
-     * @var Collection<int, EmbeddedTestLevel1>|array<EmbeddedTestLevel1>
-     */
+    /** @var Collection<int, EmbeddedTestLevel1>|array<EmbeddedTestLevel1> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedTestLevel1::class)]
     public $level1 = [];
 }

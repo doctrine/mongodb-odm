@@ -6,13 +6,13 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument() */
+#[ODM\EmbeddedDocument]
 class TypedEmbeddedDocument
 {
-    /** @ODM\Field(type="string") */
+    #[ODM\Field(type: 'string')]
     private string $name;
 
-    /** @ODM\Field(type="int") */
+    #[ODM\Field(type: 'int')]
     private int $number;
 
     public function __construct(string $name, int $number)

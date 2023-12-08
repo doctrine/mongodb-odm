@@ -22,20 +22,14 @@ class GH850Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH850Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne
-     *
-     * @var object|string
-     */
+    /** @var object|string */
+    #[ODM\ReferenceOne]
     public $refs = '';
 }

@@ -617,34 +617,23 @@ class ParentAssociationTest
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\ChangeTrackingPolicy("NOTIFY")
- */
+#[ODM\Document]
+#[ODM\ChangeTrackingPolicy('NOTIFY')]
 class NotifyChangedDocument implements NotifyPropertyChanged
 {
     /** @var PropertyChangedListener[] */
     private $_listeners = [];
 
-    /**
-     * @ODM\Id(type="int", strategy="none")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(type: 'int', strategy: 'none')]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $data;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=NotifyChangedRelatedItem::class)
-     *
-     * @var Collection<int, NotifyChangedRelatedItem>
-     */
+    /** @var Collection<int, NotifyChangedRelatedItem> */
+    #[ODM\ReferenceMany(targetDocument: NotifyChangedRelatedItem::class)]
     private $items;
 
     /** @var mixed */
@@ -714,21 +703,15 @@ class NotifyChangedDocument implements NotifyPropertyChanged
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class NotifyChangedRelatedItem
 {
-    /**
-     * @ODM\Id(type="int", strategy="none")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(type: 'int', strategy: 'none')]
     private $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=NotifyChangedDocument::class)
-     *
-     * @var NotifyChangedDocument|null
-     */
+    /** @var NotifyChangedDocument|null */
+    #[ODM\ReferenceOne(targetDocument: NotifyChangedDocument::class)]
     private $owner;
 
     public function getId(): ?int
@@ -752,21 +735,15 @@ class NotifyChangedRelatedItem
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ArrayTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="hash")
-     *
-     * @var array<string, mixed>|null
-     */
+    /** @var array<string, mixed>|null */
+    #[ODM\Field(type: 'hash')]
     public $data;
 
     /** @param array<string, mixed>|null $data */
@@ -776,89 +753,68 @@ class ArrayTest
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class UowCustomIdDocument
 {
-    /**
-     * @ODM\Id(type="custom_id")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(type: 'custom_id')]
     public $id;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedUpsertDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentWithoutId
 {
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentWithId
 {
     /** @var bool */
     public $preRemove = false;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\PreRemove */
+    #[ODM\PreRemove]
     public function preRemove(): void
     {
         $this->preRemove = true;
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentWithIdStrategyNone
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'none')]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class PersistRemovedEmbeddedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class)
-     *
-     * @var EmbeddedDocumentWithId
-     */
+    /** @var EmbeddedDocumentWithId */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithId::class)]
     public $embedded;
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 class MappedSuperclass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }

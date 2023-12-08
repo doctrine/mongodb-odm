@@ -39,31 +39,20 @@ class MODM116Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("COLLECTION_PER_CLASS") *
- */
+#[ODM\Document]
+#[ODM\InheritanceType('COLLECTION_PER_CLASS')]
 class MODM116Parent
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=MODM116Child::class) *
-     *
-     * @var MODM116Child|null
-     */
+    /** @var MODM116Child|null */
+    #[ODM\ReferenceOne(targetDocument: MODM116Child::class)]
     private $child;
 
     public function getId(): ?string
@@ -92,7 +81,7 @@ class MODM116Parent
     }
 }
 
-/** @ODM\Document **/
+#[ODM\Document]
 class MODM116Child extends MODM116Parent
 {
 }

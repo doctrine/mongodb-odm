@@ -7,41 +7,26 @@ namespace Documents\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="functional_tests") */
+#[ODM\Document(collection: 'functional_tests')]
 class SimpleEmbedAndReference
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Embedded::class)
-     *
-     * @var Collection<int, Embedded>|array<Embedded>
-     */
+    /** @var Collection<int, Embedded>|array<Embedded> */
+    #[ODM\EmbedMany(targetDocument: Embedded::class)]
     public $embedMany = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Reference::class)
-     *
-     * @var Collection<int, Reference>|array<Reference>
-     */
+    /** @var Collection<int, Reference>|array<Reference> */
+    #[ODM\ReferenceMany(targetDocument: Reference::class)]
     public $referenceMany = [];
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Embedded::class)
-     *
-     * @var Embedded|null
-     */
+    /** @var Embedded|null */
+    #[ODM\EmbedOne(targetDocument: Embedded::class)]
     public $embedOne;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Reference::class)
-     *
-     * @var Reference|null
-     */
+    /** @var Reference|null */
+    #[ODM\ReferenceOne(targetDocument: Reference::class)]
     public $referenceOne;
 }

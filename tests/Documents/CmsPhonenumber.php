@@ -6,21 +6,15 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class CmsPhonenumber
 {
-    /**
-     * @ODM\Id(strategy="NONE", type="custom_id")
-     *
-     * @var int|string|null
-     */
+    /** @var int|string|null */
+    #[ODM\Id(strategy: 'NONE', type: 'custom_id')]
     public $phonenumber;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=CmsUser::class, cascade={"merge"})
-     *
-     * @var CmsUser|null
-     */
+    /** @var CmsUser|null */
+    #[ODM\ReferenceOne(targetDocument: CmsUser::class, cascade: ['merge'])]
     public $user;
 
     public function setUser(CmsUser $user): void

@@ -181,21 +181,15 @@ class GH1275Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="item") */
+#[ODM\Document(collection: 'item')]
 class Item
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     /** @var Container */
@@ -208,21 +202,15 @@ class Item
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Element
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -231,95 +219,43 @@ class Element
     }
 }
 
-/** @ODM\Document(collection="container") */
+#[ODM\Document(collection: 'container')]
 class Container
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /** @ODM\ReferenceMany(
-     *     targetDocument=Item::class,
-     *     cascade={"refresh","persist"},
-     *     orphanRemoval="true",
-     *     strategy="atomicSet"
-     * )
-     *
-     * @var Collection<int, Item>
-     */
+    /** @var Collection<int, Item> */
+    #[ODM\ReferenceMany(targetDocument: Item::class, cascade: ['refresh', 'persist'], orphanRemoval: true, strategy: 'atomicSet')]
     public $items;
 
-    /**
-     * @ODM\ReferenceOne(
-     *     targetDocument=Item::class,
-     *     cascade={"refresh"}
-     * )
-     *
-     * @var Item
-     */
+    /** @var Item */
+    #[ODM\ReferenceOne(targetDocument: Item::class, cascade: ['refresh'])]
     public $firstItem;
 
-    /**
-     * @ODM\EmbedMany(
-     *     targetDocument=Element::class,
-     *     strategy="addToSet"
-     * )
-     *
-     * @var Collection<int, Element>
-     */
+    /** @var Collection<int, Element> */
+    #[ODM\EmbedMany(targetDocument: Element::class, strategy: 'addToSet')]
     public $addToSet;
 
-    /**
-     * @ODM\EmbedMany(
-     *     targetDocument=Element::class,
-     *     strategy="set"
-     * )
-     *
-     * @var Collection<int, Element>
-     */
+    /** @var Collection<int, Element> */
+    #[ODM\EmbedMany(targetDocument: Element::class, strategy: 'set')]
     public $set;
 
-    /**
-     * @ODM\EmbedMany(
-     *     targetDocument=Element::class,
-     *     strategy="setArray"
-     * )
-     *
-     * @var Collection<int, Element>
-     */
+    /** @var Collection<int, Element> */
+    #[ODM\EmbedMany(targetDocument: Element::class, strategy: 'setArray')]
     public $setArray;
 
-    /**
-     * @ODM\EmbedMany(
-     *     targetDocument=Element::class,
-     *     strategy="pushAll"
-     * )
-     *
-     * @var Collection<int, Element>
-     */
+    /** @var Collection<int, Element> */
+    #[ODM\EmbedMany(targetDocument: Element::class, strategy: 'pushAll')]
     public $pushAll;
 
-    /**
-     * @ODM\EmbedMany(
-     *     targetDocument=Element::class,
-     *     strategy="atomicSet"
-     * )
-     *
-     * @var Collection<int, Element>
-     */
+    /** @var Collection<int, Element> */
+    #[ODM\EmbedMany(targetDocument: Element::class, strategy: 'atomicSet')]
     public $atomicSet;
 
-    /**
-     * @ODM\EmbedMany(
-     *     targetDocument=Element::class,
-     *     strategy="atomicSetArray"
-     * )
-     *
-     * @var Collection<int, Element>
-     */
+    /** @var Collection<int, Element> */
+    #[ODM\EmbedMany(targetDocument: Element::class, strategy: 'atomicSetArray')]
     public $atomicSetArray;
 
     public function __construct()

@@ -87,63 +87,41 @@ class MODM90EventListener
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM90TestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne
-     * (
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "test"=MODM90TestEmbeddedDocument::class,
-     *     "test2"=MODM90Test2EmbeddedDocument::class
-     *   }
-     *  )
-     *
-     * @var MODM90TestEmbeddedDocument|MODM90Test2EmbeddedDocument|null
-     */
+    /** @var MODM90TestEmbeddedDocument|MODM90Test2EmbeddedDocument|null */
+    #[ODM\EmbedOne(discriminatorField: 'type', discriminatorMap: [
+        'test' => MODM90TestEmbeddedDocument::class,
+        'test2' => MODM90Test2EmbeddedDocument::class,
+    ])]
     public $embedded;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM90TestEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM90Test2EmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="string") The discriminator field is a real property
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $type;
 }

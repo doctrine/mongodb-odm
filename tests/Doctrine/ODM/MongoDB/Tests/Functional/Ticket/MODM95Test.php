@@ -43,22 +43,16 @@ class MODM95Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM95TestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
     // Note: Test case fails with default "pushAll" strategy, but "set" works
-    /**
-     * @ODM\EmbedMany(targetDocument=MODM95TestEmbeddedDocument::class)
-     *
-     * @var Collection<int, MODM95TestEmbeddedDocument>
-     */
+    /** @var Collection<int, MODM95TestEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: MODM95TestEmbeddedDocument::class)]
     public $embeddedDocuments;
 
     public function __construct()
@@ -77,14 +71,11 @@ class MODM95TestDocument
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM95TestEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

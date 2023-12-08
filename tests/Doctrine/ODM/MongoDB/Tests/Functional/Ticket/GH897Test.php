@@ -40,55 +40,38 @@ class GH897Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH897A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class GH897B
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH897A::class)
-     *
-     * @var GH897A|null
-     */
+    /** @var GH897A|null */
+    #[ODM\ReferenceOne(targetDocument: GH897A::class)]
     public $refOne;
 
     /** @var DocumentManager|null */
     public $dm;
 
-    /** @ODM\PreFlush */
+    #[ODM\PreFlush]
     public function preFlush(): void
     {
         if (! $this->refOne instanceof GH897A) {

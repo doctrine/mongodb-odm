@@ -6,34 +6,22 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Customer
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(name="cartTest", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'cartTest', type: 'string')]
     public $cartTest;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
-     *
-     * @var Cart|null
-     */
+    /** @var Cart|null */
+    #[ODM\ReferenceOne(targetDocument: Cart::class, mappedBy: 'customer')]
     public $cart;
 }

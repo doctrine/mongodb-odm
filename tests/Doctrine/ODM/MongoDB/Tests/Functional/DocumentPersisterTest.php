@@ -873,231 +873,143 @@ class DocumentPersisterTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentPersisterTestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="dbName", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'dbName', type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(
-     *     targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\AbstractDocumentPersisterTestDocumentAssociation::class,
-     *     discriminatorField="type",
-     *     name="associationName"
-     * )
-     *
-     * @var AbstractDocumentPersisterTestDocumentAssociation|null
-     */
+    /** @var AbstractDocumentPersisterTestDocumentAssociation|null */
+    #[ODM\EmbedOne(targetDocument: AbstractDocumentPersisterTestDocumentAssociation::class, discriminatorField: 'type', name: 'associationName')]
     public $association;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="id")
-     *
-     * @var DocumentPersisterTestHashIdDocument|null
-     */
+    /** @var DocumentPersisterTestHashIdDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestHashIdDocument::class, storeAs: 'id')]
     public $simpleRef;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRef")
-     *
-     * @var DocumentPersisterTestHashIdDocument|null
-     */
+    /** @var DocumentPersisterTestHashIdDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestHashIdDocument::class, storeAs: 'dbRef')]
     public $semiComplexRef;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="dbRefWithDb")
-     *
-     * @var DocumentPersisterTestHashIdDocument|null
-     */
+    /** @var DocumentPersisterTestHashIdDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestHashIdDocument::class, storeAs: 'dbRefWithDb')]
     public $complexRef;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestHashIdDocument::class, storeAs="ref")
-     *
-     * @var DocumentPersisterTestHashIdDocument|null
-     */
+    /** @var DocumentPersisterTestHashIdDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestHashIdDocument::class, storeAs: 'ref')]
     public $embeddedRef;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentPersisterTestDocumentWithVersion
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(name="dbName", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'dbName', type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Version]
+    #[ODM\Field(type: 'int')]
     public $revision = 1;
 }
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({
- *     "reference"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentReference",
- *     "embed"="Doctrine\ODM\MongoDB\Tests\Functional\DocumentPersisterTestDocumentEmbed"
- * })
- */
+#[ODM\EmbeddedDocument]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['reference' => DocumentPersisterTestDocumentReference::class, 'embed' => DocumentPersisterTestDocumentEmbed::class])]
 abstract class AbstractDocumentPersisterTestDocumentAssociation
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(name="nestedName")
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\EmbedOne(name: 'nestedName')]
     public $nested;
 
-    /**
-     * @ODM\EmbedOne(
-     *     targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\AbstractDocumentPersisterTestDocumentAssociation::class,
-     *     discriminatorField="type",
-     *     name="associationName"
-     * )
-     *
-     * @var AbstractDocumentPersisterTestDocumentAssociation|null
-     */
+    /** @var AbstractDocumentPersisterTestDocumentAssociation|null */
+    #[ODM\EmbedOne(targetDocument: self::class, discriminatorField: 'type', name: 'associationName')]
     public $association;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class DocumentPersisterTestDocumentReference extends AbstractDocumentPersisterTestDocumentAssociation
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(name="nestedName")
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\ReferenceOne(name: 'nestedName')]
     public $nested;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class DocumentPersisterTestDocumentEmbed extends AbstractDocumentPersisterTestDocumentAssociation
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(name="nestedName")
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\EmbedOne(name: 'nestedName')]
     public $nested;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentPersisterTestHashIdDocument
 {
-    /**
-     * @ODM\Id(strategy="none", options={"type"="hash"})
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'none', options: ['type' => 'hash'])]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="id")
-     *
-     * @var DocumentPersisterTestDocument|null
-     */
+    /** @var DocumentPersisterTestDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestDocument::class, storeAs: 'id')]
     public $simpleRef;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRef")
-     *
-     * @var DocumentPersisterTestDocument|null
-     */
+    /** @var DocumentPersisterTestDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestDocument::class, storeAs: 'dbRef')]
     public $semiComplexRef;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="dbRefWithDb")
-     *
-     * @var DocumentPersisterTestDocument|null
-     */
+    /** @var DocumentPersisterTestDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestDocument::class, storeAs: 'dbRefWithDb')]
     public $complexRef;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocument::class, storeAs="ref")
-     *
-     * @var DocumentPersisterTestDocument|null
-     */
+    /** @var DocumentPersisterTestDocument|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestDocument::class, storeAs: 'ref')]
     public $embeddedRef;
 }
 
-/** @ODM\Document(writeConcern="majority") */
+#[ODM\Document(writeConcern: 'majority')]
 class DocumentPersisterWriteConcernMajority
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document(writeConcern=0) */
+#[ODM\Document(writeConcern: 0)]
 class DocumentPersisterWriteConcernUnacknowledged
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document(writeConcern=1) */
+#[ODM\Document(writeConcern: 1)]
 class DocumentPersisterWriteConcernAcknowledged
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
@@ -1171,14 +1083,11 @@ final class DocumentPersisterCustomIdType extends Type
     }
 }
 
-/** @ODM\Document() */
+#[ODM\Document]
 class DocumentPersisterTestDocumentWithCustomId
 {
-    /**
-     * @ODM\Id(strategy="NONE", type="DocumentPersisterCustomId")
-     *
-     * @var DocumentPersisterCustomTypedId
-     */
+    /** @var DocumentPersisterCustomTypedId */
+    #[ODM\Id(strategy: 'NONE', type: 'DocumentPersisterCustomId')]
     private $id;
 
     public function __construct(DocumentPersisterCustomTypedId $id)
@@ -1192,21 +1101,15 @@ class DocumentPersisterTestDocumentWithCustomId
     }
 }
 
-/** @ODM\Document() */
+#[ODM\Document]
 class DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId
 {
-    /**
-     * @ODM\Id()
-     *
-     * @var DocumentPersisterCustomTypedId
-     */
+    /** @var DocumentPersisterCustomTypedId */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentPersisterTestDocumentWithCustomId::class, storeAs="id")
-     *
-     * @var DocumentPersisterTestDocumentWithCustomId
-     */
+    /** @var DocumentPersisterTestDocumentWithCustomId */
+    #[ODM\ReferenceOne(targetDocument: DocumentPersisterTestDocumentWithCustomId::class, storeAs: 'id')]
     private $documentWithCustomId;
 
     public function __construct(DocumentPersisterTestDocumentWithCustomId $documentWithCustomId)

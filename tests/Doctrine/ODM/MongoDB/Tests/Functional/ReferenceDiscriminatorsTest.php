@@ -91,26 +91,18 @@ class ReferenceDiscriminatorsTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document(collection="rdt_action")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("discriminator")
- * @ODM\DiscriminatorMap({"action"=Action::class, "commentable_action"=CommentableAction::class})
- */
+#[ODM\Document(collection: 'rdt_action')]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('discriminator')]
+#[ODM\DiscriminatorMap(['action' => Action::class, 'commentable_action' => CommentableAction::class])]
 class Action
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $type;
 
     public function __construct(string $type)
@@ -129,14 +121,11 @@ class Action
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class CommentableAction extends Action
 {
-    /**
-     * @ODM\Field(type="collection") *
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     protected $comments = [];
 
     /** @param string[] $comments */
@@ -154,21 +143,15 @@ class CommentableAction extends Action
     }
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 abstract class ActivityStreamItem
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Action::class)
-     *
-     * @var Action
-     */
+    /** @var Action */
+    #[ODM\ReferenceOne(targetDocument: Action::class)]
     protected $action;
 
     public function __construct(Action $action)
@@ -187,17 +170,12 @@ abstract class ActivityStreamItem
     }
 }
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\UniqueIndex(keys={"groupId"="asc", "action.$id"="asc"}, options={"unique"=true})
- */
+#[ODM\MappedSuperclass]
+#[ODM\UniqueIndex(keys: ['groupId' => 'asc', 'action.$id' => 'asc'], options: ['unique' => true])]
 abstract class GroupActivityStreamItem extends ActivityStreamItem
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $groupId;
 
     public function __construct(Action $action, string $groupId)
@@ -213,27 +191,22 @@ abstract class GroupActivityStreamItem extends ActivityStreamItem
     }
 }
 
-/** @ODM\Document(collection="rdt_group_main_activity_stream_item") */
+#[ODM\Document(collection: 'rdt_group_main_activity_stream_item')]
 class GroupMainActivityStreamItem extends GroupActivityStreamItem
 {
 }
 
-/** @ODM\Document(collection="rdt_group_members_activity_stream_item") */
+#[ODM\Document(collection: 'rdt_group_members_activity_stream_item')]
 class GroupMembersActivityStreamItem extends GroupActivityStreamItem
 {
 }
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\UniqueIndex(keys={"userId"="asc", "action.$id"="asc"}, options={"unique"=true})
- */
+#[ODM\MappedSuperclass]
+#[ODM\UniqueIndex(keys: ['userId' => 'asc', 'action.$id' => 'asc'], options: ['unique' => true])]
 abstract class UserActivityStreamItem extends ActivityStreamItem
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $userId;
 
     public function __construct(Action $action, string $userId)
@@ -249,12 +222,12 @@ abstract class UserActivityStreamItem extends ActivityStreamItem
     }
 }
 
-/** @ODM\Document(collection="rdt_user_dashboard_activity_stream_item") */
+#[ODM\Document(collection: 'rdt_user_dashboard_activity_stream_item')]
 class UserDashboardActivityStreamItem extends UserActivityStreamItem
 {
 }
 
-/** @ODM\Document(collection="rdt_user_profile_activity_stream_item") */
+#[ODM\Document(collection: 'rdt_user_profile_activity_stream_item')]
 class UserProfileActivityStreamItem extends UserActivityStreamItem
 {
 }

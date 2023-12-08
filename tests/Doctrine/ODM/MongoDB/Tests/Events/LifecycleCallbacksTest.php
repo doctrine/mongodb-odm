@@ -246,110 +246,72 @@ class LifecycleCallbacksTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class User extends BaseDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Profile::class)
-     *
-     * @var Profile|null
-     */
+    /** @var Profile|null */
+    #[ODM\EmbedOne(targetDocument: Profile::class)]
     public $profile;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Profile::class)
-     *
-     * @var Collection<int, Profile>|array<Profile>
-     */
+    /** @var Collection<int, Profile>|array<Profile> */
+    #[ODM\EmbedMany(targetDocument: Profile::class)]
     public $profiles = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=User::class)
-     *
-     * @var Collection<int, User>|array<User>
-     */
+    /** @var Collection<int, User>|array<User> */
+    #[ODM\ReferenceMany(targetDocument: self::class)]
     public $friends = [];
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Cart extends BaseDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
-     *
-     * @var Customer|null
-     */
+    /** @var Customer|null */
+    #[ODM\ReferenceOne(targetDocument: Customer::class, inversedBy: 'cart')]
     public $customer;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Customer extends BaseDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
-     *
-     * @var Cart|null
-     */
+    /** @var Cart|null */
+    #[ODM\ReferenceOne(targetDocument: Cart::class, mappedBy: 'customer')]
     public $cart;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Profile extends BaseDocument
 {
-    /**
-     * @ODM\EmbedOne(targetDocument=Profile::class)
-     *
-     * @var Profile|null
-     */
+    /** @var Profile|null */
+    #[ODM\EmbedOne(targetDocument: self::class)]
     public $profile;
 }
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\MappedSuperclass]
+#[ODM\HasLifecycleCallbacks]
 abstract class BaseDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime
-     */
+    /** @var DateTime */
+    #[ODM\Field(type: 'date')]
     public $createdAt;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Field(type: 'date')]
     public $updatedAt;
 
     /** @var bool */
@@ -379,57 +341,57 @@ abstract class BaseDocument
     /** @var bool */
     public $preFlush = false;
 
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(Event\LifecycleEventArgs $e): void
     {
         $this->prePersist = true;
         $this->createdAt  = new DateTime();
     }
 
-    /** @ODM\PostPersist */
+    #[ODM\PostPersist]
     public function postPersist(Event\LifecycleEventArgs $e): void
     {
         $this->postPersist = true;
     }
 
-    /** @ODM\PreUpdate */
+    #[ODM\PreUpdate]
     public function preUpdate(Event\PreUpdateEventArgs $e): void
     {
         $this->preUpdate = true;
         $this->updatedAt = new DateTime();
     }
 
-    /** @ODM\PostUpdate */
+    #[ODM\PostUpdate]
     public function postUpdate(Event\LifecycleEventArgs $e): void
     {
         $this->postUpdate = true;
     }
 
-    /** @ODM\PreRemove */
+    #[ODM\PreRemove]
     public function preRemove(Event\LifecycleEventArgs $e): void
     {
         $this->preRemove = true;
     }
 
-    /** @ODM\PostRemove */
+    #[ODM\PostRemove]
     public function postRemove(Event\LifecycleEventArgs $e): void
     {
         $this->postRemove = true;
     }
 
-    /** @ODM\PreLoad */
+    #[ODM\PreLoad]
     public function preLoad(Event\PreLoadEventArgs $e): void
     {
         $this->preLoad = true;
     }
 
-    /** @ODM\PostLoad */
+    #[ODM\PostLoad]
     public function postLoad(Event\LifecycleEventArgs $e): void
     {
         $this->postLoad = true;
     }
 
-    /** @ODM\PreFlush */
+    #[ODM\PreFlush]
     public function preFlush(Event\PreFlushEventArgs $e): void
     {
         $this->preFlush = true;
