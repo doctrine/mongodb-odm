@@ -140,21 +140,20 @@ class XmlDriver extends FileDriver
                 }
 
                 $metadata->setCollection($config);
-            } else if (isset($xmlRoot['timeseries-collection'])) {
-                $config = ['name' => (string)$xmlRoot['collection']];
+            } elseif (isset($xmlRoot['timeseries-collection'])) {
+                $config               = ['name' => (string) $xmlRoot['collection']];
                 $config['timeseries'] = [
-                    'timeField' => (string)$xmlRoot['timeseries-collection-timefield'],
-                    'metaField' => (string)$xmlRoot['timeseries-collection-meta'],
-                    'granularity' => (string)$xmlRoot['timeseries-collection-granularity'],
+                    'timeField' => (string) $xmlRoot['timeseries-collection-timefield'],
+                    'metaField' => (string) $xmlRoot['timeseries-collection-meta'],
+                    'granularity' => (string) $xmlRoot['timeseries-collection-granularity'],
                 ];
 
                 if (isset($xmlRoot['expireAfterSeconds'])) {
-                    $config['expireAfterSeconds'] = (int)$xmlRoot['expireAfterSeconds'];
+                    $config['expireAfterSeconds'] = (int) $xmlRoot['expireAfterSeconds'];
                 }
 
                 $metadata->setCollection($config);
-            }
-            else {
+            } else {
                 $metadata->setCollection((string) $xmlRoot['collection']);
             }
         }

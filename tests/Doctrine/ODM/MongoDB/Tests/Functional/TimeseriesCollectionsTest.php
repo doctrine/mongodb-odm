@@ -46,31 +46,19 @@ class TimeseriesCollectionsTest extends BaseTestCase
  */
 class TimeseriesCollectionTestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
-    public $id;
+    /** @ODM\Id */
+    public ?string $id;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTimeInterface|null
-     */
-    public $createdAt;
+    /** @ODM\Field(type="date") */
+    public ?DateTimeInterface $createdAt;
 
     /**
      * @ODM\Field(type="hash")
      *
      * @var array|null
      */
-    public $metaData;
+    public ?array $metaData;
 
-    /**
-     * @ODM\Field(type="integer")
-     *
-     * @var int|null
-     */
-    public $value;
+    /** @ODM\Field(type="integer") */
+    public ?int $value;
 }

@@ -668,10 +668,10 @@ use const PHP_VERSION_ID;
     public $isMappedSuperclass = false;
 
      /**
-     * READ-ONLY: Whether this class describes the mapping of Timeseries.
-     *
-     * @var bool
-     */
+      * READ-ONLY: Whether this class describes the mapping of Timeseries.
+      *
+      * @var bool
+      */
     public $isTimeSeriesDocument = false;
 
     /**
@@ -1420,17 +1420,17 @@ use const PHP_VERSION_ID;
             }
 
             if (array_key_exists('timeseries', $name)) {
-                $this->collectionTimeseries = [
+                $this->collectionTimeseries         = [
                     'timeField' => $name['timeseries']['timeField'],
                     'metaField' => $name['timeseries']['metaField'] ?? null,
-                    'granularity' => $name['timeseries']['granularity'] ?? null
+                    'granularity' => $name['timeseries']['granularity'] ?? null,
                 ];
                 $this->collectionExpireAfterSeconds = $name['expireAfterSeconds'] ?? null;
             } else {
                 $this->collectionCapped = $name['capped'] ?? false;
-                $this->collectionSize = $name['size'] ?? 0;
-                $this->collectionMax = $name['max'] ?? 0;
-                $this->collection = $name['name'];
+                $this->collectionSize   = $name['size'] ?? 0;
+                $this->collectionMax    = $name['max'] ?? 0;
+                $this->collection       = $name['name'];
             }
         } else {
             $this->collection = $name;
@@ -1505,23 +1505,18 @@ use const PHP_VERSION_ID;
     {
         $this->collectionMax = $max;
     }
-    
-    /**
-     * @return array|null
-     */
+
+    /** @return array|null */
     public function getCollectionTimeseries(): ?array
     {
         return $this->collectionTimeseries;
     }
 
-    /**
-     * @return int|null
-     */
     public function getCollectionExpireAfterSeconds(): ?int
     {
         return $this->collectionExpireAfterSeconds;
     }
-    
+
     /**
      * Returns TRUE if this Document is mapped to a collection FALSE otherwise.
      */

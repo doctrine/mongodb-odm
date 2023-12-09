@@ -17,6 +17,7 @@ use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
 
+use function array_key_exists;
 use function array_merge;
 use function array_replace;
 use function assert;

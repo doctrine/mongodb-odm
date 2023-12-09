@@ -85,11 +85,8 @@ class StaticProxyFactoryTest extends BaseTestCase
 
 class DocumentNotFoundListener
 {
-    private Closure $closure;
-
-    public function __construct(Closure $closure)
+    public function __construct(private Closure $closure)
     {
-        $this->closure = $closure;
     }
 
     public function documentNotFound(DocumentNotFoundEventArgs $eventArgs): void
