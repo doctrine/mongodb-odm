@@ -389,7 +389,7 @@ class DocumentManager implements ObjectManager
         if (! isset($this->documentBuckets[$className])) {
             $db = $this->getDocumentDatabase($className);
 
-            $options = ['bucketName' => $bucketName];
+            $options = ['bucketName' => $bucketName, 'typeMap' => self::CLIENT_TYPEMAP];
             if ($metadata->readPreference !== null) {
                 $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
             }
