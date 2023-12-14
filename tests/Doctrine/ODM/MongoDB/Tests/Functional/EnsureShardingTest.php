@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Sharded\ShardedByUser;
@@ -31,7 +32,7 @@ class EnsureShardingTest extends BaseTestCase
 
         $collection = $this->dm->getDocumentCollection($class);
         $indexes    = iterator_to_array($collection->listIndexes());
-        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         self::assertCount(2, $indexes);
         self::assertSame(['k' => 1], $indexes[1]['key']);
@@ -45,7 +46,7 @@ class EnsureShardingTest extends BaseTestCase
 
         $collection = $this->dm->getDocumentCollection($class);
         $indexes    = iterator_to_array($collection->listIndexes());
-        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         self::assertCount(2, $indexes);
         self::assertSame(['k' => 1], $indexes[1]['key']);
@@ -64,7 +65,7 @@ class EnsureShardingTest extends BaseTestCase
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         self::assertTrue($stats['sharded']);
     }
@@ -83,7 +84,7 @@ class EnsureShardingTest extends BaseTestCase
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         self::assertFalse($stats['sharded']);
     }
@@ -97,7 +98,7 @@ class EnsureShardingTest extends BaseTestCase
         $this->dm->getSchemaManager()->ensureDocumentSharding(ShardedOne::class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         self::assertTrue($stats['sharded']);
     }
@@ -110,7 +111,7 @@ class EnsureShardingTest extends BaseTestCase
         $this->dm->getSchemaManager()->ensureDocumentSharding($class);
 
         $collection = $this->dm->getDocumentCollection($class);
-        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()])->toArray()[0];
+        $stats      = $this->dm->getDocumentDatabase($class)->command(['collstats' => $collection->getCollectionName()], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
         $indexes    = iterator_to_array($collection->listIndexes());
 
         self::assertTrue($stats['sharded']);

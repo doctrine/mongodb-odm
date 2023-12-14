@@ -279,6 +279,21 @@ class DefaultGridFSRepositoryTest extends BaseTestCase
         self::assertSame(261120, $file->getChunkSize());
     }
 
+    public function testReadingFileWithMetadata(): void
+    {
+        $uploadOptions                                = new UploadOptions();
+        $uploadOptions->metadata                      = new FileMetadata();
+        $uploadOptions->metadata->getEmbedOne()->name = 'foo';
+
+        $file = $this->getRepository()->uploadFromFile(__FILE__, uploadOptions: $uploadOptions);
+        $this->dm->detach($file);
+
+        $retrievedFile = $this->getRepository()->find($file->getId());
+        self::assertInstanceOf(File::class, $retrievedFile);
+        self::assertInstanceOf(FileMetadata::class, $retrievedFile->getMetadata());
+        self::assertSame('foo', $retrievedFile->getMetadata()->getEmbedOne()->name);
+    }
+
     /**
      * @param class-string<T> $className
      *
