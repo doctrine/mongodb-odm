@@ -446,6 +446,16 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Hydrator/HydratorFactory.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\:\\:validateAndCompleteTypedFieldMapping\\(\\) should return array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\} but returns array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+		-
+			message: "#^Parameter \\#2 \\$enumType of class Doctrine\\\\Persistence\\\\Reflection\\\\EnumReflectionProperty constructor expects class\\-string\\<BackedEnum\\>, class\\-string\\<UnitEnum\\> given\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+		-
 			message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
