@@ -23,8 +23,12 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     private array $documentChangeSet;
 
     /** @psalm-param array<string, ChangeSet> $changeSet */
-    public function __construct(object $document, DocumentManager $dm, array $changeSet, ?Session $session = null)
-    {
+    public function __construct(
+        object $document,
+        DocumentManager $dm,
+        array $changeSet,
+        ?Session $session = null,
+    ) {
         parent::__construct($document, $dm, $session);
 
         $this->documentChangeSet = $changeSet;

@@ -16,8 +16,12 @@ final class PreLoadEventArgs extends LifecycleEventArgs
     private array $data;
 
     /** @param array<string, mixed> $data */
-    public function __construct(object $document, DocumentManager $dm, array &$data, ?Session $session = null)
-    {
+    public function __construct(
+        object $document,
+        DocumentManager $dm,
+        array &$data,
+        ?Session $session = null,
+    ) {
         parent::__construct($document, $dm, $session);
 
         $this->data =& $data;
