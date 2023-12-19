@@ -254,7 +254,7 @@ abstract class BaseEventDocument
 
     private function assertTransactionState(LifecycleEventArgs $e): void
     {
-        $this->test->assertTrue($e->isInTransaction);
+        $this->test->assertTrue($e->isInTransaction());
         $this->test->assertInstanceOf(Session::class, $e->session);
     }
 }

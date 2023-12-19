@@ -80,8 +80,7 @@ final class LifecycleEventManager
             return;
         }
 
-        $isInTransaction = $session ? $session->isInTransaction() : false;
-        $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
+        $eventArgs = new LifecycleEventArgs($document, $this->dm, $session);
 
         $class->invokeLifecycleCallbacks(Events::postPersist, $document, [$eventArgs]);
         $this->dispatchEvent($class, Events::postPersist, $eventArgs);
@@ -102,8 +101,7 @@ final class LifecycleEventManager
             return;
         }
 
-        $isInTransaction = $session ? $session->isInTransaction() : false;
-        $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
+        $eventArgs = new LifecycleEventArgs($document, $this->dm, $session);
 
         $class->invokeLifecycleCallbacks(Events::postRemove, $document, [$eventArgs]);
         $this->dispatchEvent($class, Events::postRemove, $eventArgs);
@@ -124,8 +122,7 @@ final class LifecycleEventManager
             return;
         }
 
-        $isInTransaction = $session ? $session->isInTransaction() : false;
-        $eventArgs       = new LifecycleEventArgs($document, $this->dm, $isInTransaction, $session);
+        $eventArgs = new LifecycleEventArgs($document, $this->dm, $session);
 
         $class->invokeLifecycleCallbacks(Events::postUpdate, $document, [$eventArgs]);
         $this->dispatchEvent($class, Events::postUpdate, $eventArgs);
@@ -182,14 +179,12 @@ final class LifecycleEventManager
             return;
         }
 
-        $isInTransaction = $session ? $session->isInTransaction() : false;
-
         if (! empty($class->lifecycleCallbacks[Events::preUpdate])) {
-            $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $isInTransaction, $session)]);
+            $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session)]);
             $this->uow->recomputeSingleDocumentChangeSet($class, $document);
         }
 
-        $this->dispatchEvent($class, Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $isInTransaction, $session));
+        $this->dispatchEvent($class, Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session));
         $this->cascadePreUpdate($class, $document, $session);
     }
 
@@ -231,8 +226,6 @@ final class LifecycleEventManager
      */
     private function cascadePostUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        $isInTransaction = $session ? $session->isInTransaction() : false;
-
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
             $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
             if ($value === null) {
@@ -253,7 +246,7 @@ final class LifecycleEventManager
                     continue;
                 }
 
-                $eventArgs = new LifecycleEventArgs($entry, $this->dm, $isInTransaction, $session);
+                $eventArgs = new LifecycleEventArgs($entry, $this->dm, $session);
 
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [$eventArgs]);
                 $this->dispatchEvent($entryClass, $event, $eventArgs);

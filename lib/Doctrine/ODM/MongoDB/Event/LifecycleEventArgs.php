@@ -20,7 +20,6 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     public function __construct(
         object $object,
         ObjectManager $objectManager,
-        public readonly bool $isInTransaction = false,
         public readonly ?Session $session = null,
     ) {
         parent::__construct($object, $objectManager);
@@ -34,5 +33,10 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     public function getDocumentManager(): DocumentManager
     {
         return $this->getObjectManager();
+    }
+
+    public function isInTransaction(): bool
+    {
+        return $this->session?->isInTransaction() ?? false;
     }
 }
