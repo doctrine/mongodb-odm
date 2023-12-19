@@ -305,16 +305,11 @@ final class LifecycleEventManager
         }
 
         // Check whether the event has already been dispatched.
-        $hasDispatched = isset($this->transactionalEvents[$this->getObjectId($document)][$eventName]);
+        $hasDispatched = isset($this->transactionalEvents[spl_object_hash($document)][$eventName]);
 
         // Mark the event as dispatched - no problem doing this if it already was dispatched
-        $this->transactionalEvents[$this->getObjectId($document)][$eventName] = true;
+        $this->transactionalEvents[spl_object_hash($document)][$eventName] = true;
 
         return ! $hasDispatched;
-    }
-
-    private function getObjectId(object $document): string
-    {
-        return spl_object_hash($document);
     }
 }
