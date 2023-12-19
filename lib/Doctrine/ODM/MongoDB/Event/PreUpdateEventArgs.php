@@ -19,30 +19,27 @@ use function sprintf;
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @psalm-var array<string, ChangeSet> */
-    private array $documentChangeSet;
-
     /** @psalm-param array<string, ChangeSet> $changeSet */
     public function __construct(
         object $document,
         DocumentManager $dm,
-        array $changeSet,
+        private array $changeSet,
         ?Session $session = null,
     ) {
         parent::__construct($document, $dm, $session);
 
-        $this->documentChangeSet = $changeSet;
+        $this->changeSet = $changeSet;
     }
 
     /** @return array<string, ChangeSet> */
     public function getDocumentChangeSet(): array
     {
-        return $this->documentChangeSet;
+        return $this->changeSet;
     }
 
     public function hasChangedField(string $field): bool
     {
-        return isset($this->documentChangeSet[$field]);
+        return isset($this->changeSet[$field]);
     }
 
     /**
@@ -54,7 +51,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     {
         $this->assertValidField($field);
 
-        return $this->documentChangeSet[$field][0];
+        return $this->changeSet[$field][0];
     }
 
     /**
@@ -66,7 +63,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     {
         $this->assertValidField($field);
 
-        return $this->documentChangeSet[$field][1];
+        return $this->changeSet[$field][1];
     }
 
     /**
@@ -78,8 +75,8 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
     {
         $this->assertValidField($field);
 
-        $this->documentChangeSet[$field][1] = $value;
-        $this->getDocumentManager()->getUnitOfWork()->setDocumentChangeSet($this->getDocument(), $this->documentChangeSet);
+        $this->changeSet[$field][1] = $value;
+        $this->getDocumentManager()->getUnitOfWork()->setDocumentChangeSet($this->getDocument(), $this->changeSet);
     }
 
     /**
@@ -89,7 +86,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
      */
     private function assertValidField(string $field): void
     {
-        if (! isset($this->documentChangeSet[$field])) {
+        if (! isset($this->changeSet[$field])) {
             throw new InvalidArgumentException(sprintf(
                 'Field "%s" is not a valid field of the document "%s" in PreUpdateEventArgs.',
                 $field,

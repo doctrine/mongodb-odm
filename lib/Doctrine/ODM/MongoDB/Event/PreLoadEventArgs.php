@@ -12,19 +12,14 @@ use MongoDB\Driver\Session;
  */
 final class PreLoadEventArgs extends LifecycleEventArgs
 {
-    /** @var array<string, mixed> */
-    private array $data;
-
     /** @param array<string, mixed> $data */
     public function __construct(
         object $document,
         DocumentManager $dm,
-        array &$data,
+        private array &$data,
         ?Session $session = null,
     ) {
         parent::__construct($document, $dm, $session);
-
-        $this->data =& $data;
     }
 
     /**
