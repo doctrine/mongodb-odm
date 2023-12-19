@@ -143,8 +143,10 @@ final class LifecycleEventManager
             return;
         }
 
-        $class->invokeLifecycleCallbacks(Events::prePersist, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->dispatchEvent($class, Events::prePersist, new LifecycleEventArgs($document, $this->dm));
+        $eventArgs = new LifecycleEventArgs($document, $this->dm);
+
+        $class->invokeLifecycleCallbacks(Events::prePersist, $document, [$eventArgs]);
+        $this->dispatchEvent($class, Events::prePersist, $eventArgs);
     }
 
     /**
@@ -161,8 +163,10 @@ final class LifecycleEventManager
             return;
         }
 
-        $class->invokeLifecycleCallbacks(Events::preRemove, $document, [new LifecycleEventArgs($document, $this->dm)]);
-        $this->dispatchEvent($class, Events::preRemove, new LifecycleEventArgs($document, $this->dm));
+        $eventArgs = new LifecycleEventArgs($document, $this->dm);
+
+        $class->invokeLifecycleCallbacks(Events::preRemove, $document, [$eventArgs]);
+        $this->dispatchEvent($class, Events::preRemove, $eventArgs);
     }
 
     /**
@@ -179,12 +183,17 @@ final class LifecycleEventManager
             return;
         }
 
+        $eventArgs = new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session);
         if (! empty($class->lifecycleCallbacks[Events::preUpdate])) {
-            $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session)]);
+            $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [$eventArgs]);
             $this->uow->recomputeSingleDocumentChangeSet($class, $document);
         }
 
-        $this->dispatchEvent($class, Events::preUpdate, new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session));
+        $this->dispatchEvent(
+            $class,
+            Events::preUpdate,
+            new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session),
+        );
         $this->cascadePreUpdate($class, $document, $session);
     }
 
