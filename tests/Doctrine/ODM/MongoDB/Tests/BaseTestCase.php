@@ -108,14 +108,14 @@ abstract class BaseTestCase extends TestCase
     protected static function createTestDocumentManager(): DocumentManager
     {
         $config = static::getConfiguration();
-        $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+        $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER);
 
         return DocumentManager::create($client, $config);
     }
 
     protected function getServerVersion(): string
     {
-        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1])->toArray()[0];
+        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         return $result['version'];
     }
@@ -123,7 +123,7 @@ abstract class BaseTestCase extends TestCase
     /** @psalm-param class-string $className */
     protected function skipTestIfNotSharded(string $className): void
     {
-        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         if (array_key_exists('shardCollection', $result['commands'])) {
             return;
@@ -135,7 +135,7 @@ abstract class BaseTestCase extends TestCase
     /** @psalm-param class-string $className */
     protected function skipTestIfSharded(string $className): void
     {
-        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true])->toArray()[0];
+        $result = $this->dm->getDocumentDatabase($className)->command(['listCommands' => true], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         if (! array_key_exists('shardCollection', $result['commands'])) {
             return;
