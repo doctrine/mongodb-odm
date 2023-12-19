@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\Client;
 use MongoDB\Driver\Session;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Assert;
 
 class TransactionalLifecycleEventsTest extends BaseTestCase
 {
@@ -34,10 +34,10 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function testPersistEvents(): void
     {
-        $root       = new RootEventDocument($this);
+        $root       = new RootEventDocument();
         $root->name = 'root';
 
-        $root->embedded       = new EmbeddedEventDocument($this);
+        $root->embedded       = new EmbeddedEventDocument();
         $root->embedded->name = 'embedded';
 
         $this->createFailPoint('insert');
@@ -51,10 +51,10 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function testUpdateEvents(): void
     {
-        $root       = new RootEventDocument($this);
+        $root       = new RootEventDocument();
         $root->name = 'root';
 
-        $root->embedded       = new EmbeddedEventDocument($this);
+        $root->embedded       = new EmbeddedEventDocument();
         $root->embedded->name = 'embedded';
 
         $this->dm->persist($root);
@@ -75,10 +75,10 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function testUpdateEventsRootOnly(): void
     {
-        $root       = new RootEventDocument($this);
+        $root       = new RootEventDocument();
         $root->name = 'root';
 
-        $root->embedded       = new EmbeddedEventDocument($this);
+        $root->embedded       = new EmbeddedEventDocument();
         $root->embedded->name = 'embedded';
 
         $this->dm->persist($root);
@@ -98,10 +98,10 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function testUpdateEventsEmbeddedOnly(): void
     {
-        $root       = new RootEventDocument($this);
+        $root       = new RootEventDocument();
         $root->name = 'root';
 
-        $root->embedded       = new EmbeddedEventDocument($this);
+        $root->embedded       = new EmbeddedEventDocument();
         $root->embedded->name = 'embedded';
 
         $this->dm->persist($root);
@@ -122,13 +122,13 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function testUpdateEventsWithNewEmbeddedDocument(): void
     {
-        $firstEmbedded       = new EmbeddedEventDocument($this);
+        $firstEmbedded       = new EmbeddedEventDocument();
         $firstEmbedded->name = 'embedded';
 
-        $secondEmbedded       = new EmbeddedEventDocument($this);
+        $secondEmbedded       = new EmbeddedEventDocument();
         $secondEmbedded->name = 'new';
 
-        $root           = new RootEventDocument($this);
+        $root           = new RootEventDocument();
         $root->name     = 'root';
         $root->embedded = $firstEmbedded;
 
@@ -158,10 +158,10 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function testRemoveEvents(): void
     {
-        $root       = new RootEventDocument($this);
+        $root       = new RootEventDocument();
         $root->name = 'root';
 
-        $root->embedded       = new EmbeddedEventDocument($this);
+        $root->embedded       = new EmbeddedEventDocument();
         $root->embedded->name = 'embedded';
 
         $this->dm->persist($root);
@@ -205,7 +205,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
  */
 abstract class BaseEventDocument
 {
-    public function __construct(private TestCase $test)
+    public function __construct()
     {
     }
 
@@ -254,8 +254,8 @@ abstract class BaseEventDocument
 
     private function assertTransactionState(LifecycleEventArgs $e): void
     {
-        $this->test->assertTrue($e->isInTransaction());
-        $this->test->assertInstanceOf(Session::class, $e->session);
+        Assert::assertTrue($e->isInTransaction());
+        Assert::assertInstanceOf(Session::class, $e->session);
     }
 }
 
