@@ -74,7 +74,14 @@ use function trigger_deprecation;
  *
  * @template T of object
  *
- * @psalm-import-type CommitOptions from UnitOfWork
+ * @psalm-type CommitOptions array{
+ *      fsync?: bool,
+ *      safe?: int,
+ *      session?: ?Session,
+ *      w?: int,
+ *      withTransaction?: bool,
+ *      writeConcern?: WriteConcern
+ * }
  * @psalm-import-type Hints from UnitOfWork
  * @psalm-import-type FieldMapping from ClassMetadata
  * @psalm-import-type SortMeta from Sort
