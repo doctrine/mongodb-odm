@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Event\PostCollectionLoadEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Driver\Session;
@@ -24,6 +25,8 @@ final class LifecycleEventManager
 {
     private bool $transactionalModeEnabled = false;
 
+    private ?Session $session = null;
+
     /** @var array<string, array<string, true>> */
     private array $transactionalEvents = [];
 
@@ -34,12 +37,14 @@ final class LifecycleEventManager
     public function clearTransactionalState(): void
     {
         $this->transactionalModeEnabled = false;
+        $this->session                  = null;
         $this->transactionalEvents      = [];
     }
 
-    public function enableTransactionalMode(): void
+    public function enableTransactionalMode(Session $session): void
     {
         $this->transactionalModeEnabled = true;
+        $this->session                  = $session;
     }
 
     /**
@@ -76,7 +81,7 @@ final class LifecycleEventManager
      */
     public function postPersist(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        if (! $this->shouldDispatchEvent($document, Events::postPersist)) {
+        if (! $this->shouldDispatchEvent($document, Events::postPersist, $session)) {
             return;
         }
 
@@ -97,7 +102,7 @@ final class LifecycleEventManager
      */
     public function postRemove(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        if (! $this->shouldDispatchEvent($document, Events::postRemove)) {
+        if (! $this->shouldDispatchEvent($document, Events::postRemove, $session)) {
             return;
         }
 
@@ -118,7 +123,7 @@ final class LifecycleEventManager
      */
     public function postUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        if (! $this->shouldDispatchEvent($document, Events::postUpdate)) {
+        if (! $this->shouldDispatchEvent($document, Events::postUpdate, $session)) {
             return;
         }
 
@@ -139,7 +144,7 @@ final class LifecycleEventManager
      */
     public function prePersist(ClassMetadata $class, object $document): void
     {
-        if (! $this->shouldDispatchEvent($document, Events::prePersist)) {
+        if (! $this->shouldDispatchEvent($document, Events::prePersist, null)) {
             return;
         }
 
@@ -159,7 +164,7 @@ final class LifecycleEventManager
      */
     public function preRemove(ClassMetadata $class, object $document): void
     {
-        if (! $this->shouldDispatchEvent($document, Events::preRemove)) {
+        if (! $this->shouldDispatchEvent($document, Events::preRemove, null)) {
             return;
         }
 
@@ -179,7 +184,7 @@ final class LifecycleEventManager
      */
     public function preUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
-        if (! $this->shouldDispatchEvent($document, Events::preUpdate)) {
+        if (! $this->shouldDispatchEvent($document, Events::preUpdate, $session)) {
             return;
         }
 
@@ -251,7 +256,7 @@ final class LifecycleEventManager
                 $entryClass = $this->dm->getClassMetadata($entry::class);
                 $event      = $this->uow->isScheduledForInsert($entry) ? Events::postPersist : Events::postUpdate;
 
-                if (! $this->shouldDispatchEvent($entry, $event)) {
+                if (! $this->shouldDispatchEvent($entry, $event, $session)) {
                     continue;
                 }
 
@@ -260,7 +265,7 @@ final class LifecycleEventManager
                 $entryClass->invokeLifecycleCallbacks($event, $entry, [$eventArgs]);
                 $this->dispatchEvent($entryClass, $event, $eventArgs);
 
-                $this->cascadePostUpdate($entryClass, $entry);
+                $this->cascadePostUpdate($entryClass, $entry, $session);
             }
         }
     }
@@ -298,10 +303,14 @@ final class LifecycleEventManager
         $this->evm->dispatchEvent($eventName, $eventArgs);
     }
 
-    private function shouldDispatchEvent(object $document, string $eventName): bool
+    private function shouldDispatchEvent(object $document, string $eventName, ?Session $session): bool
     {
         if (! $this->transactionalModeEnabled) {
             return true;
+        }
+
+        if ($session !== $this->session) {
+            throw MongoDBException::transactionalSessionMismatch();
         }
 
         // Check whether the event has already been dispatched.

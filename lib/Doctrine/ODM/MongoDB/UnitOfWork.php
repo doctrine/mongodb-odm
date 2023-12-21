@@ -456,10 +456,12 @@ final class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
             if ($this->useTransaction($options)) {
-                $this->lifecycleEventManager->enableTransactionalMode();
+                $session = $this->dm->getClient()->startSession();
+
+                $this->lifecycleEventManager->enableTransactionalMode($session);
 
                 with_transaction(
-                    $this->dm->getClient()->startSession(),
+                    $session,
                     function (Session $session) use ($options): void {
                         $this->doCommit(['session' => $session] + $this->stripTransactionOptions($options));
                     },
