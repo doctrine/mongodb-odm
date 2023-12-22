@@ -8,13 +8,11 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Card;
 use Documents\Suit;
 use Error;
-use Jean85\PrettyVersions;
 use MongoDB\BSON\ObjectId;
 use ValueError;
 
 use function preg_quote;
 use function sprintf;
-use function version_compare;
 
 class EnumTest extends BaseTestCase
 {
@@ -36,11 +34,6 @@ class EnumTest extends BaseTestCase
 
     public function testArrayOfEnums(): void
     {
-        $persistenceVersion = PrettyVersions::getVersion('doctrine/persistence')->getPrettyVersion();
-        if (version_compare('3.2.0', $persistenceVersion, '>')) {
-            self::markTestSkipped('Support for array of enums was introduced in doctrine/persistence 3.2.0');
-        }
-
         $doc        = new Card();
         $doc->suits = ['foo' => Suit::Clubs, 'bar' => Suit::Diamonds];
 

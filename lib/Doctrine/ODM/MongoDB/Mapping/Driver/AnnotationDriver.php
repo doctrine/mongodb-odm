@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
@@ -32,7 +33,7 @@ use function trigger_deprecation;
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
  */
-class AnnotationDriver extends CompatibilityAnnotationDriver
+class AnnotationDriver implements MappingDriver
 {
     use ColocatedMappingDriver;
 
