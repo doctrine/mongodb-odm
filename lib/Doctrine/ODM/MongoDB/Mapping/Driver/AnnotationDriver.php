@@ -18,6 +18,7 @@ use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
 
+use function array_key_exists;
 use function array_merge;
 use function array_replace;
 use function assert;
@@ -180,6 +181,9 @@ class AnnotationDriver implements MappingDriver
 
         if (isset($documentAnnot->collection)) {
             $metadata->setCollection($documentAnnot->collection);
+            if (is_array($documentAnnot->collection) && array_key_exists('timeseries', $documentAnnot->collection)) {
+                $metadata->isTimeSeriesDocument = true;
+            }
         }
 
         if (isset($documentAnnot->view)) {
