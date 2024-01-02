@@ -32,6 +32,11 @@ document mapping metadata:
 Introduction to Docblock Annotations
 ------------------------------------
 
+.. note::
+
+    To be able to use annotations, you will have to install an extra
+    package called ``doctrine/annotations``.
+
 You've probably used docblock annotations in some form already,
 most likely to provide documentation metadata for a tool like
 ``PHPDocumentor`` (@author, @link, ...). Docblock annotations are a
@@ -44,12 +49,15 @@ chances of clashes with other docblock annotations, the Doctrine
 docblock annotations feature an alternative syntax that is heavily
 inspired by the Annotation syntax introduced in Java 5.
 
-The implementation of these enhanced docblock annotations is
-located in the ``Doctrine\Common\Annotations`` namespace and
-therefore part of the Common package. Doctrine docblock annotations
-support namespaces and nested annotations among other things. The
-Doctrine MongoDB ODM defines its own set of docblock annotations
-for supplying object document mapping metadata.
+The implementation of these enhanced docblock annotations is located in
+the ``doctrine/annotations`` package, but in the
+``Doctrine\Common\Annotations`` namespace for backwards compatibility
+reasons. Note that ``doctrine/annotations`` is not required by Doctrine
+MongoDB ODM, and you will need to require that package if you want to use
+annotations. Doctrine MongoDB ODM docblock annotations support namespaces and
+nested annotations among other things. The Doctrine MongoDB ODM defines its
+own set of docblock annotations for supplying object-relational mapping
+metadata.
 
 .. note::
 
