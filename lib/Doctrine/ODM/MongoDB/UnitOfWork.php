@@ -456,8 +456,12 @@ final class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
             if ($this->useTransaction($options)) {
+                $session = $this->dm->getClient()->startSession();
+
+                $this->lifecycleEventManager->enableTransactionalMode($session);
+
                 with_transaction(
-                    $this->dm->getClient()->startSession(),
+                    $session,
                     function (Session $session) use ($options): void {
                         $this->doCommit(['session' => $session] + $this->stripTransactionOptions($options));
                     },
@@ -484,6 +488,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->hasScheduledCollections      = [];
         } finally {
             $this->commitsInProgress--;
+            $this->lifecycleEventManager->clearTransactionalState();
         }
     }
 
@@ -1171,7 +1176,7 @@ final class UnitOfWork implements PropertyChangedListener
         $persister->executeInserts($options);
 
         foreach ($documents as $document) {
-            $this->lifecycleEventManager->postPersist($class, $document);
+            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1195,7 +1200,7 @@ final class UnitOfWork implements PropertyChangedListener
         $persister->executeUpserts($options);
 
         foreach ($documents as $document) {
-            $this->lifecycleEventManager->postPersist($class, $document);
+            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1218,13 +1223,13 @@ final class UnitOfWork implements PropertyChangedListener
         $persister = $this->getDocumentPersister($className);
 
         foreach ($documents as $oid => $document) {
-            $this->lifecycleEventManager->preUpdate($class, $document);
+            $this->lifecycleEventManager->preUpdate($class, $document, $options['session'] ?? null);
 
             if (! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
                 $persister->update($document, $options);
             }
 
-            $this->lifecycleEventManager->postUpdate($class, $document);
+            $this->lifecycleEventManager->postUpdate($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1266,7 +1271,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $value->clearSnapshot();
             }
 
-            $this->lifecycleEventManager->postRemove($class, $document);
+            $this->lifecycleEventManager->postRemove($class, $document, $options['session'] ?? null);
         }
     }
 
