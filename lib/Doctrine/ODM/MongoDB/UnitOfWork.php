@@ -25,10 +25,12 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
+use Throwable;
 use UnexpectedValueException;
 
 use function array_diff_key;
@@ -37,13 +39,13 @@ use function array_intersect_key;
 use function array_key_exists;
 use function array_merge;
 use function assert;
+use function call_user_func;
 use function count;
 use function get_class;
 use function in_array;
 use function is_array;
 use function is_object;
 use function method_exists;
-use function MongoDB\with_transaction;
 use function preg_match;
 use function serialize;
 use function spl_object_hash;
@@ -460,7 +462,7 @@ final class UnitOfWork implements PropertyChangedListener
 
                 $this->lifecycleEventManager->enableTransactionalMode($session);
 
-                with_transaction(
+                $this->withTransaction(
                     $session,
                     function (Session $session) use ($options): void {
                         $this->doCommit(['session' => $session] + $this->stripTransactionOptions($options));
@@ -3176,5 +3178,78 @@ final class UnitOfWork implements PropertyChangedListener
             ),
             self::TRANSACTION_OPTIONS,
         );
+    }
+
+    /**
+     * This following method was taken from the MongoDB Library and adapted to not use the default 120 seconds timeout.
+     * The code within this method is licensed under the Apache License. Copyright belongs to MongoDB, Inc.
+     */
+    private function withTransaction(Session $session, callable $callback, array $transactionOptions = []): void
+    {
+        $closureAttempts = 0;
+
+        while (true) {
+            $session->startTransaction($transactionOptions);
+
+            try {
+                $closureAttempts++;
+                call_user_func($callback, $session);
+            } catch (Throwable $e) {
+                if ($session->isInTransaction()) {
+                    $session->abortTransaction();
+                }
+
+                if (
+                    $e instanceof RuntimeException &&
+                    $e->hasErrorLabel('TransientTransactionError') &&
+                    ! $this->shouldAbortWithTransaction($closureAttempts)
+                ) {
+                    continue;
+                }
+
+                throw $e;
+            }
+
+            if (! $session->isInTransaction()) {
+                // Assume callback intentionally ended the transaction
+                return;
+            }
+
+            while (true) {
+                try {
+                    $session->commitTransaction();
+                } catch (RuntimeException $e) {
+                    if (
+                        $e->getCode() !== 50 /* MaxTimeMSExpired */ &&
+                        $e->hasErrorLabel('UnknownTransactionCommitResult') &&
+                        ! $this->shouldAbortWithTransaction($closureAttempts)
+                    ) {
+                        // Retry committing the transaction
+                        continue;
+                    }
+
+                    if (
+                        $e->hasErrorLabel('TransientTransactionError') &&
+                        ! $this->shouldAbortWithTransaction($closureAttempts)
+                    ) {
+                        // Restart the transaction, invoking the callback again
+                        continue 2;
+                    }
+
+                    throw $e;
+                }
+
+                // Commit was successful
+                break;
+            }
+
+            // Transaction was successful
+            break;
+        }
+    }
+
+    private function shouldAbortWithTransaction(int $closureAttempts): bool
+    {
+        return $closureAttempts >= 2;
     }
 }
