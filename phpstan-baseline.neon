@@ -621,6 +621,11 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\UnitOfWork\\:\\:withTransaction\\(\\) has parameter \\$transactionOptions with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
+
+		-
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php

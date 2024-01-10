@@ -115,6 +115,50 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         self::assertEquals([], $this->uow->getDocumentChangeSet($friendUser));
     }
 
+    public function testMultipleTransientErrors(): void
+    {
+        $firstUser           = new ForumUser();
+        $firstUser->username = 'alcaeus';
+        $this->uow->persist($firstUser);
+
+        $secondUser           = new ForumUser();
+        $secondUser->username = 'jmikola';
+        $this->uow->persist($secondUser);
+
+        $friendUser = new FriendUser('GromNaN');
+        $this->uow->persist($friendUser);
+
+        // Add a failpoint that triggers multiple transient errors. The transaction is expected to fail
+        $this->createTransientFailPoint('insert', 2);
+
+        try {
+            $this->uow->commit();
+            self::fail('Expected exception when committing');
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(192, $e->getCode());
+        }
+
+        self::assertSame(
+            0,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertSame(
+            0,
+            $this->dm->getDocumentCollection(FriendUser::class)->countDocuments(),
+        );
+
+        self::assertTrue($this->uow->isScheduledForInsert($firstUser));
+        self::assertNotEquals([], $this->uow->getDocumentChangeSet($firstUser));
+
+        self::assertTrue($this->uow->isScheduledForInsert($secondUser));
+        self::assertNotEquals([], $this->uow->getDocumentChangeSet($secondUser));
+
+        self::assertTrue($this->uow->isScheduledForInsert($friendUser));
+        self::assertNotEquals([], $this->uow->getDocumentChangeSet($friendUser));
+    }
+
     public function testDuplicateKeyError(): void
     {
         // Create a unique index on the collection to let the second insert fail
@@ -534,12 +578,11 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         return $configuration;
     }
 
-    private function createTransientFailPoint(string $failCommand): void
+    private function createTransientFailPoint(string $failCommand, int $times = 1): void
     {
         $this->dm->getClient()->selectDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
-            // Trigger the error twice, working around retryable writes
-            'mode' => ['times' => 2],
+            'mode' => ['times' => $times],
             'data' => [
                 'errorCode' => 192, // FailPointEnabled
                 'errorLabels' => ['TransientTransactionError'],
