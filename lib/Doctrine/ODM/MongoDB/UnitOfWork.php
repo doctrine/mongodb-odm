@@ -3186,13 +3186,13 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function withTransaction(Session $session, callable $callback, array $transactionOptions = []): void
     {
-        $closureAttempts = 0;
+        $numAttempts = 0;
 
         while (true) {
             $session->startTransaction($transactionOptions);
 
             try {
-                $closureAttempts++;
+                $numAttempts++;
                 call_user_func($callback, $session);
             } catch (Throwable $e) {
                 if ($session->isInTransaction()) {
@@ -3202,7 +3202,7 @@ final class UnitOfWork implements PropertyChangedListener
                 if (
                     $e instanceof RuntimeException &&
                     $e->hasErrorLabel('TransientTransactionError') &&
-                    ! $this->shouldAbortWithTransaction($closureAttempts)
+                    ! $this->shouldAbortWithTransaction($numAttempts)
                 ) {
                     continue;
                 }
@@ -3222,7 +3222,7 @@ final class UnitOfWork implements PropertyChangedListener
                     if (
                         $e->getCode() !== 50 /* MaxTimeMSExpired */ &&
                         $e->hasErrorLabel('UnknownTransactionCommitResult') &&
-                        ! $this->shouldAbortWithTransaction($closureAttempts)
+                        ! $this->shouldAbortWithTransaction($numAttempts)
                     ) {
                         // Retry committing the transaction
                         continue;
@@ -3230,7 +3230,7 @@ final class UnitOfWork implements PropertyChangedListener
 
                     if (
                         $e->hasErrorLabel('TransientTransactionError') &&
-                        ! $this->shouldAbortWithTransaction($closureAttempts)
+                        ! $this->shouldAbortWithTransaction($numAttempts)
                     ) {
                         // Restart the transaction, invoking the callback again
                         continue 2;
@@ -3248,8 +3248,8 @@ final class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    private function shouldAbortWithTransaction(int $closureAttempts): bool
+    private function shouldAbortWithTransaction(int $numAttempts): bool
     {
-        return $closureAttempts >= 2;
+        return $numAttempts >= 2;
     }
 }
