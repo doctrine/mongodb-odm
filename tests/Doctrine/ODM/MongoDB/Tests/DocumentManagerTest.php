@@ -26,15 +26,21 @@ use Documents\CmsPhonenumber;
 use Documents\CmsUser;
 use Documents\CustomRepository\Document;
 use Documents\CustomRepository\Repository;
+use Documents\ForumUser;
+use Documents\FriendUser;
 use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use MongoDB\Driver\Exception\BulkWriteException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use stdClass;
+use Throwable;
+
+use function uniqid;
 
 class DocumentManagerTest extends BaseTestCase
 {
@@ -228,6 +234,97 @@ class DocumentManagerTest extends BaseTestCase
         self::assertIsArray($dbRef);
         self::assertCount(1, $dbRef);
         self::assertArrayHasKey('id', $dbRef);
+    }
+
+    public function testTransactionalWithoutTransactionSupport(): void
+    {
+        if ($this->supportsTransactions()) {
+            $this->markTestSkipped('Test does not apply as transactions are supported');
+        }
+
+        $closure = fn () => $this->dm->persist(new User());
+
+        $this->expectException(BulkWriteException::class);
+        $this->expectExceptionMessageMatches('%transaction%i');
+
+        $this->dm->transactional($closure);
+    }
+
+    public function testTransactionalWithTransientError(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        $closure = function (): void {
+            $firstUser           = new ForumUser();
+            $firstUser->username = 'alcaeus';
+            $this->uow->persist($firstUser);
+
+            $secondUser           = new ForumUser();
+            $secondUser->username = 'jmikola';
+            $this->uow->persist($secondUser);
+
+            $friendUser = new FriendUser('GromNaN');
+            $this->uow->persist($friendUser);
+        };
+
+        // Add a failpoint that triggers a transient error. The transaction will be retried and succeeds
+        $this->createTransientFailPoint('insert');
+
+        $this->dm->transactional($closure);
+
+        self::assertSame(
+            2,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertSame(
+            1,
+            $this->dm->getDocumentCollection(FriendUser::class)->countDocuments(),
+        );
+    }
+
+    public function testTransactionalWithFatalError(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        // Create a unique index on the collection to let the second insert fail
+        $collection = $this->dm->getDocumentCollection(ForumUser::class);
+        $collection->createIndex(['username' => 1], ['unique' => true]);
+
+        $closure = function (): void {
+            $firstUser           = new ForumUser();
+            $firstUser->username = 'alcaeus';
+            $this->uow->persist($firstUser);
+
+            $secondUser           = new ForumUser();
+            $secondUser->username = 'alcaeus';
+            $this->uow->persist($secondUser);
+        };
+
+        try {
+            // The second insert will fail due to a duplicate key exception.
+            // Since we're using transactions, the first user document should not be saved afterwards
+            $this->dm->transactional($closure);
+            self::fail('Expected exception when committing');
+        } catch (Throwable $e) {
+            self::assertInstanceOf(BulkWriteException::class, $e);
+            self::assertSame(11000, $e->getCode()); // Duplicate key
+        }
+
+        self::assertSame(
+            0,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+    }
+
+    public function testTransactionalReturnsClosureReturnValue(): void
+    {
+        $this->skipTestIfNoTransactionSupport();
+
+        $rand    = uniqid();
+        $closure = static fn (): string => $rand;
+
+        self::assertSame($rand, $this->dm->transactional($closure));
     }
 }
 

@@ -253,4 +253,29 @@ abstract class BaseTestCase extends TestCase
 
         return $manager->selectServer()->getType() !== Server::TYPE_STANDALONE;
     }
+
+    protected function createFatalFailPoint(string $failCommand): void
+    {
+        $this->dm->getClient()->selectDatabase('admin')->command([
+            'configureFailPoint' => 'failCommand',
+            'mode' => ['times' => 1],
+            'data' => [
+                'errorCode' => 192, // FailPointEnabled
+                'failCommands' => [$failCommand],
+            ],
+        ]);
+    }
+
+    protected function createTransientFailPoint(string $failCommand, int $times = 1): void
+    {
+        $this->dm->getClient()->selectDatabase('admin')->command([
+            'configureFailPoint' => 'failCommand',
+            'mode' => ['times' => $times],
+            'data' => [
+                'errorCode' => 192, // FailPointEnabled
+                'errorLabels' => ['TransientTransactionError'],
+                'failCommands' => [$failCommand],
+            ],
+        ]);
+    }
 }

@@ -577,29 +577,4 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         return $configuration;
     }
-
-    private function createTransientFailPoint(string $failCommand, int $times = 1): void
-    {
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => $times],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'errorLabels' => ['TransientTransactionError'],
-                'failCommands' => [$failCommand],
-            ],
-        ]);
-    }
-
-    private function createFatalFailPoint(string $failCommand): void
-    {
-        $this->dm->getClient()->selectDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => [$failCommand],
-            ],
-        ]);
-    }
 }

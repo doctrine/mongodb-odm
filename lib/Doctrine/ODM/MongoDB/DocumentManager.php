@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
+use Closure;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -881,6 +882,22 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
+    }
+
+    /**
+     * @psalm-param Closure():T $closure
+     *
+     * @return mixed
+     * @psalm-return T
+     *
+     * @psalm-template T
+     */
+    public function transactional(Closure $closure)
+    {
+        $return = $closure();
+        $this->flush(['withTransaction' => true]);
+
+        return $return;
     }
 
     private static function getVersion(): string
