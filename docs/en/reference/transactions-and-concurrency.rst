@@ -15,7 +15,7 @@ atomic, the operation as a whole is not and other operations may interleave.
 Transaction support
 ~~~~~~~~~~~~~~~~~~~
 
-MongoDB supports Multi-Document Transactions on Replica Sets (starting in MongoDB 4.2) and Sharded Clusters (MongoDB
+MongoDB supports multi-document transactions on replica sets (starting in MongoDB 4.2) and sharded clusters (MongoDB
 4.4). Standalone topologies do not support multi-document transactions.
 
 Transaction Support in Doctrine MongoDB ODM
@@ -59,7 +59,7 @@ Lifecycle Events and Transactions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When using transactional flushes, either through the configuration or explicitly, there are a couple of important things
-to note regarding lifecycle events. Due to the way MongoDB Transactions work, it is possible that ODM attempts write
+to note regarding lifecycle events. Due to the way MongoDB transactions work, it is possible that ODM attempts write
 operations multiple times. However, to preserve the expectation that lifecycle events are only triggered once per flush
 operation, lifecycle events will not be dispatched when the transaction is retried. This maintains current functionality
 when a lifecycle event modifies the unit of work, as this change is automatically carried over when the transaction is
@@ -79,7 +79,7 @@ Multi-Document transactions provide certain guarantees regarding your database w
 operations from interfering with each other. Depending on your use case, this is not enough, as the transactional
 guarantee will only apply once you start writing to the database as part of the ``DocumentManager::flush()`` call. This
 could still lead to data loss if you replace data that was written to the database by a different process in between you
-reading the data and starting the transaction. To solve this problem, Optimistic and Pessimistic Locking strategies can
+reading the data and starting the transaction. To solve this problem, optimistic and pessimistic locking strategies can
 be used, allowing for fine-grained control over what kind of locking is required for documents in your application.
 
 .. _transactions_and_concurrency_optimistic_locking:
