@@ -42,7 +42,7 @@ Now we can add some event listeners to the ``$evm``. Let's create a
             $evm->addEventListener([self::preFoo, self::postFoo], $this);
         }
 
-        public function preFoo(EventArgs $e): void 
+        public function preFoo(EventArgs $e): void
         {
             $this->preFooInvoked = true;
         }
@@ -693,8 +693,8 @@ Define the ``EventTest`` class with a ``postCollectionLoad()`` method:
         }
     }
 
-Load ClassMetadata Event
-------------------------
+loadClassMetadata
+~~~~~~~~~~~~~~~~~
 
 When the mapping information for a document is read, it is
 populated in to a ``ClassMetadata`` instance. You can hook in to
