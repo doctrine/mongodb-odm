@@ -345,6 +345,38 @@ follow this restrictions very carefully since operations in the
 wrong event may produce lots of different errors, such as
 inconsistent data and lost updates/persists/removes.
 
+Handling Transactional Flushes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When a flush operation is executed in a transaction, all queries inside a lifecycle event listener also have to make use
+of the session used during the flush operation. This session object is exposed through the ``LifecycleEventArgs``
+parameter passed to the listener. Passing the session to queries ensures that the query will become part of the
+transaction and will see data that has not been committed yet.
+
+.. code-block:: php
+
+    <?php
+
+    public function someEventListener(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
+    {
+        // To check if a transaction is active:
+        if ($eventArgs->isInTransaction()) {
+            // Do something
+        }
+
+        // Pass the session to any query you execute
+        $eventArgs->getDocumentManager()->createQueryBuilder(User::class)
+            // Query logic
+            ->getQuery(['session' => $eventArgs->session])
+            ->execute();
+    }
+
+.. note::
+
+    Event listeners are only called during the first transaction attempt. If the transaction is retried, event listeners
+    will not be invoked again. Make sure to run any persistence logic through the UnitOfWork instead of modifying data
+    directly through queries run in an event listener.
+
 prePersist
 ~~~~~~~~~~
 
