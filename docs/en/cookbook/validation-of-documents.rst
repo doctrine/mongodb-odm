@@ -86,7 +86,7 @@ Now validation is performed whenever you call
 ``DocumentManager#persist($order)`` or when you call
 ``DocumentManager#flush()`` and an order is about to be updated. Any
 Exception that happens in the lifecycle callbacks will be cached by
-the DocumentManager and the current transaction is rolled back.
+the DocumentManager.
 
 Of course you can do any type of primitive checks, not null,
 email-validation, string size, integer and date ranges in your
