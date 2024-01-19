@@ -94,7 +94,6 @@ class Configuration
      *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository<object>>,
      *      defaultDB?: string,
      *      documentNamespaces?: array<string, string>,
-     *      enableTransactionalFlush?: bool,
      *      filters?: array<string, array{
      *          class: class-string,
      *          parameters: array<string, mixed>

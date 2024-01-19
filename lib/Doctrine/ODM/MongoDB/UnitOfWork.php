@@ -3183,6 +3183,9 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * This following method was taken from the MongoDB Library and adapted to not use the default 120 seconds timeout.
      * The code within this method is licensed under the Apache License. Copyright belongs to MongoDB, Inc.
+     *
+     * @see https://github.com/mongodb/mongo-php-library/blob/1.17.0/src/Operation/WithTransaction.php
+     * @see https://github.com/mongodb/specifications/blob/master/source/transactions-convenient-api/transactions-convenient-api.rst#pseudo-code
      */
     private function withTransaction(Session $session, callable $callback, array $transactionOptions = []): void
     {

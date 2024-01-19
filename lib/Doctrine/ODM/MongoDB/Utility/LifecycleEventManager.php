@@ -188,8 +188,8 @@ final class LifecycleEventManager
             return;
         }
 
-        $eventArgs = new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session);
         if (! empty($class->lifecycleCallbacks[Events::preUpdate])) {
+            $eventArgs = new PreUpdateEventArgs($document, $this->dm, $this->uow->getDocumentChangeSet($document), $session);
             $class->invokeLifecycleCallbacks(Events::preUpdate, $document, [$eventArgs]);
             $this->uow->recomputeSingleDocumentChangeSet($class, $document);
         }
