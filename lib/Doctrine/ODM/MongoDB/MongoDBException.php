@@ -155,4 +155,9 @@ class MongoDBException extends Exception
     {
         return new self(sprintf('Cannot create repository for class "%s".', $className));
     }
+
+    public static function transactionalSessionMismatch(): self
+    {
+        return new self('The transactional operation cannot be executed because it was started in a different session.');
+    }
 }

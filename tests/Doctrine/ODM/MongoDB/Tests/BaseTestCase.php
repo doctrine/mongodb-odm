@@ -11,15 +11,24 @@ use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 
 use function array_key_exists;
 use function array_map;
+use function count;
+use function explode;
 use function getenv;
+use function implode;
 use function in_array;
 use function iterator_to_array;
+use function parse_url;
 use function preg_match;
+use function strlen;
+use function strpos;
+use function substr_replace;
 use function version_compare;
 
 use const DOCTRINE_MONGODB_DATABASE;
@@ -27,6 +36,8 @@ use const DOCTRINE_MONGODB_SERVER;
 
 abstract class BaseTestCase extends TestCase
 {
+    protected static ?bool $supportsTransactions;
+    protected static bool $allowsTransactions = true;
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
 
@@ -80,6 +91,9 @@ abstract class BaseTestCase extends TestCase
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
 
+        // Enable transactions if supported
+        $config->setUseTransactionalFlush(static::$allowsTransactions && self::supportsTransactions());
+
         return $config;
     }
 
@@ -108,7 +122,7 @@ abstract class BaseTestCase extends TestCase
     protected static function createTestDocumentManager(): DocumentManager
     {
         $config = static::getConfiguration();
-        $client = new Client(getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER);
+        $client = new Client(self::getUri());
 
         return DocumentManager::create($client, $config);
     }
@@ -118,6 +132,32 @@ abstract class BaseTestCase extends TestCase
         $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         return $result['version'];
+    }
+
+    protected function getPrimaryServer(): Server
+    {
+        return $this->dm->getClient()->getManager()->selectServer();
+    }
+
+    protected function skipTestIfNoTransactionSupport(): void
+    {
+        if (! self::supportsTransactions()) {
+            $this->markTestSkipped('Test requires a topology that supports transactions');
+        }
+    }
+
+    protected function skipTestIfTransactionalFlushDisabled(): void
+    {
+        if (! $this->dm?->getConfiguration()->isTransactionalFlushEnabled()) {
+            $this->markTestSkipped('Test only applies when transactional flush is enabled');
+        }
+    }
+
+    protected function skipTestIfTransactionalFlushEnabled(): void
+    {
+        if ($this->dm?->getConfiguration()->isTransactionalFlushEnabled()) {
+            $this->markTestSkipped('Test is not compatible with transactional flush');
+        }
     }
 
     /** @psalm-param class-string $className */
@@ -161,5 +201,56 @@ abstract class BaseTestCase extends TestCase
     protected function requireMongoDB42(string $message): void
     {
         $this->requireVersion($this->getServerVersion(), '4.2.0', '<', $message);
+    }
+
+    protected static function getUri(bool $useMultipleMongoses = true): string
+    {
+        $uri = getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER;
+
+        return $useMultipleMongoses ? $uri : self::removeMultipleHosts($uri);
+    }
+
+    /**
+     * Removes any hosts beyond the first in a URI. This function should only be
+     * used with a sharded cluster URI, but that is not enforced.
+     */
+    protected static function removeMultipleHosts(string $uri): string
+    {
+        $parts = parse_url($uri);
+
+        self::assertIsArray($parts);
+
+        $hosts = explode(',', $parts['host']);
+
+        // Nothing to do if the URI already has a single mongos host
+        if (count($hosts) === 1) {
+            return $uri;
+        }
+
+        // Re-append port to last host
+        if (isset($parts['port'])) {
+            $hosts[count($hosts) - 1] .= ':' . $parts['port'];
+        }
+
+        $singleHost    = $hosts[0];
+        $multipleHosts = implode(',', $hosts);
+
+        $pos = strpos($uri, $multipleHosts);
+
+        self::assertNotFalse($pos);
+
+        return substr_replace($uri, $singleHost, $pos, strlen($multipleHosts));
+    }
+
+    protected static function supportsTransactions(): bool
+    {
+        return self::$supportsTransactions ??= self::detectTransactionSupport();
+    }
+
+    private static function detectTransactionSupport(): bool
+    {
+        $manager = new Manager(self::getUri());
+
+        return $manager->selectServer()->getType() !== Server::TYPE_STANDALONE;
     }
 }

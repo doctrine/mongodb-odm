@@ -9,26 +9,78 @@ Transactions
 As per the `documentation <https://docs.mongodb.com/manual/core/write-operations-atomicity/#atomicity-and-transactions>`_, MongoDB
 write operations are "atomic on the level of a single document".
 
-Even when updating multiple documents within a single write operation,
-though the modification of each document is atomic,
-the operation as a whole is not and other operations may interleave.
+Even when updating multiple documents within a single write operation, though the modification of each document is
+atomic, the operation as a whole is not and other operations may interleave.
 
-As stated in the `FAQ <https://docs.mongodb.com/manual/faq/fundamentals/#does-mongodb-support-transactions>`_,
-"MongoDB does not support multi-document transactions" and neither does Doctrine MongoDB ODM.
+Transaction support
+~~~~~~~~~~~~~~~~~~~
 
-Limitation
-~~~~~~~~~~
-At the moment, Doctrine MongoDB ODM does not provide any native strategy to emulate multi-document transactions.
+MongoDB supports multi-document transactions on replica sets (starting in MongoDB 4.2) and sharded clusters (MongoDB
+4.4). Standalone topologies do not support multi-document transactions.
 
-Workaround
-~~~~~~~~~~
-To work around this limitation, one can utilize `two phase commits <https://docs.mongodb.com/manual/tutorial/perform-two-phase-commits/>`_.
+Transaction Support in Doctrine MongoDB ODM
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Concurrency
------------
+.. note::
+    Transaction support in MongoDB ODM was introduced in version 2.7.
 
-Doctrine MongoDB ODM offers native support for pessimistic and optimistic locking strategies.
-This allows for very fine-grained control over what kind of locking is required for documents in your application.
+You can instruct the ODM to use transactions when writing changes to the databases by enabling the
+``useTransactionalFlush`` setting in your configuration:
+
+.. code-block:: php
+
+    $config = new Configuration();
+    $config->setUseTransactionalFlush(true);
+    // Other configuration
+
+    $dm = DocumentManager::create(null, $config);
+
+From then onwards, any call to ``DocumentManager::flush`` will start a transaction, apply the write operations, then
+commit the transaction.
+
+To enable or disable transaction usage for a single flush operation, use the ``withTransaction`` write option when
+calling ``DocumentManager::flush``:
+
+.. code-block:: php
+
+    // To explicitly enable transaction for this write
+    $dm->flush(['withTransaction' => true]);
+
+    // To disable transaction usage for a write, regardless of the ``useTransactionalFlush`` config:
+    $dm->flush(['withTransaction' => false]);
+
+.. note::
+
+    Please note that transactions are only used for write operations executed during the ``flush`` operation. For any
+    other operations, e.g. manually executed queries or aggregation pipelines, transactions will not be used and you
+    will have to rely on the MongoDB driver's transaction mechanism.
+
+Lifecycle Events and Transactions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using transactional flushes, either through the configuration or explicitly, there are a couple of important things
+to note regarding lifecycle events. Due to the way MongoDB transactions work, it is possible that ODM attempts write
+operations multiple times. However, to preserve the expectation that lifecycle events are only triggered once per flush
+operation, lifecycle events will not be dispatched when the transaction is retried. This maintains current functionality
+when a lifecycle event modifies the unit of work, as this change is automatically carried over when the transaction is
+retried.
+
+Lifecycle events now expose a ``MongoDB\Driver\Session`` object which needs to be used if it is set. Since MongoDB
+transactions are not tied to the connection but only to a session, any command that should be part of the transaction
+needs to be told about the session to be used. This does not only apply to write commands, but also to read commands
+that need to see the transaction state. If a session is given in a lifecycle event, this session should always be used
+regardless of whether a transaction is active or not.
+
+
+Other Concurrency Controls
+--------------------------
+
+Multi-Document transactions provide certain guarantees regarding your database writes and prevent two simultaneous write
+operations from interfering with each other. Depending on your use case, this is not enough, as the transactional
+guarantee will only apply once you start writing to the database as part of the ``DocumentManager::flush()`` call. This
+could still lead to data loss if you replace data that was written to the database by a different process in between you
+reading the data and starting the transaction. To solve this problem, optimistic and pessimistic locking strategies can
+be used, allowing for fine-grained control over what kind of locking is required for documents in your application.
 
 .. _transactions_and_concurrency_optimistic_locking:
 

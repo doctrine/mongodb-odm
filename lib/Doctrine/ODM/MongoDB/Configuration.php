@@ -117,6 +117,8 @@ class Configuration
 
     private int $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
 
+    private bool $useTransactionalFlush = false;
+
     public function __construct()
     {
         $this->proxyManagerConfiguration = new ProxyManagerConfiguration();
@@ -595,6 +597,16 @@ class Configuration
     public function getProxyManagerConfiguration(): ProxyManagerConfiguration
     {
         return $this->proxyManagerConfiguration;
+    }
+
+    public function setUseTransactionalFlush(bool $useTransactionalFlush): void
+    {
+        $this->useTransactionalFlush = $useTransactionalFlush;
+    }
+
+    public function isTransactionalFlushEnabled(): bool
+    {
+        return $this->useTransactionalFlush;
     }
 }
 

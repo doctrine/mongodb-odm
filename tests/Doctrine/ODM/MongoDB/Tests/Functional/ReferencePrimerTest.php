@@ -389,7 +389,9 @@ class ReferencePrimerTest extends BaseTestCase
             $invokedArgs[] = func_get_args();
         };
 
-        $readPreference = new ReadPreference(ReadPreference::RP_SECONDARY_PREFERRED);
+        // Note: using a secondary read preference here can cause issues when using transactions
+        // Using a primaryPreferred works just as well to check if the hint is passed on to the primer
+        $readPreference = new ReadPreference(ReadPreference::RP_PRIMARY_PREFERRED);
         $this->dm->createQueryBuilder(User::class)
             ->field('account')->prime($primer)
             ->field('groups')->prime($primer)
