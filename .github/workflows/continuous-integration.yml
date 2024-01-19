@@ -45,7 +45,7 @@ jobs:
           # Test with highest dependencies
           - topology: "server"
             php-version: "8.2"
-            mongodb-version: "6.0"
+            mongodb-version: "7.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "7"
