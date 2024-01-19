@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.18.0@b113f3ed0259fd6e212d87c3df80eec95a6abf19">
+<files psalm-version="5.20.0@3f284e96c9d9be6fe6b15c79416e1d1903dcfef4">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
       <code>IteratorAggregate</code>
@@ -301,6 +301,9 @@
     <NullableReturnStatement>
       <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>
+    <TypeDoesNotContainType>
+      <code><![CDATA[empty($divided[$class->name])]]></code>
+    </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/OperatorTest.php">
     <InternalClass>
@@ -489,6 +492,9 @@
     <InvalidArgument>
       <code>$options + $expectedWriteOptions</code>
     </InvalidArgument>
+    <TypeDoesNotContainType>
+      <code>empty($dbCommands[$databaseName])</code>
+    </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Types/DateImmutableTypeTest.php">
     <TypeDoesNotContainType>
