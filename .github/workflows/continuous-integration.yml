@@ -119,10 +119,11 @@ jobs:
           composer-options: "--prefer-dist"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: composer.lock
+          name: "composer-lock-phpunit-${{ matrix.php-version }}-${{ matrix.dependencies }}-${{ matrix.mongodb-version }}"
           path: composer.lock
+          overwrite: true
 
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master
