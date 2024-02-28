@@ -51,7 +51,7 @@ final class ReferenceMany extends AbstractField
     /** @var array<string, string|int> */
     public $sort;
 
-    /** @var array<string, string> */
+    /** @var array<string, mixed> */
     public $criteria;
 
     /** @var int|null */
@@ -73,7 +73,7 @@ final class ReferenceMany extends AbstractField
      * @param array<string, class-string>|null $discriminatorMap
      * @param string[]|string|null             $cascade
      * @param array<string, string|int>        $sort
-     * @param array<string, string>            $criteria
+     * @param array<string, mixed>             $criteria
      * @param string[]                         $prime
      */
     public function __construct(

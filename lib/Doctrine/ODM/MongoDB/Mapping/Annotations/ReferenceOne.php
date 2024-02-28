@@ -50,7 +50,7 @@ final class ReferenceOne extends AbstractField
     /** @var array<string, string|int> */
     public $sort;
 
-    /** @var array<string, string> */
+    /** @var array<string, mixed> */
     public $criteria;
 
     /** @var int|null */
@@ -64,7 +64,7 @@ final class ReferenceOne extends AbstractField
      * @param array<string, class-string>|null $discriminatorMap
      * @param string[]|string|null             $cascade
      * @param array<string, string|int>        $sort
-     * @param array<string, string>            $criteria
+     * @param array<string, mixed>             $criteria
      */
     public function __construct(
         ?string $name = null,
