@@ -5,37 +5,22 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Types\Type;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Address
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    protected $street;
+    #[ODM\Field(type: Type::STRING)]
+    protected ?string $street;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    protected $city;
+    #[ODM\Field(type: Type::STRING)]
+    protected ?string $city;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    protected $state;
+    #[ODM\Field(type: Type::STRING)]
+    protected ?string $state;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    protected $postalCode;
+    #[ODM\Field(type: Type::STRING)]
+    protected ?string $postalCode;
 
     public function getStreet(): ?string
     {

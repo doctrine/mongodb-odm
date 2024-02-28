@@ -5,23 +5,16 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Types\Type;
 
-/** @ODM\Document(collection="accounts") */
+#[ODM\Document(collection: 'accounts')]
 class Account
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
-    protected $id;
+    #[ODM\Id]
+    protected ?string $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
-    protected $name;
+    #[ODM\Field(type: Type::STRING)]
+    protected string $name;
 
     public function __construct(string $name)
     {

@@ -7,52 +7,30 @@ namespace Documents;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 use function md5;
 
-/** @ODM\Document(collection="users") */
+#[ODM\Document(collection: 'users')]
 class User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
-    protected $id;
+    #[ODM\Id]
+    protected ?string $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    private $username;
+    #[ODM\Field(type: Type::STRING)]
+    private ?string $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    protected $password;
+    #[ODM\Field(type: Type::STRING)]
+    protected ?string $password;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Address::class)
-     *
-     * @var Address|null
-     */
-    protected $address;
+    #[ODM\EmbedOne(targetDocument: Address::class)]
+    protected ?Address $address;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Account::class)
-     *
-     * @var Account|null
-     */
-    protected $account;
+    #[ODM\ReferenceOne(targetDocument: Account::class)]
+    protected ?Account $account;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Phonenumber::class)
-     *
-     * @var Collection<int, Phonenumber>
-     */
+    /** @var Collection<int, Phonenumber> */
+    #[ODM\EmbedMany(targetDocument: Phonenumber::class)]
     protected $phonenumbers;
 
     public function __construct()
