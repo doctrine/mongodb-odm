@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.17.0@c620f6e80d0abfca532b00bda366062aaedf6e5d">
+<files psalm-version="5.22.2@d768d914152dbbf3486c36398802f74e80cfde48">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
-      <code>IteratorAggregate</code>
+      <code><![CDATA[IteratorAggregate]]></code>
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php">
     <MoreSpecificImplementedParamType>
-      <code>$fieldName</code>
-      <code>$order</code>
+      <code><![CDATA[$fieldName]]></code>
+      <code><![CDATA[$order]]></code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/AbstractSearchOperator.php">
     <MoreSpecificImplementedParamType>
-      <code>$fieldName</code>
-      <code>$order</code>
+      <code><![CDATA[$fieldName]]></code>
+      <code><![CDATA[$order]]></code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Configuration.php">
@@ -26,17 +26,17 @@
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/DocumentManager.php">
     <ImplementedReturnTypeMismatch>
-      <code>ClassMetadataFactoryInterface</code>
+      <code><![CDATA[ClassMetadataFactoryInterface]]></code>
     </ImplementedReturnTypeMismatch>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs.php">
     <TooManyArguments>
-      <code>parent::__construct($objectManager, $entityClass)</code>
+      <code><![CDATA[parent::__construct($objectManager, $entityClass)]]></code>
     </TooManyArguments>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Iterator/CachingIterator.php">
     <ImplementedReturnTypeMismatch>
-      <code>TValue|false</code>
+      <code><![CDATA[TValue|false]]></code>
     </ImplementedReturnTypeMismatch>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php">
@@ -44,11 +44,11 @@
       <code><![CDATA[array<string|null>]]></code>
     </ImplementedReturnTypeMismatch>
     <InvalidArgument>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$mapping]]></code>
     </InvalidArgument>
     <InvalidArrayOffset>
       <code><![CDATA[[$this->identifier => $this->getIdentifierValue($object)]]]></code>
@@ -59,36 +59,36 @@
       <code><![CDATA[$this->fieldMappings]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
-      <code>$mapping</code>
+      <code><![CDATA[$mapping]]></code>
       <code><![CDATA[array_filter(
             $this->associationMappings,
             static fn ($assoc) => ! empty($assoc['embedded'])
         )]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code>FieldMapping</code>
+      <code><![CDATA[FieldMapping]]></code>
       <code><![CDATA[array<string, FieldMapping>]]></code>
     </InvalidReturnType>
     <LessSpecificImplementedReturnType>
-      <code>array</code>
+      <code><![CDATA[array]]></code>
       <code><![CDATA[array<string|null>]]></code>
     </LessSpecificImplementedReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php">
     <InvalidArgument>
-      <code>$mapping</code>
+      <code><![CDATA[$mapping]]></code>
     </InvalidArgument>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/AnnotationDriver.php">
     <InvalidArgument>
-      <code>$mapping</code>
-      <code>$options</code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$options]]></code>
     </InvalidArgument>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php">
     <InvalidArgument>
-      <code>$mapping</code>
-      <code>$options</code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$options]]></code>
     </InvalidArgument>
     <InvalidPropertyFetch>
       <code><![CDATA[$xmlRoot->field]]></code>
@@ -131,7 +131,7 @@
       <code><![CDATA[(string) $mapping['index-name']]]></code>
     </RedundantCast>
     <RedundantCondition>
-      <code>assert($attributes instanceof SimpleXMLElement)</code>
+      <code><![CDATA[assert($attributes instanceof SimpleXMLElement)]]></code>
       <code><![CDATA[isset($embed->{'default-discriminator-value'})]]></code>
       <code><![CDATA[isset($embed->{'discriminator-field'})]]></code>
       <code><![CDATA[isset($embed->{'discriminator-map'})]]></code>
@@ -187,12 +187,12 @@
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php">
     <RedundantFunctionCall>
-      <code>array_values</code>
+      <code><![CDATA[array_values]]></code>
     </RedundantFunctionCall>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Proxy/Resolver/ProxyManagerClassNameResolver.php">
     <MoreSpecificImplementedParamType>
-      <code>$className</code>
+      <code><![CDATA[$className]]></code>
     </MoreSpecificImplementedParamType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Builder.php">
@@ -209,91 +209,91 @@
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Query/Query.php">
     <MissingTemplateParam>
-      <code>IteratorAggregate</code>
+      <code><![CDATA[IteratorAggregate]]></code>
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Repository/DocumentRepository.php">
     <LessSpecificImplementedReturnType>
-      <code>array</code>
+      <code><![CDATA[array]]></code>
     </LessSpecificImplementedReturnType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/ClearCache/MetadataCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/CommandCompatibility.php">
     <DuplicateClass>
-      <code>CommandCompatibility</code>
+      <code><![CDATA[CommandCompatibility]]></code>
     </DuplicateClass>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateHydratorsCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GeneratePersistentCollectionsCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/GenerateProxiesCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/QueryCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/AbstractCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/ValidateCommand.php">
     <UndefinedInterfaceMethod>
-      <code>getDocumentManager</code>
+      <code><![CDATA[getDocumentManager]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Helper/DocumentManagerHelper.php">
     <DuplicateClass>
-      <code>DocumentManagerHelperCompatibility</code>
+      <code><![CDATA[DocumentManagerHelperCompatibility]]></code>
     </DuplicateClass>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/MetadataFilter.php">
     <MissingTemplateParam>
-      <code>MetadataFilter</code>
+      <code><![CDATA[MetadataFilter]]></code>
     </MissingTemplateParam>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/ResolveTargetDocumentListener.php">
     <InvalidArgument>
-      <code>$newMapping</code>
-      <code>$newMapping</code>
-      <code>$newMapping</code>
-      <code>$newMapping</code>
+      <code><![CDATA[$newMapping]]></code>
+      <code><![CDATA[$newMapping]]></code>
+      <code><![CDATA[$newMapping]]></code>
+      <code><![CDATA[$newMapping]]></code>
     </InvalidArgument>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Types/DateImmutableType.php">
     <RedundantCondition>
-      <code>$datetime instanceof DateTime</code>
+      <code><![CDATA[$datetime instanceof DateTime]]></code>
     </RedundantCondition>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/UnitOfWork.php">
     <InvalidArgument>
-      <code>$assoc</code>
-      <code>$assoc</code>
-      <code>$assoc2</code>
-      <code>$assoc2</code>
-      <code>$mapping</code>
-      <code>$mapping</code>
+      <code><![CDATA[$assoc]]></code>
+      <code><![CDATA[$assoc]]></code>
+      <code><![CDATA[$assoc2]]></code>
+      <code><![CDATA[$assoc2]]></code>
+      <code><![CDATA[$mapping]]></code>
+      <code><![CDATA[$mapping]]></code>
     </InvalidArgument>
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$this->parentAssociations]]></code>
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
-      <code>$divided</code>
+      <code><![CDATA[$divided]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code><![CDATA[array<class-string, array{0: ClassMetadata<object>, 1: array<string, object>}>]]></code>
@@ -301,23 +301,26 @@
     <NullableReturnStatement>
       <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>
+    <TypeDoesNotContainType>
+      <code><![CDATA[empty($divided[$class->name])]]></code>
+    </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/OperatorTest.php">
     <InternalClass>
-      <code>Operator</code>
+      <code><![CDATA[Operator]]></code>
     </InternalClass>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
     <InvalidArgument>
-      <code>$documentPersister</code>
+      <code><![CDATA[$documentPersister]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/ClassMetadataTestUtil.php">
     <InvalidReturnStatement>
-      <code>$mapping + $defaultFieldMapping</code>
+      <code><![CDATA[$mapping + $defaultFieldMapping]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
-      <code>FieldMapping</code>
+      <code><![CDATA[FieldMapping]]></code>
     </InvalidReturnType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php">
@@ -332,7 +335,7 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php">
     <InvalidArgument>
-      <code>new ArrayCollection([$project])</code>
+      <code><![CDATA[new ArrayCollection([$project])]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Events/PreLoadEventArgsTest.php">
@@ -349,21 +352,21 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/CustomCollectionsTest.php">
     <InvalidArgument>
-      <code>$i</code>
-      <code>$i</code>
-      <code>$j</code>
-      <code>$j</code>
+      <code><![CDATA[$i]]></code>
+      <code><![CDATA[$i]]></code>
+      <code><![CDATA[$j]]></code>
+      <code><![CDATA[$j]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/DetachedDocumentTest.php">
     <UndefinedInterfaceMethod>
-      <code>$phonenumbers</code>
-      <code>$phonenumbers</code>
+      <code><![CDATA[$phonenumbers]]></code>
+      <code><![CDATA[$phonenumbers]]></code>
     </UndefinedInterfaceMethod>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Iterator/CachingIteratorTest.php">
     <MissingTemplateParam>
-      <code>Iterator</code>
+      <code><![CDATA[Iterator]]></code>
     </MissingTemplateParam>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/ReferenceEmbeddedDocumentsTest.php">
@@ -380,7 +383,7 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/RepositoriesTest.php">
     <TypeDoesNotContainType>
-      <code>assertEmpty</code>
+      <code><![CDATA[assertEmpty]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/ShardKeyTest.php">
@@ -395,31 +398,31 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH245Test.php">
     <RedundantCondition>
-      <code>assertIsInt</code>
+      <code><![CDATA[assertIsInt]]></code>
     </RedundantCondition>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH453Test.php">
     <InvalidPropertyAssignmentValue>
-      <code>$colAddToSet</code>
-      <code>$colAddToSet</code>
-      <code>$colAddToSet</code>
-      <code>$colPush</code>
-      <code>$colPush</code>
-      <code>$colPush</code>
-      <code>$colSet</code>
-      <code>$colSet</code>
-      <code>$colSet</code>
-      <code>$colSetArray</code>
-      <code>$colSetArray</code>
-      <code>$colSetArray</code>
+      <code><![CDATA[$colAddToSet]]></code>
+      <code><![CDATA[$colAddToSet]]></code>
+      <code><![CDATA[$colAddToSet]]></code>
+      <code><![CDATA[$colPush]]></code>
+      <code><![CDATA[$colPush]]></code>
+      <code><![CDATA[$colPush]]></code>
+      <code><![CDATA[$colSet]]></code>
+      <code><![CDATA[$colSet]]></code>
+      <code><![CDATA[$colSet]]></code>
+      <code><![CDATA[$colSetArray]]></code>
+      <code><![CDATA[$colSetArray]]></code>
+      <code><![CDATA[$colSetArray]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH566Test.php">
     <InvalidPropertyAssignmentValue>
-      <code>new ArrayCollection([
+      <code><![CDATA[new ArrayCollection([
             $embeddedDoc1,
             $embeddedDoc2,
-        ])</code>
+        ])]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH597Test.php">
@@ -429,12 +432,12 @@
             new GH597Comment('Comment 2'),
             new GH597Comment('Comment 3'),
         ])]]></code>
-      <code>new ArrayCollection([$referenceMany1, $referenceMany2])</code>
+      <code><![CDATA[new ArrayCollection([$referenceMany1, $referenceMany2])]]></code>
     </InvalidPropertyAssignmentValue>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM29Test.php">
     <InvalidArgument>
-      <code>$collection</code>
+      <code><![CDATA[$collection]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM43Test.php">
@@ -444,7 +447,7 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM81Test.php">
     <InvalidNullableReturnType>
-      <code>DocumentManager</code>
+      <code><![CDATA[DocumentManager]]></code>
     </InvalidNullableReturnType>
     <NullableReturnStatement>
       <code><![CDATA[$this->dm]]></code>
@@ -452,8 +455,8 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php">
     <InvalidArgument>
-      <code>$config</code>
-      <code>$mapping</code>
+      <code><![CDATA[$config]]></code>
+      <code><![CDATA[$mapping]]></code>
       <code><![CDATA[[
             'fieldName' => 'assoc',
             'reference' => true,
@@ -474,36 +477,39 @@
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php">
     <InvalidArgument>
-      <code>1</code>
+      <code><![CDATA[1]]></code>
     </InvalidArgument>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php">
     <InternalClass>
-      <code>new IndexInfoIteratorIterator(new ArrayIterator($indexes))</code>
-      <code>new IndexInfoIteratorIterator(new ArrayIterator([]))</code>
+      <code><![CDATA[new IndexInfoIteratorIterator(new ArrayIterator($indexes))]]></code>
+      <code><![CDATA[new IndexInfoIteratorIterator(new ArrayIterator([]))]]></code>
     </InternalClass>
     <InternalMethod>
-      <code>new IndexInfoIteratorIterator(new ArrayIterator($indexes))</code>
-      <code>new IndexInfoIteratorIterator(new ArrayIterator([]))</code>
+      <code><![CDATA[new IndexInfoIteratorIterator(new ArrayIterator($indexes))]]></code>
+      <code><![CDATA[new IndexInfoIteratorIterator(new ArrayIterator([]))]]></code>
     </InternalMethod>
     <InvalidArgument>
-      <code>$options + $expectedWriteOptions</code>
+      <code><![CDATA[$options + $expectedWriteOptions]]></code>
     </InvalidArgument>
+    <TypeDoesNotContainType>
+      <code><![CDATA[empty($dbCommands[$databaseName])]]></code>
+    </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Types/DateImmutableTypeTest.php">
     <TypeDoesNotContainType>
-      <code>assertInstanceOf</code>
+      <code><![CDATA[assertInstanceOf]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Types/DateTypeTest.php">
     <TypeDoesNotContainType>
-      <code>assertInstanceOf</code>
+      <code><![CDATA[assertInstanceOf]]></code>
     </TypeDoesNotContainType>
   </file>
   <file src="tests/Documents/CommentRepository.php">
     <InternalMethod>
-      <code>loadAll</code>
-      <code>loadAll</code>
+      <code><![CDATA[loadAll]]></code>
+      <code><![CDATA[loadAll]]></code>
     </InternalMethod>
   </file>
 </files>
