@@ -422,6 +422,20 @@ use function trigger_deprecation;
     public $collectionMax;
 
     /**
+     * READ-ONLY: If the collection should be a timeseries
+     *
+     * @var array{timeField:string,metaField?:string,granularity?:string}|null
+     */
+    public $collectionTimeseries;
+
+    /**
+     * READ-ONLY: If the collection is timeseries, sets automatic removal for the collection.
+     *
+     * @var int|null
+     */
+    public $collectionExpireAfterSeconds;
+
+    /**
      * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
      *
      * @var string|null
@@ -653,6 +667,13 @@ use function trigger_deprecation;
      * @var bool
      */
     public $isMappedSuperclass = false;
+
+     /**
+     * READ-ONLY: Whether this class describes the mapping of Timeseries.
+     *
+     * @var bool
+     */
+    public $isTimeSeriesDocument = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a embedded document.
@@ -1388,7 +1409,7 @@ use function trigger_deprecation;
      * Sets the collection this Document is mapped to.
      *
      * @param array|string $name
-     * @psalm-param array{name: string, capped?: bool, size?: int, max?: int}|string $name
+     * @psalm-param array{name: string, capped?: bool, size?: int, max?: int}|array{name: string, timeseries?: array{timeField:string,metaField?:string,granularity?:string}, expireAfterSeconds?: int}|string $name
      *
      * @throws InvalidArgumentException
      */
@@ -1399,10 +1420,19 @@ use function trigger_deprecation;
                 throw new InvalidArgumentException('A name key is required when passing an array to setCollection()');
             }
 
-            $this->collectionCapped = $name['capped'] ?? false;
-            $this->collectionSize   = $name['size'] ?? 0;
-            $this->collectionMax    = $name['max'] ?? 0;
-            $this->collection       = $name['name'];
+            if (array_key_exists('timeseries', $name)) {
+                $this->collectionTimeseries = [
+                    'timeField' => $name['timeseries']['timeField'],
+                    'metaField' => $name['timeseries']['metaField'] ?? null,
+                    'granularity' => $name['timeseries']['granularity'] ?? null
+                ];
+                $this->collectionExpireAfterSeconds = $name['expireAfterSeconds'] ?? null;
+            } else {
+                $this->collectionCapped = $name['capped'] ?? false;
+                $this->collectionSize = $name['size'] ?? 0;
+                $this->collectionMax = $name['max'] ?? 0;
+                $this->collection = $name['name'];
+            }
         } else {
             $this->collection = $name;
         }
@@ -1476,7 +1506,23 @@ use function trigger_deprecation;
     {
         $this->collectionMax = $max;
     }
+    
+    /**
+     * @return array|null
+     */
+    public function getCollectionTimeseries(): ?array
+    {
+        return $this->collectionTimeseries;
+    }
 
+    /**
+     * @return int|null
+     */
+    public function getCollectionExpireAfterSeconds(): ?int
+    {
+        return $this->collectionExpireAfterSeconds;
+    }
+    
     /**
      * Returns TRUE if this Document is mapped to a collection FALSE otherwise.
      */
@@ -2462,6 +2508,10 @@ use function trigger_deprecation;
             $serialized[] = 'defaultDiscriminatorValue';
             $serialized[] = 'parentClasses';
             $serialized[] = 'subClasses';
+        }
+
+        if ($this->isTimeSeriesDocument) {
+            $serialized[] = 'isTimeSeriesDocument';
         }
 
         if ($this->isMappedSuperclass) {
