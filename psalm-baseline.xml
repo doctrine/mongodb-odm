@@ -391,6 +391,11 @@
       <code><![CDATA[['upsert' => true]]]></code>
     </InvalidArgument>
   </file>
+  <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/TargetDocumentTest.php">
+    <UndefinedClass>
+      <code><![CDATA[['Foo' => 'Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass']]]></code>
+    </UndefinedClass>
+  </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1011Test.php">
     <InvalidArgument>
       <code><![CDATA[$doc->embeds]]></code>

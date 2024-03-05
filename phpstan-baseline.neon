@@ -791,6 +791,16 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/NestedDocumentsTest.php
 
 		-
+			message: "#^Parameter \\$discriminatorMap of attribute class Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Annotations\\\\ReferenceOne constructor expects array\\<string, class\\-string\\>\\|null, array\\<string, string\\> given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/TargetDocumentTest.php
+
+		-
+			message: "#^Parameter \\$targetDocument of attribute class Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Annotations\\\\ReferenceOne constructor expects class\\-string\\|null, string given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/TargetDocumentTest.php
+
+		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1058PersistDocument\\:\\:\\$id is never written, only read\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1058Test.php
