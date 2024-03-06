@@ -1,6 +1,11 @@
 Annotations Reference
 =====================
 
+.. note::
+
+    To be able to use annotations, you will have to install an extra
+    package called ``doctrine/annotations``.
+
 In this chapter a reference of every Doctrine 2 ODM Annotation is
 given with short explanations on their context and usage.
 

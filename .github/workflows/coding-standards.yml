@@ -5,9 +5,10 @@ on:
   pull_request:
     branches:
       - "*.x"
+      - "feature/*"
   push:
 
 jobs:
   coding-standards:
     name: "Coding Standards"
-    uses: "doctrine/.github/.github/workflows/coding-standards.yml@3.1.0"
+    uses: "doctrine/.github/.github/workflows/coding-standards.yml@4.0.0"

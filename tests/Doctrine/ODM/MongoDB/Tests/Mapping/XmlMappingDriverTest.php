@@ -24,7 +24,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTestCase
     public function testSetShardKeyOptionsByAttributes(): void
     {
         $class   = new ClassMetadata(stdClass::class);
-        $driver  = $this->loadDriver();
+        $driver  = static::loadDriver();
         $element = new SimpleXMLElement('<shard-key unique="true" numInitialChunks="4096"><key name="_id"/></shard-key>');
 
         /** @uses XmlDriver::setShardKey */
@@ -41,7 +41,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTestCase
     public function testInvalidMappingFileTriggersException(): void
     {
         $className     = InvalidMappingDocument::class;
-        $mappingDriver = $this->loadDriver();
+        $mappingDriver = static::loadDriver();
 
         $class = new ClassMetadata($className);
 

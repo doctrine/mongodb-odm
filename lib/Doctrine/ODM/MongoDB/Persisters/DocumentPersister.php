@@ -35,6 +35,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Exception\WriteException;
+use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use stdClass;
@@ -73,7 +74,14 @@ use function trigger_deprecation;
  *
  * @template T of object
  *
- * @psalm-import-type CommitOptions from UnitOfWork
+ * @psalm-type CommitOptions array{
+ *      fsync?: bool,
+ *      safe?: int,
+ *      session?: ?Session,
+ *      w?: int,
+ *      withTransaction?: bool,
+ *      writeConcern?: WriteConcern
+ * }
  * @psalm-import-type Hints from UnitOfWork
  * @psalm-import-type FieldMapping from ClassMetadata
  * @psalm-import-type SortMeta from Sort
@@ -1580,7 +1588,23 @@ final class DocumentPersister
             unset($writeOptions['w']);
         }
 
-        return $writeOptions;
+        return $this->isInTransaction($options)
+            ? $this->uow->stripTransactionOptions($writeOptions)
+            : $writeOptions;
+    }
+
+    private function isInTransaction(array $options): bool
+    {
+        if (! isset($options['session'])) {
+            return false;
+        }
+
+        $session = $options['session'];
+        if (! $session instanceof Session) {
+            return false;
+        }
+
+        return $session->isInTransaction();
     }
 
     /**

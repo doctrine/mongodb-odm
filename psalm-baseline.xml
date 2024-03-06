@@ -79,7 +79,7 @@
       <code><![CDATA[$mapping]]></code>
     </InvalidArgument>
   </file>
-  <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/AnnotationDriver.php">
+  <file src="lib/Doctrine/ODM/MongoDB/Mapping/Driver/AttributeDriver.php">
     <InvalidArgument>
       <code><![CDATA[$mapping]]></code>
       <code><![CDATA[$options]]></code>

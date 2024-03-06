@@ -25,14 +25,21 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Driver\Exception\RuntimeException;
+use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
+use Throwable;
 use UnexpectedValueException;
 
+use function array_diff_key;
 use function array_filter;
+use function array_intersect_key;
 use function array_key_exists;
+use function array_merge;
 use function assert;
+use function call_user_func;
 use function count;
 use function get_class;
 use function in_array;
@@ -61,6 +68,7 @@ use function trigger_deprecation;
  *      fsync?: bool,
  *      safe?: int,
  *      w?: int,
+ *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
  */
@@ -92,6 +100,12 @@ final class UnitOfWork implements PropertyChangedListener
 
     /** @internal */
     public const DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
+    private const TRANSACTION_OPTIONS     = [
+        'maxCommitTimeMS' => 1,
+        'readConcern' => 1,
+        'readPreference' => 1,
+        'writeConcern' => 1,
+    ];
 
     /**
      * The identity map holds references to all managed documents.
@@ -162,42 +176,42 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @var array<string, object>
      */
-    private array $documentInsertions = [];
+    private array $scheduledDocumentInsertions = [];
 
     /**
      * A list of all pending document updates.
      *
      * @var array<string, object>
      */
-    private array $documentUpdates = [];
+    private array $scheduledDocumentUpdates = [];
 
     /**
      * A list of all pending document upserts.
      *
      * @var array<string, object>
      */
-    private array $documentUpserts = [];
+    private array $scheduledDocumentUpserts = [];
 
     /**
      * A list of all pending document deletions.
      *
      * @var array<string, object>
      */
-    private array $documentDeletions = [];
+    private array $scheduledDocumentDeletions = [];
 
     /**
      * All pending collection deletions.
      *
      * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
-    private array $collectionDeletions = [];
+    private array $scheduledCollectionDeletions = [];
 
     /**
      * All pending collection updates.
      *
      * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
      */
-    private array $collectionUpdates = [];
+    private array $scheduledCollectionUpdates = [];
 
     /**
      * A list of documents related to collections scheduled for update or deletion
@@ -418,12 +432,12 @@ final class UnitOfWork implements PropertyChangedListener
         $this->computeChangeSets();
 
         if (
-            ! ($this->documentInsertions ||
-            $this->documentUpserts ||
-            $this->documentDeletions ||
-            $this->documentUpdates ||
-            $this->collectionUpdates ||
-            $this->collectionDeletions ||
+            ! ($this->scheduledDocumentInsertions ||
+            $this->scheduledDocumentUpserts ||
+            $this->scheduledDocumentDeletions ||
+            $this->scheduledDocumentUpdates ||
+            $this->scheduledCollectionUpdates ||
+            $this->scheduledCollectionDeletions ||
             $this->orphanRemovals)
         ) {
             return; // Nothing to do.
@@ -441,46 +455,42 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            // Raise onFlush
             $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
 
-            foreach ($this->getClassesForCommitAction($this->documentUpserts) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpserts($class, $documents, $options);
-            }
+            if ($this->useTransaction($options)) {
+                $session = $this->dm->getClient()->startSession();
 
-            foreach ($this->getClassesForCommitAction($this->documentInsertions) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeInserts($class, $documents, $options);
-            }
+                $this->lifecycleEventManager->enableTransactionalMode($session);
 
-            foreach ($this->getClassesForCommitAction($this->documentUpdates) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeUpdates($class, $documents, $options);
-            }
-
-            foreach ($this->getClassesForCommitAction($this->documentDeletions, true) as $classAndDocuments) {
-                [$class, $documents] = $classAndDocuments;
-                $this->executeDeletions($class, $documents, $options);
+                $this->withTransaction(
+                    $session,
+                    function (Session $session) use ($options): void {
+                        $this->doCommit(['session' => $session] + $this->stripTransactionOptions($options));
+                    },
+                    $this->getTransactionOptions($options),
+                );
+            } else {
+                $this->doCommit($options);
             }
 
             // Raise postFlush
             $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
 
             // Clear up
-            $this->documentInsertions          =
-            $this->documentUpserts             =
-            $this->documentUpdates             =
-            $this->documentDeletions           =
-            $this->documentChangeSets          =
-            $this->collectionUpdates           =
-            $this->collectionDeletions         =
-            $this->visitedCollections          =
-            $this->scheduledForSynchronization =
-            $this->orphanRemovals              =
-            $this->hasScheduledCollections     = [];
+            $this->scheduledDocumentInsertions  =
+            $this->scheduledDocumentUpserts     =
+            $this->scheduledDocumentUpdates     =
+            $this->scheduledDocumentDeletions   =
+            $this->documentChangeSets           =
+            $this->scheduledCollectionUpdates   =
+            $this->scheduledCollectionDeletions =
+            $this->visitedCollections           =
+            $this->scheduledForSynchronization  =
+            $this->orphanRemovals               =
+            $this->hasScheduledCollections      = [];
         } finally {
             $this->commitsInProgress--;
+            $this->lifecycleEventManager->clearTransactionalState();
         }
     }
 
@@ -537,7 +547,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function computeScheduleInsertsChangeSets(): void
     {
-        foreach ($this->documentInsertions as $document) {
+        foreach ($this->scheduledDocumentInsertions as $document) {
             $class = $this->dm->getClassMetadata($document::class);
             if ($class->isEmbeddedDocument || $class->isView()) {
                 continue;
@@ -554,7 +564,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function computeScheduleUpsertsChangeSets(): void
     {
-        foreach ($this->documentUpserts as $document) {
+        foreach ($this->scheduledDocumentUpserts as $document) {
             $class = $this->dm->getClassMetadata($document::class);
             if ($class->isEmbeddedDocument || $class->isView()) {
                 continue;
@@ -647,7 +657,7 @@ final class UnitOfWork implements PropertyChangedListener
      * entry is the new value of the property. Changesets are used by persisters
      * to INSERT/UPDATE the persistent document state.
      *
-     * {@link documentUpdates}
+     * {@link scheduledDocumentUpdates}
      * If the document is already fully MANAGED (has been fetched from the database before)
      * and any changes to its properties are detected, then a reference to the document is stored
      * there to mark it for an update.
@@ -930,9 +940,9 @@ final class UnitOfWork implements PropertyChangedListener
                 // Only MANAGED documents that are NOT SCHEDULED FOR INSERTION, UPSERT OR DELETION are processed here.
                 $oid = spl_object_hash($document);
                 if (
-                    isset($this->documentInsertions[$oid])
-                    || isset($this->documentUpserts[$oid])
-                    || isset($this->documentDeletions[$oid])
+                    isset($this->scheduledDocumentInsertions[$oid])
+                    || isset($this->scheduledDocumentUpserts[$oid])
+                    || isset($this->scheduledDocumentDeletions[$oid])
                     || ! isset($this->documentStates[$oid])
                 ) {
                     continue;
@@ -953,7 +963,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(object $parentDocument, array $assoc, $value): void
     {
-        $isNewParentDocument   = isset($this->documentInsertions[spl_object_hash($parentDocument)]);
+        $isNewParentDocument   = isset($this->scheduledDocumentInsertions[spl_object_hash($parentDocument)]);
         $class                 = $this->dm->getClassMetadata($parentDocument::class);
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
 
@@ -1161,15 +1171,14 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $persister = $this->getDocumentPersister($class->name);
 
-        foreach ($documents as $oid => $document) {
+        foreach ($documents as $document) {
             $persister->addInsert($document);
-            unset($this->documentInsertions[$oid]);
         }
 
         $persister->executeInserts($options);
 
         foreach ($documents as $document) {
-            $this->lifecycleEventManager->postPersist($class, $document);
+            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1186,15 +1195,14 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $persister = $this->getDocumentPersister($class->name);
 
-        foreach ($documents as $oid => $document) {
+        foreach ($documents as $document) {
             $persister->addUpsert($document);
-            unset($this->documentUpserts[$oid]);
         }
 
         $persister->executeUpserts($options);
 
         foreach ($documents as $document) {
-            $this->lifecycleEventManager->postPersist($class, $document);
+            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1217,15 +1225,13 @@ final class UnitOfWork implements PropertyChangedListener
         $persister = $this->getDocumentPersister($className);
 
         foreach ($documents as $oid => $document) {
-            $this->lifecycleEventManager->preUpdate($class, $document);
+            $this->lifecycleEventManager->preUpdate($class, $document, $options['session'] ?? null);
 
             if (! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
                 $persister->update($document, $options);
             }
 
-            unset($this->documentUpdates[$oid]);
-
-            $this->lifecycleEventManager->postUpdate($class, $document);
+            $this->lifecycleEventManager->postUpdate($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1248,7 +1254,6 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             unset(
-                $this->documentDeletions[$oid],
                 $this->documentIdentifiers[$oid],
                 $this->originalDocumentData[$oid],
             );
@@ -1268,11 +1273,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $value->clearSnapshot();
             }
 
-            // Document with this $oid after deletion treated as NEW, even if the $oid
-            // is obtained by a new document because the old one went out of scope.
-            $this->documentStates[$oid] = self::STATE_NEW;
-
-            $this->lifecycleEventManager->postRemove($class, $document);
+            $this->lifecycleEventManager->postRemove($class, $document, $options['session'] ?? null);
         }
     }
 
@@ -1294,19 +1295,19 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
 
-        if (isset($this->documentUpdates[$oid])) {
+        if (isset($this->scheduledDocumentUpdates[$oid])) {
             throw new InvalidArgumentException('Dirty document can not be scheduled for insertion.');
         }
 
-        if (isset($this->documentDeletions[$oid])) {
+        if (isset($this->scheduledDocumentDeletions[$oid])) {
             throw new InvalidArgumentException('Removed document can not be scheduled for insertion.');
         }
 
-        if (isset($this->documentInsertions[$oid])) {
+        if (isset($this->scheduledDocumentInsertions[$oid])) {
             throw new InvalidArgumentException('Document can not be scheduled for insertion twice.');
         }
 
-        $this->documentInsertions[$oid] = $document;
+        $this->scheduledDocumentInsertions[$oid] = $document;
 
         if (! isset($this->documentIdentifiers[$oid])) {
             return;
@@ -1336,20 +1337,20 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Embedded document can not be scheduled for upsert.');
         }
 
-        if (isset($this->documentUpdates[$oid])) {
+        if (isset($this->scheduledDocumentUpdates[$oid])) {
             throw new InvalidArgumentException('Dirty document can not be scheduled for upsert.');
         }
 
-        if (isset($this->documentDeletions[$oid])) {
+        if (isset($this->scheduledDocumentDeletions[$oid])) {
             throw new InvalidArgumentException('Removed document can not be scheduled for upsert.');
         }
 
-        if (isset($this->documentUpserts[$oid])) {
+        if (isset($this->scheduledDocumentUpserts[$oid])) {
             throw new InvalidArgumentException('Document can not be scheduled for upsert twice.');
         }
 
-        $this->documentUpserts[$oid]     = $document;
-        $this->documentIdentifiers[$oid] = $class->getIdentifierValue($document);
+        $this->scheduledDocumentUpserts[$oid] = $document;
+        $this->documentIdentifiers[$oid]      = $class->getIdentifierValue($document);
         $this->addToIdentityMap($document);
     }
 
@@ -1358,7 +1359,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isScheduledForInsert(object $document): bool
     {
-        return isset($this->documentInsertions[spl_object_hash($document)]);
+        return isset($this->scheduledDocumentInsertions[spl_object_hash($document)]);
     }
 
     /**
@@ -1366,7 +1367,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isScheduledForUpsert(object $document): bool
     {
-        return isset($this->documentUpserts[spl_object_hash($document)]);
+        return isset($this->scheduledDocumentUpserts[spl_object_hash($document)]);
     }
 
     /**
@@ -1383,19 +1384,19 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document has no identity.');
         }
 
-        if (isset($this->documentDeletions[$oid])) {
+        if (isset($this->scheduledDocumentDeletions[$oid])) {
             throw new InvalidArgumentException('Document is removed.');
         }
 
         if (
-            isset($this->documentUpdates[$oid])
-            || isset($this->documentInsertions[$oid])
-            || isset($this->documentUpserts[$oid])
+            isset($this->scheduledDocumentUpdates[$oid])
+            || isset($this->scheduledDocumentInsertions[$oid])
+            || isset($this->scheduledDocumentUpserts[$oid])
         ) {
             return;
         }
 
-        $this->documentUpdates[$oid] = $document;
+        $this->scheduledDocumentUpdates[$oid] = $document;
     }
 
     /**
@@ -1405,7 +1406,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isScheduledForUpdate(object $document): bool
     {
-        return isset($this->documentUpdates[spl_object_hash($document)]);
+        return isset($this->scheduledDocumentUpdates[spl_object_hash($document)]);
     }
 
     /**
@@ -1427,12 +1428,12 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
 
-        if (isset($this->documentInsertions[$oid])) {
+        if (isset($this->scheduledDocumentInsertions[$oid])) {
             if ($this->isInIdentityMap($document)) {
                 $this->removeFromIdentityMap($document);
             }
 
-            unset($this->documentInsertions[$oid]);
+            unset($this->scheduledDocumentInsertions[$oid]);
 
             return; // document has not been persisted yet, so nothing more to do.
         }
@@ -1444,15 +1445,15 @@ final class UnitOfWork implements PropertyChangedListener
         $this->removeFromIdentityMap($document);
         $this->documentStates[$oid] = self::STATE_REMOVED;
 
-        if (isset($this->documentUpdates[$oid])) {
-            unset($this->documentUpdates[$oid]);
+        if (isset($this->scheduledDocumentUpdates[$oid])) {
+            unset($this->scheduledDocumentUpdates[$oid]);
         }
 
-        if (isset($this->documentUpserts[$oid])) {
-            unset($this->documentUpserts[$oid]);
+        if (isset($this->scheduledDocumentUpserts[$oid])) {
+            unset($this->scheduledDocumentUpserts[$oid]);
         }
 
-        if (isset($this->documentDeletions[$oid])) {
+        if (isset($this->scheduledDocumentDeletions[$oid])) {
             return;
         }
 
@@ -1460,7 +1461,7 @@ final class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $this->documentDeletions[$oid] = $document;
+        $this->scheduledDocumentDeletions[$oid] = $document;
     }
 
     /**
@@ -1469,7 +1470,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isScheduledForDelete(object $document): bool
     {
-        return isset($this->documentDeletions[spl_object_hash($document)]);
+        return isset($this->scheduledDocumentDeletions[spl_object_hash($document)]);
     }
 
     /**
@@ -1481,10 +1482,10 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($document);
 
-        return isset($this->documentInsertions[$oid]) ||
-            isset($this->documentUpserts[$oid]) ||
-            isset($this->documentUpdates[$oid]) ||
-            isset($this->documentDeletions[$oid]);
+        return isset($this->scheduledDocumentInsertions[$oid]) ||
+            isset($this->scheduledDocumentUpserts[$oid]) ||
+            isset($this->scheduledDocumentUpdates[$oid]) ||
+            isset($this->scheduledDocumentDeletions[$oid]);
     }
 
     /**
@@ -1781,7 +1782,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             case self::STATE_REMOVED:
                 // Document becomes managed again
-                unset($this->documentDeletions[$oid]);
+                unset($this->scheduledDocumentDeletions[$oid]);
 
                 $this->documentStates[$oid] = self::STATE_MANAGED;
                 break;
@@ -2094,14 +2095,14 @@ final class UnitOfWork implements PropertyChangedListener
             case self::STATE_MANAGED:
                 $this->removeFromIdentityMap($document);
                 unset(
-                    $this->documentInsertions[$oid],
-                    $this->documentUpdates[$oid],
-                    $this->documentDeletions[$oid],
+                    $this->scheduledDocumentInsertions[$oid],
+                    $this->scheduledDocumentUpdates[$oid],
+                    $this->scheduledDocumentDeletions[$oid],
                     $this->documentIdentifiers[$oid],
                     $this->documentStates[$oid],
                     $this->originalDocumentData[$oid],
                     $this->parentAssociations[$oid],
-                    $this->documentUpserts[$oid],
+                    $this->scheduledDocumentUpserts[$oid],
                     $this->hasScheduledCollections[$oid],
                     $this->embeddedDocumentsRegistry[$oid],
                 );
@@ -2392,22 +2393,22 @@ final class UnitOfWork implements PropertyChangedListener
     public function clear(?string $documentName = null): void
     {
         if ($documentName === null) {
-            $this->identityMap                 =
-            $this->documentIdentifiers         =
-            $this->originalDocumentData        =
-            $this->documentChangeSets          =
-            $this->documentStates              =
-            $this->scheduledForSynchronization =
-            $this->documentInsertions          =
-            $this->documentUpserts             =
-            $this->documentUpdates             =
-            $this->documentDeletions           =
-            $this->collectionUpdates           =
-            $this->collectionDeletions         =
-            $this->parentAssociations          =
-            $this->embeddedDocumentsRegistry   =
-            $this->orphanRemovals              =
-            $this->hasScheduledCollections     = [];
+            $this->identityMap                  =
+            $this->documentIdentifiers          =
+            $this->originalDocumentData         =
+            $this->documentChangeSets           =
+            $this->documentStates               =
+            $this->scheduledForSynchronization  =
+            $this->scheduledDocumentInsertions  =
+            $this->scheduledDocumentUpserts     =
+            $this->scheduledDocumentUpdates     =
+            $this->scheduledDocumentDeletions   =
+            $this->scheduledCollectionUpdates   =
+            $this->scheduledCollectionDeletions =
+            $this->parentAssociations           =
+            $this->embeddedDocumentsRegistry    =
+            $this->orphanRemovals               =
+            $this->hasScheduledCollections      = [];
 
             $event = new Event\OnClearEventArgs($this->dm);
         } else {
@@ -2497,12 +2498,12 @@ final class UnitOfWork implements PropertyChangedListener
     public function scheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
         $oid = spl_object_hash($coll);
-        unset($this->collectionUpdates[$oid]);
-        if (isset($this->collectionDeletions[$oid])) {
+        unset($this->scheduledCollectionUpdates[$oid]);
+        if (isset($this->scheduledCollectionDeletions[$oid])) {
             return;
         }
 
-        $this->collectionDeletions[$oid] = $coll;
+        $this->scheduledCollectionDeletions[$oid] = $coll;
         $this->scheduleCollectionOwner($coll);
     }
 
@@ -2515,7 +2516,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isCollectionScheduledForDeletion(PersistentCollectionInterface $coll): bool
     {
-        return isset($this->collectionDeletions[spl_object_hash($coll)]);
+        return isset($this->scheduledCollectionDeletions[spl_object_hash($coll)]);
     }
 
     /**
@@ -2532,12 +2533,12 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $oid = spl_object_hash($coll);
-        if (! isset($this->collectionDeletions[$oid])) {
+        if (! isset($this->scheduledCollectionDeletions[$oid])) {
             return;
         }
 
         $topmostOwner = $this->getOwningDocument($coll->getOwner());
-        unset($this->collectionDeletions[$oid]);
+        unset($this->scheduledCollectionDeletions[$oid]);
         unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
     }
 
@@ -2559,11 +2560,11 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $oid = spl_object_hash($coll);
-        if (isset($this->collectionUpdates[$oid])) {
+        if (isset($this->scheduledCollectionUpdates[$oid])) {
             return;
         }
 
-        $this->collectionUpdates[$oid] = $coll;
+        $this->scheduledCollectionUpdates[$oid] = $coll;
         $this->scheduleCollectionOwner($coll);
     }
 
@@ -2581,12 +2582,12 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $oid = spl_object_hash($coll);
-        if (! isset($this->collectionUpdates[$oid])) {
+        if (! isset($this->scheduledCollectionUpdates[$oid])) {
             return;
         }
 
         $topmostOwner = $this->getOwningDocument($coll->getOwner());
-        unset($this->collectionUpdates[$oid]);
+        unset($this->scheduledCollectionUpdates[$oid]);
         unset($this->hasScheduledCollections[spl_object_hash($topmostOwner)][$oid]);
     }
 
@@ -2599,7 +2600,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function isCollectionScheduledForUpdate(PersistentCollectionInterface $coll): bool
     {
-        return isset($this->collectionUpdates[spl_object_hash($coll)]);
+        return isset($this->scheduledCollectionUpdates[spl_object_hash($coll)]);
     }
 
     /**
@@ -2939,7 +2940,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function hasPendingInsertions(): bool
     {
-        return ! empty($this->documentInsertions);
+        return ! empty($this->scheduledDocumentInsertions);
     }
 
     /**
@@ -3034,7 +3035,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getScheduledDocumentInsertions(): array
     {
-        return $this->documentInsertions;
+        return $this->scheduledDocumentInsertions;
     }
 
     /**
@@ -3044,7 +3045,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getScheduledDocumentUpserts(): array
     {
-        return $this->documentUpserts;
+        return $this->scheduledDocumentUpserts;
     }
 
     /**
@@ -3054,7 +3055,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getScheduledDocumentUpdates(): array
     {
-        return $this->documentUpdates;
+        return $this->scheduledDocumentUpdates;
     }
 
     /**
@@ -3064,7 +3065,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getScheduledDocumentDeletions(): array
     {
-        return $this->documentDeletions;
+        return $this->scheduledDocumentDeletions;
     }
 
     /**
@@ -3076,7 +3077,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getScheduledCollectionDeletions(): array
     {
-        return $this->collectionDeletions;
+        return $this->scheduledCollectionDeletions;
     }
 
     /**
@@ -3088,7 +3089,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getScheduledCollectionUpdates(): array
     {
-        return $this->collectionUpdates;
+        return $this->scheduledCollectionUpdates;
     }
 
     /**
@@ -3119,8 +3120,139 @@ final class UnitOfWork implements PropertyChangedListener
         };
     }
 
+    /** @internal */
+    public function stripTransactionOptions(array $options): array
+    {
+        return array_diff_key(
+            $options,
+            self::TRANSACTION_OPTIONS,
+        );
+    }
+
     private function objToStr(object $obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : $obj::class . '@' . spl_object_hash($obj);
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function doCommit(array $options): void
+    {
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentInsertions) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeInserts($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpdates) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeUpdates($class, $documents, $options);
+        }
+
+        foreach ($this->getClassesForCommitAction($this->scheduledDocumentDeletions, true) as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->executeDeletions($class, $documents, $options);
+        }
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function useTransaction(array $options): bool
+    {
+        if (isset($options['withTransaction'])) {
+            return $options['withTransaction'];
+        }
+
+        return $this->dm->getConfiguration()->isTransactionalFlushEnabled();
+    }
+
+    /** @psalm-param CommitOptions $options */
+    private function getTransactionOptions(array $options): array
+    {
+        return array_intersect_key(
+            array_merge(
+                $this->dm->getConfiguration()->getDefaultCommitOptions(),
+                $options,
+            ),
+            self::TRANSACTION_OPTIONS,
+        );
+    }
+
+    /**
+     * This following method was taken from the MongoDB Library and adapted to not use the default 120 seconds timeout.
+     * The code within this method is licensed under the Apache License. Copyright belongs to MongoDB, Inc.
+     *
+     * @see https://github.com/mongodb/mongo-php-library/blob/1.17.0/src/Operation/WithTransaction.php
+     * @see https://github.com/mongodb/specifications/blob/master/source/transactions-convenient-api/transactions-convenient-api.rst#pseudo-code
+     */
+    private function withTransaction(Session $session, callable $callback, array $transactionOptions = []): void
+    {
+        $numAttempts = 0;
+
+        while (true) {
+            $session->startTransaction($transactionOptions);
+
+            try {
+                $numAttempts++;
+                call_user_func($callback, $session);
+            } catch (Throwable $e) {
+                if ($session->isInTransaction()) {
+                    $session->abortTransaction();
+                }
+
+                if (
+                    $e instanceof RuntimeException &&
+                    $e->hasErrorLabel('TransientTransactionError') &&
+                    ! $this->shouldAbortWithTransaction($numAttempts)
+                ) {
+                    continue;
+                }
+
+                throw $e;
+            }
+
+            if (! $session->isInTransaction()) {
+                // Assume callback intentionally ended the transaction
+                return;
+            }
+
+            while (true) {
+                try {
+                    $session->commitTransaction();
+                } catch (RuntimeException $e) {
+                    if (
+                        $e->getCode() !== 50 /* MaxTimeMSExpired */ &&
+                        $e->hasErrorLabel('UnknownTransactionCommitResult') &&
+                        ! $this->shouldAbortWithTransaction($numAttempts)
+                    ) {
+                        // Retry committing the transaction
+                        continue;
+                    }
+
+                    if (
+                        $e->hasErrorLabel('TransientTransactionError') &&
+                        ! $this->shouldAbortWithTransaction($numAttempts)
+                    ) {
+                        // Restart the transaction, invoking the callback again
+                        continue 2;
+                    }
+
+                    throw $e;
+                }
+
+                // Commit was successful
+                break;
+            }
+
+            // Transaction was successful
+            break;
+        }
+    }
+
+    private function shouldAbortWithTransaction(int $numAttempts): bool
+    {
+        return $numAttempts >= 2;
     }
 }

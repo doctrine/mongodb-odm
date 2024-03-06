@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - "*.x"
+      - "feature/*"
   push:
 
 env:
@@ -21,6 +22,7 @@ jobs:
           - "8.2"
           - "8.3"
         mongodb-version:
+          - "7.0"
           - "6.0"
           - "5.0"
           - "4.4"
@@ -33,24 +35,34 @@ jobs:
         symfony-version:
           - "stable"
         include:
+          # Test against lowest dependencies
           - dependencies: "lowest"
             php-version: "8.1"
             mongodb-version: "4.4"
             driver-version: "1.11.0"
             topology: "server"
             symfony-version: "stable"
+          # Test with highest dependencies
+          - topology: "server"
+            php-version: "8.2"
+            mongodb-version: "7.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: "7"
+          # Test with a 4.4 replica set
+          - topology: "replica_set"
+            php-version: "8.2"
+            mongodb-version: "4.4"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: "stable"
+          # Test with a 4.4 sharded cluster
           - topology: "sharded_cluster"
             php-version: "8.2"
             mongodb-version: "4.4"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
-          - topology: "server"
-            php-version: "8.2"
-            mongodb-version: "6.0"
-            driver-version: "stable"
-            dependencies: "highest"
-            symfony-version: "7"
 
     steps:
       - name: "Checkout"
@@ -67,7 +79,7 @@ jobs:
           key: "extcache-v1"
 
       - name: Cache extensions
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.extcache.outputs.dir }}
           key: ${{ steps.extcache.outputs.key }}
@@ -101,16 +113,17 @@ jobs:
           composer require --no-update --dev symfony/cache:^7@dev
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: composer.lock
+          name: "composer-lock-phpunit-${{ matrix.php-version }}-${{ matrix.dependencies }}-${{ matrix.mongodb-version }}"
           path: composer.lock
+          overwrite: true
 
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master

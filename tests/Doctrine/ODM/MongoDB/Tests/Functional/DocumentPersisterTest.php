@@ -632,12 +632,36 @@ class DocumentPersisterTest extends BaseTestCase
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteInsertsRespectsWriteConcern(string $class, $writeConcern): void
     {
+        $this->skipTestIfTransactionalFlushEnabled();
+
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
+    /** @psalm-param class-string $class */
+    #[DataProvider('dataProviderTestWriteConcern')]
+    public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class): void
+    {
+        $this->skipTestIfTransactionalFlushDisabled();
+
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('insertMany')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -655,12 +679,37 @@ class DocumentPersisterTest extends BaseTestCase
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteUpsertsRespectsWriteConcern(string $class, $writeConcern): void
     {
+        $this->skipTestIfTransactionalFlushEnabled();
+
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
             ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument     = new $class();
+        $testDocument->id = new ObjectId();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
+    /** @psalm-param class-string $class */
+    #[DataProvider('dataProviderTestWriteConcern')]
+    public function testExecuteUpsertsDoesNotUseWriteConcernInTransaction(string $class): void
+    {
+        $this->skipTestIfTransactionalFlushDisabled();
+
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('updateOne')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setAccessible(true);
@@ -679,6 +728,8 @@ class DocumentPersisterTest extends BaseTestCase
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testRemoveRespectsWriteConcern(string $class, $writeConcern): void
     {
+        $this->skipTestIfTransactionalFlushEnabled();
+
         $documentPersister = $this->uow->getDocumentPersister($class);
 
         $collection = $this->createMock(Collection::class);
@@ -698,8 +749,35 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
+    /** @psalm-param class-string $class */
+    #[DataProvider('dataProviderTestWriteConcern')]
+    public function testRemoveDoesNotUseWriteConcernInTransaction(string $class): void
+    {
+        $this->skipTestIfTransactionalFlushDisabled();
+
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('deleteOne')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+
+        $this->dm->remove($testDocument);
+        $this->dm->flush();
+    }
+
     public function testDefaultWriteConcernIsRespected(): void
     {
+        $this->skipTestIfTransactionalFlushEnabled();
+
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
@@ -719,8 +797,33 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
+    public function testDefaultWriteConcernIsIgnoredInTransaction(): void
+    {
+        $this->skipTestIfTransactionalFlushDisabled();
+
+        $class             = DocumentPersisterTestDocument::class;
+        $documentPersister = $this->uow->getDocumentPersister($class);
+
+        $collection = $this->createMock(Collection::class);
+        $collection->expects($this->once())
+            ->method('insertMany')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+
+        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($documentPersister, $collection);
+
+        $this->dm->getConfiguration()->setDefaultCommitOptions(['writeConcern' => new WriteConcern(1)]);
+
+        $testDocument = new $class();
+        $this->dm->persist($testDocument);
+        $this->dm->flush();
+    }
+
     public function testDefaultWriteConcernIsRespectedBackwardCompatibility(): void
     {
+        $this->skipTestIfTransactionalFlushEnabled();
+
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 

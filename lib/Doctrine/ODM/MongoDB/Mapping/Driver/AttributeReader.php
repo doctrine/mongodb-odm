@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Annotation;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -15,75 +14,24 @@ use function assert;
 use function is_subclass_of;
 
 /** @internal */
-final class AttributeReader implements Reader
+final class AttributeReader
 {
-    public function getClassAnnotations(ReflectionClass $class): array
+    /** @return array<object> */
+    public function getClassAttributes(ReflectionClass $class): array
     {
         return $this->convertToAttributeInstances($class->getAttributes());
     }
 
-    /**
-     * @param class-string<T> $annotationName
-     *
-     * @return T|null
-     *
-     * @template T
-     */
-    public function getClassAnnotation(ReflectionClass $class, $annotationName)
-    {
-        foreach ($this->getClassAnnotations($class) as $annotation) {
-            if ($annotation instanceof $annotationName) {
-                return $annotation;
-            }
-        }
-
-        return null;
-    }
-
-    public function getMethodAnnotations(ReflectionMethod $method): array
+    /** @return array<object> */
+    public function getMethodAttributes(ReflectionMethod $method): array
     {
         return $this->convertToAttributeInstances($method->getAttributes());
     }
 
-    /**
-     * @param class-string<T> $annotationName
-     *
-     * @return T|null
-     *
-     * @template T
-     */
-    public function getMethodAnnotation(ReflectionMethod $method, $annotationName)
-    {
-        foreach ($this->getMethodAnnotations($method) as $annotation) {
-            if ($annotation instanceof $annotationName) {
-                return $annotation;
-            }
-        }
-
-        return null;
-    }
-
-    public function getPropertyAnnotations(ReflectionProperty $property): array
+    /** @return array<object> */
+    public function getPropertyAttributes(ReflectionProperty $property): array
     {
         return $this->convertToAttributeInstances($property->getAttributes());
-    }
-
-    /**
-     * @param class-string<T> $annotationName
-     *
-     * @return T|null
-     *
-     * @template T
-     */
-    public function getPropertyAnnotation(ReflectionProperty $property, $annotationName)
-    {
-        foreach ($this->getPropertyAnnotations($property) as $annotation) {
-            if ($annotation instanceof $annotationName) {
-                return $annotation;
-            }
-        }
-
-        return null;
     }
 
     /**

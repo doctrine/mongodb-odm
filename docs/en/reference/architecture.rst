@@ -56,7 +56,7 @@ A document instance can be characterized as being NEW, MANAGED, DETACHED or REMO
    DocumentManager and a UnitOfWork.
 -  A REMOVED document instance is an instance with a persistent
    identity, associated with a DocumentManager, that will be removed
-   from the database upon transaction commit.
+   from the database upon UnitOfWork commit.
 
 Persistent fields
 ~~~~~~~~~~~~~~~~~
@@ -103,7 +103,7 @@ persistent objects.
 Transactional write-behind
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An ``DocumentManager`` and the underlying ``UnitOfWork`` employ a
+The ``DocumentManager`` and the underlying ``UnitOfWork`` employ a
 strategy called "transactional write-behind" that delays the
 execution of query statements in order to execute them in the most
 efficient way and to execute them at the end of a transaction so
