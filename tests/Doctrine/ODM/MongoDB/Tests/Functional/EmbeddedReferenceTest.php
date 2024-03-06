@@ -58,28 +58,19 @@ class EmbeddedReferenceTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Offer
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Link::class)
-     *
-     * @var Collection<int, Link>
-     */
+    /** @var Collection<int, Link> */
+    #[ODM\EmbedMany(targetDocument: Link::class)]
     public $links;
 
     public function __construct(string $name)
@@ -89,28 +80,19 @@ class Offer
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Link
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $url;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=ReferencedDocument::class)
-     *
-     * @var Collection<int, ReferencedDocument>
-     */
+    /** @var Collection<int, ReferencedDocument> */
+    #[ODM\ReferenceMany(targetDocument: ReferencedDocument::class)]
     public $referencedDocuments;
 
     public function __construct(string $url)
@@ -120,21 +102,15 @@ class Link
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ReferencedDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

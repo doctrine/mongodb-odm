@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Event;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\Client;
 use MongoDB\Driver\Session;
 use PHPUnit\Framework\Assert;
@@ -199,22 +200,16 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\MappedSuperclass]
+#[ODM\HasLifecycleCallbacks]
 abstract class BaseEventDocument
 {
     public function __construct()
     {
     }
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    public $name;
+    #[ODM\Field(type: Type::STRING)]
+    public ?string $name = null;
 
     public int $preUpdate = 0;
 
@@ -225,27 +220,28 @@ abstract class BaseEventDocument
     public int $postRemove = 0;
 
     /** @ODM\PreUpdate */
+    #[ODM\PreUpdate]
     public function preUpdate(Event\PreUpdateEventArgs $e): void
     {
         $this->assertTransactionState($e);
         $this->preUpdate++;
     }
 
-    /** @ODM\PostPersist */
+    #[ODM\PostPersist]
     public function postPersist(Event\LifecycleEventArgs $e): void
     {
         $this->assertTransactionState($e);
         $this->postPersist++;
     }
 
-    /** @ODM\PostUpdate */
+    #[ODM\PostUpdate]
     public function postUpdate(Event\LifecycleEventArgs $e): void
     {
         $this->assertTransactionState($e);
         $this->postUpdate++;
     }
 
-    /** @ODM\PostRemove */
+    #[ODM\PostRemove]
     public function postRemove(Event\LifecycleEventArgs $e): void
     {
         $this->assertTransactionState($e);
@@ -259,17 +255,17 @@ abstract class BaseEventDocument
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedEventDocument extends BaseEventDocument
 {
 }
 
-/** @ODM\Document  */
+#[ODM\Document]
 class RootEventDocument extends BaseEventDocument
 {
-    /** @ODM\Id */
+    #[ODM\Id]
     public string $id;
 
-    /** @ODM\EmbedOne(targetDocument=EmbeddedEventDocument::class) */
+    #[ODM\EmbedOne(targetDocument: EmbeddedEventDocument::class)]
     public ?EmbeddedEventDocument $embedded;
 }

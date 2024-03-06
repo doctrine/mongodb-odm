@@ -11,42 +11,27 @@ use MongoDB\BSON\UTCDateTime;
 use function array_search;
 use function in_array;
 
-/** @ODM\Document(collection="articles") */
+#[ODM\Document(collection: 'articles')]
 class Article
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $title;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $body;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var string|UTCDateTime|DateTimeInterface|null
-     */
+    /** @var string|UTCDateTime|DateTimeInterface|null */
+    #[ODM\Field(type: 'date')]
     private $createdAt;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var int[]
-     */
+    /** @var int[] */
+    #[ODM\Field(type: 'collection')]
     private $tags = [];
 
     public function getId(): ?string

@@ -7,24 +7,16 @@ namespace Documents\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\EmbeddedDocument]
+#[ODM\HasLifecycleCallbacks]
 class EmbeddedTestLevel1
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedTestLevel2::class)
-     *
-     * @var Collection<int, EmbeddedTestLevel2>|array<EmbeddedTestLevel2>
-     */
+    /** @var Collection<int, EmbeddedTestLevel2>|array<EmbeddedTestLevel2> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedTestLevel2::class)]
     public $level2 = [];
 
     /** @var bool */
@@ -39,25 +31,25 @@ class EmbeddedTestLevel1
     /** @var bool */
     public $postLoad = false;
 
-    /** @ODM\PreRemove */
+    #[ODM\PreRemove]
     public function onPreRemove(): void
     {
         $this->preRemove = true;
     }
 
-    /** @ODM\PostRemove */
+    #[ODM\PostRemove]
     public function onPostRemove(): void
     {
         $this->postRemove = true;
     }
 
-    /** @ODM\PreLoad */
+    #[ODM\PreLoad]
     public function onPreLoad(): void
     {
         $this->preLoad = true;
     }
 
-    /** @ODM\PostLoad */
+    #[ODM\PostLoad]
     public function onPostLoad(): void
     {
         $this->postLoad = true;

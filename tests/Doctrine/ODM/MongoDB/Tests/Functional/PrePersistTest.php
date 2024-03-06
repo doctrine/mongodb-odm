@@ -28,10 +28,8 @@ class PrePersistTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class PrePersistTestDocument
 {
     /** @var int */
@@ -40,27 +38,21 @@ class PrePersistTestDocument
     /** @var int */
     public $preUpdate;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $field;
 
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->prePersist++;
     }
 
-    /** @ODM\PreUpdate */
+    #[ODM\PreUpdate]
     public function preUpdate(): void
     {
         $this->preUpdate++;

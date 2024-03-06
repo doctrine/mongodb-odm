@@ -211,151 +211,106 @@ class AlsoLoadTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class AlsoLoadDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\AlsoLoad({"bar", "zip"})
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\AlsoLoad(['bar', 'zip'])]
     public $foo;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     * @ODM\AlsoLoad({"zip", "bar"})
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
+    #[ODM\AlsoLoad(['zip', 'bar'])]
     public $baz;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $bar;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $zip;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\AlsoLoad("zip")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\AlsoLoad('zip')]
     public $zap = 'zap';
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $name;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $fullName;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $firstName;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $lastName;
 
-    /**
-     * @ODM\Field(type="string")
-     * @ODM\AlsoLoad("testNew")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    #[ODM\AlsoLoad('testNew')]
     public $test = 'test';
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $testNew;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $testOld;
 
-    /**
-     * @ODM\Field(notSaved=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(notSaved: true)]
     public $testOlder;
 
-    /** @ODM\AlsoLoad({"name", "fullName"}) */
+    #[ODM\AlsoLoad(['name', 'fullName'])]
     public function populateFirstAndLastName(string $name): void
     {
         [$this->firstName, $this->lastName] = explode(' ', $name);
     }
 
-    /** @ODM\AlsoLoad ({"testOld", "testOlder"}) */
+    #[ODM\AlsoLoad(['testOld', 'testOlder'])]
     public function populateTest(?string $test): void
     {
         $this->test = $test;
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class AlsoLoadChild extends AlsoLoadDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $fizz;
 
-    /** @ODM\AlsoLoad("buzz") */
+    #[ODM\AlsoLoad('buzz')]
     public function populateFizz(string $fizz): void
     {
         $this->fizz = $fizz;
     }
 
-    /** @ODM\AlsoLoad ("testOldest") */
+    #[ODM\AlsoLoad('testOldest')]
     public function populateTest(?string $test): void
     {
         $this->test = $test;
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class AlsoLoadGrandchild extends AlsoLoadChild
 {
-    /** @ODM\AlsoLoad ("testReallyOldest") */
+    #[ODM\AlsoLoad('testReallyOldest')]
     public function populateTest(?string $test): void
     {
         $this->test = $test;

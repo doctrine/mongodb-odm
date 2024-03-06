@@ -60,28 +60,19 @@ class MODM81Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM81TestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=MODM81TestEmbeddedDocument::class)
-     *
-     * @var Collection<int, MODM81TestEmbeddedDocument>
-     */
+    /** @var Collection<int, MODM81TestEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: MODM81TestEmbeddedDocument::class)]
     protected $embeddedDocuments;
 
     public function getId(): ?string
@@ -112,28 +103,19 @@ class MODM81TestDocument
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM81TestEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $message;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class)
-     *
-     * @var MODM81TestDocument
-     */
+    /** @var MODM81TestDocument */
+    #[ODM\ReferenceOne(targetDocument: MODM81TestDocument::class)]
     public $refTodocument1;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=MODM81TestDocument::class)
-     *
-     * @var MODM81TestDocument
-     */
+    /** @var MODM81TestDocument */
+    #[ODM\ReferenceOne(targetDocument: MODM81TestDocument::class)]
     public $refTodocument2;
 
     public function __construct(MODM81TestDocument $document1, MODM81TestDocument $document2, string $message)

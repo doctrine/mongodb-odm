@@ -43,21 +43,15 @@ class GH1011Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1011Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH1011Embedded::class, strategy="set")
-     *
-     * @var Collection<int, GH1011Embedded>
-     */
+    /** @var Collection<int, GH1011Embedded> */
+    #[ODM\EmbedMany(targetDocument: GH1011Embedded::class, strategy: 'set')]
     public $embeds;
 
     public function __construct()
@@ -66,14 +60,11 @@ class GH1011Document
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1011Embedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

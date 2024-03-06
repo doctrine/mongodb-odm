@@ -30,53 +30,35 @@ class GH426Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH426Form
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH426Field::class, mappedBy="form", cascade={"all"})
-     *
-     * @var Collection<int, GH426Field>|array<GH426Field>
-     */
+    /** @var Collection<int, GH426Field>|array<GH426Field> */
+    #[ODM\ReferenceMany(targetDocument: GH426Field::class, mappedBy: 'form', cascade: ['all'])]
     public $fields = [];
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":1})
-     *
-     * @var GH426Field|null
-     */
+    /** @var GH426Field|null */
+    #[ODM\ReferenceOne(targetDocument: GH426Field::class, mappedBy: 'form', sort: ['_id' => 1])]
     public $firstField;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH426Field::class, mappedBy="form", sort={"_id":-1})
-     *
-     * @var GH426Field|null
-     */
+    /** @var GH426Field|null */
+    #[ODM\ReferenceOne(targetDocument: GH426Field::class, mappedBy: 'form', sort: ['_id' => -1])]
     public $lastField;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH426Field
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(inversedBy="fields", discriminatorMap={"f":GH426Form::class}, discriminatorField="type", cascade={"all"})
-     *
-     * @var GH426Form
-     */
+    /** @var GH426Form */
+    #[ODM\ReferenceOne(inversedBy: 'fields', discriminatorMap: ['f' => GH426Form::class], discriminatorField: 'type', cascade: ['all'])]
     public $form;
 
     public function __construct(GH426Form $form)

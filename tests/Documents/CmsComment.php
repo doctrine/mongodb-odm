@@ -5,55 +5,34 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 
-/**
- * @ODM\Document
- * @ODM\Indexes({
- *   @ODM\Index(keys={"topic"="asc"})
- * })
- */
+#[Index(keys: ['topic' => 'asc'])]
+#[ODM\Document]
 class CmsComment
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     public $topic;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     public $text;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=CmsArticle::class)
-     *
-     * @var CmsArticle|null
-     */
+    /** @var CmsArticle|null */
+    #[ODM\ReferenceOne(targetDocument: CmsArticle::class)]
     public $article;
 
-    /**
-     * @ODM\Field(name="ip", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(name: 'ip', type: 'string')]
     public $authorIp;
 
-    /**
-     * @ODM\Field(type="string", nullable=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string', nullable: true)]
     public $nullableField;
 
     public function setArticle(CmsArticle $article): void

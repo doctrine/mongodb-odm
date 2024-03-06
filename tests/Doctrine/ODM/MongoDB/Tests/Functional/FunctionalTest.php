@@ -928,27 +928,18 @@ class FunctionalTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ParentAssociationTestA
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\EmbedOne]
     public $child;
 
     public function __construct(string $name)
@@ -957,20 +948,14 @@ class ParentAssociationTestA
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class ParentAssociationTestB
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
-    /**
-     * @ODM\EmbedMany
-     *
-     * @var Collection<int, object>|array<object>
-     */
+    /** @var Collection<int, object>|array<object> */
+    #[ODM\EmbedMany]
     public $children = [];
 
     public function __construct(string $name)
@@ -979,14 +964,11 @@ class ParentAssociationTestB
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class ParentAssociationTestC
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

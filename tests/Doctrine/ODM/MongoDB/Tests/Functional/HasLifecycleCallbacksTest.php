@@ -107,115 +107,99 @@ class HasLifecycleCallbacksTest extends BaseTestCase
     }
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 abstract class HasLifecycleCallbacksSuper
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
     /** @var string[] */
     public $invoked = [];
 
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->invoked[] = 'super';
     }
 }
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\MappedSuperclass]
+#[ODM\HasLifecycleCallbacks]
 abstract class HasLifecycleCallbacksSuperAnnotated
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
     /** @var string[] */
     public $invoked = [];
 
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->invoked[] = 'super';
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HasLifecycleCallbacksSubExtendsSuper extends HasLifecycleCallbacksSuper
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HasLifecycleCallbacksSubExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class HasLifecycleCallbacksSubAnnotatedExtendsSuper extends HasLifecycleCallbacksSuper
 {
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class HasLifecycleCallbacksSubAnnotatedExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HasLifecycleCallbacksSubOverrideExtendsSuper extends HasLifecycleCallbacksSuper
 {
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class HasLifecycleCallbacksSubOverrideExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuper extends HasLifecycleCallbacksSuper
 {
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class HasLifecycleCallbacksSubOverrideAnnotatedExtendsSuperAnnotated extends HasLifecycleCallbacksSuperAnnotated
 {
-    /** @ODM\PrePersist */
+    #[ODM\PrePersist]
     public function prePersist(): void
     {
         $this->invoked[] = 'sub';

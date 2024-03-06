@@ -61,28 +61,19 @@ class GH267Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="users") */
+#[ODM\Document(collection: 'users')]
 class GH267User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\ReferenceOne(name="company", targetDocument=GH267Company::class, inversedBy="users")
-     *
-     * @var GH267Company|null
-     */
+    /** @var GH267Company|null */
+    #[ODM\ReferenceOne(name: 'company', targetDocument: GH267Company::class, inversedBy: 'users')]
     protected $company;
 
     public function __construct(string $name)
@@ -121,26 +112,18 @@ class GH267User
     }
 }
 
-/**
- * @ODM\Document(collection="companies")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"seller"=GH267SellerCompany::class, "buyer"=GH267BuyerCompany::class})
- */
+#[ODM\Document(collection: 'companies')]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['seller' => GH267SellerCompany::class, 'buyer' => GH267BuyerCompany::class])]
 class GH267Company
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH267User::class, mappedBy="company")
-     *
-     * @var Collection<int, GH267User>
-     */
+    /** @var Collection<int, GH267User> */
+    #[ODM\ReferenceMany(targetDocument: GH267User::class, mappedBy: 'company')]
     protected $users;
 
     public function setId(string $id): void
@@ -166,12 +149,12 @@ class GH267Company
     }
 }
 
-/** @ODM\Document(collection="companies") */
+#[ODM\Document(collection: 'companies')]
 class GH267BuyerCompany extends GH267Company
 {
 }
 
-/** @ODM\Document(collection="companies") */
+#[ODM\Document(collection: 'companies')]
 class GH267SellerCompany extends GH267Company
 {
 }

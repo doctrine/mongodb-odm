@@ -7,26 +7,17 @@ namespace Documents\Functional\Ticket\MODM160;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="embedded_test") */
+#[ODM\Document(collection: 'embedded_test')]
 class EmbedManyInArrayLevel0
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbedManyInArrayLevel1::class)
-     *
-     * @var Collection<int, EmbedManyInArrayLevel1>|array<EmbedManyInArrayLevel1>
-     */
+    /** @var Collection<int, EmbedManyInArrayLevel1>|array<EmbedManyInArrayLevel1> */
+    #[ODM\EmbedMany(targetDocument: EmbedManyInArrayLevel1::class)]
     public $level1 = [];
 }

@@ -62,21 +62,15 @@ class MODM66Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM52A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=MODM52B::class, cascade="all")
-     *
-     * @var Collection<int, MODM52B>
-     */
+    /** @var Collection<int, MODM52B> */
+    #[ODM\ReferenceMany(targetDocument: MODM52B::class, cascade: 'all')]
     protected $b;
 
     /** @param array<MODM52B> $b */
@@ -92,21 +86,15 @@ class MODM52A
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM52B
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $value;
 
     public function __construct(string $v)

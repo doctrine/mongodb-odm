@@ -39,62 +39,38 @@ class BinDataTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class BinDataTestUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="bin")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin')]
     public $bin;
 
-    /**
-     * @ODM\Field(type="bin_func")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin_func')]
     public $binFunc;
 
-    /**
-     * @ODM\Field(type="bin_bytearray")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin_bytearray')]
     public $binByteArray;
 
-    /**
-     * @ODM\Field(type="bin_uuid")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin_uuid')]
     public $binUUID;
 
-    /**
-     * @ODM\Field(type="bin_uuid_rfc4122")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin_uuid_rfc4122')]
     public $binUUIDRFC4122;
 
-    /**
-     * @ODM\Field(type="bin_md5")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin_md5')]
     public $binMD5;
 
-    /**
-     * @ODM\Field(type="bin_custom")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'bin_custom')]
     public $binCustom;
 }

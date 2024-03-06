@@ -53,42 +53,30 @@ class GH878Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH878Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH878SubDocument::class)
-     *
-     * @var GH878SubDocument|null
-     */
+    /** @var GH878SubDocument|null */
+    #[ODM\EmbedOne(targetDocument: GH878SubDocument::class)]
     public $embeddedField;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH878SubDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $some = '2';
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH878OtherDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }

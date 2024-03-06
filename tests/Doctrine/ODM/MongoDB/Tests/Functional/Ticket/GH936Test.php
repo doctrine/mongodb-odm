@@ -39,21 +39,15 @@ class GH936Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH936Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH936Document::class, cascade={"persist","remove"})
-     *
-     * @var GH936Document|null
-     */
+    /** @var GH936Document|null */
+    #[ODM\ReferenceOne(targetDocument: self::class, cascade: ['persist', 'remove'])]
     public $ref;
 
     public function __construct(?GH936Document $ref = null)

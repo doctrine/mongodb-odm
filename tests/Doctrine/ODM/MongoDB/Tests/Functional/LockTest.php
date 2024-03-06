@@ -559,36 +559,24 @@ class LockTest extends BaseTestCase
     }
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 abstract class AbstractVersionBase
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|string|null
-     */
+    /** @var ObjectId|string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $title;
 
-    /**
-     * @ODM\Lock
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Lock]
+    #[ODM\Field(type: 'int')]
     public $locked;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Issue::class)
-     *
-     * @var Collection<int, Issue>
-     */
+    /** @var Collection<int, Issue> */
+    #[ODM\EmbedMany(targetDocument: Issue::class)]
     public $issues;
 
     /** @var int|string|DateTime|DateTimeImmutable|null */
@@ -618,88 +606,64 @@ abstract class AbstractVersionBase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class LockInt extends AbstractVersionBase
 {
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Version]
+    #[ODM\Field(type: 'int')]
     public $version;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class LockDate extends AbstractVersionBase
 {
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Version]
+    #[ODM\Field(type: 'date')]
     public $version;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class LockDateImmutable extends AbstractVersionBase
 {
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="date_immutable")
-     *
-     * @var DateTimeImmutable|null
-     */
+    /** @var DateTimeImmutable|null */
+    #[ODM\Version]
+    #[ODM\Field(type: 'date_immutable')]
     public $version;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class LockDecimal128 extends AbstractVersionBase
 {
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="decimal128")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Version]
+    #[ODM\Field(type: 'decimal128')]
     public $version;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class InvalidLockDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Lock
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Lock]
+    #[ODM\Field(type: 'string')]
     public $lock;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class InvalidVersionDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Version
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Version]
+    #[ODM\Field(type: 'string')]
     public $version;
 }

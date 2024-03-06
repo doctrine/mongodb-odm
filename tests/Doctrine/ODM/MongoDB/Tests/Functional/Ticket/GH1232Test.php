@@ -35,34 +35,21 @@ class GH1232Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1232Post
 {
     public const CLASSNAME = self::class;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1232Comment::class, mappedBy="post", cascade={"remove"})
-     *
-     * @var Collection<int, GH1232Comment>
-     */
+    /** @var Collection<int, GH1232Comment> */
+    #[ODM\ReferenceMany(targetDocument: GH1232Comment::class, mappedBy: 'post', cascade: ['remove'])]
     protected $comments;
 
-    /**
-     * @ODM\ReferenceMany(
-     *     targetDocument=GH1232Comment::class,
-     *     mappedBy="post",
-     *     repositoryMethod="getLongComments",
-     * )
-     *
-     * @var Collection<int, GH1232Comment>
-     */
+    /** @var Collection<int, GH1232Comment> */
+    #[ODM\ReferenceMany(targetDocument: GH1232Comment::class, mappedBy: 'post', repositoryMethod: 'getLongComments')]
     protected $longComments;
 
     public function __construct()
@@ -71,21 +58,15 @@ class GH1232Post
     }
 }
 
-/** @ODM\Document(repositoryClass="GH1232CommentRepository") */
+#[ODM\Document(repositoryClass: 'GH1232CommentRepository')]
 class GH1232Comment
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH1232Post::class)
-     *
-     * @var GH1232Post|null
-     */
+    /** @var GH1232Post|null */
+    #[ODM\ReferenceOne(targetDocument: GH1232Post::class)]
     public $post;
 }
 

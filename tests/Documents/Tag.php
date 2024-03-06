@@ -7,28 +7,19 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Tag
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=BlogPost::class, mappedBy="tags")
-     *
-     * @var Collection<int, BlogPost>
-     */
+    /** @var Collection<int, BlogPost> */
+    #[ODM\ReferenceMany(targetDocument: BlogPost::class, mappedBy: 'tags')]
     public $blogPosts;
 
     public function __construct(string $name)

@@ -8,31 +8,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\EmbeddedDocument]
+#[ODM\HasLifecycleCallbacks]
 class Chapter
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Page::class)
-     *
-     * @var Collection<int, Page>
-     */
+    /** @var Collection<int, Page> */
+    #[ODM\EmbedMany(targetDocument: Page::class)]
     public $pages;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $nbPages = 0;
 
     public function __construct(?string $name = null)
@@ -41,7 +30,7 @@ class Chapter
         $this->pages = new ArrayCollection();
     }
 
-    /** @ODM\PostUpdate */
+    #[ODM\PostUpdate]
     public function doThisAfterAnUpdate(): void
     {
         /* Do not do this at home, it is here only to see if nothing breaks,

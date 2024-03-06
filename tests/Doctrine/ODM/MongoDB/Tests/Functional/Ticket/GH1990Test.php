@@ -30,21 +30,15 @@ class GH1990Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1990Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH1990Document::class)
-     *
-     * @var GH1990Document|null
-     */
+    /** @var GH1990Document|null */
+    #[ODM\ReferenceOne(targetDocument: self::class)]
     private $parent;
 
     public function __construct(?GH1990Document $parent)

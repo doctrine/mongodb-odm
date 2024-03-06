@@ -6,35 +6,23 @@ namespace Documents\GraphLookup;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Traveller
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Airport::class, cascade={"persist"}, storeAs="ref")
-     *
-     * @var Airport|null
-     */
+    /** @var Airport|null */
+    #[ODM\ReferenceOne(targetDocument: Airport::class, cascade: ['persist'], storeAs: 'ref')]
     public $nearestAirport;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Airport::class, cascade={"persist"}, storeAs="id")
-     *
-     * @var Airport|null
-     */
+    /** @var Airport|null */
+    #[ODM\ReferenceOne(targetDocument: Airport::class, cascade: ['persist'], storeAs: 'id')]
     public $nearestAirportId;
 
     public function __construct(string $name, Airport $nearestAirport)

@@ -6,21 +6,15 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Phonenumber
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $phonenumber;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, cascade={"persist"})
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(targetDocument: User::class, cascade: ['persist'])]
     private $lastCalledBy;
 
     public function __construct(?string $phonenumber = null, ?User $lastCalledBy = null)

@@ -116,45 +116,26 @@ class CollectionsTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document(collection={
- *   "name"="CollectionTestCapped",
- *   "capped"=true,
- *   "size"=1000,
- *   "max"=1
- * })
- */
+#[ODM\Document(collection: ['name' => 'CollectionTestCapped', 'capped' => true, 'size' => 1000, 'max' => 1])]
 class CollectionTestCapped
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class CollectionTestBasic
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $username;
 }

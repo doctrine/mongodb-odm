@@ -35,38 +35,24 @@ class MODM56Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class MODM56Parent
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Field(type: 'date')]
     public $updatedAt;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=MODM56Child::class)
-     *
-     * @var Collection<int, MODM56Child>|array<MODM56Child>
-     */
+    /** @var Collection<int, MODM56Child>|array<MODM56Child> */
+    #[ODM\EmbedMany(targetDocument: MODM56Child::class)]
     public $children = [];
 
     public function __construct(string $name)
@@ -74,28 +60,22 @@ class MODM56Parent
         $this->name = $name;
     }
 
-    /** @ODM\PreUpdate */
+    #[ODM\PreUpdate]
     public function preUpdate(): void
     {
         $this->updatedAt = new DateTime();
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM56Child
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

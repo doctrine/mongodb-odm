@@ -52,73 +52,52 @@ class TargetDocumentTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class TargetDocumentTestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Doctrine\ODM\MongoDB\Tests\Functional\TargetDocumentTestReference::class)
-     *
-     * @var TargetDocumentTestReference|null
-     */
+    /** @var TargetDocumentTestReference|null */
+    #[ODM\ReferenceOne(targetDocument: TargetDocumentTestReference::class)]
     public $reference;
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 abstract class AbstractTargetDocumentTestReference
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class TargetDocumentTestReference extends AbstractTargetDocumentTestReference
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class InvalidTargetDocumentTestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument="Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass")
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\ReferenceOne(targetDocument: 'Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass')]
     public $reference;
 }
 
 
-/** @ODM\Document */
+#[ODM\Document]
 class InvalidDiscriminatorTargetsTestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(discriminatorField="referencedClass", discriminatorMap={"Foo"="Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass"})
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\ReferenceOne(discriminatorField: 'referencedClass', discriminatorMap: ['Foo' => 'Doctrine\ODM\MongoDB\Tests\Functional\SomeInvalidClass'])]
     public $reference;
 }

@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Types\Type;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Phonenumber
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
-    protected $phonenumber;
+    #[ODM\Field(type: Type::STRING)]
+    protected ?string $phonenumber;
 
     public function __construct(?string $phonenumber = null)
     {

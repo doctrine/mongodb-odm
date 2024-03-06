@@ -5,48 +5,30 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 
-/**
- * @ODM\Document
- * @ODM\Indexes({
- *   @ODM\Index(keys={"country"="asc", "zip"="asc", "city"="asc"})
- * })
- */
+#[Index(keys: ['country' => 'asc', 'zip' => 'asc', 'city' => 'asc'])]
+#[ODM\Document]
 class CmsAddress
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $country;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $zip;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $city;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=CmsUser::class)
-     *
-     * @var CmsUser|null
-     */
+    /** @var CmsUser|null */
+    #[ODM\ReferenceOne(targetDocument: CmsUser::class)]
     public $user;
 
     public function getId(): ?string

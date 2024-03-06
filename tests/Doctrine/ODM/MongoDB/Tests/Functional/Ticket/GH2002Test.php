@@ -85,25 +85,17 @@ class GH2002Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("class")
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('class')]
 class GH2002DocumentA
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH2002DocumentA::class, cascade="all")
-     *
-     * @var GH2002DocumentA
-     */
+    /** @var GH2002DocumentA */
+    #[ODM\ReferenceOne(targetDocument: self::class, cascade: 'all')]
     public $parentDocument;
 
     public function __construct(?GH2002DocumentA $parentDocument = null)
@@ -112,26 +104,20 @@ class GH2002DocumentA
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2002DocumentB extends GH2002DocumentA
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2002ReferenceWithoutTargetDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(cascade="all")
-     *
-     * @var GH2002DocumentA
-     */
+    /** @var GH2002DocumentA */
+    #[ODM\ReferenceOne(cascade: 'all')]
     public $parentDocument;
 
     public function __construct(?GH2002DocumentA $parentDocument = null)
@@ -140,21 +126,15 @@ class GH2002ReferenceWithoutTargetDocument
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2002ReferenceWithoutTargetDocumentWithDiscriminatorField
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(discriminatorField="referencedClass", cascade="all")
-     *
-     * @var GH2002DocumentA
-     */
+    /** @var GH2002DocumentA */
+    #[ODM\ReferenceOne(discriminatorField: 'referencedClass', cascade: 'all')]
     public $parentDocument;
 
     public function __construct(?GH2002DocumentA $parentDocument = null)
@@ -163,21 +143,15 @@ class GH2002ReferenceWithoutTargetDocumentWithDiscriminatorField
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2002ReferenceWithDiscriminatorField
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH2002DocumentA::class, discriminatorField="referencedClass", cascade="all")
-     *
-     * @var GH2002DocumentA
-     */
+    /** @var GH2002DocumentA */
+    #[ODM\ReferenceOne(targetDocument: GH2002DocumentA::class, discriminatorField: 'referencedClass', cascade: 'all')]
     public $parentDocument;
 
     public function __construct(?GH2002DocumentA $parentDocument = null)
@@ -186,21 +160,15 @@ class GH2002ReferenceWithDiscriminatorField
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2002ReferenceWithPartialDiscriminatorMap
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(discriminatorField="referencedClass", discriminatorMap={"B"=GH2002DocumentB::class}, cascade="all")
-     *
-     * @var GH2002DocumentA
-     */
+    /** @var GH2002DocumentA */
+    #[ODM\ReferenceOne(discriminatorField: 'referencedClass', discriminatorMap: ['B' => GH2002DocumentB::class], cascade: 'all')]
     public $parentDocument;
 
     public function __construct(?GH2002DocumentA $parentDocument = null)
@@ -209,26 +177,18 @@ class GH2002ReferenceWithPartialDiscriminatorMap
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"A"=GH2002DocumentWithDiscriminatorMapA::class})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['A' => GH2002DocumentWithDiscriminatorMapA::class])]
 class GH2002DocumentWithDiscriminatorMapA
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH2002DocumentWithDiscriminatorMapA::class, cascade="all")
-     *
-     * @var GH2002DocumentWithDiscriminatorMapA
-     */
+    /** @var GH2002DocumentWithDiscriminatorMapA */
+    #[ODM\ReferenceOne(targetDocument: self::class, cascade: 'all')]
     public $parentDocument;
 
     public function __construct(?GH2002DocumentWithDiscriminatorMapA $parentDocument = null)
@@ -237,7 +197,7 @@ class GH2002DocumentWithDiscriminatorMapA
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2002DocumentWithDiscriminatorMapB extends GH2002DocumentWithDiscriminatorMapA
 {
 }

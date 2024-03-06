@@ -6,28 +6,19 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="pre_update_test_product") */
+#[ODM\Document(collection: 'pre_update_test_product')]
 class PreUpdateTestProduct
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=PreUpdateTestSellable::class)
-     *
-     * @var PreUpdateTestSellable|null
-     */
+    /** @var PreUpdateTestSellable|null */
+    #[ODM\EmbedOne(targetDocument: PreUpdateTestSellable::class)]
     public $sellable;
 
     public function getName(): ?string

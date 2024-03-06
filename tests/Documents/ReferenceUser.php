@@ -9,86 +9,52 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * A document to test the different "storeAs" values
- *
- * @ODM\Document
  */
+#[ODM\Document]
 class ReferenceUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id")
-     *
-     * @var User
-     */
+    /** @var User */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'id')]
     public $user;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="id")
-     *
-     * @var Collection<int, User>|array<User>
-     */
+    /** @var Collection<int, User>|array<User> */
+    #[ODM\ReferenceMany(targetDocument: User::class, storeAs: 'id')]
     public $users = [];
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef")
-     *
-     * @var User
-     */
+    /** @var User */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'dbRef')]
     public $parentUser;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRef")
-     *
-     * @var Collection<int, User>|array<User>
-     */
+    /** @var Collection<int, User>|array<User> */
+    #[ODM\ReferenceMany(targetDocument: User::class, storeAs: 'dbRef')]
     public $parentUsers = [];
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb")
-     *
-     * @var User
-     */
+    /** @var User */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'dbRefWithDb')]
     public $otherUser;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="dbRefWithDb")
-     *
-     * @var Collection<int, User>|array<User>
-     */
+    /** @var Collection<int, User>|array<User> */
+    #[ODM\ReferenceMany(targetDocument: User::class, storeAs: 'dbRefWithDb')]
     public $otherUsers = [];
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
-     *
-     * @var User
-     */
+    /** @var User */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'ref')]
     public $referencedUser;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=User::class, storeAs="ref")
-     *
-     * @var Collection<int, User>|array<User>
-     */
+    /** @var Collection<int, User>|array<User> */
+    #[ODM\ReferenceMany(targetDocument: User::class, storeAs: 'ref')]
     public $referencedUsers = [];
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Documents\IndirectlyReferencedUser::class)
-     *
-     * @var Collection<int, IndirectlyReferencedUser>|array<IndirectlyReferencedUser>
-     */
+    /** @var Collection<int, IndirectlyReferencedUser>|array<IndirectlyReferencedUser> */
+    #[ODM\EmbedMany(targetDocument: IndirectlyReferencedUser::class)]
     public $indirectlyReferencedUsers = [];
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function setUser(User $user): void

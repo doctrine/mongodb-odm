@@ -368,13 +368,13 @@ class IdTest extends BaseTestCase
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @Doctrine\ODM\MongoDB\Mapping\Annotations\Document */
+#[ODM\Document]
 class %s
 {
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Id(strategy="%s", options={"type"="%s"}) **/
+    #[ODM\Id(strategy: "%s", options: ["type" => "%s"])]
     public $id;
 
-    /** @Doctrine\ODM\MongoDB\Mapping\Annotations\Field("type=string") **/
+    #[ODM\Field(type: "string")]
     public $test = "test";
 }',
                 $shortClassName,
@@ -389,21 +389,15 @@ class %s
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class UuidUser
 {
-    /**
-     * @ODM\Id(strategy="uuid", options={"salt"="test"})
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'uuid', options: ['salt' => 'test'])]
     public $id;
 
-    /**
-     * @ODM\Field(name="t", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 't', type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -412,35 +406,23 @@ class UuidUser
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class CollectionIdUser
 {
-    /**
-     * @ODM\Id(strategy="increment")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'increment')]
     public $id;
 
-    /**
-     * @ODM\Field(name="t", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 't', type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"})
-     *
-     * @var ReferencedCollectionId|null
-     */
+    /** @var ReferencedCollectionId|null */
+    #[ODM\ReferenceOne(targetDocument: ReferencedCollectionId::class, cascade: ['persist'])]
     public $reference;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class)
-     *
-     * @var Collection<int, EmbeddedCollectionId>|array<EmbeddedCollectionId>
-     */
+    /** @var Collection<int, EmbeddedCollectionId>|array<EmbeddedCollectionId> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedCollectionId::class)]
     public $embedded = [];
 
     public function __construct(string $name)
@@ -449,35 +431,23 @@ class CollectionIdUser
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class CollectionIdUserWithStartingId
 {
-    /**
-     * @ODM\Id(strategy="increment", options={"startingId"=10})
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'increment', options: ['startingId' => 10])]
     public $id;
 
-    /**
-     * @ODM\Field(name="t", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 't', type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=ReferencedCollectionId::class, cascade={"persist"})
-     *
-     * @var ReferencedCollectionId|null
-     */
+    /** @var ReferencedCollectionId|null */
+    #[ODM\ReferenceOne(targetDocument: ReferencedCollectionId::class, cascade: ['persist'])]
     public $reference;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedCollectionId::class)
-     *
-     * @var Collection<int, EmbeddedCollectionId>|array<EmbeddedCollectionId>
-     */
+    /** @var Collection<int, EmbeddedCollectionId>|array<EmbeddedCollectionId> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedCollectionId::class)]
     public $embedded = [];
 
     public function __construct(string $name)
@@ -486,21 +456,15 @@ class CollectionIdUserWithStartingId
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ReferencedCollectionId
 {
-    /**
-     * @ODM\Id(strategy="increment")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'increment')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -514,21 +478,15 @@ class ReferencedCollectionId
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedCollectionId
 {
-    /**
-     * @ODM\Id(strategy="increment")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'increment')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -542,21 +500,15 @@ class EmbeddedCollectionId
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class AlnumCharsUser
 {
-    /**
-     * @ODM\Id(strategy="alnum", options={"chars"="zyxwvutsrqponmlkjihgfedcba"})
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'alnum', options: ['chars' => 'zyxwvutsrqponmlkjihgfedcba'])]
     public $id;
 
-    /**
-     * @ODM\Field(name="t", type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(name: 't', type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -565,21 +517,15 @@ class AlnumCharsUser
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class CustomIdUser
 {
-    /**
-     * @ODM\Id(strategy="none", nullable=true)
-     *
-     * @var int|string|null
-     */
+    /** @var int|string|null */
+    #[ODM\Id(strategy: 'none', nullable: true)]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)
@@ -588,13 +534,10 @@ class CustomIdUser
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class TestIdTypesIdAutoUser
 {
-    /**
-     * @ODM\Id(strategy="auto", options={"type"="id"})
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'auto', options: ['type' => 'id'])]
     public $id;
 }

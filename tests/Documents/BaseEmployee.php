@@ -7,63 +7,39 @@ namespace Documents;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 abstract class BaseEmployee
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="int", strategy="increment")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int', strategy: 'increment')]
     protected $changes = 0;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     protected $notes = [];
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\Field(type="float")
-     *
-     * @var float|null
-     */
+    /** @var float|null */
+    #[ODM\Field(type: 'float')]
     protected $salary;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Field(type: 'date')]
     protected $started;
 
-    /**
-     * @ODM\Field(type="date")
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\Field(type: 'date')]
     protected $left;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Address::class)
-     *
-     * @var Address|null
-     */
+    /** @var Address|null */
+    #[ODM\EmbedOne(targetDocument: Address::class)]
     protected $address;
 
     public function getId(): ?string

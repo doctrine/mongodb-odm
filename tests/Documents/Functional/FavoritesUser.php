@@ -10,55 +10,31 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Documents\Group;
 use Documents\Project;
 
-/** @ODM\Document(collection="favorites_user") */
+#[ODM\Document(collection: 'favorites_user')]
 class FavoritesUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\ReferenceMany(
-     *   discriminatorField="type",
-     *   discriminatorMap={
-     *     "group"=Documents\Group::class,
-     *     "project"=Documents\Project::class
-     *   }
-     * )
-     *
-     * @var Collection<int, Group|Project>
-     */
+    /** @var Collection<int, Group|Project> */
+    #[ODM\ReferenceMany(discriminatorField: 'type', discriminatorMap: ['group' => Group::class, 'project' => Project::class])]
     private $favorites;
 
-    /**
-     * @ODM\EmbedMany
-     *
-     * @var Collection<int, object>|array<object>
-     */
+    /** @var Collection<int, object>|array<object> */
+    #[ODM\EmbedMany]
     private $embedded = [];
 
-    /**
-     * @ODM\ReferenceOne
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\ReferenceOne]
     private $favorite;
 
-    /**
-     * @ODM\EmbedOne
-     *
-     * @var object|null
-     */
+    /** @var object|null */
+    #[ODM\EmbedOne]
     private $embed;
 
     public function __construct()

@@ -129,23 +129,17 @@ class GH1229Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1229Parent
 {
     public const CLASSNAME = self::class;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(discriminatorField="_class")
-     *
-     * @var Collection<int, GH1229Child>
-     */
+    /** @var Collection<int, GH1229Child> */
+    #[ODM\EmbedMany(discriminatorField: '_class')]
     protected $children;
 
     public function __construct()
@@ -183,23 +177,17 @@ class GH1229Parent
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1229Child
 {
     public const CLASSNAME = self::class;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
     public $order = 0;
 
     public function __construct(string $name)
@@ -221,7 +209,7 @@ class GH1229Child
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1229ChildTypeB extends GH1229Child
 {
     public const CLASSNAME = self::class;

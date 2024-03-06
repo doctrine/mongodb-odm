@@ -7,27 +7,18 @@ namespace Documents\Functional;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class EmbedNamed
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedWhichReferences::class, name="embedded_doc")
-     *
-     * @var EmbeddedWhichReferences|null
-     */
+    /** @var EmbeddedWhichReferences|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedWhichReferences::class, name: 'embedded_doc')]
     public $embeddedDoc;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedWhichReferences::class, name="embedded_docs")
-     *
-     * @var Collection<int, EmbeddedWhichReferences>|array<EmbeddedWhichReferences>
-     */
+    /** @var Collection<int, EmbeddedWhichReferences>|array<EmbeddedWhichReferences> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedWhichReferences::class, name: 'embedded_docs')]
     public $embeddedDocs = [];
 }

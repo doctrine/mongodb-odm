@@ -38,28 +38,23 @@ class GH2157Test extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document(collection="documents")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"firsttype"=GH2157FirstType::class, "secondtype"=GH2157SecondType::class})
- */
+#[ODM\Document(collection: 'documents')]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['firsttype' => GH2157FirstType::class, 'secondtype' => GH2157SecondType::class])]
 abstract class GH2157Abstract
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     protected $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2157FirstType extends GH2157Abstract
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH2157SecondType extends GH2157Abstract
 {
 }

@@ -8,49 +8,31 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\File(chunkSizeBytes=12345) */
+#[ODM\File(chunkSizeBytes: 12345)]
 class File
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\File\Filename
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\File\Filename]
     private $filename;
 
-    /**
-     * @ODM\File\ChunkSize
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\File\ChunkSize]
     private $chunkSize;
 
-    /**
-     * @ODM\File\Length
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\File\Length]
     private $length;
 
-    /**
-     * @ODM\File\UploadDate
-     *
-     * @var DateTime|null
-     */
+    /** @var DateTime|null */
+    #[ODM\File\UploadDate]
     private $uploadDate;
 
-    /**
-     * @ODM\File\Metadata(targetDocument=FileMetadata::class)
-     *
-     * @var FileMetadata|null
-     */
+    /** @var FileMetadata|null */
+    #[ODM\File\Metadata(targetDocument: FileMetadata::class)]
     private $metadata;
 
     public function getId(): ?string

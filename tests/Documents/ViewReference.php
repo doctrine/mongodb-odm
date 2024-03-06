@@ -8,42 +8,27 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class ViewReference
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=UserName::class, cascade={"persist"})
-     *
-     * @var UserName
-     */
+    /** @var UserName */
+    #[ODM\ReferenceOne(targetDocument: UserName::class, cascade: ['persist'])]
     private $referenceOneView;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=UserName::class, mappedBy="viewReference")
-     *
-     * @var UserName
-     */
+    /** @var UserName */
+    #[ODM\ReferenceOne(targetDocument: UserName::class, mappedBy: 'viewReference')]
     private $referenceOneViewMappedBy;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=UserName::class, cascade={"persist"})
-     *
-     * @var Collection<int, UserName>
-     */
+    /** @var Collection<int, UserName> */
+    #[ODM\ReferenceMany(targetDocument: UserName::class, cascade: ['persist'])]
     private $referenceManyView;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=UserName::class, mappedBy="viewReference")
-     *
-     * @var Collection<int, UserName>
-     */
+    /** @var Collection<int, UserName> */
+    #[ODM\ReferenceMany(targetDocument: UserName::class, mappedBy: 'viewReference')]
     private $referenceManyViewMappedBy;
 
     public function __construct(string $id)

@@ -6,20 +6,14 @@ namespace Documents\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="functional_tests") */
+#[ODM\Document(collection: 'functional_tests')]
 class NullFieldValues
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(nullable=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(nullable: true)]
     public $field;
 }

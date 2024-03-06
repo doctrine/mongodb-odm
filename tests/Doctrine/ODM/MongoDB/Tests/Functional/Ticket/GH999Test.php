@@ -41,24 +41,16 @@ class GH999Listener
     }
 }
 
-/**
- * @ODM\Document
- * @ODM\HasLifecycleCallbacks
- */
+#[ODM\Document]
+#[ODM\HasLifecycleCallbacks]
 class GH999Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function __construct(string $name)
@@ -81,7 +73,7 @@ class GH999Document
         $this->name = $name;
     }
 
-    /** @ODM\PostUpdate */
+    #[ODM\PostUpdate]
     public function postUpdate(): void
     {
         throw new Exception('Did not expect postUpdate to be called when persisting a new document');

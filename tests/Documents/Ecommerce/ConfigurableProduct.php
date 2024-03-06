@@ -12,28 +12,19 @@ use function array_map;
 use function array_search;
 use function in_array;
 
-/** @ODM\Document */
+#[ODM\Document]
 class ConfigurableProduct
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Documents\Ecommerce\Option::class)
-     *
-     * @var Collection<int, Option>|array<Option>
-     */
+    /** @var Collection<int, Option>|array<Option> */
+    #[ODM\EmbedMany(targetDocument: Option::class)]
     protected $options = [];
 
     /** @var Option|null */

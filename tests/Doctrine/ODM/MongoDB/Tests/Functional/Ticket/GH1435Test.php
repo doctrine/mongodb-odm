@@ -67,38 +67,26 @@ class GH1435Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document() */
+#[ODM\Document]
 class GH1435Document
 {
-    /**
-     * @ODM\Id()
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string", nullable=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string', nullable: true)]
     public $name;
 }
 
-/** @ODM\Document() */
+#[ODM\Document]
 class GH1435DocumentIncrement
 {
-    /**
-     * @ODM\Id(strategy="increment")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Id(strategy: 'increment')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string", nullable=true)
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string', nullable: true)]
     public $name;
 }

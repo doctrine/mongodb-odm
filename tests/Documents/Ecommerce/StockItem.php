@@ -6,35 +6,23 @@ namespace Documents\Ecommerce;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class StockItem
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Field(type: 'int')]
     private $inventory;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class)
-     *
-     * @var Money|null
-     */
+    /** @var Money|null */
+    #[ODM\EmbedOne(targetDocument: Money::class)]
     private $cost;
 
     public function getId(): ?string

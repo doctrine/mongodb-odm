@@ -507,62 +507,44 @@ class ReferencesTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithArrayReference
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentWithArrayId::class)
-     *
-     * @var DocumentWithArrayId|null
-     */
+    /** @var DocumentWithArrayId|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentWithArrayId::class)]
     public $referenceOne;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithArrayId
 {
-    /**
-     * @ODM\Id(strategy="none", options={"type"="hash"})
-     *
-     * @var array<string, int>
-     */
+    /** @var array<string, int> */
+    #[ODM\Id(strategy: 'none', options: ['type' => 'hash'])]
     public $id;
 }
 
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithMongoBinDataReference
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=DocumentWithMongoBinDataId::class)
-     *
-     * @var DocumentWithMongoBinDataId|null
-     */
+    /** @var DocumentWithMongoBinDataId|null */
+    #[ODM\ReferenceOne(targetDocument: DocumentWithMongoBinDataId::class)]
     public $referenceOne;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithMongoBinDataId
 {
-    /**
-     * @ODM\Id(strategy="none", options={"type"="bin"})
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'none', options: ['type' => 'bin'])]
     public $id;
 }
 

@@ -24,21 +24,15 @@ class MODM45Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="modm45_test") */
+#[ODM\Document(collection: 'modm45_test')]
 class MODM45A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=MODM45B::class)
-     *
-     * @var MODM45B|null
-     */
+    /** @var MODM45B|null */
+    #[ODM\EmbedOne(targetDocument: MODM45B::class)]
     protected $b;
 
     public function getId(): ?string
@@ -57,14 +51,11 @@ class MODM45A
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM45B
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $val;
 
     public function setVal(string $val): void

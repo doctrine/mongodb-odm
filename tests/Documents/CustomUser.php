@@ -6,35 +6,23 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="custom_users") */
+#[ODM\Document(collection: 'custom_users')]
 class CustomUser
 {
-    /**
-     * @ODM\Id(strategy="none")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'none')]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $password;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Account::class, cascade={"all"})
-     *
-     * @var Account|null
-     */
+    /** @var Account|null */
+    #[ODM\ReferenceOne(targetDocument: Account::class, cascade: ['all'])]
     protected $account;
 
     public function getId(): ?string

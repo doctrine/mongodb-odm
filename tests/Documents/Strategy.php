@@ -7,34 +7,22 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="strategy") */
+#[ODM\Document(collection: 'strategy')]
 class Strategy
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     public $logs = [];
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Message::class, strategy="set")
-     *
-     * @var Collection<int, Message>|array<Message>
-     */
+    /** @var Collection<int, Message>|array<Message> */
+    #[ODM\EmbedMany(targetDocument: Message::class, strategy: 'set')]
     public $messages = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Task::class, strategy="set")
-     *
-     * @var Collection<int, Task>|array<Task>
-     */
+    /** @var Collection<int, Task>|array<Task> */
+    #[ODM\ReferenceMany(targetDocument: Task::class, strategy: 'set')]
     public $tasks = [];
 }

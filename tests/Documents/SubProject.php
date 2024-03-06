@@ -7,14 +7,11 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class SubProject extends Project
 {
-    /**
-     * @ODM\EmbedMany(targetDocument=Issue::class)
-     *
-     * @var Collection<int, Issue>
-     */
+    /** @var Collection<int, Issue> */
+    #[ODM\EmbedMany(targetDocument: Issue::class)]
     private $issues;
 
     /** @return Collection<int, Issue> */

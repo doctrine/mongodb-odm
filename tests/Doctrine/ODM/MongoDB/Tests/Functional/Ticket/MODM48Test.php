@@ -30,21 +30,15 @@ class MODM48Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM48A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=MODM48B::class)
-     *
-     * @var MODM48B|null
-     */
+    /** @var MODM48B|null */
+    #[ODM\EmbedOne(targetDocument: MODM48B::class)]
     public $b;
 
     public function getId(): ?string
@@ -63,14 +57,11 @@ class MODM48A
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM48B
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $val;
 
     public function setVal(string $val): void

@@ -29,35 +29,23 @@ class MODM76Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM76A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $test = 'test';
 
-    /**
-     * @ODM\EmbedMany(targetDocument=MODM76B::class)
-     *
-     * @var Collection<int, MODM76B>
-     */
+    /** @var Collection<int, MODM76B> */
+    #[ODM\EmbedMany(targetDocument: MODM76B::class)]
     protected $b;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=MODM76C::class)
-     *
-     * @var Collection<int, MODM76C>
-     */
+    /** @var Collection<int, MODM76C> */
+    #[ODM\ReferenceMany(targetDocument: MODM76C::class)]
     protected $c;
 
     /**
@@ -88,14 +76,11 @@ class MODM76A
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM76B
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=MODM76C::class)
-     *
-     * @var MODM76C
-     */
+    /** @var MODM76C */
+    #[ODM\ReferenceOne(targetDocument: MODM76C::class)]
     protected $c;
 
     public function __construct(MODM76C $c)
@@ -109,13 +94,10 @@ class MODM76B
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM76C
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 }

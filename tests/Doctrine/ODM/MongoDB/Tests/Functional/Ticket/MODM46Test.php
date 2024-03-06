@@ -25,32 +25,23 @@ class MODM46Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM46A
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=MODM46AB::class)
-     * @ODM\AlsoLoad("c")
-     *
-     * @var MODM46AB|null
-     */
+    /** @var MODM46AB|null */
+    #[ODM\EmbedOne(targetDocument: MODM46AB::class)]
+    #[ODM\AlsoLoad('c')]
     public $b;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM46AB
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $value;
 }

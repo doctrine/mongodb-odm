@@ -10,32 +10,20 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 use function uniqid;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class VirtualHostDirective
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     protected $recId;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $name;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $value;
-    /**
-     * @ODM\EmbedMany(targetDocument=Documents\Functional\VirtualHostDirective::class)
-     *
-     * @var Collection<int, VirtualHostDirective>|null
-     */
+    /** @var Collection<int, VirtualHostDirective>|null */
+    #[ODM\EmbedMany(targetDocument: self::class)]
     protected $directives;
 
     public function __construct(string $name = '', string $value = '')

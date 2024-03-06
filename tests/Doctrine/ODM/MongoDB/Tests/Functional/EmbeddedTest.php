@@ -637,28 +637,19 @@ class EmbeddedTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ChangeEmbeddedIdTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class)
-     *
-     * @var EmbeddedDocumentWithId|null
-     */
+    /** @var EmbeddedDocumentWithId|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithId::class)]
     public $embed;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbeddedDocumentWithId::class)
-     *
-     * @var Collection<int, EmbeddedDocumentWithId>|array<EmbeddedDocumentWithId>
-     */
+    /** @var Collection<int, EmbeddedDocumentWithId>|array<EmbeddedDocumentWithId> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedDocumentWithId::class)]
     public $embedMany;
 
     public function __construct()
@@ -667,49 +658,34 @@ class ChangeEmbeddedIdTest
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentWithId
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ChangeEmbeddedWithNameAnnotationTest
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class)
-     *
-     * @var EmbeddedDocumentWithAnotherEmbedded|null
-     */
+    /** @var EmbeddedDocumentWithAnotherEmbedded|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithAnotherEmbedded::class)]
     public $embedOne;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithAnotherEmbedded::class)
-     *
-     * @var EmbeddedDocumentWithAnotherEmbedded|null
-     */
+    /** @var EmbeddedDocumentWithAnotherEmbedded|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithAnotherEmbedded::class)]
     public $embedTwo;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentWithAnotherEmbedded
 {
-    /**
-     * @ODM\EmbedOne(targetDocument=EmbeddedDocumentWithId::class, name="m_id")
-     *
-     * @var EmbeddedDocumentWithId|null
-     */
+    /** @var EmbeddedDocumentWithId|null */
+    #[ODM\EmbedOne(targetDocument: EmbeddedDocumentWithId::class, name: 'm_id')]
     public $embed;
 }

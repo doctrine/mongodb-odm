@@ -41,21 +41,15 @@ class GH1346Test extends BaseTestCase
 }
 
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1346Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH1346ReferencedDocument::class)
-     *
-     * @var Collection<int, GH1346ReferencedDocument>
-     */
+    /** @var Collection<int, GH1346ReferencedDocument> */
+    #[ODM\ReferenceMany(targetDocument: GH1346ReferencedDocument::class)]
     protected $references;
 
     public function __construct()
@@ -80,21 +74,15 @@ class GH1346Document
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1346ReferencedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $test;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
     public function setTest(string $test): void

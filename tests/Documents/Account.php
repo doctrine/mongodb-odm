@@ -6,35 +6,23 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Account
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field]
     private $name;
 
-    /**
-     * @ODM\ReferenceOne(storeAs="dbRefWithDb")
-     *
-     * @var User|CustomUser|null
-     */
+    /** @var User|CustomUser|null */
+    #[ODM\ReferenceOne(storeAs: 'dbRefWithDb')]
     protected $user;
 
-    /**
-     * @ODM\ReferenceOne(storeAs="dbRef")
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(storeAs: 'dbRef')]
     protected $userDbRef;
 
     public function getId(): ?string

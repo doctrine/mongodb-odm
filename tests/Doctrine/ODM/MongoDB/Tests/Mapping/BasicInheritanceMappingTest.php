@@ -100,94 +100,63 @@ class TransientBaseClass
     private $transient2;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentSubClass extends TransientBaseClass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 }
 
-/**
- * @ODM\MappedSuperclass
- * @ODM\ReadPreference("secondary", tags={ { "dc"="east" } })
- */
+#[ODM\MappedSuperclass]
+#[ODM\ReadPreference('secondary', tags: [['dc' => 'east']])]
 class MappedSuperclassBase
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $mapped1;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $mapped2;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=MappedSuperclassRelated1::class)
-     *
-     * @var MappedSuperclassRelated1|null
-     */
+    /** @var MappedSuperclassRelated1|null */
+    #[ODM\ReferenceOne(targetDocument: MappedSuperclassRelated1::class)]
     private $mappedRelated1;
 
     /** @var mixed */
     private $transient;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentSubClass2 extends MappedSuperclassBase
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 }
 
-/**
- * @ODM\File(bucketName="myFile", chunkSizeBytes=112)
- * @ODM\DiscriminatorField("type")
- */
+#[ODM\File(bucketName: 'myFile', chunkSizeBytes: 112)]
+#[ODM\DiscriminatorField('type')]
 class GridFSParentClass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 }
 
-/** @ODM\File */
+#[ODM\File]
 class GridFSChildClass extends GridFSParentClass
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 }

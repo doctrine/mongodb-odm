@@ -10,32 +10,23 @@ use InvalidArgumentException;
 use function implode;
 use function in_array;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Currency
 {
     public const USD  = 'USD';
     public const EURO = 'EURO';
     public const JPN  = 'JPN';
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\Field(type="float")
-     *
-     * @var float
-     */
+    /** @var float */
+    #[ODM\Field(type: 'float')]
     protected $multiplier;
 
     /** @param float|int $multiplier */

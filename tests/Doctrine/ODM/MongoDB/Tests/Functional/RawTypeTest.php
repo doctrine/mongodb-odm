@@ -41,20 +41,14 @@ class RawTypeTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class RawType
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="raw")
-     *
-     * @var mixed
-     */
+    /** @var mixed */
+    #[ODM\Field(type: 'raw')]
     public $raw;
 }

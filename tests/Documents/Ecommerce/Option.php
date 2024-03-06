@@ -7,35 +7,23 @@ namespace Documents\Ecommerce;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use InvalidArgumentException;
 
-/** @ODM\EmbeddedDocument() */
+#[ODM\EmbeddedDocument]
 class Option
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Documents\Ecommerce\Money::class)
-     *
-     * @var Money
-     */
+    /** @var Money */
+    #[ODM\EmbedOne(targetDocument: Money::class)]
     protected $money;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Ecommerce\StockItem::class, cascade="all")
-     *
-     * @var StockItem
-     */
+    /** @var StockItem */
+    #[ODM\ReferenceOne(targetDocument: StockItem::class, cascade: 'all')]
     protected $stockItem;
 
     public function __construct(string $name, Money $money, StockItem $stockItem)

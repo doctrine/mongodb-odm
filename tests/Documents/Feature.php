@@ -6,28 +6,19 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class Feature
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Product::class, inversedBy="features", cascade={"all"})
-     *
-     * @var Product|null
-     */
+    /** @var Product|null */
+    #[ODM\ReferenceOne(targetDocument: Product::class, inversedBy: 'features', cascade: ['all'])]
     public $product;
 
     public function __construct(string $name)

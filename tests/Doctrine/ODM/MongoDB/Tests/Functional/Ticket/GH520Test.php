@@ -64,20 +64,14 @@ class GH520Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH520Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH520Document::class, cascade={"persist"})
-     *
-     * @var GH520Document|null
-     */
+    /** @var GH520Document|null */
+    #[ODM\ReferenceOne(targetDocument: self::class, cascade: ['persist'])]
     public $ref;
 }

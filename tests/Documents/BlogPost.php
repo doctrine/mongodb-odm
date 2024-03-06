@@ -7,105 +7,63 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
+#[ODM\Document]
 class BlogPost
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Tag::class, inversedBy="blogPosts", cascade={"all"})
-     *
-     * @var Collection<int, Tag>|array<Tag>
-     */
+    /** @var Collection<int, Tag>|array<Tag> */
+    #[ODM\ReferenceMany(targetDocument: Tag::class, inversedBy: 'blogPosts', cascade: ['all'])]
     public $tags = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", cascade={"all"}, prime={"author"})
-     *
-     * @var Collection<int, Comment>|array<Comment>
-     */
+    /** @var Collection<int, Comment>|array<Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, mappedBy: 'parent', cascade: ['all'], prime: ['author'])]
     public $comments = [];
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Comment::class, mappedBy="parent", sort={"date"="asc"})
-     *
-     * @var Comment|null
-     */
+    /** @var Comment|null */
+    #[ODM\ReferenceOne(targetDocument: Comment::class, mappedBy: 'parent', sort: ['date' => 'asc'])]
     public $firstComment;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Comment::class, mappedBy="parent", sort={"date"="desc"})
-     *
-     * @var Comment|null
-     */
+    /** @var Comment|null */
+    #[ODM\ReferenceOne(targetDocument: Comment::class, mappedBy: 'parent', sort: ['date' => 'desc'])]
     public $latestComment;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", sort={"date"="desc"}, limit=5)
-     *
-     * @var Collection<int, Comment>|array<Comment>
-     */
+    /** @var Collection<int, Comment>|array<Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, mappedBy: 'parent', sort: ['date' => 'desc'], limit: 5)]
     public $last5Comments = [];
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", criteria={"isByAdmin"=true}, sort={"date"="desc"})
-     *
-     * @var Collection<int, Comment>|array<Comment>
-     */
+    /** @var Collection<int, Comment>|array<Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, mappedBy: 'parent', criteria: ['isByAdmin' => true], sort: ['date' => 'desc'])]
     public $adminComments = [];
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Comment::class, mappedBy="parent", repositoryMethod="findOneComment")
-     *
-     * @var Comment|null
-     */
+    /** @var Comment|null */
+    #[ODM\ReferenceOne(targetDocument: Comment::class, mappedBy: 'parent', repositoryMethod: 'findOneComment')]
     public $repoComment;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", repositoryMethod="findManyComments")
-     *
-     * @var Collection<int, Comment>
-     */
+    /** @var Collection<int, Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, mappedBy: 'parent', repositoryMethod: 'findManyComments')]
     public $repoComments;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", repositoryMethod="findManyComments", prime={"author"})
-     *
-     * @var Collection<int, Comment>
-     */
+    /** @var Collection<int, Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, mappedBy: 'parent', repositoryMethod: 'findManyComments', prime: ['author'])]
     public $repoCommentsWithPrimer;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, mappedBy="parent", strategy="set", repositoryMethod="findManyComments")
-     *
-     * @var Collection<int, Comment>
-     */
+    /** @var Collection<int, Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, mappedBy: 'parent', strategy: 'set', repositoryMethod: 'findManyComments')]
     public $repoCommentsSet;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Comment::class, repositoryMethod="findManyComments")
-     *
-     * @var Collection<int, Comment>
-     */
+    /** @var Collection<int, Comment> */
+    #[ODM\ReferenceMany(targetDocument: Comment::class, repositoryMethod: 'findManyComments')]
     public $repoCommentsWithoutMappedBy;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, inversedBy="posts", nullable=true)
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(targetDocument: User::class, inversedBy: 'posts', nullable: true)]
     public $user;
 
     public function __construct(?string $name = null)

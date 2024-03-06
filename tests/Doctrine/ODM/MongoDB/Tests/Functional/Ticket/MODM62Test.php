@@ -25,21 +25,15 @@ class MODM62Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="modm62_users") */
+#[ODM\Document(collection: 'modm62_users')]
 class MODM62Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="collection")
-     *
-     * @var string[]
-     */
+    /** @var string[] */
+    #[ODM\Field(type: 'collection')]
     public $b = ['ok'];
 
     /** @param string[] $b */

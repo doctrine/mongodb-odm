@@ -6,13 +6,10 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class IndirectlyReferencedUser
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
-     *
-     * @var User
-     */
+    /** @var User */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'ref')]
     public $user;
 }

@@ -185,55 +185,27 @@ class CustomCollectionsTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class DocumentWithCustomCollection
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedMany(
-     *   collectionClass=MyEmbedsCollection::class,
-     *   targetDocument=EmbeddedDocumentInCustomCollection::class
-     * )
-     *
-     * @var MyEmbedsCollection<int, EmbeddedDocumentInCustomCollection>
-     */
+    /** @var MyEmbedsCollection<int, EmbeddedDocumentInCustomCollection> */
+    #[ODM\EmbedMany(collectionClass: MyEmbedsCollection::class, targetDocument: EmbeddedDocumentInCustomCollection::class)]
     public $coll;
 
-    /**
-     * @ODM\EmbedMany(
-     *   targetDocument=EmbeddedDocumentInCustomCollection::class
-     * )
-     *
-     * @var Collection<int, EmbeddedDocumentInCustomCollection>
-     */
+    /** @var Collection<int, EmbeddedDocumentInCustomCollection> */
+    #[ODM\EmbedMany(targetDocument: EmbeddedDocumentInCustomCollection::class)]
     public $boring;
 
-    /**
-     * @ODM\ReferenceMany(
-     *   collectionClass=MyDocumentsCollection::class,
-     *   orphanRemoval=true,
-     *   targetDocument=DocumentWithCustomCollection::class
-     * )
-     *
-     * @var MyDocumentsCollection<int, DocumentWithCustomCollection>
-     */
+    /** @var MyDocumentsCollection<int, DocumentWithCustomCollection> */
+    #[ODM\ReferenceMany(collectionClass: MyDocumentsCollection::class, orphanRemoval: true, targetDocument: self::class)]
     public $refMany;
 
-    /**
-     * @ODM\ReferenceMany(
-     *   collectionClass="\Doctrine\ODM\MongoDB\Tests\Functional\MyDocumentsCollection",
-     *   mappedBy="refMany",
-     *   targetDocument=DocumentWithCustomCollection::class
-     * )
-     *
-     * @var MyDocumentsCollection<int, DocumentWithCustomCollection>
-     */
+    /** @var MyDocumentsCollection<int, DocumentWithCustomCollection> */
+    #[ODM\ReferenceMany(collectionClass: '\Doctrine\ODM\MongoDB\Tests\Functional\MyDocumentsCollection', mappedBy: 'refMany', targetDocument: self::class)]
     public $inverseRefMany;
 
     public function __construct()
@@ -245,21 +217,15 @@ class DocumentWithCustomCollection
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class EmbeddedDocumentInCustomCollection
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="bool")
-     *
-     * @var bool
-     */
+    /** @var bool */
+    #[ODM\Field(type: 'bool')]
     public $enabled;
 
     public function __construct(string $name, bool $enabled)

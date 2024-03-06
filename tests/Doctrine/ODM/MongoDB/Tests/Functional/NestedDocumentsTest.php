@@ -140,28 +140,19 @@ class NestedDocumentsTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Hierarchy
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=Hierarchy::class)
-     *
-     * @var Collection<int, Hierarchy>|array<Hierarchy>
-     */
+    /** @var Collection<int, Hierarchy>|array<Hierarchy> */
+    #[ODM\ReferenceMany(targetDocument: self::class)]
     private $children = [];
 
     public function __construct(string $name)
@@ -227,21 +218,15 @@ class Hierarchy
     }
 }
 
-/** @ODM\MappedSuperclass */
+#[ODM\MappedSuperclass]
 class BaseCategory
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=ChildCategory::class)
-     *
-     * @var Collection<int, ChildCategory>
-     */
+    /** @var Collection<int, ChildCategory> */
+    #[ODM\EmbedMany(targetDocument: ChildCategory::class)]
     protected $children;
 
     public function __construct(string $name)
@@ -303,14 +288,11 @@ class BaseCategory
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Category extends BaseCategory
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     protected $id;
 
     public function getId(): ?string
@@ -319,55 +301,40 @@ class Category extends BaseCategory
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class ChildCategory extends BaseCategory
 {
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Order
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $title;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=ProductBackup::class)
-     *
-     * @var ProductBackup|null
-     */
+    /** @var ProductBackup|null */
+    #[ODM\EmbedOne(targetDocument: ProductBackup::class)]
     public $product;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class Product
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $title;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class ProductBackup extends Product
 {
 }

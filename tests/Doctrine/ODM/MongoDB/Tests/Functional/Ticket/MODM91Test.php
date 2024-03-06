@@ -62,38 +62,26 @@ class MODM91EventListener
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class MODM91TestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=MODM91TestEmbeddedDocument::class)
-     *
-     * @var MODM91TestEmbeddedDocument|null
-     */
+    /** @var MODM91TestEmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: MODM91TestEmbeddedDocument::class)]
     public $embedded;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class MODM91TestEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

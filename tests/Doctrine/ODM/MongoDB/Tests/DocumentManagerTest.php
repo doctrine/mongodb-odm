@@ -231,59 +231,38 @@ class DocumentManagerTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class WrongSimpleRefDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Documents\Tournament\Participant::class, storeAs="id")
-     *
-     * @var Participant|null
-     */
+    /** @var Participant|null */
+    #[ODM\ReferenceOne(targetDocument: Participant::class, storeAs: 'id')]
     public $ref;
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class ReferenceStoreAsDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="id")
-     *
-     * @var User|null
-     */
+    /** @var User|null */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'id')]
     public $ref1;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRef")
-     *
-     * @var Collection<int, User>
-     */
+    /** @var Collection<int, User> */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'dbRef')]
     public $ref2;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="dbRefWithDb")
-     *
-     * @var Collection<int, User>
-     */
+    /** @var Collection<int, User> */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'dbRefWithDb')]
     public $ref3;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, storeAs="ref")
-     *
-     * @var Collection<int, User>
-     */
+    /** @var Collection<int, User> */
+    #[ODM\ReferenceOne(targetDocument: User::class, storeAs: 'ref')]
     public $ref4;
 }

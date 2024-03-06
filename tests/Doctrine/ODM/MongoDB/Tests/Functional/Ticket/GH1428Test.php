@@ -29,36 +29,27 @@ class GH1428Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1428Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1428EmbeddedDocument::class)
-     *
-     * @var GH1428EmbeddedDocument|null
-     */
+    /** @var GH1428EmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: GH1428EmbeddedDocument::class)]
     public $embedded;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1428EmbeddedDocument
 {
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1428NestedEmbeddedDocument::class, name="shortNameThatDoesntExist")
-     *
-     * @var GH1428NestedEmbeddedDocument|null
-     */
+    /** @var GH1428NestedEmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: GH1428NestedEmbeddedDocument::class, name: 'shortNameThatDoesntExist')]
     public $nestedEmbedded;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1428NestedEmbeddedDocument
 {
 }

@@ -7,21 +7,15 @@ namespace Documents;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Documents\Functional\Embedded;
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 final class FileMetadata
 {
-    /**
-     * @ODM\ReferenceOne(targetDocument=User::class, cascade={"persist"})
-     *
-     * @var User
-     */
+    /** @var User */
+    #[ODM\ReferenceOne(targetDocument: User::class, cascade: ['persist'])]
     private $owner;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Embedded::class)
-     *
-     * @var Embedded
-     */
+    /** @var Embedded */
+    #[ODM\EmbedOne(targetDocument: Embedded::class)]
     private $embedOne;
 
     public function __construct()

@@ -7,34 +7,19 @@ namespace Documents;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/**
- * @ODM\View(
- *     rootClass=CmsUser::class,
- *     repositoryClass=UserNameRepository::class,
- *     view="user-name"
- * )
- */
+#[ODM\View(rootClass: CmsUser::class, repositoryClass: UserNameRepository::class, view: 'user-name')]
 class UserName
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $username;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=ViewReference::class, name="_id", storeAs=ClassMetadata::REFERENCE_STORE_AS_ID, notSaved=true)
-     *
-     * @var ViewReference|null
-     */
+    /** @var ViewReference|null */
+    #[ODM\ReferenceOne(targetDocument: ViewReference::class, name: '_id', storeAs: ClassMetadata::REFERENCE_STORE_AS_ID, notSaved: true)]
     private $viewReference;
 
     public function getId(): ?string

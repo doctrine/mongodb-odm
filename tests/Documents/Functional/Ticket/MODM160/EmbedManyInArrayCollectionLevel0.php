@@ -8,27 +8,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document(collection="embedded_test") */
+#[ODM\Document(collection: 'embedded_test')]
 class EmbedManyInArrayCollectionLevel0
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=EmbedManyInArrayCollectionLevel1::class)
-     *
-     * @var Collection<int, EmbedManyInArrayCollectionLevel1>
-     */
+    /** @var Collection<int, EmbedManyInArrayCollectionLevel1> */
+    #[ODM\EmbedMany(targetDocument: EmbedManyInArrayCollectionLevel1::class)]
     public $level1;
 
     public function __construct()

@@ -37,21 +37,15 @@ class GH1294Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1294User
 {
-    /**
-     * @ODM\Id(strategy="UUID", type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id(strategy: 'UUID', type: 'string')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name = '';
 
     public function getId(): ?string

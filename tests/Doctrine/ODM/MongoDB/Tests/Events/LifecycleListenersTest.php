@@ -257,60 +257,39 @@ class PostCollectionLoadEventListener
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class TestDocument
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=TestEmbeddedDocument::class)
-     *
-     * @var Collection<int, TestEmbeddedDocument>
-     */
+    /** @var Collection<int, TestEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: TestEmbeddedDocument::class)]
     public $embedded;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Image::class)
-     *
-     * @var Image|null
-     */
+    /** @var Image|null */
+    #[ODM\EmbedOne(targetDocument: Image::class)]
     public $image;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=TestProfile::class)
-     *
-     * @var Collection<int, TestProfile>|array<TestProfile>
-     */
+    /** @var Collection<int, TestProfile>|array<TestProfile> */
+    #[ODM\ReferenceMany(targetDocument: TestProfile::class)]
     public $profiles;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=TestProfile::class)
-     *
-     * @var TestProfile|null
-     */
+    /** @var TestProfile|null */
+    #[ODM\ReferenceOne(targetDocument: TestProfile::class)]
     public $profile;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class TestEmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name = '')
@@ -320,46 +299,31 @@ class TestEmbeddedDocument
 }
 
 
-/** @ODM\Document */
+#[ODM\Document]
 class TestProfile
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Image::class)
-     *
-     * @var Image|null
-     */
+    /** @var Image|null */
+    #[ODM\EmbedOne(targetDocument: Image::class)]
     public $image;
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Image
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=Thumbnail::class)
-     *
-     * @var Collection<int, Thumbnail>|array<Thumbnail>
-     */
+    /** @var Collection<int, Thumbnail>|array<Thumbnail> */
+    #[ODM\EmbedMany(targetDocument: Thumbnail::class)]
     public $thumbnails = [];
 
     public function __construct(string $name)
@@ -368,14 +332,11 @@ class Image
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Thumbnail
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

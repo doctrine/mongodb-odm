@@ -66,28 +66,19 @@ class GH921Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH921User
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH921Post::class)
-     *
-     * @var Collection<int, GH921Post>
-     */
+    /** @var Collection<int, GH921Post> */
+    #[ODM\ReferenceMany(targetDocument: GH921Post::class)]
     private $posts;
 
     public function __construct()
@@ -122,21 +113,15 @@ class GH921User
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH921Post
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function getId(): ?string

@@ -6,28 +6,17 @@ namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document(collection="servers")
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("stype")
- * @ODM\DiscriminatorMap({
- * "server"=Server::class,
- * "server_guest"=GuestServer::class
- * })
- */
+#[ODM\Document(collection: 'servers')]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('stype')]
+#[ODM\DiscriminatorMap(['server' => Server::class, 'server_guest' => GuestServer::class])]
 class Server
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 }

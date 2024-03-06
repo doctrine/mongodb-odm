@@ -71,40 +71,23 @@ class GH566Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH566Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH566EmbeddedDocument::class)
-     *
-     * @var GH566EmbeddedDocument|null
-     */
+    /** @var GH566EmbeddedDocument|null */
+    #[ODM\EmbedOne(targetDocument: GH566EmbeddedDocument::class)]
     public $version;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH566EmbeddedDocument::class)
-     *
-     * @var Collection<int, GH566EmbeddedDocument>
-     */
+    /** @var Collection<int, GH566EmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: GH566EmbeddedDocument::class)]
     public $versions;
 
-    /**
-     * @ODM\ReferenceMany(
-     *      targetDocument=GH566Document::class,
-     *      cascade={"all"},
-     *      mappedBy="version.parent",
-     *      sort={"version.sequence"="asc"}
-     * )
-     *
-     * @var Collection<int, GH566Document>
-     */
+    /** @var Collection<int, GH566Document> */
+    #[ODM\ReferenceMany(targetDocument: self::class, cascade: ['all'], mappedBy: 'version.parent', sort: ['version.sequence' => 'asc'])]
     public $children;
 
     public function __construct()
@@ -114,20 +97,14 @@ class GH566Document
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH566EmbeddedDocument
 {
-    /**
-     * @ODM\Field(type="int")
-     *
-     * @var int|null
-     */
+    /** @var int|null */
+    #[ODM\Field(type: 'int')]
     public $sequence = 0;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH566Document::class, cascade={"all"}, inversedBy="children")
-     *
-     * @var GH566Document|null
-     */
+    /** @var GH566Document|null */
+    #[ODM\ReferenceOne(targetDocument: GH566Document::class, cascade: ['all'], inversedBy: 'children')]
     public $parent;
 }

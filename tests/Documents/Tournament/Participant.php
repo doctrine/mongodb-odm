@@ -6,32 +6,21 @@ namespace Documents\Tournament;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorMap({"solo"=ParticipantSolo::class, "team"=ParticipantTeam::class})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorMap(['solo' => ParticipantSolo::class, 'team' => ParticipantTeam::class])]
 class Participant
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field]
     private $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=Tournament::class, cascade={"all"})
-     *
-     * @var Tournament|null
-     */
+    /** @var Tournament|null */
+    #[ODM\ReferenceOne(targetDocument: Tournament::class, cascade: ['all'])]
     protected $tournament;
 
     public function __construct(string $name)

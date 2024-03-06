@@ -547,71 +547,44 @@ class AtomicSetTest extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class AtomicSetUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var ObjectId|null
-     */
+    /** @var ObjectId|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\Field(type="int")
-     * @ODM\Version
-     *
-     * @var int
-     */
+    /** @var int */
+    #[ODM\Field(type: 'int')]
+    #[ODM\Version]
     public $version = 1;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $surname;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonenumber::class)
-     *
-     * @var Collection<int, Phonenumber>
-     */
+    /** @var Collection<int, Phonenumber> */
+    #[ODM\EmbedMany(strategy: 'atomicSet', targetDocument: Phonenumber::class)]
     public $phonenumbers;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSetArray", targetDocument=Documents\Phonenumber::class)
-     *
-     * @var Collection<int, Phonenumber>
-     */
+    /** @var Collection<int, Phonenumber> */
+    #[ODM\EmbedMany(strategy: 'atomicSetArray', targetDocument: Phonenumber::class)]
     public $phonenumbersArray;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=Documents\Phonebook::class)
-     *
-     * @var Collection<int, Phonebook>
-     */
+    /** @var Collection<int, Phonebook> */
+    #[ODM\EmbedMany(strategy: 'atomicSet', targetDocument: Phonebook::class)]
     public $phonebooks;
 
-    /**
-     * @ODM\EmbedMany(strategy="atomicSet", targetDocument=AtomicSetInception::class)
-     *
-     * @var Collection<int, AtomicSetInception>
-     */
+    /** @var Collection<int, AtomicSetInception> */
+    #[ODM\EmbedMany(strategy: 'atomicSet', targetDocument: AtomicSetInception::class)]
     public $inception;
 
-    /**
-     * @ODM\ReferenceMany(strategy="atomicSetArray", targetDocument=AtomicSetUser::class)
-     *
-     * @var Collection<int, AtomicSetUser>|array<AtomicSetUser>
-     */
+    /** @var Collection<int, AtomicSetUser>|array<AtomicSetUser> */
+    #[ODM\ReferenceMany(strategy: 'atomicSetArray', targetDocument: self::class)]
     public $friends;
 
     public function __construct(string $name)
@@ -624,28 +597,19 @@ class AtomicSetUser
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class AtomicSetInception
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $value;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=AtomicSetInception::class)
-     *
-     * @var AtomicSetInception|null
-     */
+    /** @var AtomicSetInception|null */
+    #[ODM\EmbedOne(targetDocument: self::class)]
     public $one;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=AtomicSetInception::class)
-     *
-     * @var Collection<int, AtomicSetInception>
-     */
+    /** @var Collection<int, AtomicSetInception> */
+    #[ODM\EmbedMany(targetDocument: self::class)]
     public $many;
 
     public function __construct(string $value)

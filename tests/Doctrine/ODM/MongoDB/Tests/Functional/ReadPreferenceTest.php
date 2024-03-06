@@ -110,16 +110,11 @@ class ReadPreferenceTest extends BaseTestCase
     }
 }
 
-/**
- * @ODM\Document()
- * @ODM\ReadPreference("nearest", tags={ { "dc"="east" } })
- */
+#[ODM\Document]
+#[ODM\ReadPreference('nearest', tags: [['dc' => 'east']])]
 class DocumentWithReadPreference
 {
-    /**
-     * @ODM\Id()
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 }

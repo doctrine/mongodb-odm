@@ -35,31 +35,22 @@ class GH1152Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH1152Parent
 {
     public const CLASSNAME = self::class;
 
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1152Child::class)
-     *
-     * @var GH1152Child|null
-     */
+    /** @var GH1152Child|null */
+    #[ODM\EmbedOne(targetDocument: GH1152Child::class)]
     public $child;
 }
 
-/**
- * @ODM\EmbeddedDocument
- *
- * @psalm-import-type AssociationFieldMapping from ClassMetadata
- */
+/** @psalm-import-type AssociationFieldMapping from ClassMetadata */
+#[ODM\EmbeddedDocument]
 class GH1152Child
 {
     /** @psalm-var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */

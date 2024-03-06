@@ -95,35 +95,23 @@ class GH1525Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document(collection="document_test") */
+#[ODM\Document(collection: 'document_test')]
 class GH1525Document
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1525Embedded::class)
-     *
-     * @var GH1525Embedded|null
-     */
+    /** @var GH1525Embedded|null */
+    #[ODM\EmbedOne(targetDocument: GH1525Embedded::class)]
     public $embedded;
 
-    /**
-     * @ODM\EmbedMany(targetDocument=GH1525Embedded::class)
-     *
-     * @var Collection<int, GH1525Embedded>
-     */
+    /** @var Collection<int, GH1525Embedded> */
+    #[ODM\EmbedMany(targetDocument: GH1525Embedded::class)]
     public $embedMany;
 
     public function __construct(string $name)
@@ -133,28 +121,19 @@ class GH1525Document
     }
 }
 
-/** @ODM\Document(collection="document_test_with_auto_ids") */
+#[ODM\Document(collection: 'document_test_with_auto_ids')]
 class GH1525DocumentIdStrategyNone
 {
-    /**
-     * @ODM\Id(strategy="NONE")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Id(strategy: 'NONE')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=GH1525Embedded::class)
-     *
-     * @var GH1525Embedded|null
-     */
+    /** @var GH1525Embedded|null */
+    #[ODM\EmbedOne(targetDocument: GH1525Embedded::class)]
     public $embedded;
 
     public function __construct(string $id, string $name)
@@ -164,14 +143,11 @@ class GH1525DocumentIdStrategyNone
     }
 }
 
-/** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class GH1525Embedded
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string
-     */
+    /** @var string */
+    #[ODM\Field(type: 'string')]
     public $name;
 
     public function __construct(string $name)

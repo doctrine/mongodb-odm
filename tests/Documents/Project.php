@@ -8,40 +8,26 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/**
- * @ODM\Document
- * @ODM\InheritanceType("SINGLE_COLLECTION")
- * @ODM\DiscriminatorField("type")
- * @ODM\DiscriminatorMap({"project"="Documents\Project", "sub-project"="Documents\SubProject", "other-sub-project"="Documents\OtherSubProject"})
- */
+#[ODM\Document]
+#[ODM\InheritanceType('SINGLE_COLLECTION')]
+#[ODM\DiscriminatorField('type')]
+#[ODM\DiscriminatorMap(['project' => 'Documents\Project', 'sub-project' => 'Documents\SubProject', 'other-sub-project' => 'Documents\OtherSubProject'])]
 class Project
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     private $name;
 
-    /**
-     * @ODM\EmbedOne(targetDocument=Address::class)
-     *
-     * @var Address|null
-     */
+    /** @var Address|null */
+    #[ODM\EmbedOne(targetDocument: Address::class)]
     private $address;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=SubProject::class, cascade="all")
-     *
-     * @var Collection<int, SubProject>
-     */
+    /** @var Collection<int, SubProject> */
+    #[ODM\ReferenceMany(targetDocument: SubProject::class, cascade: 'all')]
     private $subProjects;
 
     /** @param Collection<int, SubProject>|null $subProjects */

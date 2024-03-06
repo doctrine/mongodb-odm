@@ -110,35 +110,23 @@ class GH852Test extends BaseTestCase
     }
 }
 
-/** @ODM\Document */
+#[ODM\Document]
 class GH852Document
 {
-    /**
-     * @ODM\Id(strategy="NONE", type="custom_id")
-     *
-     * @var Binary|array<string, mixed>
-     */
+    /** @var Binary|array<string, mixed> */
+    #[ODM\Id(strategy: 'NONE', type: 'custom_id')]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=GH852Document::class, cascade="all")
-     *
-     * @var GH852Document
-     */
+    /** @var GH852Document */
+    #[ODM\ReferenceOne(targetDocument: self::class, cascade: 'all')]
     public $refOne;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=GH852Document::class, cascade="all")
-     *
-     * @var Collection<int, GH852Document>
-     */
+    /** @var Collection<int, GH852Document> */
+    #[ODM\ReferenceMany(targetDocument: self::class, cascade: 'all')]
     public $refMany;
 
     public function __construct()
