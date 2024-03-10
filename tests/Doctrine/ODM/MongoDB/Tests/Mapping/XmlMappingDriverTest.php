@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ReflectionMethod;
 use SimpleXMLElement;
 use stdClass;
@@ -50,4 +51,20 @@ class XmlMappingDriverTest extends AbstractMappingDriverTestCase
 
         $mappingDriver->loadMetadataForClass($className, $class);
     }
+
+    #[DoesNotPerformAssertions]
+    public function testExtensionTagsAreAllowedWhenNamespaced(): void
+    {
+        $className     = DocumentWithExtension::class;
+        $mappingDriver = $this->loadDriver();
+
+        $class = new ClassMetadata($className);
+
+        $mappingDriver->loadMetadataForClass($className, $class);
+    }
+}
+
+class DocumentWithExtension
+{
+    public ?string $id;
 }
