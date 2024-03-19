@@ -25,7 +25,6 @@ jobs:
           - "7.0"
           - "6.0"
           - "5.0"
-          - "4.4"
         driver-version:
           - "stable"
         topology:
@@ -38,7 +37,7 @@ jobs:
           # Test against lowest dependencies
           - dependencies: "lowest"
             php-version: "8.1"
-            mongodb-version: "4.4"
+            mongodb-version: "5.0"
             driver-version: "1.11.0"
             topology: "server"
             symfony-version: "stable"
@@ -49,17 +48,17 @@ jobs:
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "7"
-          # Test with a 4.4 replica set
+          # Test with a 5.0 replica set
           - topology: "replica_set"
             php-version: "8.2"
-            mongodb-version: "4.4"
+            mongodb-version: "5.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
-          # Test with a 4.4 sharded cluster
+          # Test with a 5.0 sharded cluster
           - topology: "sharded_cluster"
             php-version: "8.2"
-            mongodb-version: "4.4"
+            mongodb-version: "5.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
