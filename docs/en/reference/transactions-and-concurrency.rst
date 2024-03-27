@@ -15,8 +15,7 @@ atomic, the operation as a whole is not and other operations may interleave.
 Transaction support
 ~~~~~~~~~~~~~~~~~~~
 
-MongoDB supports multi-document transactions on replica sets (starting in MongoDB 4.2) and sharded clusters (MongoDB
-4.4). Standalone topologies do not support multi-document transactions.
+MongoDB supports multi-document transactions on replica sets and sharded clusters. Standalone topologies do not support multi-document transactions.
 
 Transaction Support in Doctrine MongoDB ODM
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
