@@ -854,7 +854,7 @@ final class UnitOfWork implements PropertyChangedListener
         // Look for changes in associations of the document
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn ($assoc) => empty($assoc['notSaved'])
+            static fn ($assoc) => empty($assoc['notSaved']),
         );
 
         foreach ($associationMappings as $mapping) {
@@ -2169,7 +2169,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn ($assoc) => $assoc['isCascadeRefresh']
+            static fn ($assoc) => $assoc['isCascadeRefresh'],
         );
 
         foreach ($associationMappings as $mapping) {
@@ -2229,7 +2229,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn ($assoc) => $assoc['isCascadeMerge']
+            static fn ($assoc) => $assoc['isCascadeMerge'],
         );
 
         foreach ($associationMappings as $assoc) {
@@ -2261,7 +2261,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $associationMappings = array_filter(
             $class->associationMappings,
-            static fn ($assoc) => $assoc['isCascadePersist']
+            static fn ($assoc) => $assoc['isCascadePersist'],
         );
 
         foreach ($associationMappings as $fieldName => $mapping) {

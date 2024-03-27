@@ -1851,7 +1851,7 @@ use function trigger_deprecation;
     {
         return array_filter(
             $this->associationMappings,
-            static fn ($assoc) => ! empty($assoc['embedded'])
+            static fn ($assoc) => ! empty($assoc['embedded']),
         );
     }
 
