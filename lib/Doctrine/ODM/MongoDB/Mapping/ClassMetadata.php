@@ -1845,7 +1845,7 @@ use function trigger_deprecation;
     /**
      * Gets mappings of fields holding embedded document(s).
      *
-     * @psalm-return array<string, FieldMapping>
+     * @psalm-return array<string, AssociationFieldMapping>
      */
     public function getEmbeddedFieldsMappings(): array
     {

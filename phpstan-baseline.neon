@@ -926,6 +926,16 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
 		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\MappedSuperclassRelated1\\:\\:\\$id is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\MappedSuperclassRelated1\\:\\:\\$name is unused\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Mapping\\\\TransientBaseClass\\:\\:\\$transient1 is unused\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
