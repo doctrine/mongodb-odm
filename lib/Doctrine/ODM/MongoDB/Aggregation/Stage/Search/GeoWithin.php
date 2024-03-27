@@ -102,11 +102,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this->appendScore($params);
     }
 
-    /**
-     * @param array|Geometry $geometry
-     *
-     * @return array
-     */
+    /** @param array|Geometry $geometry */
     private function convertGeometry($geometry): array
     {
         if (! $geometry instanceof Geometry) {

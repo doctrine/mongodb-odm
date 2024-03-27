@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\Functional\MappedSuperclassRelated1;
 
 use function serialize;
 use function unserialize;
@@ -130,6 +129,18 @@ class MappedSuperclassBase
 
     /** @var mixed */
     private $transient;
+}
+
+#[ODM\Document]
+class MappedSuperclassRelated1
+{
+    /** @var int|null */
+    #[ODM\Id(strategy: 'none')]
+    private $id;
+
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    private $name;
 }
 
 #[ODM\Document]

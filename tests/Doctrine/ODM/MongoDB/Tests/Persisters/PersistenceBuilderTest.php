@@ -220,8 +220,6 @@ class PersistenceBuilderTest extends BaseTestCase
     /**
      * Provides data for @see PersistenceBuilderTest::testPrepareInsertData()
      * Returns arrays of array(document => expected data)
-     *
-     * @return array
      */
     public static function getDocumentsAndExpectedData(): array
     {
