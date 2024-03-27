@@ -1845,13 +1845,13 @@ use function trigger_deprecation;
     /**
      * Gets mappings of fields holding embedded document(s).
      *
-     * @psalm-return array<string, FieldMapping>
+     * @psalm-return array<string, AssociationFieldMapping>
      */
     public function getEmbeddedFieldsMappings(): array
     {
         return array_filter(
             $this->associationMappings,
-            static fn ($assoc) => ! empty($assoc['embedded'])
+            static fn ($assoc) => ! empty($assoc['embedded']),
         );
     }
 

@@ -602,7 +602,6 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
     }
 
-    /** @return array */
     public static function dataProviderTestWriteConcern(): array
     {
         return [

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.22.2@d768d914152dbbf3486c36398802f74e80cfde48">
+<files psalm-version="5.23.1@8471a896ccea3526b26d082f4461eeea467f10a4">
   <file src="lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php">
     <MissingTemplateParam>
       <code><![CDATA[IteratorAggregate]]></code>
@@ -60,14 +60,9 @@
     </InvalidPropertyAssignmentValue>
     <InvalidReturnStatement>
       <code><![CDATA[$mapping]]></code>
-      <code><![CDATA[array_filter(
-            $this->associationMappings,
-            static fn ($assoc) => ! empty($assoc['embedded'])
-        )]]></code>
     </InvalidReturnStatement>
     <InvalidReturnType>
       <code><![CDATA[FieldMapping]]></code>
-      <code><![CDATA[array<string, FieldMapping>]]></code>
     </InvalidReturnType>
     <LessSpecificImplementedReturnType>
       <code><![CDATA[array]]></code>
@@ -304,11 +299,6 @@
     <TypeDoesNotContainType>
       <code><![CDATA[empty($divided[$class->name])]]></code>
     </TypeDoesNotContainType>
-  </file>
-  <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/OperatorTest.php">
-    <InternalClass>
-      <code><![CDATA[Operator]]></code>
-    </InternalClass>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
     <InvalidArgument>

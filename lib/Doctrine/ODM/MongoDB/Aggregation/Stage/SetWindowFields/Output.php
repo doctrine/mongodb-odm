@@ -37,10 +37,7 @@ class Output extends Operator implements WindowOperators
 
     private string $currentField = '';
 
-    /**
-     * @var array
-     * @psalm-var array<string, Window>
-     */
+    /** @psalm-var array<string, Window> */
     private array $windows = [];
 
     public function __construct(Builder $builder, private SetWindowFields $setWindowFields)

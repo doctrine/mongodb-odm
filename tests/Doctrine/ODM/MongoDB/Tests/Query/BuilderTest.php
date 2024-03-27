@@ -593,8 +593,6 @@ class BuilderTest extends BaseTestCase
      * Provide arguments for select() and exclude() tests.
      *
      * @param bool $include Whether the field should be included or excluded
-     *
-     * @return array
      */
     private static function provideProjections(bool $include): array
     {
