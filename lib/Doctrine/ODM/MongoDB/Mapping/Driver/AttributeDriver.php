@@ -241,6 +241,14 @@ class AttributeDriver implements MappingDriver
                 }
 
                 if ($propertyAttribute instanceof ODM\Indexes) {
+                    trigger_deprecation(
+                        'doctrine/mongodb-odm',
+                        '2.2',
+                        'The "@Indexes" attribute used in property "%s" of class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.',
+                        $property->getName(),
+                        $className,
+                    );
+
                     $value = $propertyAttribute->value;
                     foreach (is_array($value) ? $value : [$value] as $index) {
                         $indexes[] = $index;
