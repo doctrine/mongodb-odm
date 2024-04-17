@@ -205,8 +205,8 @@ class AttributeDriver implements MappingDriver
                 'doctrine/mongodb-odm',
                 '2.2',
                 'The "indexes" parameter in the "%s" attribute for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.',
-                $className,
                 $documentAttribute::class,
+                $className,
             );
 
             foreach ($documentAttribute->indexes as $index) {
