@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\SearchIndex;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -96,6 +97,10 @@ class AttributeDriver implements MappingDriver
             // non-document class attributes
             if ($attribute instanceof ODM\AbstractIndex) {
                 $this->addIndex($metadata, $attribute);
+            }
+
+            if ($attribute instanceof ODM\SearchIndex) {
+                $this->addSearchIndex($metadata, $attribute);
             }
 
             if ($attribute instanceof ODM\Indexes) {
@@ -347,6 +352,26 @@ class AttributeDriver implements MappingDriver
 
         $options = array_merge($options, $index->options);
         $class->addIndex($keys, $options);
+    }
+
+    /** @param ClassMetadata<object> $class */
+    private function addSearchIndex(ClassMetadata $class, SearchIndex $index): void
+    {
+        $definition = [];
+
+        foreach (['dynamic', 'fields'] as $key) {
+            if (isset($index->$key)) {
+                $definition['mappings'][$key] = $index->$key;
+            }
+        }
+
+        foreach (['analyzer', 'searchAnalyzer', 'analyzers', 'storedSource', 'synonyms'] as $key) {
+            if (isset($index->$key)) {
+                $definition[$key] = $index->$key;
+            }
+        }
+
+        $class->addSearchIndex($definition, $index->name ?? null);
     }
 
     /**

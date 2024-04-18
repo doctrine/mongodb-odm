@@ -44,6 +44,21 @@
                 </partial-filter-expression>
             </index>
         </indexes>
+        <search-indexes>
+            <search-index dynamic="true" analyzer="lucene.standard" searchAnalyzer="lucene.standard" storedSource="true" />
+            <search-index name="usernameAndPhoneNumbers">
+                <field name="username" type="string">
+                    <multi name="english" type="string" analyzer="lucene.english" />
+                    <multi name="french" type="string" analyzer="lucene.french" />
+                </field>
+                <field name="username" type="autocomplete" />
+                <field name="embedded_phone_number" type="embeddedDocuments" dynamic="true" />
+                <stored-source type="include">
+                    <field name="username" />
+                </stored-source>
+                <synonym name="mySynonyms" analyzer="lucene.english" sourceCollection="synonyms" />
+            </search-index>
+        </search-indexes>
         <reference-one target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Address" field="address">
             <cascade>
                 <remove />

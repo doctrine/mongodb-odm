@@ -218,6 +218,21 @@ use function trigger_deprecation;
  *      keys: IndexKeys,
  *      options: IndexOptions
  * }
+ * @psalm-type SearchIndexDefinition = array{
+ *      mappings: array{
+ *          dynamic?: bool,
+ *          fields?: array,
+ *      },
+ *      analyzer?: string,
+ *      searchAnalyzer?: string,
+ *      analyzers?: array,
+ *      storedSource?: array|bool,
+ *      synonyms?: array,
+ * }
+ * @psalm-type SearchIndexMapping = array{
+ *      name?: string,
+ *      definition: SearchIndexDefinition
+ * }
  * @psalm-type ShardKeys = array<string, mixed>
  * @psalm-type ShardOptions = array<string, mixed>
  * @psalm-type ShardKey = array{
@@ -457,6 +472,13 @@ use function trigger_deprecation;
      * @psalm-var array<IndexMapping>
      */
     public $indexes = [];
+
+    /**
+     * READ-ONLY: The array of search indexes for the document collection.
+     *
+     * @var list<SearchIndexMapping>
+     */
+    public $searchIndexes = [];
 
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
@@ -1155,6 +1177,40 @@ use function trigger_deprecation;
     public function hasIndexes(): bool
     {
         return $this->indexes !== [];
+    }
+
+    /**
+     * Add a search index for this Document.
+     *
+     * @psalm-param SearchIndexDefinition $definition
+     */
+    public function addSearchIndex(array $definition, ?string $name = null): void
+    {
+        $searchIndex = ['definition' => $definition];
+
+        if ($name !== null) {
+            $searchIndex['name'] = $name;
+        }
+
+        $this->searchIndexes[] = $searchIndex;
+    }
+
+    /**
+     * Returns the array of search indexes for this Document.
+     *
+     * @psalm-return list<SearchIndexMapping>
+     */
+    public function getSearchIndexes(): array
+    {
+        return $this->searchIndexes;
+    }
+
+    /**
+     * Checks whether this document has search indexes or not.
+     */
+    public function hasSearchIndexes(): bool
+    {
+        return $this->searchIndexes !== [];
     }
 
     /**

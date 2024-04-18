@@ -100,6 +100,7 @@
       <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0" />
       <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
       <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
+      <xs:element name="search-indexes" type="odm:search-indexes" minOccurs="0" />
       <xs:element name="shard-key" type="odm:shard-key" minOccurs="0" />
       <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" />
       <xs:element name="schema-validation" type="odm:schema-validation" minOccurs="0" />
@@ -465,6 +466,96 @@
       <xs:element name="index" type="odm:index" maxOccurs="unbounded" />
     </xs:choice>
   </xs:complexType>
+
+  <xs:complexType name="search-indexes">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="search-index" type="odm:search-index" maxOccurs="unbounded" />
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/ -->
+  <xs:complexType name="search-index">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="field" type="odm:search-index-field" minOccurs="0" maxOccurs="unbounded" />
+      <!-- Note: custom analyzers are intentionally unsupported in XML -->
+      <xs:element name="synonym" type="odm:search-index-synonym" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="stored-source" type="odm:search-index-stored-source" minOccurs="0" maxOccurs="1" />
+    </xs:choice>
+
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="dynamic" type="xs:boolean" />
+    <xs:attribute name="analyzer" type="xs:string" />
+    <xs:attribute name="searchAnalyzer" type="xs:string" />
+    <xs:attribute name="storedSource" type="xs:boolean" />
+  </xs:complexType>
+
+  <!-- https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/ -->
+  <xs:complexType name="search-index-field">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/document-type/ -->
+      <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/embedded-documents-type/ -->
+      <xs:element name="field" type="odm:search-index-field" minOccurs="0" maxOccurs="unbounded" />
+      <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/string-type/ -->
+      <xs:element name="multi" type="odm:search-index-field" minOccurs="0" maxOccurs="unbounded" />
+    </xs:choice>
+
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="type" type="xs:string" use="required" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/autocomplete-type/ -->
+    <xs:attribute name="maxGrams" type="xs:integer" />
+    <xs:attribute name="minGrams" type="xs:integer" />
+    <xs:attribute name="tokenization" type="xs:string" />
+    <xs:attribute name="foldDiacritics" type="xs:boolean" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/document-type/ -->
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/embedded-documents-type/ -->
+    <xs:attribute name="dynamic" type="xs:boolean" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/geo-type/ -->
+    <xs:attribute name="indexShapes" type="xs:boolean" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/knn-vector/ -->
+    <xs:attribute name="dimensions" type="xs:integer" />
+    <xs:attribute name="similarity" type="xs:string" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/number-type/ -->
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/number-facet-type/ -->
+    <xs:attribute name="representation" type="xs:string" />
+    <xs:attribute name="indexIntegers" type="xs:boolean" />
+    <xs:attribute name="indexDoubles" type="xs:boolean" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/string-type/ -->
+    <xs:attribute name="analyzer" type="xs:string" />
+    <xs:attribute name="searchAnalyzer" type="xs:string" />
+    <xs:attribute name="indexOptions" type="xs:string" />
+    <xs:attribute name="store" type="xs:boolean" />
+    <xs:attribute name="ignoreAbove" type="xs:integer" />
+    <xs:attribute name="norms" type="xs:string" />
+    <!-- https://www.mongodb.com/docs/atlas/atlas-search/field-types/token-type/ -->
+    <xs:attribute name="normalizer" type="xs:string" />
+  </xs:complexType>
+
+  <!-- https://www.mongodb.com/docs/atlas/atlas-search/synonyms/ -->
+  <xs:complexType name="search-index-synonym">
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="analyzer" type="xs:string" use="required" />
+    <xs:attribute name="sourceCollection" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <!-- https://www.mongodb.com/docs/atlas/atlas-search/stored-source-definition -->
+  <xs:complexType name="search-index-stored-source">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="field" type="odm:search-index-stored-source-field" minOccurs="0" maxOccurs="unbounded" />
+    </xs:choice>
+
+    <xs:attribute name="type" type="odm:search-index-stored-source-type" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="search-index-stored-source-field">
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:simpleType name="search-index-stored-source-type">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="include" />
+      <xs:enumeration value="exclude" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="shard-key">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
