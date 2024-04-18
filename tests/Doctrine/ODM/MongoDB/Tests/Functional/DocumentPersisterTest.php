@@ -606,19 +606,19 @@ class DocumentPersisterTest extends BaseTestCase
     {
         return [
             'default' => [
-                'className' => DocumentPersisterTestDocument::class,
+                'class' => DocumentPersisterTestDocument::class,
                 'writeConcern' => 1,
             ],
             'acknowledged' => [
-                'className' => DocumentPersisterWriteConcernAcknowledged::class,
+                'class' => DocumentPersisterWriteConcernAcknowledged::class,
                 'writeConcern' => 1,
             ],
             'unacknowledged' => [
-                'className' => DocumentPersisterWriteConcernUnacknowledged::class,
+                'class' => DocumentPersisterWriteConcernUnacknowledged::class,
                 'writeConcern' => 0,
             ],
             'majority' => [
-                'className' => DocumentPersisterWriteConcernMajority::class,
+                'class' => DocumentPersisterWriteConcernMajority::class,
                 'writeConcern' => 'majority',
             ],
         ];
@@ -651,7 +651,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class): void
+    public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class, $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
@@ -699,7 +699,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteUpsertsDoesNotUseWriteConcernInTransaction(string $class): void
+    public function testExecuteUpsertsDoesNotUseWriteConcernInTransaction(string $class, $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
@@ -750,7 +750,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testRemoveDoesNotUseWriteConcernInTransaction(string $class): void
+    public function testRemoveDoesNotUseWriteConcernInTransaction(string $class, $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
