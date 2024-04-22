@@ -606,30 +606,27 @@ class DocumentPersisterTest extends BaseTestCase
     {
         return [
             'default' => [
-                'className' => DocumentPersisterTestDocument::class,
+                'class' => DocumentPersisterTestDocument::class,
                 'writeConcern' => 1,
             ],
             'acknowledged' => [
-                'className' => DocumentPersisterWriteConcernAcknowledged::class,
+                'class' => DocumentPersisterWriteConcernAcknowledged::class,
                 'writeConcern' => 1,
             ],
             'unacknowledged' => [
-                'className' => DocumentPersisterWriteConcernUnacknowledged::class,
+                'class' => DocumentPersisterWriteConcernUnacknowledged::class,
                 'writeConcern' => 0,
             ],
             'majority' => [
-                'className' => DocumentPersisterWriteConcernMajority::class,
+                'class' => DocumentPersisterWriteConcernMajority::class,
                 'writeConcern' => 'majority',
             ],
         ];
     }
 
-    /**
-     * @param int|string $writeConcern
-     * @psalm-param class-string $class
-     */
+    /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteInsertsRespectsWriteConcern(string $class, $writeConcern): void
+    public function testExecuteInsertsRespectsWriteConcern(string $class, string|int $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushEnabled();
 
@@ -651,7 +648,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class): void
+    public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class, string|int $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
@@ -671,12 +668,9 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /**
-     * @param int|string $writeConcern
-     * @psalm-param class-string $class
-     */
+    /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteUpsertsRespectsWriteConcern(string $class, $writeConcern): void
+    public function testExecuteUpsertsRespectsWriteConcern(string $class, string|int $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushEnabled();
 
@@ -699,7 +693,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testExecuteUpsertsDoesNotUseWriteConcernInTransaction(string $class): void
+    public function testExecuteUpsertsDoesNotUseWriteConcernInTransaction(string $class, string|int $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
@@ -720,12 +714,9 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /**
-     * @param int|string $writeConcern
-     * @psalm-param class-string $class
-     */
+    /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testRemoveRespectsWriteConcern(string $class, $writeConcern): void
+    public function testRemoveRespectsWriteConcern(string $class, string|int $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushEnabled();
 
@@ -750,7 +741,7 @@ class DocumentPersisterTest extends BaseTestCase
 
     /** @psalm-param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
-    public function testRemoveDoesNotUseWriteConcernInTransaction(string $class): void
+    public function testRemoveDoesNotUseWriteConcernInTransaction(string $class, string|int $writeConcern): void
     {
         $this->skipTestIfTransactionalFlushDisabled();
 
