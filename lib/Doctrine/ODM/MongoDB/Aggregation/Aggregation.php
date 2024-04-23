@@ -8,8 +8,10 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
+use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Iterator as SPLIterator;
 use IteratorAggregate;
 use MongoDB\Collection;
@@ -26,8 +28,15 @@ final class Aggregation implements IteratorAggregate
      * @param array<string, mixed> $options
      * @psalm-param PipelineExpression $pipeline
      */
-    public function __construct(private DocumentManager $dm, private ?ClassMetadata $classMetadata, private Collection $collection, private array $pipeline, private array $options = [], private bool $rewindable = true)
-    {
+    public function __construct(
+        private DocumentManager $dm,
+        private ?ClassMetadata $classMetadata,
+        private Collection $collection,
+        private array $pipeline,
+        private array $options = [],
+        private bool $rewindable = true,
+        private array $primers = []
+    ) {
     }
 
     public function getIterator(): Iterator
@@ -48,6 +57,13 @@ final class Aggregation implements IteratorAggregate
         if ($this->classMetadata) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->classMetadata);
         }
+
+        if (! empty($this->primers)) {
+            $referencePrimer = new ReferencePrimer($this->dm, $this->dm->getUnitOfWork());
+            $cursor          = new PrimingIterator($cursor, $this->classMetadata, $referencePrimer, $this->primers, []);
+        }
+
+
 
         return $this->rewindable ? new CachingIterator($cursor) : new UnrewindableIterator($cursor);
     }
