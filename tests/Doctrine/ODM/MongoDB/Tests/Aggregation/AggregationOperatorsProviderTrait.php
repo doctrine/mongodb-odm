@@ -56,125 +56,125 @@ trait AggregationOperatorsProviderTrait
 
     public static function provideArithmeticExpressionOperators(): Generator
     {
-            yield 'abs' => [
-                'expected' => ['$abs' => '$field'],
-                'operator' => 'abs',
-                'args' => ['$field'],
-            ];
+        yield 'abs' => [
+            'expected' => ['$abs' => '$field'],
+            'operator' => 'abs',
+            'args' => ['$field'],
+        ];
 
-            yield 'addWithTwoArgs' => [
-                'expected' => ['$add' => [5, '$field']],
-                'operator' => 'add',
-                'args' => [5, '$field'],
-            ];
+        yield 'addWithTwoArgs' => [
+            'expected' => ['$add' => [5, '$field']],
+            'operator' => 'add',
+            'args' => [5, '$field'],
+        ];
 
-            yield 'addWithMultipleArgs' => [
-                'expected' => ['$add' => [5, '$field', '$otherField', 4.99]],
-                'operator' => 'add',
-                'args' => [5, '$field', '$otherField', 4.99],
-            ];
+        yield 'addWithMultipleArgs' => [
+            'expected' => ['$add' => [5, '$field', '$otherField', 4.99]],
+            'operator' => 'add',
+            'args' => [5, '$field', '$otherField', 4.99],
+        ];
 
-            yield 'ceil' => [
-                'expected' => ['$ceil' => '$field'],
-                'operator' => 'ceil',
-                'args' => ['$field'],
-            ];
+        yield 'ceil' => [
+            'expected' => ['$ceil' => '$field'],
+            'operator' => 'ceil',
+            'args' => ['$field'],
+        ];
 
-            yield 'divide' => [
-                'expected' => ['$divide' => ['$field', 5]],
-                'operator' => 'divide',
-                'args' => ['$field', 5],
-            ];
+        yield 'divide' => [
+            'expected' => ['$divide' => ['$field', 5]],
+            'operator' => 'divide',
+            'args' => ['$field', 5],
+        ];
 
-            yield 'exp' => [
-                'expected' => ['$exp' => '$field'],
-                'operator' => 'exp',
-                'args' => ['$field'],
-            ];
+        yield 'exp' => [
+            'expected' => ['$exp' => '$field'],
+            'operator' => 'exp',
+            'args' => ['$field'],
+        ];
 
-            yield 'floor' => [
-                'expected' => ['$floor' => '$field'],
-                'operator' => 'floor',
-                'args' => ['$field'],
-            ];
+        yield 'floor' => [
+            'expected' => ['$floor' => '$field'],
+            'operator' => 'floor',
+            'args' => ['$field'],
+        ];
 
-            yield 'ln' => [
-                'expected' => ['$ln' => '$field'],
-                'operator' => 'ln',
-                'args' => ['$field'],
-            ];
+        yield 'ln' => [
+            'expected' => ['$ln' => '$field'],
+            'operator' => 'ln',
+            'args' => ['$field'],
+        ];
 
-            yield 'log' => [
-                'expected' => ['$log' => ['$field', '$base']],
-                'operator' => 'log',
-                'args' => ['$field', '$base'],
-            ];
+        yield 'log' => [
+            'expected' => ['$log' => ['$field', '$base']],
+            'operator' => 'log',
+            'args' => ['$field', '$base'],
+        ];
 
-            yield 'log10' => [
-                'expected' => ['$log10' => '$field'],
-                'operator' => 'log10',
-                'args' => ['$field'],
-            ];
+        yield 'log10' => [
+            'expected' => ['$log10' => '$field'],
+            'operator' => 'log10',
+            'args' => ['$field'],
+        ];
 
-            yield 'mod' => [
-                'expected' => ['$mod' => ['$field', 5]],
-                'operator' => 'mod',
-                'args' => ['$field', 5],
-            ];
+        yield 'mod' => [
+            'expected' => ['$mod' => ['$field', 5]],
+            'operator' => 'mod',
+            'args' => ['$field', 5],
+        ];
 
-            yield 'multiplyWithTwoArgs' => [
-                'expected' => ['$multiply' => ['$field', 5]],
-                'operator' => 'multiply',
-                'args' => ['$field', 5],
-            ];
+        yield 'multiplyWithTwoArgs' => [
+            'expected' => ['$multiply' => ['$field', 5]],
+            'operator' => 'multiply',
+            'args' => ['$field', 5],
+        ];
 
-            yield 'multiplyWithMultipleArgs' => [
-                'expected' => ['$multiply' => ['$field', 5, '$otherField']],
-                'operator' => 'multiply',
-                'args' => ['$field', 5, '$otherField'],
-            ];
+        yield 'multiplyWithMultipleArgs' => [
+            'expected' => ['$multiply' => ['$field', 5, '$otherField']],
+            'operator' => 'multiply',
+            'args' => ['$field', 5, '$otherField'],
+        ];
 
-            yield 'multiply' => [
-                'expected' => ['$multiply' => ['$field', 5]],
-                'operator' => 'multiply',
-                'args' => ['$field', 5],
-            ];
+        yield 'multiply' => [
+            'expected' => ['$multiply' => ['$field', 5]],
+            'operator' => 'multiply',
+            'args' => ['$field', 5],
+        ];
 
-            yield 'pow' => [
-                'expected' => ['$pow' => ['$number', '$exponent']],
-                'operator' => 'pow',
-                'args' => ['$number', '$exponent'],
-            ];
+        yield 'pow' => [
+            'expected' => ['$pow' => ['$number', '$exponent']],
+            'operator' => 'pow',
+            'args' => ['$number', '$exponent'],
+        ];
 
-            yield 'round' => [
-                'expected' => ['$round' => ['$number', '$place']],
-                'operator' => 'round',
-                'args' => ['$number', '$place'],
-            ];
+        yield 'round' => [
+            'expected' => ['$round' => ['$number', '$place']],
+            'operator' => 'round',
+            'args' => ['$number', '$place'],
+        ];
 
-            yield 'sortArray' => [
-                'expected' => ['$sortArray' => ['input' => '$field', 'sortBy' => ['foo' => 1]]],
-                'operator' => 'sortArray',
-                'args' => ['$field', ['foo' => 1]],
-            ];
+        yield 'sortArray' => [
+            'expected' => ['$sortArray' => ['input' => '$field', 'sortBy' => ['foo' => 1]]],
+            'operator' => 'sortArray',
+            'args' => ['$field', ['foo' => 1]],
+        ];
 
-            yield 'sqrt' => [
-                'expected' => ['$sqrt' => '$field'],
-                'operator' => 'sqrt',
-                'args' => ['$field'],
-            ];
+        yield 'sqrt' => [
+            'expected' => ['$sqrt' => '$field'],
+            'operator' => 'sqrt',
+            'args' => ['$field'],
+        ];
 
-            yield 'subtract' => [
-                'expected' => ['$subtract' => ['$field', '$otherField']],
-                'operator' => 'subtract',
-                'args' => ['$field', '$otherField'],
-            ];
+        yield 'subtract' => [
+            'expected' => ['$subtract' => ['$field', '$otherField']],
+            'operator' => 'subtract',
+            'args' => ['$field', '$otherField'],
+        ];
 
-            yield 'trunc' => [
-                'expected' => ['$trunc' => '$field'],
-                'operator' => 'trunc',
-                'args' => ['$field'],
-            ];
+        yield 'trunc' => [
+            'expected' => ['$trunc' => '$field'],
+            'operator' => 'trunc',
+            'args' => ['$field'],
+        ];
     }
 
     public static function provideArrayExpressionOperators(): Generator
