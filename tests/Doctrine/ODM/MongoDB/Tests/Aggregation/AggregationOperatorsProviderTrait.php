@@ -251,12 +251,6 @@ trait AggregationOperatorsProviderTrait
             'args' => ['$field', '$otherField', '$start', '$end'],
         ];
 
-        yield 'isArray' => [
-            'expected' => ['$isArray' => '$field'],
-            'operator' => 'isArray',
-            'args' => ['$field'],
-        ];
-
         yield 'last' => [
             'expected' => ['$last' => '$array'],
             'operator' => 'last',
@@ -289,12 +283,6 @@ trait AggregationOperatorsProviderTrait
             'expected' => ['$minN' => ['input' => '$array', 'n' => '$n']],
             'operator' => 'minN',
             'args' => ['$array', '$n'],
-        ];
-
-        yield 'objectToArray' => [
-            'expected' => ['$objectToArray' => ['$obj']],
-            'operator' => 'objectToArray',
-            'args' => [['$obj']],
         ];
 
         yield 'rangeWithoutStep' => [
