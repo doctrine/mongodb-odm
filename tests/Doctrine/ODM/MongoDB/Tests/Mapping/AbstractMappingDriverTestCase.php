@@ -432,6 +432,7 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     {
         $expectedIndexes = [
             [
+                'name' => 'default',
                 'definition' => [
                     'mappings' => ['dynamic' => true],
                     'analyzer' => 'lucene.standard',

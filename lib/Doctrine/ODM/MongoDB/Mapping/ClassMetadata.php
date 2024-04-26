@@ -230,7 +230,7 @@ use function trigger_deprecation;
  *      synonyms?: array,
  * }
  * @psalm-type SearchIndexMapping = array{
- *      name?: string,
+ *      name: string,
  *      definition: SearchIndexDefinition
  * }
  * @psalm-type ShardKeys = array<string, mixed>
@@ -391,6 +391,13 @@ use function trigger_deprecation;
     public const STORAGE_STRATEGY_ATOMIC_SET       = 'atomicSet';
     public const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
     public const STORAGE_STRATEGY_SET_ARRAY        = 'setArray';
+
+    /**
+     * Default search index name.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/
+     */
+    public const DEFAULT_SEARCH_INDEX_NAME = 'default';
 
     private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
 
@@ -1186,13 +1193,10 @@ use function trigger_deprecation;
      */
     public function addSearchIndex(array $definition, ?string $name = null): void
     {
-        $searchIndex = ['definition' => $definition];
-
-        if ($name !== null) {
-            $searchIndex['name'] = $name;
-        }
-
-        $this->searchIndexes[] = $searchIndex;
+        $this->searchIndexes[] = [
+            'definition' => $definition,
+            'name' => $name ?? self::DEFAULT_SEARCH_INDEX_NAME,
+        ];
     }
 
     /**
