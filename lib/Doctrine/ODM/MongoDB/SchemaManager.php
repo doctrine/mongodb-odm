@@ -13,6 +13,8 @@ use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\Model\IndexInfo;
 
+use function array_column;
+use function array_diff;
 use function array_diff_key;
 use function array_filter;
 use function array_keys;
@@ -22,6 +24,7 @@ use function array_unique;
 use function array_values;
 use function assert;
 use function count;
+use function implode;
 use function in_array;
 use function is_array;
 use function is_string;
@@ -316,6 +319,140 @@ final class SchemaManager
         }
 
         $this->dm->getDocumentCollection($documentName)->dropIndexes($this->getWriteOptions($maxTimeMs, $writeConcern));
+    }
+
+    /**
+     * Create search indexes for all mapped document classes.
+     */
+    public function createSearchIndexes(): void
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+                continue;
+            }
+
+            $this->createDocumentSearchIndexes($class->name);
+        }
+    }
+
+    /**
+     * Create search indexes for the given document class.
+     *
+     * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
+     */
+    public function createDocumentSearchIndexes(string $documentName): void
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            throw new InvalidArgumentException('Cannot create search indexes for mapped super classes, embedded documents, query result documents, or views.');
+        }
+
+        $searchIndexes = $class->getSearchIndexes();
+
+        if (empty($searchIndexes)) {
+            return;
+        }
+
+        $collection   = $this->dm->getDocumentCollection($class->name);
+        $createdNames = $collection->createSearchIndexes($searchIndexes);
+        $definedNames = array_column($searchIndexes, 'name');
+
+        /* createSearchIndexes builds indexes asynchronously but still reports
+         * the names of created indexes. Report an error if any defined names
+         * were not actually created. */
+        $unprocessedNames = array_diff($definedNames, $createdNames);
+
+        if (! empty($unprocessedNames)) {
+            throw new InvalidArgumentException(sprintf('The following search indexes for %s were not created: %s', $class->name, implode(', ', $unprocessedNames)));
+        }
+    }
+
+    /**
+     * Update search indexes for all mapped document classes.
+     *
+     * Search indexes will be updated using the definitions in the document
+     * metadata. Search indexes not defined in the metadata will be deleted.
+     */
+    public function updateSearchIndexes(): void
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+                continue;
+            }
+
+            $this->updateDocumentSearchIndexes($class->name);
+        }
+    }
+
+    /**
+     * Update search indexes for the given document class.
+     *
+     * Search indexes will be updated using the definitions in the document
+     * metadata. Search indexes not defined in the metadata will be deleted.
+     *
+     * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
+     */
+    public function updateDocumentSearchIndexes(string $documentName): void
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            throw new InvalidArgumentException('Cannot update search indexes for mapped super classes, embedded documents, query result documents, or views.');
+        }
+
+        $searchIndexes = $class->getSearchIndexes();
+        $collection    = $this->dm->getDocumentCollection($class->name);
+
+        $definedNames  = array_column($searchIndexes, 'name');
+        $existingNames = array_column(iterator_to_array($collection->listSearchIndexes()), 'name');
+
+        foreach (array_diff($existingNames, $definedNames) as $name) {
+            $collection->dropSearchIndex($name);
+        }
+
+        foreach ($searchIndexes as $searchIndex) {
+            $collection->updateSearchIndex($searchIndex['name'], $searchIndex['definition']);
+        }
+    }
+
+    /**
+     * Delete search indexes for all mapped document classes.
+     */
+    public function deleteSearchIndexes(): void
+    {
+        foreach ($this->metadataFactory->getAllMetadata() as $class) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+                continue;
+            }
+
+            $this->deleteDocumentSearchIndexes($class->name);
+        }
+    }
+
+    /**
+     * Delete search indexes for the given document class.
+     *
+     * @psalm-param class-string $documentName
+     *
+     * @throws InvalidArgumentException
+     */
+    public function deleteDocumentSearchIndexes(string $documentName): void
+    {
+        $class = $this->dm->getClassMetadata($documentName);
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            throw new InvalidArgumentException('Cannot delete search indexes for mapped super classes, embedded documents, query result documents, or views.');
+        }
+
+        $collection = $this->dm->getDocumentCollection($class->name);
+
+        foreach ($collection->listSearchIndexes() as $searchIndex) {
+            $collection->dropSearchIndex($searchIndex['name']);
+        }
     }
 
     /**
