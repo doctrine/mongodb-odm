@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
-use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
@@ -16,14 +15,20 @@ use Throwable;
 use function array_filter;
 use function is_string;
 use function sprintf;
-use function ucfirst;
 
 class CreateCommand extends AbstractCommand
 {
     use CommandCompatibility;
 
     /** @var string[] */
-    private array $createOrder = [self::COLLECTION, self::INDEX];
+    private array $createOrder = [self::COLLECTION, self::INDEX, self::SEARCH_INDEX];
+
+    /* @var array<string, list<string>> */
+    private const INFLECTIONS = [
+        self::COLLECTION => ['collection', 'collections'],
+        self::INDEX => ['index(es)', 'indexes'],
+        self::SEARCH_INDEX => ['search index(es)', 'search indexes'],
+    ];
 
     /** @return void */
     protected function configure()
@@ -35,6 +40,7 @@ class CreateCommand extends AbstractCommand
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED, 'Document class to process (default: all classes)')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
+            ->addOption(self::SEARCH_INDEX, null, InputOption::VALUE_NONE, 'Create search indexes')
             ->addOption('background', null, InputOption::VALUE_NONE, sprintf('Create indexes in background (requires "%s" option)', self::INDEX))
             ->setDescription('Create databases, collections and indexes for your documents');
     }
@@ -53,17 +59,22 @@ class CreateCommand extends AbstractCommand
         $isErrored = false;
 
         foreach ($create as $option) {
+            $method = match ($option) {
+                self::COLLECTION => 'Collection',
+                self::INDEX => 'Index',
+                self::SEARCH_INDEX => 'SearchIndex',
+            };
+
             try {
                 if (isset($class)) {
-                    $this->{'processDocument' . ucfirst($option)}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
+                    $this->{'processDocument' . $method}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
                 } else {
-                    $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
+                    $this->{'process' . $method}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
                 }
 
                 $output->writeln(sprintf(
-                    'Created <comment>%s%s</comment> for <info>%s</info>',
-                    $option,
-                    is_string($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's'),
+                    'Created <comment>%s</comment> for <info>%s</info>',
+                    self::INFLECTIONS[$option][isset($class) ? 0 : 1],
                     is_string($class) ? $class : 'all classes'
                 ));
             } catch (Throwable $e) {
@@ -85,16 +96,6 @@ class CreateCommand extends AbstractCommand
         $sm->createCollections($maxTimeMs, $writeConcern);
     }
 
-    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
-    }
-
-    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('A database is created automatically by MongoDB (>= 3.0).');
-    }
-
     protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
         $sm->ensureDocumentIndexes($document, $maxTimeMs, $writeConcern, $background);
@@ -103,6 +104,16 @@ class CreateCommand extends AbstractCommand
     protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
     {
         $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
+    }
+
+    protected function processDocumentSearchIndex(SchemaManager $sm, string $document): void
+    {
+        $sm->createDocumentSearchIndexes($document);
+    }
+
+    protected function processSearchIndex(SchemaManager $sm): void
+    {
+        $sm->createSearchIndexes();
     }
 
     /** @return void */

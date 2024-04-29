@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
-use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
@@ -40,10 +39,10 @@ class ShardCommand extends AbstractCommand
 
         try {
             if (is_string($class)) {
-                $this->processDocumentIndex($sm, $class, null, $this->getWriteConcernFromInput($input));
+                $this->processDocumentSharding($sm, $class, $this->getWriteConcernFromInput($input));
                 $output->writeln(sprintf('Enabled sharding for <info>%s</info>', $class));
             } else {
-                $this->processIndex($sm, null, $this->getWriteConcernFromInput($input));
+                $this->processSharding($sm, $this->getWriteConcernFromInput($input));
                 $output->writeln('Enabled sharding for <info>all classes</info>');
             }
         } catch (Throwable $e) {
@@ -54,37 +53,14 @@ class ShardCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null)
+    /** @psalm-param class-string $document */
+    private function processDocumentSharding(SchemaManager $sm, string $document, ?WriteConcern $writeConcern = null): void
     {
         $sm->ensureDocumentSharding($document, $writeConcern);
     }
 
-    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null)
+    private function processSharding(SchemaManager $sm, ?WriteConcern $writeConcern = null): void
     {
         $sm->ensureSharding($writeConcern);
-    }
-
-    /** @throws BadMethodCallException */
-    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('Cannot update a document collection');
-    }
-
-    /** @throws BadMethodCallException */
-    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('Cannot update a collection');
-    }
-
-    /** @throws BadMethodCallException */
-    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('Cannot update a document database');
-    }
-
-    /** @throws BadMethodCallException */
-    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('Cannot update a database');
     }
 }

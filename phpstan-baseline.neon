@@ -591,6 +591,16 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/AbstractCommand.php
 
 		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/CreateCommand.php
+
+		-
+			message: "#^Match expression does not handle remaining value\\: string$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/DropCommand.php
+
+		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Console\\\\Helper\\\\HelperInterface\\:\\:getDocumentManager\\(\\)\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Tools/Console/Command/Schema/ValidateCommand.php
