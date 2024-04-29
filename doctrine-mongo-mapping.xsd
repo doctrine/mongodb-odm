@@ -468,7 +468,7 @@
   </xs:complexType>
 
   <xs:complexType name="search-indexes">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
+    <xs:choice maxOccurs="unbounded">
       <xs:element name="search-index" type="odm:search-index" maxOccurs="unbounded" />
     </xs:choice>
   </xs:complexType>
