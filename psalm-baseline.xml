@@ -100,6 +100,7 @@
       <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
       <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
       <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
+      <code><![CDATA[$xmlRoot->{'search-indexes'}]]></code>
       <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
     </InvalidPropertyFetch>
     <NoInterfaceProperties>
@@ -117,6 +118,7 @@
       <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
       <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
       <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
+      <code><![CDATA[$xmlRoot->{'search-indexes'}]]></code>
       <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
     </NoInterfaceProperties>
     <RedundantCast>
@@ -155,6 +157,7 @@
       <code><![CDATA[isset($xmlRoot->{'reference-many'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'reference-one'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'schema-validation'})]]></code>
+      <code><![CDATA[isset($xmlRoot->{'search-indexes'})]]></code>
       <code><![CDATA[isset($xmlRoot->{'shard-key'})]]></code>
       <code><![CDATA[isset($xmlShardkey->option)]]></code>
     </RedundantCondition>
