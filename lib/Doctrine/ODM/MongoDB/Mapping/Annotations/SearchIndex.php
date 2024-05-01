@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * @Annotation
  * @NamedArgumentConstructor
- *
  * @psalm-import-type SearchIndexStoredSource from ClassMetadata
  * @psalm-import-type SearchIndexSynonym from ClassMetadata
  */

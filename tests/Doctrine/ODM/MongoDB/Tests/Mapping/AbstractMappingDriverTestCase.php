@@ -424,9 +424,7 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         return $class;
     }
 
-    /**
-     * @param ClassMetadata<AbstractMappingDriverUser> $class
-     */
+    /** @param ClassMetadata<AbstractMappingDriverUser> $class */
     #[Depends('testLoadMapping')]
     public function testSearchIndexes(ClassMetadata $class): void
     {
@@ -471,7 +469,7 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
                             'source' => ['collection' => 'synonyms'],
                         ],
                     ],
-                ]
+                ],
             ],
         ];
 
@@ -725,24 +723,24 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
 #[ODM\Index(keys: ['lock' => 'asc'], partialFilterExpression: ['version' => ['$gt' => 1], 'discr' => ['$eq' => 'default']])]
 #[ODM\SearchIndex(dynamic: true, analyzer: 'lucene.standard', searchAnalyzer: 'lucene.standard', storedSource: true)]
 #[ODM\SearchIndex(
-  name: 'usernameAndPhoneNumbers',
-  fields: [
-    'username' => [
-      [
-        'type' => 'string',
-        'multi' => [
-          'english' => ['type' => 'string', 'analyzer' => 'lucene.english'],
-          'french' => ['type' => 'string', 'analyzer' => 'lucene.french'],
+    name: 'usernameAndPhoneNumbers',
+    fields: [
+        'username' => [
+            [
+                'type' => 'string',
+                'multi' => [
+                    'english' => ['type' => 'string', 'analyzer' => 'lucene.english'],
+                    'french' => ['type' => 'string', 'analyzer' => 'lucene.french'],
+                ],
+            ],
+            ['type' => 'autocomplete'],
         ],
-      ],
-      ['type' => 'autocomplete'],
+        'embedded_phone_number' => ['type' => 'embeddedDocuments', 'dynamic' => true],
     ],
-    'embedded_phone_number' => ['type' => 'embeddedDocuments', 'dynamic' => true],
-  ],
-  storedSource: ['include' => ['username']],
-  synonyms: [
-    ['name' => 'mySynonyms', 'analyzer' => 'lucene.english', 'source' => ['collection' => 'synonyms']],
-  ],
+    storedSource: ['include' => ['username']],
+    synonyms: [
+        ['name' => 'mySynonyms', 'analyzer' => 'lucene.english', 'source' => ['collection' => 'synonyms']],
+    ],
 )]
 #[ODM\ShardKey(keys: ['name' => 'asc'], unique: true, numInitialChunks: 4096)]
 #[ODM\ReadPreference('primaryPreferred', tags: [['dc' => 'east'], ['dc' => 'west'], []])]

@@ -14,6 +14,7 @@ use LibXMLError;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use SimpleXMLElement;
 
+use function array_is_list;
 use function array_keys;
 use function array_map;
 use function assert;
@@ -587,7 +588,7 @@ class XmlDriver extends FileDriver
         }
 
         foreach ($searchIndex->field as $field) {
-            $name = (string) $field['name'];
+            $name            = (string) $field['name'];
             $fieldDefinition = $this->getSearchIndexFieldDefinition($field);
 
             // If the field is indexed with multiple data types, collect the definitions in a list.
@@ -610,7 +611,7 @@ class XmlDriver extends FileDriver
         }
 
         foreach ($searchIndex->{'stored-source'} as $storedSource) {
-            $type = (string) $storedSource['type'];
+            $type   = (string) $storedSource['type'];
             $fields = [];
 
             foreach ($storedSource->field as $field) {
@@ -646,7 +647,7 @@ class XmlDriver extends FileDriver
         $fieldDefinition = [];
 
         foreach ($field->field as $nestedField) {
-            $name = (string) $nestedField['name'];
+            $name                  = (string) $nestedField['name'];
             $nestedFieldDefinition = $this->getSearchIndexFieldDefinition($field);
 
             // If the field is indexed with multiple data types, collect the definitions in a list.
@@ -663,7 +664,7 @@ class XmlDriver extends FileDriver
         }
 
         foreach ($field->multi as $multi) {
-            $name = (string) $multi['name'];
+            $name                            = (string) $multi['name'];
             $fieldDefinition['multi'][$name] = $this->getSearchIndexFieldDefinition($multi);
         }
 
