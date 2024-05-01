@@ -218,6 +218,16 @@ use function trigger_deprecation;
  *      keys: IndexKeys,
  *      options: IndexOptions
  * }
+ * @psalm-type SearchIndexStoredSourceInclude = array{include: list<string>}
+ * @psalm-type SearchIndexStoredSourceExclude = array{exclude: list<string>}
+ * @psalm-type SearchIndexStoredSource = bool|SearchIndexStoredSourceInclude|SearchIndexStoredSourceExclude
+ * @psalm-type SearchIndexSynonym = array{
+ *      analyzer: string,
+ *      name: string,
+ *      source: array{
+ *          collection: string,
+ *      },
+ * }
  * @psalm-type SearchIndexDefinition = array{
  *      mappings: array{
  *          dynamic?: bool,
@@ -226,8 +236,8 @@ use function trigger_deprecation;
  *      analyzer?: string,
  *      searchAnalyzer?: string,
  *      analyzers?: array,
- *      storedSource?: array|bool,
- *      synonyms?: array,
+ *      storedSource?: SearchIndexStoredSource,
+ *      synonyms?: list<SearchIndexSynonym>,
  * }
  * @psalm-type SearchIndexMapping = array{
  *      name: string,
