@@ -446,14 +446,39 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Hydrator/HydratorFactory.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\:\\:validateAndCompleteTypedFieldMapping\\(\\) should return array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\} but returns array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}\\.$#"
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Annotations\\\\SearchIndex\\:\\:__construct\\(\\) has parameter \\$analyzers with no value type specified in iterable type array\\.$#"
 			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Annotations/SearchIndex.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Annotations\\\\SearchIndex\\:\\:__construct\\(\\) has parameter \\$fields with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Annotations/SearchIndex.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\:\\:addSearchIndex\\(\\) has parameter \\$definition with no value type specified in iterable type array\\.$#"
+			count: 2
+			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\:\\:getSearchIndexes\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 2
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
 			message: "#^Parameter \\#2 \\$enumType of class Doctrine\\\\Persistence\\\\Reflection\\\\EnumReflectionProperty constructor expects class\\-string\\<BackedEnum\\>, class\\-string\\<UnitEnum\\> given\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\:\\:\\$searchIndexes type has no value type specified in iterable type array\\.$#"
+			count: 2
+			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:getSearchIndexFieldDefinition\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
 		-
 			message: "#^Parameter \\#2 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\Driver\\\\XmlDriver\\:\\:addFieldMapping\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\<string, non\\-empty\\-array\\<int, string\\>\\|bool\\|string\\> given\\.$#"
