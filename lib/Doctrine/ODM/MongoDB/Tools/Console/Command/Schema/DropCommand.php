@@ -43,6 +43,7 @@ class DropCommand extends AbstractCommand
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Drop collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Drop indexes')
             ->addOption(self::SEARCH_INDEX, null, InputOption::VALUE_NONE, 'Drop search indexes')
+            ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->setDescription('Drop databases, collections and indexes for your documents');
     }
 
@@ -64,6 +65,10 @@ class DropCommand extends AbstractCommand
                 self::INDEX => 'Index',
                 self::SEARCH_INDEX => 'SearchIndex',
             };
+
+            if ($option === self::SEARCH_INDEX && $input->getOption('skip-search-indexes')) {
+                continue;
+            }
 
             try {
                 if (is_string($class)) {

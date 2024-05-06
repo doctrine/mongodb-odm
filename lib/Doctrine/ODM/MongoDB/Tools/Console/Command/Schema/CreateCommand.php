@@ -41,6 +41,7 @@ class CreateCommand extends AbstractCommand
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Create collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Create indexes')
             ->addOption(self::SEARCH_INDEX, null, InputOption::VALUE_NONE, 'Create search indexes')
+            ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->addOption('background', null, InputOption::VALUE_NONE, sprintf('Create indexes in background (requires "%s" option)', self::INDEX))
             ->setDescription('Create databases, collections and indexes for your documents');
     }
@@ -64,6 +65,10 @@ class CreateCommand extends AbstractCommand
                 self::INDEX => 'Index',
                 self::SEARCH_INDEX => 'SearchIndex',
             };
+
+            if ($option === self::SEARCH_INDEX && $input->getOption('skip-search-indexes')) {
+                continue;
+            }
 
             try {
                 if (isset($class)) {

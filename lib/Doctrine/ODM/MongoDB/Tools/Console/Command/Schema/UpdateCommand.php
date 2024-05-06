@@ -27,7 +27,7 @@ class UpdateCommand extends AbstractCommand
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
-            ->addOption('disable-search-indexes', null, InputOption::VALUE_NONE, 'Do not update search indexes')
+            ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->addOption('disable-validators', null, InputOption::VALUE_NONE, 'Do not update database-level validation rules')
             ->setDescription('Update indexes and validation rules for your documents');
     }
@@ -36,7 +36,7 @@ class UpdateCommand extends AbstractCommand
     {
         $class               = $input->getOption('class');
         $updateValidators    = ! $input->getOption('disable-validators');
-        $updateSearchIndexes = ! $input->getOption('disable-search-indexes');
+        $updateSearchIndexes = ! $input->getOption('skip-search-indexes');
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
