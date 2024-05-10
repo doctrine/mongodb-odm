@@ -296,9 +296,6 @@
     <NullableReturnStatement>
       <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>
-    <TypeDoesNotContainType>
-      <code><![CDATA[empty($divided[$class->name])]]></code>
-    </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
     <InvalidArgument>
@@ -487,9 +484,6 @@
     <InvalidArgument>
       <code><![CDATA[$options + $expectedWriteOptions]]></code>
     </InvalidArgument>
-    <TypeDoesNotContainType>
-      <code><![CDATA[empty($dbCommands[$databaseName])]]></code>
-    </TypeDoesNotContainType>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Types/DateImmutableTypeTest.php">
     <TypeDoesNotContainType>
