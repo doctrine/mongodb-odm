@@ -24,6 +24,7 @@
        reference/bidirectional-references
        reference/complex-references
        reference/indexes
+       reference/search-indexes
        reference/inheritance-mapping
        reference/embedded-mapping
        reference/trees
