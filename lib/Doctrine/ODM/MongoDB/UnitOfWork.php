@@ -477,6 +477,12 @@ final class UnitOfWork implements PropertyChangedListener
             $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
 
             // Clear up
+            foreach ($this->visitedCollections as $collections) {
+                foreach ($collections as $coll) {
+                    $coll->takeSnapshot();
+                }
+            }
+
             $this->scheduledDocumentInsertions  =
             $this->scheduledDocumentUpserts     =
             $this->scheduledDocumentUpdates     =

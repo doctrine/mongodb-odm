@@ -1512,14 +1512,11 @@ final class DocumentPersister
             $collections[] = $coll;
         }
 
-        if (! empty($collections)) {
-            $this->cp->update($document, $collections, $options);
+        if (empty($collections)) {
+            return;
         }
 
-        // Take new snapshots from visited collections
-        foreach ($this->uow->getVisitedCollections($document) as $coll) {
-            $coll->takeSnapshot();
-        }
+        $this->cp->update($document, $collections, $options);
     }
 
     /**
