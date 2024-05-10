@@ -541,7 +541,7 @@ Optional attributes:
     strings. This is required when `@Index`_ is used at the class level.
 -
     ``options`` - Options for creating the index. Options are documented in the
-    :ref:`indexes chapter <indees>`.
+    :ref:`indexes chapter <indexes>`.
 
 The ``keys`` and ``options`` attributes correspond to the arguments for
 `MongoDB\Collection::createIndex() <https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-createIndex/>`_.
