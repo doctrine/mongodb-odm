@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Documents\Address;
 use Documents\ForumUser;
 use Documents\FriendUser;
+use Documents\Phonenumber;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
@@ -559,6 +560,36 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         self::assertFalse($this->uow->isScheduledForDelete($address));
         self::assertFalse($this->uow->isScheduledForDelete($user));
+    }
+
+    public function testTransientErrorPreservesCollectionChangesets(): void
+    {
+        // Create a dummy user so that we later have a user to remove
+        $fooUser = new User();
+        $fooUser->setUsername('foo');
+        $this->uow->persist($fooUser);
+        $this->uow->commit();
+
+        // Create a new user with a collection update
+        $alcaeus = new User();
+        // Set an identifier to force an upsert, which causes separate queries
+        // for collection updates
+        $alcaeus->setId(new ObjectId());
+        $alcaeus->setUsername('alcaeus');
+        $alcaeus->getPhonenumbers()->add(new Phonenumber('12345'));
+        $this->uow->persist($alcaeus);
+
+        // Remove fooUser and create a transient failpoint to force the deletion
+        // to fail. This exposes the issue with collections
+        $this->uow->remove($fooUser);
+        $this->createTransientFailPoint('delete');
+
+        $this->uow->commit();
+
+        $this->dm->clear();
+        $check = $this->dm->find(User::class, $alcaeus->getId());
+        self::assertNotNull($check);
+        self::assertCount(1, $check->getPhonenumbers());
     }
 
     /** Create a document manager with a single host to ensure failpoints target the correct server */

@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Phonebook;
 use Documents\Phonenumber;
@@ -85,41 +84,6 @@ class CommitImprovementTest extends BaseTestCase
         self::assertCount(2, $phonenumbers);
         self::assertEquals('12345678', $phonenumbers[0]->getPhonenumber());
         self::assertEquals('87654321', $phonenumbers[1]->getPhonenumber());
-    }
-
-    /**
-     * This test checks few things:
-     *  - if collections were updated after post* events, our changes would be saved
-     *  - if collection snapshot would be taken after post* events, collection
-     *    wouldn't be dirty and wouldn't be updated in next flush
-     */
-    public function testChangingCollectionInPostEventsHasNoIllEffects(): void
-    {
-        $this->dm->getEventManager()->addEventSubscriber(new PhonenumberMachine());
-
-        $user = new VersionedUser();
-        $user->setUsername('malarzm');
-        $this->dm->persist($user);
-        $this->dm->flush();
-
-        $phoneNumbers = $user->getPhonenumbers();
-        self::assertCount(1, $phoneNumbers); // so we got a number on postPersist
-        self::assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers); // so we got a number on postPersist
-        self::assertTrue($phoneNumbers->isDirty()); // but they should be dirty
-
-        $collection = $this->dm->getDocumentCollection($user::class);
-        $inDb       = $collection->findOne();
-        self::assertArrayNotHasKey('phonenumbers', $inDb, 'Collection modified in postPersist should not be in database without recomputing change set');
-
-        $this->dm->flush();
-
-        $phoneNumbers = $user->getPhonenumbers();
-        self::assertInstanceOf(PersistentCollectionInterface::class, $phoneNumbers);
-        self::assertCount(2, $phoneNumbers); // so we got a number on postUpdate
-        self::assertTrue($phoneNumbers->isDirty()); // but they should be dirty
-
-        $inDb = $collection->findOne();
-        self::assertCount(1, $inDb['phonenumbers'], 'Collection changes from postUpdate should not be in database');
     }
 
     public function testSchedulingCollectionDeletionAfterSchedulingForUpdate(): void
