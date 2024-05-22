@@ -6,9 +6,9 @@ namespace Documents;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 
-#[Index(keys: ['topic' => 'asc'])]
+#[ODM\Index(keys: ['topic' => 'asc'])]
+#[ODM\SearchIndex(dynamic: true)]
 #[ODM\Document]
 class CmsArticle
 {

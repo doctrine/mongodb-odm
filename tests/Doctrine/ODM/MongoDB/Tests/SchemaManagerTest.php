@@ -64,6 +64,12 @@ class SchemaManagerTest extends BaseTestCase
     ];
 
     /** @psalm-var list<class-string> */
+    private array $searchIndexedClasses = [
+        CmsAddress::class,
+        CmsArticle::class,
+    ];
+
+    /** @psalm-var list<class-string> */
     private array $views = [
         UserName::class,
     ];
@@ -373,6 +379,84 @@ class SchemaManagerTest extends BaseTestCase
         }
 
         $this->schemaManager->deleteDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
+    }
+
+    public function testCreateSearchIndexes(): void
+    {
+        $searchIndexedCollections = array_map(
+            fn (string $fqcn) => $this->dm->getClassMetadata($fqcn)->getCollection(),
+            $this->searchIndexedClasses,
+        );
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if (in_array($collectionName, $searchIndexedCollections)) {
+                $collection
+                    ->expects($this->once())
+                    ->method('createSearchIndexes')
+                    ->with($this->anything())
+                    ->willReturn(['default']);
+            } else {
+                $collection->expects($this->never())->method('createSearchIndexes');
+            }
+        }
+
+        $this->schemaManager->createSearchIndexes();
+    }
+
+    public function testCreateDocumentSearchIndexes(): void
+    {
+        $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if ($collectionName === $cmsArticleCollectionName) {
+                $collection
+                    ->expects($this->once())
+                    ->method('createSearchIndexes')
+                    ->with($this->anything())
+                    ->willReturn(['default']);
+            } else {
+                $collection->expects($this->never())->method('createSearchIndexes');
+            }
+        }
+
+        $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testUpdateDocumentSearchIndexes(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willReturn(new ArrayIterator([
+                ['name' => 'default'],
+                ['name' => 'foo'],
+            ]));
+        $collection
+            ->expects($this->once())
+            ->method('dropSearchIndex')
+            ->with('foo');
+        $collection
+            ->expects($this->once())
+            ->method('updateSearchIndex')
+            ->with('default', $this->anything());
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testDeleteDocumentSearchIndexes(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willReturn(new ArrayIterator([['name' => 'default']]));
+        $collection
+            ->expects($this->once())
+            ->method('dropSearchIndex')
+            ->with('default');
+
+        $this->schemaManager->deleteDocumentSearchIndexes(CmsArticle::class);
     }
 
     public function testUpdateValidators(): void

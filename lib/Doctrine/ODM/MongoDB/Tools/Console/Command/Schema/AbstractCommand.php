@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
+use BadMethodCallException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\SchemaManager;
@@ -18,9 +19,10 @@ use function is_string;
 
 abstract class AbstractCommand extends Command
 {
-    public const DB         = 'db';
-    public const COLLECTION = 'collection';
-    public const INDEX      = 'index';
+    public const DB           = 'db';
+    public const COLLECTION   = 'collection';
+    public const INDEX        = 'index';
+    public const SEARCH_INDEX = 'search-index';
 
     /** @return void */
     protected function configure()
@@ -34,23 +36,81 @@ abstract class AbstractCommand extends Command
             ->addOption('journal', null, InputOption::VALUE_REQUIRED, 'An optional journal option for the write concern that will be used for all schema operations. Using this option without a w option will cause an exception to be thrown.');
     }
 
-    /** @return void */
-    abstract protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern);
+    /**
+     * @return void
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        throw new BadMethodCallException('This command does not support collections');
+    }
 
-    /** @return void */
-    abstract protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern);
+    /**
+     * @return void
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        throw new BadMethodCallException('This command does not support collections');
+    }
 
-    /** @return void */
-    abstract protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern);
+    /**
+     * @return void
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        throw new BadMethodCallException('This command does not support databases');
+    }
 
-    /** @return void */
-    abstract protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern);
+    /**
+     * @return void
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        throw new BadMethodCallException('This command does not support databases');
+    }
 
-    /** @return void */
-    abstract protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern);
+    /**
+     * @return void
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        throw new BadMethodCallException('This command does not support indexes');
+    }
 
-    /** @return void */
-    abstract protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern);
+    /**
+     * @return void
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    {
+        throw new BadMethodCallException('This command does not support indexes');
+    }
+
+    /** @throws BadMethodCallException */
+    protected function processSearchIndex(SchemaManager $sm): void
+    {
+        throw new BadMethodCallException('This command does not support search indexes');
+    }
+
+    /**
+     * @psalm-param class-string $document
+     *
+     * @throws BadMethodCallException
+     */
+    protected function processDocumentSearchIndex(SchemaManager $sm, string $document): void
+    {
+        throw new BadMethodCallException('This command does not support search indexes');
+    }
 
     /** @return SchemaManager */
     protected function getSchemaManager()

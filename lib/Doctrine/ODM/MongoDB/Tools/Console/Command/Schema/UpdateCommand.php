@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
-use BadMethodCallException;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
@@ -28,14 +27,16 @@ class UpdateCommand extends AbstractCommand
         $this
             ->setName('odm:schema:update')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
+            ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->addOption('disable-validators', null, InputOption::VALUE_NONE, 'Do not update database-level validation rules')
             ->setDescription('Update indexes and validation rules for your documents');
     }
 
     private function doExecute(InputInterface $input, OutputInterface $output): int
     {
-        $class            = $input->getOption('class');
-        $updateValidators = ! $input->getOption('disable-validators');
+        $class               = $input->getOption('class');
+        $updateValidators    = ! $input->getOption('disable-validators');
+        $updateSearchIndexes = ! $input->getOption('skip-search-indexes');
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -49,6 +50,11 @@ class UpdateCommand extends AbstractCommand
                     $this->processDocumentValidator($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                     $output->writeln(sprintf('Updated <comment>validation</comment> for <info>%s</info>', $class));
                 }
+
+                if ($updateSearchIndexes) {
+                    $this->processDocumentSearchIndex($sm, $class);
+                    $output->writeln(sprintf('Updated <comment>search index(es)</comment> for <info>%s</info>', $class));
+                }
             } else {
                 $this->processIndex($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 $output->writeln('Updated <comment>indexes</comment> for <info>all classes</info>');
@@ -56,6 +62,11 @@ class UpdateCommand extends AbstractCommand
                 if ($updateValidators) {
                     $this->processValidators($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                     $output->writeln('Updated <comment>validation</comment> for <info>all classes</info>');
+                }
+
+                if ($updateSearchIndexes) {
+                    $this->processSearchIndex($sm);
+                    $output->writeln('Updated <comment>search indexes</comment> for <info>all classes</info>');
                 }
             }
         } catch (Throwable $e) {
@@ -88,27 +99,13 @@ class UpdateCommand extends AbstractCommand
         $sm->updateValidators($maxTimeMs, $writeConcern);
     }
 
-    /** @throws BadMethodCallException */
-    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processDocumentSearchIndex(SchemaManager $sm, string $document): void
     {
-        throw new BadMethodCallException('Cannot update a document collection');
+        $sm->updateDocumentSearchIndexes($document);
     }
 
-    /** @throws BadMethodCallException */
-    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processSearchIndex(SchemaManager $sm): void
     {
-        throw new BadMethodCallException('Cannot update a collection');
-    }
-
-    /** @throws BadMethodCallException */
-    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('Cannot update a document database');
-    }
-
-    /** @throws BadMethodCallException */
-    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
-    {
-        throw new BadMethodCallException('Cannot update a database');
+        $sm->updateSearchIndexes();
     }
 }

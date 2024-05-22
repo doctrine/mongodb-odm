@@ -1073,6 +1073,60 @@ Optional attributes:
      */
     private $cart;
 
+@SearchIndex
+------------
+
+This annotation is used to specify :ref:`search indexes <search_indexes>` for
+`MongoDB Atlas Search <https://www.mongodb.com/docs/atlas/atlas-search/>`__.
+
+The attributes correspond to arguments for
+`MongoDB\Collection::createSearchIndex() <https://www.mongodb.com/docs/php-library/current/reference/method/MongoDBCollection-createSearchIndex/>`__.
+Excluding ``name``, attributes are used to create the
+`search index definition <https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#search-index-definition-syntax>`__.
+
+Optional attributes:
+
+-
+    ``name`` - Name of the search index to create, which must be unique to the
+    collection. Defaults to ``"default"``.
+-
+    ``dynamic`` - Enables or disables dynamic field mapping for this index.
+    If ``true``, the index will include all fields with
+    `supported data types <https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/#std-label-bson-data-chart>`__.
+    If ``false``, the ``fields`` attribute must be specified. Defaults to ``false``.
+-
+    ``fields`` - Associative array of `field mappings <https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/>`__
+    that specify the fields to index (keys). Required only if dynamic mapping is disabled.
+-
+    ``analyzer`` - Specifies the `analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/>`__
+    to apply to string fields when indexing. Defaults to the
+    `standard analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/standard/>`__.
+-
+    ``searchAnalyzer`` - Specifies the `analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/>`__
+    to apply to query text before the text is searched. Defaults to the
+    ``analyzer`` attribute, or the `standard analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/standard/>`__.
+    if both are unspecified.
+-
+    ``analyzers`` - Array of `custom analyzers <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/custom/>`__
+    to use in this index.
+-
+    ``storedSource`` - Specifies document fields to store for queries performed
+    using the `returnedStoredSource <https://www.mongodb.com/docs/atlas/atlas-search/return-stored-source/>`__
+    option. Specify ``true`` to store all fields, ``false`` to store no fields,
+    or a `document <https://www.mongodb.com/docs/atlas/atlas-search/stored-source-definition/#std-label-fts-stored-source-document>`__
+    to specify individual fields to include or exclude from storage. Defaults to ``false``.
+-
+    ``synonyms`` - Array of `synonym mapping definitions <https://www.mongodb.com/docs/atlas/atlas-search/synonyms/>`__
+    to use in this index.
+
+.. note::
+
+    Search indexes have some notable differences from `@Index`_. They may only
+    be defined on document classes. Definitions will not be incorporated from
+    embedded documents. Additionally, ODM will **NOT** translate field names in
+    search index definitions. Database field names must be used instead of
+    mapped field names (i.e. PHP property names).
+
 @ShardKey
 ---------
 

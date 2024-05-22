@@ -218,6 +218,31 @@ use function trigger_deprecation;
  *      keys: IndexKeys,
  *      options: IndexOptions
  * }
+ * @psalm-type SearchIndexStoredSourceInclude = array{include: list<string>}
+ * @psalm-type SearchIndexStoredSourceExclude = array{exclude: list<string>}
+ * @psalm-type SearchIndexStoredSource = bool|SearchIndexStoredSourceInclude|SearchIndexStoredSourceExclude
+ * @psalm-type SearchIndexSynonym = array{
+ *      analyzer: string,
+ *      name: string,
+ *      source: array{
+ *          collection: string,
+ *      },
+ * }
+ * @psalm-type SearchIndexDefinition = array{
+ *      mappings: array{
+ *          dynamic?: bool,
+ *          fields?: array,
+ *      },
+ *      analyzer?: string,
+ *      searchAnalyzer?: string,
+ *      analyzers?: array,
+ *      storedSource?: SearchIndexStoredSource,
+ *      synonyms?: list<SearchIndexSynonym>,
+ * }
+ * @psalm-type SearchIndexMapping = array{
+ *      name: string,
+ *      definition: SearchIndexDefinition
+ * }
  * @psalm-type ShardKeys = array<string, mixed>
  * @psalm-type ShardOptions = array<string, mixed>
  * @psalm-type ShardKey = array{
@@ -377,6 +402,13 @@ use function trigger_deprecation;
     public const STORAGE_STRATEGY_ATOMIC_SET_ARRAY = 'atomicSetArray';
     public const STORAGE_STRATEGY_SET_ARRAY        = 'setArray';
 
+    /**
+     * Default search index name.
+     *
+     * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/
+     */
+    public const DEFAULT_SEARCH_INDEX_NAME = 'default';
+
     private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
 
     /**
@@ -457,6 +489,13 @@ use function trigger_deprecation;
      * @psalm-var array<IndexMapping>
      */
     public $indexes = [];
+
+    /**
+     * READ-ONLY: The array of search indexes for the document collection.
+     *
+     * @var list<SearchIndexMapping>
+     */
+    public $searchIndexes = [];
 
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
@@ -1155,6 +1194,37 @@ use function trigger_deprecation;
     public function hasIndexes(): bool
     {
         return $this->indexes !== [];
+    }
+
+    /**
+     * Add a search index for this Document.
+     *
+     * @psalm-param SearchIndexDefinition $definition
+     */
+    public function addSearchIndex(array $definition, ?string $name = null): void
+    {
+        $this->searchIndexes[] = [
+            'definition' => $definition,
+            'name' => $name ?? self::DEFAULT_SEARCH_INDEX_NAME,
+        ];
+    }
+
+    /**
+     * Returns the array of search indexes for this Document.
+     *
+     * @psalm-return list<SearchIndexMapping>
+     */
+    public function getSearchIndexes(): array
+    {
+        return $this->searchIndexes;
+    }
+
+    /**
+     * Checks whether this document has search indexes or not.
+     */
+    public function hasSearchIndexes(): bool
+    {
+        return $this->searchIndexes !== [];
     }
 
     /**

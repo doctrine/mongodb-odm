@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Index;
 
-#[Index(keys: ['country' => 'asc', 'zip' => 'asc', 'city' => 'asc'])]
+#[ODM\Index(keys: ['country' => 'asc', 'zip' => 'asc', 'city' => 'asc'])]
+#[ODM\SearchIndex(dynamic: true)]
 #[ODM\Document]
 class CmsAddress
 {

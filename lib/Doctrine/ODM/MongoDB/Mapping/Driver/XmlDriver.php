@@ -14,6 +14,7 @@ use LibXMLError;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use SimpleXMLElement;
 
+use function array_is_list;
 use function array_keys;
 use function array_map;
 use function assert;
@@ -187,6 +188,12 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->indexes)) {
             foreach ($xmlRoot->indexes->index as $index) {
                 $this->addIndex($metadata, $index);
+            }
+        }
+
+        if (isset($xmlRoot->{'search-indexes'})) {
+            foreach ($xmlRoot->{'search-indexes'}->{'search-index'} as $searchIndex) {
+                $this->addSearchIndex($metadata, $searchIndex);
             }
         }
 
@@ -569,6 +576,136 @@ class XmlDriver extends FileDriver
         }
 
         $class->addIndex($keys, $options);
+    }
+
+    /** @param ClassMetadata<object> $class */
+    private function addSearchIndex(ClassMetadata $class, SimpleXMLElement $searchIndex): void
+    {
+        $definition = [];
+
+        if (isset($searchIndex['dynamic'])) {
+            $definition['mappings']['dynamic'] = $this->convertXMLElementValue((string) $searchIndex['dynamic']);
+        }
+
+        foreach ($searchIndex->field as $field) {
+            $name            = (string) $field['name'];
+            $fieldDefinition = $this->getSearchIndexFieldDefinition($field);
+
+            // If the field is indexed with multiple data types, collect the definitions in a list.
+            // See: https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/#index-field-as-multiple-data-types
+            if (isset($definition['mappings']['fields'][$name])) {
+                if (! array_is_list($definition['mappings']['fields'][$name])) {
+                    $definition['mappings']['fields'][$name] = [$definition['mappings']['fields'][$name]];
+                }
+
+                $definition['mappings']['fields'][$name][] = $fieldDefinition;
+            } else {
+                $definition['mappings']['fields'][$name] = $fieldDefinition;
+            }
+        }
+
+        foreach (['analyzer', 'searchAnalyzer', 'storedSource'] as $key) {
+            if (isset($searchIndex[$key])) {
+                $definition[$key] = $this->convertXMLElementValue((string) $searchIndex[$key]);
+            }
+        }
+
+        foreach ($searchIndex->{'stored-source'} as $storedSource) {
+            $type   = (string) $storedSource['type'];
+            $fields = [];
+
+            foreach ($storedSource->field as $field) {
+                $fields[] = (string) $field['name'];
+            }
+
+            if (isset($definition['storedSource'])) {
+                throw new InvalidArgumentException('Search index definition already has a "storedSource" option');
+            }
+
+            if ($type !== 'include' && $type !== 'exclude') {
+                throw new InvalidArgumentException(sprintf('Type "%s" is unsupported for <stored-source>', $type));
+            }
+
+            $definition['storedSource'] = [$type => $fields];
+        }
+
+        foreach ($searchIndex->synonym as $synonym) {
+            $definition['synonyms'][] = [
+                'analyzer' => (string) $synonym['analyzer'],
+                'name' => (string) $synonym['name'],
+                'source' => ['collection' => (string) $synonym['sourceCollection']],
+            ];
+        }
+
+        $name = isset($searchIndex['name']) ? (string) $searchIndex['name'] : null;
+
+        $class->addSearchIndex($definition, $name);
+    }
+
+    private function getSearchIndexFieldDefinition(SimpleXMLElement $field): array
+    {
+        $fieldDefinition = [];
+
+        foreach ($field->field as $nestedField) {
+            $name                  = (string) $nestedField['name'];
+            $nestedFieldDefinition = $this->getSearchIndexFieldDefinition($field);
+
+            // If the field is indexed with multiple data types, collect the definitions in a list.
+            // See: https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/#index-field-as-multiple-data-types
+            if (isset($fieldDefinition[$name])) {
+                if (! array_is_list($fieldDefinition['fields'][$name])) {
+                    $fieldDefinition['fields'][$name] = [$fieldDefinition['fields'][$name]];
+                }
+
+                $fieldDefinition['fields'][$name][] = $fieldDefinition;
+            } else {
+                $fieldDefinition['fields'][$name] = $fieldDefinition;
+            }
+        }
+
+        foreach ($field->multi as $multi) {
+            $name                            = (string) $multi['name'];
+            $fieldDefinition['multi'][$name] = $this->getSearchIndexFieldDefinition($multi);
+        }
+
+        $allowedOptions = [
+            'type',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/autocomplete-type/
+            'maxGrams',
+            'minGrams',
+            'tokenization',
+            'foldDiacritics',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/document-type/
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/embedded-documents-type/
+            'dynamic',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/geo-type/
+            'indexShapes',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/knn-vector/
+            'dimensions',
+            'similarity',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/number-type/
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/number-facet-type/
+            'representation',
+            'indexIntegers',
+            'indexDoubles',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/string-type/
+            'analyzer',
+            'searchAnalyzer',
+            'indexOptions',
+            'store',
+            'ignoreAbove',
+            'norms',
+            // https://www.mongodb.com/docs/atlas/atlas-search/field-types/token-type/
+            'normalizer',
+        ];
+
+        foreach ($allowedOptions as $key) {
+            if (isset($field[$key])) {
+                $fieldDefinition[$key] = $this->convertXMLElementValue((string) $field[$key]);
+            }
+        }
+
+        return $fieldDefinition;
     }
 
     /** @return array<string, array<string, mixed>|scalar|null> */

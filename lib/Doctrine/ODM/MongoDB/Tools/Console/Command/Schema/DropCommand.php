@@ -15,14 +15,21 @@ use Throwable;
 use function array_filter;
 use function is_string;
 use function sprintf;
-use function ucfirst;
 
 class DropCommand extends AbstractCommand
 {
     use CommandCompatibility;
 
     /** @var string[] */
-    private array $dropOrder = [self::INDEX, self::COLLECTION, self::DB];
+    private array $dropOrder = [self::SEARCH_INDEX, self::INDEX, self::COLLECTION, self::DB];
+
+    /* @var array<string, list<string>> */
+    private const INFLECTIONS = [
+        self::DB => ['database', 'databases'],
+        self::COLLECTION => ['collection', 'collections'],
+        self::INDEX => ['index(es)', 'indexes'],
+        self::SEARCH_INDEX => ['search index(es)', 'search indexes'],
+    ];
 
     /** @return void */
     protected function configure()
@@ -35,6 +42,8 @@ class DropCommand extends AbstractCommand
             ->addOption(self::DB, null, InputOption::VALUE_NONE, 'Drop databases')
             ->addOption(self::COLLECTION, null, InputOption::VALUE_NONE, 'Drop collections')
             ->addOption(self::INDEX, null, InputOption::VALUE_NONE, 'Drop indexes')
+            ->addOption(self::SEARCH_INDEX, null, InputOption::VALUE_NONE, 'Drop search indexes')
+            ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->setDescription('Drop databases, collections and indexes for your documents');
     }
 
@@ -50,17 +59,27 @@ class DropCommand extends AbstractCommand
         $isErrored = false;
 
         foreach ($drop as $option) {
+            $method = match ($option) {
+                self::DB => 'Db',
+                self::COLLECTION => 'Collection',
+                self::INDEX => 'Index',
+                self::SEARCH_INDEX => 'SearchIndex',
+            };
+
+            if ($option === self::SEARCH_INDEX && $input->getOption('skip-search-indexes')) {
+                continue;
+            }
+
             try {
                 if (is_string($class)) {
-                    $this->{'processDocument' . ucfirst($option)}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                    $this->{'processDocument' . $method}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 } else {
-                    $this->{'process' . ucfirst($option)}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
+                    $this->{'process' . $method}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 }
 
                 $output->writeln(sprintf(
-                    'Dropped <comment>%s%s</comment> for <info>%s</info>',
-                    $option,
-                    is_string($class) ? ($option === self::INDEX ? '(es)' : '') : ($option === self::INDEX ? 'es' : 's'),
+                    'Dropped <comment>%s</comment> for <info>%s</info>',
+                    self::INFLECTIONS[$option][isset($class) ? 0 : 1],
                     is_string($class) ? $class : 'all classes'
                 ));
             } catch (Throwable $e) {
@@ -100,5 +119,15 @@ class DropCommand extends AbstractCommand
     protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
     {
         $sm->deleteIndexes($maxTimeMs, $writeConcern);
+    }
+
+    protected function processDocumentSearchIndex(SchemaManager $sm, string $document): void
+    {
+        $sm->deleteDocumentSearchIndexes($document);
+    }
+
+    protected function processSearchIndex(SchemaManager $sm): void
+    {
+        $sm->deleteSearchIndexes();
     }
 }
