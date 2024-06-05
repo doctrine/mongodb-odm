@@ -28,6 +28,9 @@
     <ImplementedReturnTypeMismatch>
       <code><![CDATA[ClassMetadataFactoryInterface]]></code>
     </ImplementedReturnTypeMismatch>
+    <NullableReturnStatement>
+      <code><![CDATA[$mapping['targetDocument']]]></code>
+    </NullableReturnStatement>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Event/OnClearEventArgs.php">
     <TooManyArguments>
@@ -296,9 +299,6 @@
     <InvalidReturnType>
       <code><![CDATA[array<class-string, array{0: ClassMetadata<object>, 1: array<string, object>}>]]></code>
     </InvalidReturnType>
-    <NullableReturnStatement>
-      <code><![CDATA[$mapping['targetDocument']]]></code>
-    </NullableReturnStatement>
   </file>
   <file src="tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/UnsetTest.php">
     <InvalidArgument>
