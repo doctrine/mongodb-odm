@@ -696,7 +696,7 @@ final class DocumentPersister
         }
 
         foreach ($embeddedDocuments as $key => $embeddedDocument) {
-            $className              = $this->uow->getClassNameForAssociation($mapping, $embeddedDocument);
+            $className              = $this->dm->getClassNameForAssociation($mapping, $embeddedDocument);
             $embeddedMetadata       = $this->dm->getClassMetadata($className);
             $embeddedDocumentObject = $embeddedMetadata->newInstance();
 
@@ -735,7 +735,7 @@ final class DocumentPersister
         $sorted = isset($mapping['sort']) && $mapping['sort'];
 
         foreach ($collection->getMongoData() as $key => $reference) {
-            $className = $this->uow->getClassNameForAssociation($mapping, $reference);
+            $className = $this->dm->getClassNameForAssociation($mapping, $reference);
 
             if ($mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID && ! is_array($reference)) {
                 throw HydratorException::associationItemTypeMismatch($owner::class, $mapping['name'], $key, 'array', gettype($reference));

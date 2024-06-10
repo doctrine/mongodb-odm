@@ -26,6 +26,7 @@ use Documents\CmsPhonenumber;
 use Documents\CmsUser;
 use Documents\CustomRepository\Document;
 use Documents\CustomRepository\Repository;
+use Documents\ForumUser;
 use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
@@ -228,6 +229,37 @@ class DocumentManagerTest extends BaseTestCase
         self::assertIsArray($dbRef);
         self::assertCount(1, $dbRef);
         self::assertArrayHasKey('id', $dbRef);
+    }
+
+    public function testGetClassNameForAssociation(): void
+    {
+        $mapping = ClassMetadataTestUtil::getFieldMapping([
+            'discriminatorField' => 'type',
+            'discriminatorMap' => ['forum_user' => ForumUser::class],
+            'targetDocument' => User::class,
+        ]);
+        $data    = ['type' => 'forum_user'];
+
+        self::assertEquals(ForumUser::class, $this->dm->getClassNameForAssociation($mapping, $data));
+    }
+
+    public function testGetClassNameForAssociationWithClassMetadataDiscriminatorMap(): void
+    {
+        $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
+        $data    = ['type' => 'forum_user'];
+
+        $userClassMetadata                     = new ClassMetadata(ForumUser::class);
+        $userClassMetadata->discriminatorField = 'type';
+        $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
+        $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
+
+        self::assertEquals(ForumUser::class, $this->dm->getClassNameForAssociation($mapping, $data));
+    }
+
+    public function testGetClassNameForAssociationReturnsTargetDocumentWithNullData(): void
+    {
+        $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
+        self::assertEquals(User::class, $this->dm->getClassNameForAssociation($mapping, null));
     }
 }
 

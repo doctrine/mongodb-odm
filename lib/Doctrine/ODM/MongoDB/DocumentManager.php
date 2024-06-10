@@ -179,8 +179,7 @@ class DocumentManager implements ObjectManager
             $this->config->getAutoGenerateHydratorClasses(),
         );
 
-        $this->unitOfWork = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
-        $this->hydratorFactory->setUnitOfWork($this->unitOfWork);
+        $this->unitOfWork        = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
         $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory      = new StaticProxyFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
@@ -881,6 +880,48 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->filterCollection;
+    }
+
+    /**
+     * Gets the class name for an association (embed or reference) with respect
+     * to any discriminator value.
+     *
+     * @internal
+     *
+     * @param FieldMapping              $mapping
+     * @param array<string, mixed>|null $data
+     *
+     * @psalm-return class-string
+     */
+    public function getClassNameForAssociation(array $mapping, $data): string
+    {
+        $discriminatorField = $mapping['discriminatorField'] ?? null;
+
+        $discriminatorValue = null;
+        if (isset($discriminatorField, $data[$discriminatorField])) {
+            $discriminatorValue = $data[$discriminatorField];
+        } elseif (isset($mapping['defaultDiscriminatorValue'])) {
+            $discriminatorValue = $mapping['defaultDiscriminatorValue'];
+        }
+
+        if ($discriminatorValue !== null) {
+            return $mapping['discriminatorMap'][$discriminatorValue]
+                ?? (string) $discriminatorValue;
+        }
+
+        $class = $this->getClassMetadata($mapping['targetDocument']);
+
+        if (isset($class->discriminatorField, $data[$class->discriminatorField])) {
+            $discriminatorValue = $data[$class->discriminatorField];
+        } elseif ($class->defaultDiscriminatorValue !== null) {
+            $discriminatorValue = $class->defaultDiscriminatorValue;
+        }
+
+        if ($discriminatorValue !== null) {
+            return $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
+        }
+
+        return $mapping['targetDocument'];
     }
 
     private static function getVersion(): string
