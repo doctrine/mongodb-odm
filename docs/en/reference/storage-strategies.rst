@@ -71,7 +71,7 @@ The ``atomicSet`` strategy uses MongoDB's `$set`_ operator to update the entire
 collection with a single update query. Unlike with ``set`` strategy there will
 be only one query for updating both parent document and collection itself. This
 strategy can be especially useful when dealing with high concurrency and
-:ref:`versioned documents <annotations_reference_version>`.
+:ref:`versioned documents <attributes_reference_version>`.
 
 .. note::
 

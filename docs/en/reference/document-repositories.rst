@@ -61,7 +61,7 @@ document class like so:
 
         namespace Documents;
 
-        /** @Document(repositoryClass="Repositories\UserRepository") */
+        #[Document(repositoryClass: \Repositories\UserRepository::class)]
         class User
         {
             /* ... */

@@ -18,16 +18,17 @@ setup a document like the following with a ``$keywords`` property that is mapped
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class Product
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $title;
 
-        /** @Field(type="collection") @Index */
+        #[Field(type: 'collection')]
+        #[Index]
         private $keywords = [];
 
         // ...
@@ -117,13 +118,13 @@ You can setup a ``Keyword`` document like the following:
 
     <?php
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Keyword
     {
-        /** @Field(type="string") @Index */
+        #[Field(type: 'string') @Index]
         private $keyword;
 
-        /** @Field(type="int") */
+        #[Field(type: 'int')]
         private $weight;
 
         public function __construct(string $keyword, int $weight)
@@ -143,12 +144,12 @@ Now you can embed the ``Keyword`` document many times in the ``Product``:
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class Product
     {
         // ...
 
-        /** @EmbedMany(targetDocument=Keyword::class) */
+        #[EmbedMany(targetDocument: Keyword::class)]
         private $keywords;
 
         // ...

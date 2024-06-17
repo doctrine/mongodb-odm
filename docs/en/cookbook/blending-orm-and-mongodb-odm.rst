@@ -16,13 +16,13 @@ First lets define our ``Product`` document:
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class Product
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $title;
 
         public function getId(): ?string
@@ -54,21 +54,16 @@ Next create the ``Order`` entity that has a ``$product`` and ``$productId`` prop
 
     use Documents\Product;
 
-    /**
-     * @Entity
-     * @Table(name="orders")
-     */
+    #[Entity]
+    #[Table(name: 'orders')]
     class Order
     {
-        /**
-         * @Id @Column(type="int")
-         * @GeneratedValue(strategy="AUTO")
-         */
+        #[Id]
+        #[Column(type: 'int')]
+        #[GeneratedValue(strategy: 'AUTO')]
         private $id;
 
-        /**
-         * @Column(type="string")
-         */
+        #[Column(type: 'string')]
         private $productId;
 
         /**

@@ -166,7 +166,7 @@ the life-time of their registered documents.
 -
    loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml).
+   (attributes/xml).
 -
    onClassMetadataNotFound - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
@@ -241,65 +241,64 @@ event occurs.
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class User
     {
         // ...
 
-        /**
-         * @Field
-         */
+        #[Field]
         public $value;
 
-        /** @Field */
+        #[Field]
         private $createdAt;
 
-        /** @PrePersist */
+        #[PrePersist]
         public function doStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->createdAt = date('Y-m-d H:i:s');
         }
 
-        /** @PrePersist */
+        #[PrePersist]
         public function doOtherStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->value = 'changed from prePersist callback!';
         }
 
-        /** @PostPersist */
+        #[PostPersist]
         public function doStuffOnPostPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->value = 'changed from postPersist callback!';
         }
 
-        /** @PreLoad */
+        #[PreLoad]
         public function doStuffOnPreLoad(\Doctrine\ODM\MongoDB\Event\PreLoadEventArgs $eventArgs): void
         {
             $data =& $eventArgs->getData();
             $data['value'] = 'changed from preLoad callback';
         }
 
-        /** @PostLoad */
+        #[PostLoad]
         public function doStuffOnPostLoad(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->value = 'changed from postLoad callback!';
         }
 
-        /** @PreUpdate */
+        #[PreUpdate]
         public function doStuffOnPreUpdate(\Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs $eventArgs): void
         {
             $this->value = 'changed from preUpdate callback!';
         }
 
-        /** @PreFlush */
+        #[PreFlush]
         public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs): void
         {
             $this->value = 'changed from preFlush callback!';
         }
     }
 
-Note that when using annotations you have to apply the
-@HasLifecycleCallbacks marker annotation on the document class.
+Note that when using attributes you have to apply the
+``#[HasLifecycleCallbacks]`` marker attribute on the document class.
 
 Listening to Lifecycle Events
 -----------------------------

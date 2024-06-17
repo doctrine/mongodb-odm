@@ -11,7 +11,7 @@ Features Overview
 -  Map one or many embedded documents.
 -  Map one or many referenced documents.
 -  Create references between documents in different databases.
--  Map documents with Annotations, XML or plain old PHP code.
+-  Map documents with Attributes, XML or plain old PHP code.
 -  Documents can be stored in GridFS buckets.
 -  Collection per class(concrete) and single collection inheritance supported.
 -  Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.
@@ -28,31 +28,31 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
     use DateTime;
 
-    /** @ODM\MappedSuperclass */
+    #[ODM\MappedSuperclass]
     abstract class BaseEmployee
     {
-        /** @ODM\Id */
+        #[ODM\Id]
         private $id;
 
-        /** @ODM\Field(type="int", strategy="increment") */
+        #[ODM\Field(type: 'int', strategy: 'increment')]
         private $changes = 0;
 
-        /** @ODM\Field(type="collection") */
+        #[ODM\Field(type: 'collection')]
         private $notes = [];
 
-        /** @ODM\Field(type="string") */
+        #[ODM\Field(type: 'string')]
         private $name;
 
-        /** @ODM\Field(type="int") */
+        #[ODM\Field(type: 'int')]
         private $salary;
 
-        /** @ODM\Field(type="date") */
+        #[ODM\Field(type: 'date')]
         private $started;
 
-        /** @ODM\Field(type="date") */
+        #[ODM\Field(type: 'date')]
         private $left;
 
-        /** @ODM\EmbedOne(targetDocument=Address::class) */
+        #[ODM\EmbedOne(targetDocument: Address::class)]
         private $address;
 
         public function getId(): ?string { return $this->id; }
@@ -79,20 +79,20 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function setAddress(Address $address): void { $this->address = $address; }
     }
 
-    /** @ODM\Document */
+    #[ODM\Document]
     class Employee extends BaseEmployee
     {
-        /** @ODM\ReferenceOne(targetDocument=Manager::class) */
+        #[ODM\ReferenceOne(targetDocument: Manager::class)]
         private $manager;
 
         public function getManager(): ?Manager { return $this->manager; }
         public function setManager(Manager $manager): void { $this->manager = $manager; }
     }
 
-    /** @ODM\Document */
+    #[ODM\Document]
     class Manager extends BaseEmployee
     {
-        /** @ODM\ReferenceMany(targetDocument=Project::class) */
+        #[ODM\ReferenceMany(targetDocument: Project::class)]
         private $projects;
 
         public function __construct() { $this->projects = new ArrayCollection(); }
@@ -101,19 +101,19 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function addProject(Project $project): void { $this->projects[] = $project; }
     }
 
-    /** @ODM\EmbeddedDocument */
+    #[ODM\EmbeddedDocument]
     class Address
     {
-        /** @ODM\Field(type="string") */
+        #[ODM\Field(type: 'string')]
         private $address;
 
-        /** @ODM\Field(type="string") */
+        #[ODM\Field(type: 'string')]
         private $city;
 
-        /** @ODM\Field(type="string") */
+        #[ODM\Field(type: 'string')]
         private $state;
 
-        /** @ODM\Field(type="string") */
+        #[ODM\Field(type: 'string')]
         private $zipcode;
 
         public function getAddress(): ?string { return $this->address; }
@@ -129,13 +129,13 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function setZipcode(string $zipcode): void { $this->zipcode = $zipcode; }
     }
 
-    /** @ODM\Document */
+    #[ODM\Document]
     class Project
     {
-        /** @ODM\Id */
+        #[ODM\Id]
         private $id;
 
-        /** @ODM\Field(type="string") */
+        #[ODM\Field(type: 'string')]
         private $name;
 
         public function __construct($name) { $this->name = $name; }
@@ -419,9 +419,9 @@ their mapping.
     classes for every request. See the `tuning for production`_ chapter in
     ProxyManager's documentation.
 
-The easiest way to define mappings for our document classes is with annotations.
-We'll need to specify an annotation driver in our configuration (with one or
-more paths) and register the annotations for the driver:
+The easiest way to define mappings for our document classes is with attributes.
+We'll need to specify an attribute driver in our configuration (with one or
+more paths) and register the attributes for the driver:
 
 .. code-block:: php
 
@@ -429,9 +429,9 @@ more paths) and register the annotations for the driver:
 
     // ...
 
-    $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
+    $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/Documents'));
 
-    require_once('path/to/vendor/autoload.php');
+    require_once __DIR__ . '/vendor/autoload.php');
 
 At this point, we have everything necessary to construct a ``DocumentManager``:
 

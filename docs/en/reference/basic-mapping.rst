@@ -11,7 +11,6 @@ Mapping Drivers
 Doctrine provides several different ways for specifying object
 document mapping metadata:
 
--  Docblock Annotations
 -  Attributes
 -  XML
 -  Raw PHP Code
@@ -20,7 +19,7 @@ document mapping metadata:
 
     If you're wondering which mapping driver gives the best
     performance, the answer is: None. Once the metadata of a class has
-    been read from the source (annotations or xml) it is stored
+    been read from the source (attributes or xml) it is stored
     in an instance of the
     ``Doctrine\ODM\MongoDB\Mapping\ClassMetadata`` class and these
     instances are stored in the metadata cache. Therefore at the end of
@@ -29,49 +28,17 @@ document mapping metadata:
     slight edge in performance due to the powerful native XML support
     in PHP.
 
-Introduction to Docblock Annotations
-------------------------------------
+Introduction to Attributes
+--------------------------
 
-.. note::
-
-    To be able to use annotations, you will have to install an extra
-    package called ``doctrine/annotations``.
-
-You've probably used docblock annotations in some form already,
-most likely to provide documentation metadata for a tool like
-``PHPDocumentor`` (@author, @link, ...). Docblock annotations are a
-tool to embed metadata inside the documentation section which can
-then be processed by some tool. Doctrine generalizes the concept of
-docblock annotations so that they can be used for any kind of
-metadata and so that it is easy to define new docblock annotations.
-In order to allow more involved annotation values and to reduce the
-chances of clashes with other docblock annotations, the Doctrine
-docblock annotations feature an alternative syntax that is heavily
-inspired by the Annotation syntax introduced in Java 5.
-
-The implementation of these enhanced docblock annotations is located in
-the ``doctrine/annotations`` package, but in the
-``Doctrine\Common\Annotations`` namespace for backwards compatibility
-reasons. Note that ``doctrine/annotations`` is not required by Doctrine
-MongoDB ODM, and you will need to require that package if you want to use
-annotations. Doctrine MongoDB ODM docblock annotations support namespaces and
-nested annotations among other things. The Doctrine MongoDB ODM defines its
-own set of docblock annotations for supplying object-relational mapping
-metadata.
-
-.. note::
-
-    If you're not comfortable with the concept of docblock
-    annotations, don't worry, as mentioned earlier Doctrine provides
-    XML alternative and you could easily implement your own
-    favorite mechanism for defining ODM metadata.
+@TODO intoduce PHP attributes
 
 Persistent classes
 ------------------
 
 In order to mark a class for object-relational persistence it needs
 to be designated as a document. This can be done through the
-``@Document`` marker annotation.
+``#[Document]`` marker attribute.
 
 .. configuration-block::
 
@@ -81,7 +48,7 @@ to be designated as a document. This can be done through the
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
         }
@@ -110,7 +77,7 @@ option as follows:
 
         namespace Documents;
 
-        /** @Document(db="my_db", collection="users") */
+        #[Document(db: 'my_db', collection: 'users')]
         class User
         {
         }
@@ -252,7 +219,7 @@ Identifiers
 ~~~~~~~~~~~
 
 Every document class needs an identifier. You designate the field
-that serves as the identifier with the ``@Id`` marker annotation.
+that serves as the identifier with the ``#[Id]`` marker attribute.
 Here is an example:
 
 .. configuration-block::
@@ -263,10 +230,10 @@ Here is an example:
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
-            /** @Id */
+            #[Id]
             private $id;
         }
 
@@ -300,10 +267,10 @@ Here is an example how to manually set a string identifier for your documents:
 
         <?php
 
-        /** Document */
+        #[Document]
         class MyPersistentClass
         {
-            /** @Id(strategy="NONE", type="string") */
+            #[Id(strategy: 'NONE', type: 'string')]
             private $id;
 
             public function setId(string $id): void
@@ -378,10 +345,10 @@ Then specify the ``class`` option for the ``CUSTOM`` strategy:
 
         <?php
 
-        /** Document */
+        #[Document]
         class MyPersistentClass
         {
-            /** @Id(strategy="CUSTOM", type="string", options={"class"="Vendor\Specific\Generator"}) */
+            #[Id(strategy: 'CUSTOM', type: 'string', options: ['class' => 'Vendor\\Specific\\Generator'])]
             private $id;
 
             public function setId(string $id): void
@@ -409,8 +376,8 @@ Then specify the ``class`` option for the ``CUSTOM`` strategy:
 Fields
 ~~~~~~
 
-To mark a property for document persistence the ``@Field`` docblock
-annotation can be used. This annotation usually requires at least 1
+To mark a property for document persistence the ``#[Field]`` docblock
+attribute can be used. This attribute usually requires at least 1
 attribute to be set, the ``type``. The ``type`` attribute specifies
 the Doctrine Mapping Type to use for the field. If the type is not
 specified, 'string' is used as the default mapping type since it is
@@ -426,12 +393,12 @@ Example:
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ...
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             private $username;
         }
 
@@ -453,7 +420,7 @@ using the mapping type ``id`` and the property ``name`` is mapped
 to the field ``name`` with the default mapping type ``string``. As
 you can see, by default the mongo field names are assumed to be the
 same as the property names. To specify a different name for the
-field, you can use the ``name`` attribute of the Field annotation
+field, you can use the ``name`` attribute of the Field attribute
 as follows:
 
 .. configuration-block::
@@ -462,7 +429,7 @@ as follows:
 
         <?php
 
-        /** @Field(name="db_name") */
+        #[Field(name: 'db_name')]
         private $name;
 
     .. code-block:: xml
@@ -481,21 +448,18 @@ the collection. Here is an example:
 
     <?php
 
-    /**
-     * @Document(collection="my_documents")
-     * @DiscriminatorField("type")
-     * @DiscriminatorMap({"article"=Article::class, "album"=Album::class})
+    #[Document(collection: 'my_documents')]
+    #[DiscriminatorField('type')]
+    #[DiscriminatorMap(['article' => Article::class, 'album' => Album::class])]
      */
     class Article
     {
         // ...
     }
 
-    /**
-     * @Document(collection="my_documents")
-     * @DiscriminatorField("type")
-     * @DiscriminatorMap({"article"=Article::class, "album"=Album::class})
-     */
+    #[Document(collection: 'my_documents')]
+    #[DiscriminatorField('type')]
+    #[DiscriminatorMap(['article' => Article::class, 'album' => Album::class])]
     class Album
     {
         // ...

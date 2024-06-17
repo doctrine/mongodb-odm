@@ -49,9 +49,7 @@ A Customer document:
     use Acme\CustomerModule\Document\Customer as BaseCustomer;
     use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
 
-    /**
-     * @ODM\Document
-     */
+    #[ODM\Document]
     class Customer extends BaseCustomer implements InvoiceSubjectInterface
     {
         // In our example, any methods defined in the InvoiceSubjectInterface
@@ -70,16 +68,11 @@ An Invoice document:
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
     use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
 
-    /**
-     * @ODM\Document
-     */
+    #[ODM\Document]
     class Invoice
     {
-        /**
-         * @ODM\ReferenceOne(targetDocument=Acme\InvoiceModule\Model\InvoiceSubjectInterface::class)
-         * @var InvoiceSubjectInterface
-         */
-        protected $subject;
+        #[ReferenceOne(targetDocument: \Acme\InvoiceModule\Model\InvoiceSubjectInterface::class)]
+        protected InvoiceSubjectInterface $subject;
     }
 
 An InvoiceSubjectInterface:

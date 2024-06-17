@@ -30,31 +30,29 @@ querying by the BlogPost's ID.
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @ReferenceMany(targetDocument=Comment::class, mappedBy="blogPost") */
+        #[ReferenceMany(targetDocument: Comment::class, mappedBy: 'blogPost')]
         private $comments;
 
-        /**
-         * @ReferenceMany(
-         *      targetDocument=Comment::class,
-         *      mappedBy="blogPost",
-         *      sort={"date"="desc"},
-         *      limit=5
-         * )
-         */
+        #[ReferenceMany(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             sort: ['date' => 'desc'],
+             limit: 5,
+        )
         private $last5Comments;
     }
 
-    /** @Document */
+    #[Document]
     class Comment
     {
         // ...
 
-        /** @ReferenceOne(targetDocument=BlogPost::class, inversedBy="comments") */
+        #[ReferenceOne(targetDocument: BlogPost::class, inversedBy: 'comments')]
         private $blogPost;
     }
 
@@ -65,13 +63,11 @@ following example:
 
     <?php
 
-    /**
-     * @ReferenceOne(
-     *      targetDocument=Comment::class,
-     *      mappedBy="blogPost",
-     *      sort={"date"="desc"}
-     * )
-     */
+    #[ReferenceOne(
+         targetDocument: Comment::class,
+         mappedBy: 'blogPost',
+         sort: ['date' => 'desc']
+    )
     private $lastComment;
 
 ``criteria`` Example
@@ -85,13 +81,11 @@ administrators:
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *      targetDocument=Comment::class,
-     *      mappedBy="blogPost",
-     *      criteria={"isByAdmin" : true}
-     * )
-     */
+    #[ReferenceMany(
+         targetDocument: Comment::class,
+         mappedBy: 'blogPost',
+         criteria: ['isByAdmin' => true]
+    )]
     private $commentsByAdmin;
 
 ``repositoryMethod`` Example
@@ -104,13 +98,11 @@ call on the Comment repository class to populate the reference.
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *      targetDocument=Comment::class,
-     *      mappedBy="blogPost",
-     *      repositoryMethod="findSomeComments"
-     * )
-     */
+    #[ReferenceMany(
+         targetDocument: Comment::class,
+         mappedBy: 'blogPost',
+         repositoryMethod: 'findSomeComments',
+    )]
     private $someComments;
 
 The ``Comment`` class will need to have a custom repository class configured:
@@ -119,7 +111,7 @@ The ``Comment`` class will need to have a custom repository class configured:
 
     <?php
 
-    /** @Document(repositoryClass="CommentRepository") */
+    #[Document(repositoryClass: 'CommentRepository')]
     class Comment
     {
         // ...

@@ -56,7 +56,7 @@ code, enforcing it at any time is important so that customers with
 a unknown reputation don't owe your business too much money.
 
 We can enforce this constraint in any of the metadata drivers.
-First Annotations:
+First Attributes:
 
 .. configuration-block::
 
@@ -64,10 +64,12 @@ First Annotations:
 
         <?php
 
-        /** @Document @HasLifecycleCallbacks */
+        #[Document]
+        #[HasLifecycleCallbacks]
         class Order
         {
-            /** @PrePersist @PreUpdate */
+            #[PrePersist]
+            #[PreUpdate]
             public function assertCustomerAllowedBuying(): void {}
         }
 
@@ -96,10 +98,12 @@ validation callbacks.
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Order
     {
-        /** @PrePersist @PreUpdate */
+        #[PrePersist]
+        #[PreUpdate]
         public function validate(): void
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
@@ -146,8 +150,8 @@ insertions and updates through a schema associated to the collection
 (cf. `MongoDB documentation <https://docs.mongodb.com/manual/core/schema-validation/>`_).
 
 Doctrine MongoDB ODM now provides a way to take advantage of this functionality
-thanks to the new :doc:`@Validation <../reference/annotations-reference#validation>`
-annotation and its properties (also available with XML mapping):
+thanks to the new :doc:`#[Validation] <../reference/attributes-reference#validation>`
+attribute and its properties (also available with XML mapping):
 
 -
   ``validator`` - The schema that will be used to validate documents.
@@ -174,14 +178,12 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
         use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-        /**
-         * @ODM\Document
-         * @ODM\Validation(
-         *     validator=SchemaValidated::VALIDATOR,
-         *     action=ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
-         *     level=ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
-         * )
-         */
+        #[ODM\Document]
+        #[ODM\Validation(
+            validator: self::VALIDATOR,
+            action: ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+            level: ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+        )]
         class SchemaValidated
         {
             public const VALIDATOR = <<<'EOT'
@@ -203,19 +205,19 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
         }
         EOT;
 
-            /** @ODM\Id */
+            #[ODM\Id]
             private $id;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $name;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $phone;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $email;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $status;
         }
 
@@ -249,5 +251,5 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
             </document>
         </doctrine-mongo-mapping>
 
-Please refer to the :doc:`@Validation <../reference/annotations-reference#document>` annotation reference
+Please refer to the :doc:`#[Validation] <../reference/attributes-reference#document>` attributes reference
 for more details on how to use this feature.

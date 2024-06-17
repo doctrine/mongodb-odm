@@ -87,7 +87,7 @@ type in your mapping like this:
 
         class MyPersistentClass
         {
-            /** @Field(type="mytype") */
+            #[Field(type: 'mytype')]
             private $field;
         }
 

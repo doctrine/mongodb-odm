@@ -70,37 +70,37 @@ You can provide your mapping information in Annotations or XML:
         <?php
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-        /** @ODM\Document */
+        #[ODM\Document]
         class User
         {
-            /** @ODM\Id */
+            #[ODM\Id]
             private $id;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $name;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $email;
 
-            /** @ODM\ReferenceMany(targetDocument=BlogPost::class, cascade="all") */
+            #[ODM\ReferenceMany(targetDocument: BlogPost::class, cascade: 'all')]
             private $posts = [];
 
             // ...
         }
 
-        /** @ODM\Document */
+        #[ODM\Document]
         class BlogPost
         {
-            /** @ODM\Id */
+            #[ODM\Id]
             private $id;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $title;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $body;
 
-            /** @ODM\Field(type="date") */
+            #[ODM\Field(type: 'date')]
             private $createdAt;
 
             // ...

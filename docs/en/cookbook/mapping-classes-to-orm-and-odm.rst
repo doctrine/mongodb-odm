@@ -49,16 +49,17 @@ First define the mapping for the ORM:
 
         use Documents\Blog\Repository\ORM\BlogPostRepository;
 
-        /** @Entity(repositoryClass=BlogPostRepository::class) */
+        #[Entity(repositoryClass: BlogPostRepository::class)]
         class BlogPost
         {
-            /** @Id @Column(type="int") */
+            #[Id]
+            #[Column(type: 'int')]
             private $id;
 
-            /** @Column(type="string") */
+            #[Column(type: 'string')]
             private $title;
 
-            /** @Column(type="text") */
+            #[Column(type: 'text')]
             private $body;
 
             // ...
@@ -114,16 +115,16 @@ Now map the same class to the Doctrine MongoDB ODM:
 
         use Documents\Blog\Repository\ODM\BlogPostRepository;
 
-        /** @Document(repositoryClass=BlogPostRepository::class) */
+        #[Document(repositoryClass: BlogPostRepository::class)]
         class BlogPost
         {
-            /** @Id */
+            #[Id]
             private $id;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             private $title;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             private $body;
 
             // ...

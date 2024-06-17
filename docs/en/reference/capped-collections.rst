@@ -14,7 +14,7 @@ Mapping
 -------
 
 You can configure the collection in the ``collection`` attribute of
-the ``@Document`` annotation:
+the ``#[Document]`` attribute:
 
 .. configuration-block::
 
@@ -22,20 +22,18 @@ the ``@Document`` annotation:
 
         <?php
 
-        /**
-         * @Document(collection={
-         *   "name"="collname",
-         *   "capped"=true,
-         *   "size"=100000,
-         *   "max"=1000
-         * })
-         */
+        #[Document(collection: [
+          'name' => 'collname',
+          'capped' => true,
+          'size' => 100000,
+          'max' => 1000,
+        ])]
         class Category
         {
-            /** @Id */
+            #[Id]
             public $id;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             public $name;
         }
 

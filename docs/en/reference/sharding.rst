@@ -17,20 +17,18 @@ the document as well as an appropriate index:
 
         <?php
 
-        /**
-         * @Document
-         * @Indexes(@Index(keys={"username"="asc"}))
-         * @ShardKey(keys={"username"="asc"})
-         */
+        #[Document]
+        #Index(keys: ['username' => 'asc'])]
+        #[ShardKey(keys: ['username' => 'asc'])]
         class User
         {
-            /** @Id */
+            #[Id]
             public $id;
 
-            /** @Field(type="int") */
+            #[Field(type: 'int')]
             public $accountId;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             public $username;
         }
 
