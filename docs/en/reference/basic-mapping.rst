@@ -31,7 +31,20 @@ document mapping metadata:
 Introduction to Attributes
 --------------------------
 
-@TODO intoduce PHP attributes
+`PHP attributes <https://www.php.net/manual/en/language.attributes.overview.php>`_
+are a PHP 8+ feature that provides a native way to add metadata to classes,
+methods, properties, and other language constructs. They replace doctrine
+annotations by offering a standardized approach to metadata, eliminating
+the need for the separate parsing library required by annotations.
+
+In this documentation we follow the `PER Coding Style <https://www.php-fig.org/per/coding-style/#12-attributes>`_
+for attributes. We use named arguments for attributes as they argument names
+or attribute classes constructors are covered by Doctrine Backward-Compatibility promise.
+
+.. note::
+
+    Doctrine Annotations are deprecated. You can migrate to PHP Attributes
+    automatically `using Rector <https://getrector.com/blog/how-to-upgrade-annotations-to-attributes>`_.
 
 Persistent classes
 ------------------
