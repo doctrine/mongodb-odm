@@ -356,18 +356,21 @@ transaction and will see data that has not been committed yet.
 
     <?php
 
-    public function someEventListener(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
+    class EventTest
     {
-        // To check if a transaction is active:
-        if ($eventArgs->isInTransaction()) {
-            // Do something
-        }
+        public function someEventListener(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
+        {
+            // To check if a transaction is active:
+            if ($eventArgs->isInTransaction()) {
+                // Do something
+            }
 
-        // Pass the session to any query you execute
-        $eventArgs->getDocumentManager()->createQueryBuilder(User::class)
-            // Query logic
-            ->getQuery(['session' => $eventArgs->session])
-            ->execute();
+            // Pass the session to any query you execute
+            $eventArgs->getDocumentManager()->createQueryBuilder(User::class)
+                // Query logic
+                ->getQuery(['session' => $eventArgs->session])
+                ->execute();
+        }
     }
 
 .. note::

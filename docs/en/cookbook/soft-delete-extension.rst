@@ -198,7 +198,7 @@ You just need to setup an event listener like the following:
             $sdm = $args->getSoftDeleteManager();
             $document = $args->getDocument();
             if ($document instanceof User) {
-                $sdm->deleteBy(Post:class, ['user.id' => $document->getId()]);
+                $sdm->deleteBy(Post::class, ['user.id' => $document->getId()]);
             }
         }
 

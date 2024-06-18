@@ -149,6 +149,7 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
     require_once('path/to/vendor/autoload.php');
 
@@ -157,7 +158,7 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
     $config->setProxyNamespace('Proxies');
     $config->setHydratorDir('/path/to/generate/hydrators');
     $config->setHydratorNamespace('Hydrators');
-    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
+    $config->setMetadataDriverImpl(AttributeDriver::create('/path/to/document/classes'));
 
     $dm = DocumentManager::create(null, $config);
 

@@ -12,9 +12,9 @@ Doctrine provides a few different ways for you to specify your
 metadata:
 
 -  **XML files** (XmlDriver)
--  **Class DocBlock Annotations** (AnnotationDriver)
 -  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
+-  ~**Class DocBlock Annotations**~ (AnnotationDriver is deprecated)
 
 Something important to note about the above drivers is they are all
 an intermediate step to the same end result. The mapping

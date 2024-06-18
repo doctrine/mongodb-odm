@@ -44,7 +44,7 @@ Mapping documents as GridFS files
     use Doctrine\ODM\MongoDB\Mapping\Annotations\File;
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 
-    #[File(bucketName='image')]
+    #[File(bucketName: 'image')]
     class Image
     {
         #[Id]
@@ -219,7 +219,7 @@ uploading:
     $stream = fopen('tmp/path/to/copy', 'w+');
     try {
         $repository->downloadToStream($file->getId(), $stream);
-    finally {
+    } finally {
         fclose($stream);
     }
 
@@ -246,7 +246,7 @@ a stream from where you can read file contents:
     $stream = $repository->openDownloadStream($file->getId());
     try {
         $contents = stream_get_contents($stream);
-    finally {
+    } finally {
         fclose($stream);
     }
 

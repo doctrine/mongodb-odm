@@ -121,7 +121,8 @@ You can setup a ``Keyword`` document like the following:
     #[EmbeddedDocument]
     class Keyword
     {
-        #[Field(type: 'string') @Index]
+        #[Field(type: 'string')]
+        #[Index]
         private $keyword;
 
         #[Field(type: 'int')]

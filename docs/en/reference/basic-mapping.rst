@@ -361,7 +361,7 @@ Then specify the ``class`` option for the ``CUSTOM`` strategy:
         #[Document]
         class MyPersistentClass
         {
-            #[Id(strategy: 'CUSTOM', type: 'string', options: ['class' => 'Vendor\\Specific\\Generator'])]
+            #[Id(strategy: 'CUSTOM', type: 'string', options: ['class' => \Vendor\Specific\Generator::class])]
             private $id;
 
             public function setId(string $id): void
@@ -464,7 +464,6 @@ the collection. Here is an example:
     #[Document(collection: 'my_documents')]
     #[DiscriminatorField('type')]
     #[DiscriminatorMap(['article' => Article::class, 'album' => Album::class])]
-     */
     class Article
     {
         // ...

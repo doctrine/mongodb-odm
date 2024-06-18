@@ -321,9 +321,7 @@ referenced documents. You must explicitly enable this functionality:
 
         <?php
 
-        /**
-         * @ReferenceOne(targetDocument=Profile::class, cascade={"persist"})
-         */
+        #[ReferenceOne(targetDocument: Profile::class, cascade: ['persist'])]
         private $profile;
 
     .. code-block:: xml

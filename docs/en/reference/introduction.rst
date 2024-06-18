@@ -350,7 +350,7 @@ we'll use:
 
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
-    use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
 The first bit of code will be to import Composer's autoloader, so these classes
 can actually be loaded:
@@ -431,7 +431,7 @@ more paths) and register the attributes for the driver:
 
     $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/Documents'));
 
-    require_once __DIR__ . '/vendor/autoload.php');
+    require_once __DIR__ . '/vendor/autoload.php';
 
 At this point, we have everything necessary to construct a ``DocumentManager``:
 
@@ -451,7 +451,7 @@ The final ``bootstrap.php`` file should look like this:
 
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
-    use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
     if ( ! file_exists($file = __DIR__.'/vendor/autoload.php')) {
         throw new RuntimeException('Install dependencies to run this script.');
@@ -465,7 +465,7 @@ The final ``bootstrap.php`` file should look like this:
     $config->setHydratorDir(__DIR__ . '/Hydrators');
     $config->setHydratorNamespace('Hydrators');
     $config->setDefaultDB('doctrine_odm');
-    $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/Documents'));
+    $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/Documents'));
 
     $dm = DocumentManager::create(null, $config);
 

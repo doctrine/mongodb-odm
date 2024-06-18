@@ -43,7 +43,7 @@ querying by the BlogPost's ID.
              mappedBy: 'blogPost',
              sort: ['date' => 'desc'],
              limit: 5,
-        )
+        )]
         private $last5Comments;
     }
 
@@ -63,12 +63,15 @@ following example:
 
     <?php
 
-    #[ReferenceOne(
-         targetDocument: Comment::class,
-         mappedBy: 'blogPost',
-         sort: ['date' => 'desc']
-    )
-    private $lastComment;
+    class BlogPost
+    {
+        #[ReferenceOne(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             sort: ['date' => 'desc']
+        )]
+        private $lastComment;
+    }
 
 ``criteria`` Example
 --------------------
@@ -81,12 +84,15 @@ administrators:
 
     <?php
 
-    #[ReferenceMany(
-         targetDocument: Comment::class,
-         mappedBy: 'blogPost',
-         criteria: ['isByAdmin' => true]
-    )]
-    private $commentsByAdmin;
+    class BlogPost
+    {
+        #[ReferenceMany(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             criteria: ['isByAdmin' => true]
+        )]
+        private $commentsByAdmin;
+    }
 
 ``repositoryMethod`` Example
 ----------------------------
@@ -98,12 +104,15 @@ call on the Comment repository class to populate the reference.
 
     <?php
 
-    #[ReferenceMany(
-         targetDocument: Comment::class,
-         mappedBy: 'blogPost',
-         repositoryMethod: 'findSomeComments',
-    )]
-    private $someComments;
+    class BlogPost
+    {
+        #[ReferenceMany(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             repositoryMethod: 'findSomeComments',
+        )]
+        private $someComments;
+    }
 
 The ``Comment`` class will need to have a custom repository class configured:
 
@@ -133,7 +142,7 @@ is called to populate the reference, Doctrine will provide the Blogpost instance
         public function findSomeComments(BlogPost $blogPost): Iterator
         {
             return $this->createQueryBuilder()
-                ->field('blogPost')->references($blogPost);
+                ->field('blogPost')->references($blogPost)
                 ->getQuery()->execute();
         }
     }

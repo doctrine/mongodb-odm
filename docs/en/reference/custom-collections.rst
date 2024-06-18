@@ -62,8 +62,8 @@ and ensuring that your custom class is initialized in the owning class' construc
         // ...
 
         #[EmbedMany(
-            collectionClass: SectionCollection::class
-            targetDocument: Section::class
+            collectionClass: SectionCollection::class,
+            targetDocument: Section::class,
         )]
         private $sections;
 

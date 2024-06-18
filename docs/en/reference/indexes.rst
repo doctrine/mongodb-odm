@@ -83,7 +83,7 @@ Unique Index
             public $id;
 
             #[Field(type: 'string')]
-            #[Index(unique:true, order: 'asc')]
+            #[Index(unique: true, order: 'asc')]
             public $username;
         }
 

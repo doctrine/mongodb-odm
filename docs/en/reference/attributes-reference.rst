@@ -14,9 +14,12 @@ does not exist.
 
     <?php
 
-    #[Field(type: 'string')]
-    #[AlsoLoad('name')]
-    public $fullName;
+    class User
+    {
+        #[Field(type: 'string')]
+        #[AlsoLoad('name')]
+        public $fullName;
+    }
 
 The ``$fullName`` property will be loaded from ``fullName`` if it exists, but
 fall back to ``name`` if it does not exist. If multiple fall back fields are
@@ -30,10 +33,13 @@ will be invoked with the first value found as its single argument.
 
     <?php
 
-    #[AlsoLoad({"name", "fullName"})]
-    public function populateFirstAndLastName(string $name): void
+    class User
     {
-        list($this->firstName, $this->lastName) = explode(' ', $name);
+        #[AlsoLoad(['name', 'fullName'])]
+        public function populateFirstAndLastName(string $name): void
+        {
+            list($this->firstName, $this->lastName) = explode(' ', $name);
+        }
     }
 
 For additional information on using `#[AlsoLoad]`_, see
@@ -159,16 +165,15 @@ Optional attributes:
 
     <?php
 
-    #[Document(]
+    #[Document(
         db: 'documents',
         collection: 'users',
-        repositoryClass :'MyProject\UserRepository',
-        indexes: {
-            new Index(keys: ['username'='desc'}, options={'unique'=true})
-        },
-        readOnly=true,
-     * )
-     */
+        repositoryClass: MyProject\UserRepository::class,
+        indexes: [
+            new Index(keys: ['username' => 'desc'], options: ['unique' => true])
+        ],
+        readOnly: true,
+    )]
     class User
     {
         //...
@@ -210,16 +215,19 @@ Optional attributes:
 
     <?php
 
-    #[EmbedMany(
-        strategy:'set',
-        discriminatorField:'type',
-        discriminatorMap: [
-            'book' => Documents\BookTag::class,
-            'song' => Documents\SongTag::class,
-        ],
-        defaultDiscriminatorValue: 'book',
-    )]
-    private $tags = [];
+    class User
+    {
+        #[EmbedMany(
+            strategy:'set',
+            discriminatorField:'type',
+            discriminatorMap: [
+                'book' => Documents\BookTag::class,
+                'song' => Documents\SongTag::class,
+            ],
+            defaultDiscriminatorValue: 'book',
+        )]
+        private $tags = [];
+    }
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
 will be stored in the ``type`` field and used to reconstruct the proper class
@@ -263,15 +271,18 @@ Optional attributes:
 
     <?php
 
-    #[EmbedOne(
-         discriminatorField: 'type',
-         discriminatorMap: [
-             'user' => Documents\User::class,
-             'author' => Documents\Author::class,
-         ],
-         defaultDiscriminatorValue: 'user',
-     )
-    private $creator;
+    class Thing
+    {
+        #[EmbedOne(
+             discriminatorField: 'type',
+             discriminatorMap: [
+                 'user' => Documents\User::class,
+                 'author' => Documents\Author::class,
+             ],
+             defaultDiscriminatorValue: 'user',
+        )]
+        private $creator;
+    }
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
 will be stored in the ``type`` field and used to reconstruct the proper class
@@ -292,7 +303,7 @@ relationship.
     #[EmbeddedDocument]
     class Money
     {
-        #[Field(type: float')]
+        #[Field(type: 'float')]
         private $amount;
 
         public function __construct(float $amount)
@@ -359,14 +370,18 @@ Examples:
 
     <?php
 
-    #[Field(type: 'string')]
-    protected $username;
+    #[Document]
+    class User
+    {
+        #[Field(type: 'string')]
+        protected $username;
 
-    #[Field(type: 'string', name: 'co')]
-    protected $country;
+        #[Field(type: 'string', name: 'co')]
+        protected $country;
 
-    #[Field(type: 'float')]
-    protected $height;
+        #[Field(type: 'float')]
+        protected $height;
+    }
 
 .. _file:
 
@@ -531,9 +546,13 @@ If you are creating a single-field index, you can simply specify an `#[Index]`_ 
 
     <?php
 
-    #[Field(type: 'string')]
-    #[UniqueIndex]
-    private $username;
+    #[Document]
+    class User
+    {
+        #[Field(type: 'string')]
+        #[UniqueIndex]
+        private $username;
+    }
 
 .. note::
 
@@ -561,7 +580,7 @@ attributes on a class level.
 
     #[Document]
     #[Indexes([
-        new Index(keys: ['username' => 'desc'], options => ['unique' => true]),
+        new Index(keys: ['username' => 'desc'], options: ['unique' => true]),
     ])]
     class User
     {
@@ -607,9 +626,13 @@ This is only compatible with the ``int`` type, and cannot be combined with `#[Id
 
     <?php
 
-    #[Field(type: int')]
-    #[Lock]
-    private $lock;
+    #[Document]
+    class Thing
+    {
+        #[Field(type: 'int')]
+        #[Lock]
+        private $lock;
+    }
 
 #[MappedSuperclass]
 -------------------
@@ -954,19 +977,22 @@ Optional attributes:
 
     <?php
 
-    #[ReferenceMany(
-        strategy: 'set',
-        targetDocument: Documents\Item::class,
-        cascade: 'all',
-        sort: ['sort_field' => 'asc']
-        discriminatorField: 'type',
-        discriminatorMap: [
-            'book' => Documents\BookItem::class,
-            'song' => Documents\SongItem::class
-        ],
-        defaultDiscriminatorValue: 'book',
-    )
-    private $cart;
+    class User
+    {
+        #[ReferenceMany(
+            strategy: 'set',
+            targetDocument: Documents\Item::class,
+            cascade: 'all',
+            sort: ['sort_field' => 'asc'],
+            discriminatorField: 'type',
+            discriminatorMap: [
+                'book' => Documents\BookItem::class,
+                'song' => Documents\SongItem::class,
+            ],
+            defaultDiscriminatorValue: 'book',
+        )]
+        private $cart;
+    }
 
 .. _attributes_reference_reference_one:
 
@@ -1023,17 +1049,20 @@ Optional attributes:
 
     <?php
 
-    #[ReferenceOne(
-        targetDocument: Documents\Item::class,
-        cascade: 'all',
-        discriminatorField: 'type',
-        discriminatorMap: [
-            'book' => Documents\BookItem::class,
-            'song' => Documents\SongItem::class,
-        ],
-        defaultDiscriminatorValue: 'book'
-    )
-    private $cart;
+    class User
+    {
+        #[ReferenceOne(
+            targetDocument: Documents\Item::class,
+            cascade: 'all',
+            discriminatorField: 'type',
+            discriminatorMap: [
+                'book' => Documents\BookItem::class,
+                'song' => Documents\SongItem::class,
+            ],
+            defaultDiscriminatorValue: 'book'
+        )]
+        private $cart;
+    }
 
 #[SearchIndex]
 --------------
@@ -1115,9 +1144,12 @@ Alias of `#[Index]`_, with the ``unique`` option set by default.
 
     <?php
 
-    #[Field(type: 'string')]
-    #[UniqueIndex]
-    private $email;
+    class User
+    {
+        #[Field(type: 'string')]
+        #[UniqueIndex]
+        private $email;
+    }
 
 .. _attributes_reference_version:
 
@@ -1222,9 +1254,12 @@ combined with `#[Id]`_. Following ODM types can be used for versioning: ``int``,
 
     <?php
 
-    #[Field(type: 'int')]
-    #[Version]
-    private $version;
+    class Thing
+    {
+        #[Field(type: 'int')]
+        #[Version]
+        private $version;
+    }
 
 By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and
 :ref:`reference-many <reference_many>` collections in separate write operations,
