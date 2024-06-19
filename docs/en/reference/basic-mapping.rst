@@ -287,7 +287,7 @@ object ID. The available strategies are:
 
 - ``AUTO`` - Uses the native generated ObjectId.
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
-- ``CUSTOM`` - Defers generation to a AbstractIdGenerator implementation specified in the ``class`` option.
+- ``CUSTOM`` - Defers generation to an implementation of ``IdGenerator`` specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
 - ``UUID`` - Generates a UUID identifier.
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
@@ -349,9 +349,28 @@ Now you can retrieve the document later:
 
     $document = $dm->find(MyPersistentClass::class, 'my_unique_identifier');
 
-You can define your own ID generator by extending the
-``Doctrine\ODM\MongoDB\Id\AbstractIdGenerator`` class and specifying the class
-as an option for the ``CUSTOM`` strategy:
+You can define your own ID generator by implementing the
+``Doctrine\ODM\MongoDB\Id\IdGenerator`` interface:
+
+.. code-block:: php
+
+    <?php
+
+    namespace Vendor\Specific;
+
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Id\IdGenerator;
+
+    class Generator implements IdGenerator
+    {
+        public function generate(DocumentManager $dm, object $document)
+        {
+            // Your own logic here
+            return 'my_generated_id';
+        }
+    }
+
+Then specify the ``class`` option for the ``CUSTOM`` strategy:
 
 .. configuration-block::
 
