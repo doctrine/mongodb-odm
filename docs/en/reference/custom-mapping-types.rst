@@ -94,3 +94,6 @@ type in your mapping like this:
     .. code-block:: xml
 
         <field field-name="field" type="mytype" />
+
+.. |FQCN| raw:: html
+  <abbr title="Fully-Qualified Class Name">FQCN</abbr>
