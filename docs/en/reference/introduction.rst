@@ -1,24 +1,42 @@
 Introduction
 ============
 
-Doctrine MongoDB Object Document Mapper is built for PHP 5.3.0+ and
-provides transparent persistence for PHP objects to the popular `MongoDB`_ database by `10gen`_.
+What is Doctrine MongoDB ODM?
+-----------------------------
+
+Doctrine MongoDB ODM (Object Document Mapper) is a PHP 8.1+ library that provides
+an abstraction layer to work with `MongoDB`_ documents in PHP applications.
+It allows developers to map PHP objects to MongoDB documents, enabling an
+intuitive and structured approach to handling data within a MongoDB database.
 
 Features Overview
 -----------------
 
--  Transparent persistence.
--  Map one or many embedded documents.
--  Map one or many referenced documents.
--  Create references between documents in different databases.
--  Map documents with Attributes, XML or plain old PHP code.
--  Documents can be stored in GridFS buckets.
--  Collection per class(concrete) and single collection inheritance supported.
--  Map your Doctrine 2 ORM Entities to the ODM and use mixed data stores.
--  Inserts are performed using `MongoDB\Collection::insertMany() <https://docs.mongodb.com/php-library/current/reference/method/MongoDBCollection-insertMany/>`_
--  Updates are performed using atomic operators.
+-  **Object Mapping**: Map PHP objects to MongoDB documents, with support for
+   embedded and referenced documents. Mapping can be configured using PHP
+   attributes, XML, or PHP code.
+-  **Atomic Updates**: Utilizes MongoDB's atomic operators for saving changes to
+   documents, ensuring data integrity and consistency.
+-  **Schema Management**: Facilitates schema design and management, ensuring
+   that your MongoDB collections adhere to your data model, their indexes, and
+   validation rules.
+-  **Query Builder**: Provides a fluent and flexible query builder that
+   simplifies the creation of simple and complex queries.
+-  **Aggregation Framework**: Supports MongoDB's powerful aggregation framework
+   for advanced data processing and analysis.
+-  **Repositories**: Offers a repository pattern for encapsulating data access
+   logic and promotes code reusability and separation of concerns.
+-  **Events System**: Leverages an events system that allows you to hook into
+   various stages of the document lifecycle for custom behavior.
+-  **GridFS Support**: Stores large files and binary data in GridFS buckets.
+-  **Doctrine ORM Integration**: Seamlessly integrates with Doctrine ORM to
+   allow you to map your ORM entities to the ODM, and use different databases.
 
-Here is a quick example of some PHP object documents that demonstrates a few of the features:
+Example
+-------
+
+Here is a quick example of some PHP object documents that demonstrates a few of
+the features.
 
 .. code-block:: php
 
@@ -67,7 +85,7 @@ Here is a quick example of some PHP object documents that demonstrates a few of 
         public function setName(string $name): void { $this->name = $name; }
 
         public function getSalary(): ?int { return $this->salary; }
-        public function setSalary(int $salary): void { $this->salary = (int) $salary; }
+        public function setSalary(int $salary): void { $this->salary = $salary; }
 
         public function getStarted(): ?DateTime { return $this->started; }
         public function setStarted(DateTime $started) { $this->started = $started; }
@@ -158,7 +176,6 @@ Doctrine:
     use Documents\Address;
     use Documents\Project;
     use Documents\Manager;
-    use DateTime;
 
     $employee = new Employee();
     $employee->setName('Employee');
@@ -179,83 +196,55 @@ Doctrine:
     $manager->setStarted(new DateTime());
     $manager->addProject($project);
 
+    /** @var Doctrine\ODM\MongoDB\DocumentManager $dm */
     $dm->persist($employee);
     $dm->persist($address);
     $dm->persist($project);
     $dm->persist($manager);
     $dm->flush();
 
-The above would insert the following:
+The above would insert the following documents into MongoDB collections:
 
 ::
 
-    Array
-    (
-        [000000004b0a33690000000001c304c6] => Array
-            (
-                [name] => New Project
-            )
+    // Project collection
+    {
+        _id: ObjectId("..2"),
+        name: "New Project"
+    }
 
-    )
-    Array
-    (
-        [000000004b0a33660000000001c304c6] => Array
-            (
-                [changes] => 0
-                [notes] => Array
-                    (
-                    )
+    // Manager collection
+    {
+        _id: ObjectId("..3"),
+        changes: 0,
+        notes: [],
+        name: "Manager",
+        salary: 100000,
+        started: Date("2024-06-19T14:30:52.557Z"),
+        projects: [
+            {
+                $ref: "Project",
+                $id: ObjectId("..2")
+            }
+        ]
+    }
 
-                [name] => Manager
-                [salary] => 100000
-                [started] => MongoDB\Driver\BSON\UTCDateTime Object
-                    (
-                        [sec] => 1275265048
-                        [usec] => 0
-                    )
+    // Employee collection
+    {
+        _id: ObjectId("..1"),
+        changes: 0,
+        notes: [],
+        name: "Employee",
+        salary: 50000,
+        started: Date("2024-06-19T14:30:52.557Z"),
+        address: {
+            address: "555 Doctrine Rd.",
+            city: "Nashville",
+            state: "TN",
+            zipcode: "37209"
+        }
+    }
 
-                [projects] => Array
-                    (
-                        [0] => Array
-                            (
-                                [$ref] => projects
-                                [$id] => 4c0300188ead0e947a000000
-                                [$db] => my_db
-                            )
-
-                    )
-
-            )
-
-    )
-    Array
-    (
-        [000000004b0a336a0000000001c304c6] => Array
-            (
-                [changes] => 0
-                [notes] => Array
-                    (
-                    )
-
-                [name] => Employee
-                [salary] => 50000
-                [started] => MongoDB\Driver\BSON\UTCDateTime Object
-                    (
-                        [sec] => 1275265048
-                        [usec] => 0
-                    )
-
-                [address] => Array
-                    (
-                        [address] => 555 Doctrine Rd.
-                        [city] => Nashville
-                        [state] => TN
-                        [zipcode] => 37209
-                    )
-
-            )
-
-    )
 
 If we update a property and call ``->flush()`` again we'll get an
 efficient update query using the atomic operators:
@@ -266,58 +255,36 @@ efficient update query using the atomic operators:
     $newProject = new Project('Another Project');
     $manager->setSalary(200000);
     $manager->addNote('Gave user 100k a year raise');
-    $manager->incrementChanges(2);
+    $manager->incrementChanges();
     $manager->addProject($newProject);
 
     $dm->persist($newProject);
     $dm->flush();
 
-The above could would produce an update that looks something like
-this:
+The above could would produce an update to Manager's collection that looks
+something like this:
 
 ::
 
-    Array
-    (
-        [$inc] => Array
-            (
-                [changes] => 2
-            )
-
-        [$push] => Array
-            (
-                [notes] => Array
-                    (
-                        [$each] => Array
-                            (
-                                [0] => Gave user 100k a year raise
-                            )
-
-                    )
-
-                [projects] => Array
-                    (
-                        [$each] => Array
-                            (
-                                [0] => Array
-                                    (
-                                        [$ref] => projects
-                                        [$id] => 4c0310718ead0e767e030000
-                                        [$db] => my_db
-                                    )
-
-                            )
-
-                    )
-
-            )
-
-        [$set] => Array
-            (
-                [salary] => 200000
-            )
-
-    )
+    {
+        $inc: { changes: 1 },
+        $push: {
+            projects: {
+                $each: [
+                    {
+                        $ref: "Project",
+                        $id: ObjectId("..5")
+                    }
+                ]
+            }
+        },
+        $set: {
+            notes: [
+                "Gave user 100k a year raise"
+            ],
+            salary: 200000
+        },
+    }
 
 This is a simple example, but it demonstrates well that you can
 transparently persist PHP objects while still utilizing the
@@ -431,8 +398,6 @@ more paths) and register the attributes for the driver:
 
     $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/Documents'));
 
-    require_once __DIR__ . '/vendor/autoload.php';
-
 At this point, we have everything necessary to construct a ``DocumentManager``:
 
 .. code-block:: php
@@ -499,7 +464,6 @@ handle the results. If you need the client elsewhere with a different typeMap,
 please create separate clients for your application and ODM.
 
 .. _MongoDB: https://www.mongodb.com/
-.. _10gen: http://www.10gen.com
 .. _Composer: http://getcomposer.org/
 .. _tuning for production: https://ocramius.github.io/ProxyManager/docs/tuning-for-production.html
 .. _official PHP manual: https://www.php.net/manual/en/mongodb.installation.php
