@@ -42,126 +42,90 @@ the features.
 
     <?php
 
+    use DateTimeImmutable;
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-    use DateTime;
 
     #[ODM\MappedSuperclass]
     abstract class BaseEmployee
     {
         #[ODM\Id]
-        private $id;
+        public string $id;
 
         #[ODM\Field(type: 'int', strategy: 'increment')]
-        private $changes = 0;
+        public int $changes = 0;
 
+        /** @var string[] */
         #[ODM\Field(type: 'collection')]
-        private $notes = [];
+        public array $notes = [];
 
         #[ODM\Field(type: 'string')]
-        private $name;
+        public string $name;
 
         #[ODM\Field(type: 'int')]
-        private $salary;
+        public int $salary;
 
         #[ODM\Field(type: 'date')]
-        private $started;
+        public DateTimeImmutable $started;
 
         #[ODM\Field(type: 'date')]
-        private $left;
+        public DateTimeImmutable $left;
 
         #[ODM\EmbedOne(targetDocument: Address::class)]
-        private $address;
-
-        public function getId(): ?string { return $this->id; }
-
-        public function getChanges(): int { return $this->changes; }
-        public function incrementChanges(): void { $this->changes++; }
-
-        public function getNotes(): array { return $this->notes; }
-        public function addNote($note) { $this->notes[] = $note; }
-
-        public function getName(): ?string { return $this->name; }
-        public function setName(string $name): void { $this->name = $name; }
-
-        public function getSalary(): ?int { return $this->salary; }
-        public function setSalary(int $salary): void { $this->salary = $salary; }
-
-        public function getStarted(): ?DateTime { return $this->started; }
-        public function setStarted(DateTime $started) { $this->started = $started; }
-
-        public function getLeft(): ?DateTime { return $this->left; }
-        public function setLeft(DateTime $left) { $this->left = $left; }
-
-        public function getAddress(): ?Address { return $this->address; }
-        public function setAddress(Address $address): void { $this->address = $address; }
+        public Address $address;
     }
 
     #[ODM\Document]
     class Employee extends BaseEmployee
     {
         #[ODM\ReferenceOne(targetDocument: Manager::class)]
-        private $manager;
-
-        public function getManager(): ?Manager { return $this->manager; }
-        public function setManager(Manager $manager): void { $this->manager = $manager; }
+        public ?Manager $manager = null;
     }
 
     #[ODM\Document]
     class Manager extends BaseEmployee
     {
+        /** @var Collection<Project> */
         #[ODM\ReferenceMany(targetDocument: Project::class)]
-        private $projects;
+        public Collection $projects;
 
-        public function __construct() { $this->projects = new ArrayCollection(); }
-
-        public function getProjects(): Collection { return $this->projects; }
-        public function addProject(Project $project): void { $this->projects[] = $project; }
+        public function __construct()
+        {
+            $this->projects = new ArrayCollection();
+        }
     }
 
     #[ODM\EmbeddedDocument]
     class Address
     {
-        #[ODM\Field(type: 'string')]
-        private $address;
+        public function __construct(
+            #[ODM\Field(type: 'string')]
+            public string $address,
 
-        #[ODM\Field(type: 'string')]
-        private $city;
+            #[ODM\Field(type: 'string')]
+            public string $city,
 
-        #[ODM\Field(type: 'string')]
-        private $state;
+            #[ODM\Field(type: 'string')]
+            public string $state,
 
-        #[ODM\Field(type: 'string')]
-        private $zipcode;
-
-        public function getAddress(): ?string { return $this->address; }
-        public function setAddress(string $address): void { $this->address = $address; }
-
-        public function getCity(): ?string { return $this->city; }
-        public function setCity(string $city): void { $this->city = $city; }
-
-        public function getState(): ?string { return $this->state; }
-        public function setState(string $state): void { $this->state = $state; }
-
-        public function getZipcode(): ?string { return $this->zipcode; }
-        public function setZipcode(string $zipcode): void { $this->zipcode = $zipcode; }
+            #[ODM\Field(type: 'string')]
+            public string $zipcode,
+        ) {
+        }
     }
 
     #[ODM\Document]
     class Project
     {
         #[ODM\Id]
-        private $id;
+        public string $id;
 
-        #[ODM\Field(type: 'string')]
-        private $name;
-
-        public function __construct($name) { $this->name = $name; }
-
-        public function getId(): ?string { return $this->id; }
-
-        public function getName(): ?string { return $this->name; }
-        public function setName(string $name): void { $this->name = $name; }
+        public function __construct(
+            #[ODM\Field(type: 'string')]
+            public string $name,
+        ) {
+        }
     }
 
 Now those objects can be used just like you weren't using any
@@ -177,24 +141,23 @@ Doctrine:
     use Documents\Project;
     use Documents\Manager;
 
-    $employee = new Employee();
-    $employee->setName('Employee');
-    $employee->setSalary(50000);
-    $employee->setStarted(new DateTime());
+    $employee          = new Employee();
+    $employee->name    = 'Employee';
+    $employee->salary  = 50000;
+    $employee->started = new DateTimeImmutable();
+    $employee->address = new Address(
+        address: '555 Doctrine Rd.',
+        city: 'Nashville',
+        state: 'TN',
+        zipcode: '37209',
+    );
 
-    $address = new Address();
-    $address->setAddress('555 Doctrine Rd.');
-    $address->setCity('Nashville');
-    $address->setState('TN');
-    $address->setZipcode('37209');
-    $employee->setAddress($address);
-
-    $project = new Project('New Project');
-    $manager = new Manager();
-    $manager->setName('Manager');
-    $manager->setSalary(100000);
-    $manager->setStarted(new DateTime());
-    $manager->addProject($project);
+    $project          = new Project('New Project');
+    $manager          = new Manager();
+    $manager->name    = 'Manager';
+    $manager->salary  = 100_000;
+    $manager->started = new DateTimeImmutable();
+    $manager->projects->add($project);
 
     /** @var Doctrine\ODM\MongoDB\DocumentManager $dm */
     $dm->persist($employee);
@@ -252,11 +215,11 @@ efficient update query using the atomic operators:
 .. code-block:: php
 
     <?php
-    $newProject = new Project('Another Project');
-    $manager->setSalary(200000);
-    $manager->addNote('Gave user 100k a year raise');
-    $manager->incrementChanges();
-    $manager->addProject($newProject);
+    $newProject       = new Project('Another Project');
+    $manager->salary  = 200_000;
+    $manager->notes[] = 'Gave user 100k a year raise';
+    $manager->changes++;
+    $manager->projects->add($newProject);
 
     $dm->persist($newProject);
     $dm->flush();
