@@ -29,8 +29,8 @@ Features Overview
 -  **Events System**: Leverages an events system that allows you to hook into
    various stages of the document lifecycle for custom behavior.
 -  **GridFS Support**: Stores large files and binary data in GridFS buckets.
--  **Doctrine ORM Integration**: Seamlessly integrates with Doctrine ORM to
-   allow you to map your ORM entities to the ODM, and use different databases.
+-  **Doctrine ORM Integration**: Create relations between your Doctrine ORM
+   entities and ODM documents to mix SQL and MongoDB databases.
 
 Example
 -------
