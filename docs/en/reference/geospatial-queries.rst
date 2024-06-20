@@ -15,29 +15,27 @@ First, setup some documents like the following:
 
         <?php
 
-        /**
-         * @Document
-         * @Index(keys={"coordinates"="2d"})
-         */
+        #[Document]
+        #[Index(keys: ['coordinates' => '2d'])]
         class City
         {
-            /** @Id */
+            #[Id]
             public $id;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             public $name;
 
-            /** @EmbedOne(targetDocument=Coordinates::class) */
+            #[EmbedOne(targetDocument: Coordinates::class)]
             public $coordinates;
         }
 
-        /** @EmbeddedDocument */
+        #[EmbeddedDocument]
         class Coordinates
         {
-            /** @Field(type="float") */
+            #[Field(type: 'float')]
             public $x;
 
-            /** @Field(type="float") */
+            #[Field(type: 'float')]
             public $y;
         }
 

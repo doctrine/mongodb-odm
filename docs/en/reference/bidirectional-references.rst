@@ -9,21 +9,21 @@ and changes are tracked and persisted separately. Here is an example:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @ReferenceOne(targetDocument=User::class) */
+        #[ReferenceOne(targetDocument: User::class)]
         private $user;
     }
 
-    /** @Document */
+    #[Document]
     class User
     {
         // ...
 
-        /** @ReferenceMany(targetDocument=BlogPost::class) */
+        #[ReferenceMany(targetDocument: BlogPost::class)]
         private $posts;
     }
 
@@ -51,21 +51,21 @@ One to Many
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @ReferenceOne(targetDocument=User::class, inversedBy="posts") */
+        #[ReferenceOne(targetDocument: User::class, inversedBy: 'posts')]
         private $user;
     }
 
-    /** @Document */
+    #[Document]
     class User
     {
         // ...
 
-        /** @ReferenceMany(targetDocument=BlogPost::class, mappedBy="user") */
+        #[ReferenceMany(targetDocument: BlogPost::class, mappedBy: 'user')]
         private $posts;
     }
 
@@ -130,25 +130,21 @@ Here is an example where we have a one to one relationship between ``Cart`` and 
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Cart
     {
         // ...
 
-        /**
-         * @ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
-         */
+        #[ReferenceOne(targetDocument: Customer::class, inversedBy: 'cart')]
         public $customer;
     }
 
-    /** @Document */
+    #[Document]
     class Customer
     {
         // ...
 
-        /**
-         * @ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
-         */
+        #[ReferenceOne(targetDocument: Cart::class, mappedBy: 'customer')]
         public $cart;
     }
 
@@ -186,19 +182,15 @@ Self-Referencing Many to Many
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class User
     {
         // ...
 
-        /**
-         * @ReferenceMany(targetDocument=User::class, mappedBy="myFriends")
-         */
+        #[ReferenceMany(targetDocument: User::class, mappedBy: 'myFriends')]
         public $friendsWithMe;
 
-        /**
-         * @ReferenceMany(targetDocument=User::class, inversedBy="friendsWithMe")
-         */
+        #[ReferenceMany(targetDocument: User::class, inversedBy: 'friendsWithMe')]
         public $myFriends;
 
         public function __construct($name)

@@ -50,10 +50,8 @@ This policy can be configured as follows:
 
     <?php
 
-    /**
-     * @Document
-     * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
-     */
+    #[Document]
+    #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
     class User
     {
         // ...
@@ -78,13 +76,11 @@ follows:
 
     <?php
 
-    use Doctrine\Persistence\NotifyPropertyChanged,
-        Doctrine\Persistence\PropertyChangedListener;
+    use Doctrine\Persistence\NotifyPropertyChanged;
+    use Doctrine\Persistence\PropertyChangedListener;
 
-    /**
-     * @Document
-     * @ChangeTrackingPolicy("NOTIFY")
-     */
+    #[Document]
+    #[ChangeTrackingPolicy('NOTIFY')]
     class MyDocument implements NotifyPropertyChanged
     {
         // ...

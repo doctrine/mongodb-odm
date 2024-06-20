@@ -1,16 +1,11 @@
-Annotations Reference
+Attributes Reference
 =====================
 
-.. note::
-
-    To be able to use annotations, you will have to install an extra
-    package called ``doctrine/annotations``.
-
-In this chapter a reference of every Doctrine 2 ODM Annotation is
+In this chapter a reference of every Doctrine ODM Attribute is
 given with short explanations on their context and usage.
 
-@AlsoLoad
----------
+#[AlsoLoad]
+-----------
 
 Specify one or more MongoDB fields to use for loading data if the original field
 does not exist.
@@ -19,14 +14,18 @@ does not exist.
 
     <?php
 
-    /** @Field(type="string") @AlsoLoad("name") */
-    public $fullName;
+    class User
+    {
+        #[Field(type: 'string')]
+        #[AlsoLoad('name')]
+        public $fullName;
+    }
 
 The ``$fullName`` property will be loaded from ``fullName`` if it exists, but
 fall back to ``name`` if it does not exist. If multiple fall back fields are
 specified, ODM will consider them in order until the first is found.
 
-Additionally, `@AlsoLoad`_ may annotate a method with one or more field names.
+Additionally, `#[AlsoLoad]`_ may annotate a method with one or more field names.
 Before normal hydration, the field(s) will be considered in order and the method
 will be invoked with the first value found as its single argument.
 
@@ -34,28 +33,29 @@ will be invoked with the first value found as its single argument.
 
     <?php
 
-    /** @AlsoLoad({"name", "fullName"}) */
-    public function populateFirstAndLastName(string $name): void
+    class User
     {
-        list($this->firstName, $this->lastName) = explode(' ', $name);
+        #[AlsoLoad(['name', 'fullName'])]
+        public function populateFirstAndLastName(string $name): void
+        {
+            list($this->firstName, $this->lastName) = explode(' ', $name);
+        }
     }
 
-For additional information on using `@AlsoLoad`_, see
+For additional information on using `#[AlsoLoad]`_, see
 :doc:`Migrations <migrating-schemas>`.
 
-@ChangeTrackingPolicy
----------------------
+#[ChangeTrackingPolicy]
+-----------------------
 
-This annotation is used to change the change tracking policy for a document:
+This attribute is used to change the change tracking policy for a document:
 
 .. code-block:: php
 
     <?php
 
-    /**
-     * @Document
-     * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
-     */
+    #[Document]
+    #[ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
     class Person
     {
         // ...
@@ -63,10 +63,10 @@ This annotation is used to change the change tracking policy for a document:
 
 For a list of available policies, read the section on :ref:`change tracking policies <change_tracking_policies>`.
 
-@DefaultDiscriminatorValue
---------------------------
+#[DefaultDiscriminatorValue]
+----------------------------
 
-This annotation can be used when using `@DiscriminatorField`_. It will be used
+This attribute can be used when using `#[DiscriminatorField]`_. It will be used
 as a fallback value if a document has no discriminator field set. This must
 correspond to a value from the configured discriminator map.
 
@@ -74,22 +74,20 @@ correspond to a value from the configured discriminator map.
 
     <?php
 
-    /**
-     * @Document
-     * @InheritanceType("SINGLE_COLLECTION")
-     * @DiscriminatorField("type")
-     * @DiscriminatorMap({"person" = Person::class, "employee" = Employee::class})
-     * @DefaultDiscriminatorValue("person")
-     */
+    #[Document]
+    #[InheritanceType('SINGLE_COLLECTION')]
+    #[DiscriminatorField('type')]
+    #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
+    #[DefaultDiscriminatorValue('person')]
     class Person
     {
         // ...
     }
 
-@DiscriminatorField
--------------------
+#[DiscriminatorField]
+---------------------
 
-This annotation is required for the top-most class in a
+This attribute is required for the top-most class in a
 :ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
 It takes a string as its only argument, which specifies the database field to
 store a class name or key (if a discriminator map is used). ODM uses this field
@@ -99,11 +97,9 @@ during hydration to select the instantiation class.
 
     <?php
 
-    /**
-     * @Document
-     * @InheritanceType("SINGLE_COLLECTION")
-     * @DiscriminatorField("type")
-     */
+    #[Document]
+    #[InheritanceType("SINGLE_COLLECTION")]
+    #[DiscriminatorField("type")]
     class SuperUser
     {
         // ...
@@ -112,12 +108,12 @@ during hydration to select the instantiation class.
 .. note::
 
     For backwards compatibility, the discriminator field may also be specified
-    via either the ``name`` or ``fieldName`` annotation attributes.
+    via either the ``name`` or ``fieldName`` attribute.
 
-@DiscriminatorMap
------------------
+#[DiscriminatorMap]
+-------------------
 
-This annotation is required for the top-most class in a
+This attribute is required for the top-most class in a
 :ref:`single collection inheritance <single_collection_inheritance>` hierarchy.
 It takes an array as its only argument, which maps keys to class names. The
 class names must be fully qualified. Using the ``::class constant`` is supported. When
@@ -130,21 +126,19 @@ and it does not contain the class name of the persisted document, a
 
     <?php
 
-    /**
-     * @Document
-     * @InheritanceType("SINGLE_COLLECTION")
-     * @DiscriminatorField("type")
-     * @DiscriminatorMap({"person" = Person::class, "employee" = Employee::class})
-     */
+    #[Document]
+    #[InheritanceType('SINGLE_COLLECTION')]
+    #[DiscriminatorField('type')]
+    #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
     class Person
     {
         // ...
     }
 
-@Document
----------
+#[Document]
+-----------
 
-Required annotation to mark a PHP class as a document, whose persistence will be
+Required attribute to mark a PHP class as a document, whose persistence will be
 managed by ODM.
 
 Optional attributes:
@@ -159,9 +153,6 @@ Optional attributes:
 -
    ``repositoryClass`` - Specifies a custom repository class to use.
 -
-   ``indexes`` - Specifies an array of indexes for this document (deprecated,
-   specify all ``@Index`` annotations on a class level).
--
    ``readOnly`` - Prevents document from being updated: it can only be inserted,
    upserted or removed.
 -
@@ -174,26 +165,24 @@ Optional attributes:
 
     <?php
 
-    /**
-     * @Document(
-     *     db="documents",
-     *     collection="users",
-     *     repositoryClass="MyProject\UserRepository",
-     *     indexes={
-     *         @Index(keys={"username"="desc"}, options={"unique"=true})
-     *     },
-     *     readOnly=true,
-     * )
-     */
+    #[Document(
+        db: 'documents',
+        collection: 'users',
+        repositoryClass: MyProject\UserRepository::class,
+        indexes: [
+            new Index(keys: ['username' => 'desc'], options: ['unique' => true])
+        ],
+        readOnly: true,
+    )]
     class User
     {
         //...
     }
 
-@EmbedMany
-----------
+#[EmbedMany]
+------------
 
-This annotation is similar to `@EmbedOne`_, but instead of embedding one
+This attribute is similar to `#[EmbedOne]`_, but instead of embedding one
 document, it embeds a collection of documents.
 
 Optional attributes:
@@ -226,28 +215,29 @@ Optional attributes:
 
     <?php
 
-    /**
-     * @EmbedMany(
-     *     strategy="set",
-     *     discriminatorField="type",
-     *     discriminatorMap={
-     *         "book"=Documents\BookTag::class,
-     *         "song"=Documents\SongTag::class
-     *     },
-     *     defaultDiscriminatorValue="book"
-     * )
-     */
-    private $tags = [];
+    class User
+    {
+        #[EmbedMany(
+            strategy:'set',
+            discriminatorField:'type',
+            discriminatorMap: [
+                'book' => Documents\BookTag::class,
+                'song' => Documents\SongTag::class,
+            ],
+            defaultDiscriminatorValue: 'book',
+        )]
+        private $tags = [];
+    }
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
 will be stored in the ``type`` field and used to reconstruct the proper class
 during hydration. The ``type`` field need not be mapped on the embedded
 document classes.
 
-@EmbedOne
----------
+#[EmbedOne]
+-----------
 
-The `@EmbedOne`_ annotation works similarly to `@ReferenceOne`_, except that
+The `#[EmbedOne]`_ attribute works similarly to `#[ReferenceOne]`_, except that
 that document will be embedded within the parent document. Consider the
 following excerpt from the MongoDB documentation:
 
@@ -281,38 +271,39 @@ Optional attributes:
 
     <?php
 
-    /**
-     * @EmbedOne(
-     *     discriminatorField="type",
-     *     discriminatorMap={
-     *         "user"=Documents\User::class,
-     *         "author"=Documents\Author::class
-     *     },
-     *     defaultDiscriminatorValue="user"
-     * )
-     */
-    private $creator;
+    class Thing
+    {
+        #[EmbedOne(
+             discriminatorField: 'type',
+             discriminatorMap: [
+                 'user' => Documents\User::class,
+                 'author' => Documents\Author::class,
+             ],
+             defaultDiscriminatorValue: 'user',
+        )]
+        private $creator;
+    }
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
 will be stored in the ``type`` field and used to reconstruct the proper class
 during hydration. The ``type`` field need not be mapped on the embedded
 document classes.
 
-@EmbeddedDocument
------------------
+#[EmbeddedDocument]
+-------------------
 
-Marks the document as embeddable. This annotation is required for any documents
-to be stored within an `@EmbedOne`_, `@EmbedMany`_ or `@File\\Metadata`_
+Marks the document as embeddable. This attribute is required for any documents
+to be stored within an `#[EmbedOne]`_, `#[EmbedMany]`_ or `#[File\\Metadata]`_
 relationship.
 
 .. code-block:: php
 
     <?php
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Money
     {
-        /** @Field(type="float") */
+        #[Field(type: 'float')]
         private $amount;
 
         public function __construct(float $amount)
@@ -322,10 +313,10 @@ relationship.
         //...
     }
 
-    /** @Document(db="finance", collection="wallets") */
+    #[Document(db: 'finance', collection: 'wallets')]
     class Wallet
     {
-        /** @EmbedOne(targetDocument=Money::class) */
+        #[EmbedOne(targetDocument: Money::class)]
         private $money;
 
         public function setMoney(Money $money): void
@@ -344,15 +335,8 @@ Unlike normal documents, embedded documents cannot specify their own database or
 collection. That said, a single embedded document class may be used with
 multiple document classes, and even other embedded documents!
 
-Optional attributes:
-
--
-   ``indexes`` - Specifies an array of indexes for this embedded document, to be
-   included in the schemas of any embedding documents (deprecated, specify all
-   ``@Index`` annotations on a class level).
-
-@Field
-------
+#[Field]
+--------
 
 Marks an annotated instance variable for persistence. Values for this field will
 be saved to and loaded from the document store as part of the document class'
@@ -386,25 +370,23 @@ Examples:
 
     <?php
 
-    /**
-     * @Field(type="string")
-     */
-    protected $username;
+    #[Document]
+    class User
+    {
+        #[Field(type: 'string')]
+        protected $username;
 
-    /**
-     * @Field(type="string", name="co")
-     */
-    protected $country;
+        #[Field(type: 'string', name: 'co')]
+        protected $country;
 
-    /**
-     * @Field(type="float")
-     */
-    protected $height;
+        #[Field(type: 'float')]
+        protected $height;
+    }
 
 .. _file:
 
-@File
------
+#[File]
+-------
 
 This marks the document as a GridFS file. GridFS allow storing larger amounts of
 data than regular documents.
@@ -423,9 +405,6 @@ Optional attributes:
    must extend the ``Doctrine\ODM\MongoDB\Repository\GridFSRepository``
    interface.
 -
-   ``indexes`` - Specifies an array of indexes for this document (deprecated,
-   specify all ``@Index`` annotations on a class level).
--
    ``readOnly`` - Prevents the file from being updated: it can only be inserted,
    upserted or removed.
 -
@@ -434,36 +413,36 @@ Optional attributes:
 
 .. _file_chunksize:
 
-@File\ChunkSize
----------------
+#[File\ChunkSize]
+-----------------
 
 This maps the ``chunkSize`` property of a GridFS file to a property. It contains
 the size of a single file chunk in bytes. No other options can be set.
 
 .. _file_filename:
 
-@File\Filename
---------------
+#[File\Filename]
+----------------
 
 This maps the ``filename`` property of a GridFS file to a property. No other
 options can be set.
 
 .. _file_length:
 
-@File\Length
-------------
+#[File\Length]
+--------------
 
 This maps the ``length`` property of a GridFS file to a property. It contains
 the size of the entire file in bytes. No other options can be set.
 
 .. _file_metadata:
 
-@File\Metadata
---------------
+#[File\Metadata]
+----------------
 
 This maps the ``metadata`` property of a GridFS file to a property. Metadata can
 be used to store additional properties in a file. The metadata document must be
-an embedded document mapped using `@EmbeddedDocument`_.
+an embedded document mapped using `#[EmbeddedDocument]`_.
 
 Optional attributes:
 
@@ -478,36 +457,37 @@ Optional attributes:
     ``defaultDiscriminatorValue`` - A default value for ``discriminatorField``
     if no value has been set in the embedded document.
 
-@File\UploadDate
-----------------
+#[File\UploadDate]
+------------------
 
 This maps the ``uploadDate`` property of a GridFS file to a property. No other
 options can be set.
 
 .. _haslifecyclecallbacks:
 
-@HasLifecycleCallbacks
-----------------------
+#[HasLifecycleCallbacks]
+------------------------
 
-This annotation must be set on the document class to instruct Doctrine to check
-for lifecycle callback annotations on public methods. Using `@PreFlush`_,
-`@PreLoad`_, `@PostLoad`_, `@PrePersist`_, `@PostPersist`_, `@PreRemove`_,
-`@PostRemove`_, `@PreUpdate`_, or `@PostUpdate`_ on methods without this
-annotation will cause Doctrine to ignore the callbacks.
+This attribute must be set on the document class to instruct Doctrine to check
+for lifecycle callback attributes on public methods. Using `#[PreFlush]`_,
+`#[PreLoad]`_, `#[PostLoad]`_, `#[PrePersist]`_, `#[PostPersist]`_, `#[PreRemove]`_,
+`#[PostRemove]`_, `#[PreUpdate]`_, or `#[PostUpdate]`_ on methods without this
+attribute will cause Doctrine to ignore the callbacks.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class User
     {
-        /** @PostPersist */
+        #[PostPersist]
         public function sendWelcomeEmail(): void {}
     }
 
-@Id
----
+#[Id]
+-----
 
 The annotated instance variable will be marked as the document identifier. The
 default behavior is to store an `MongoDB\BSON\ObjectId`_ instance, but you may
@@ -517,19 +497,19 @@ customize this via the :ref:`strategy <basic_mapping_identifiers>` attribute.
 
     <?php
 
-    /** @Document */
+    #[Document]
     class User
     {
-        /** @Id */
+        #[Id]
         protected $id;
     }
 
-@Index
-------
+#[Index]
+--------
 
-This annotation is used  to specify indexes to be created on the
+This attribute is used  to specify indexes to be created on the
 collection (or embedding document's collection in the case of
-`@EmbeddedDocument`_). It may also be used at the property-level to define
+`#[EmbeddedDocument]`_). It may also be used at the property-level to define
 single-field indexes.
 
 Optional attributes:
@@ -538,7 +518,7 @@ Optional attributes:
     ``keys`` - Mapping of indexed fields to their ordering or index type. ODM
     will allow ``asc`` and ``desc`` to be used in place of ``1`` and ``-1``,
     respectively. Special index types (e.g. ``2dsphere``) should be specified as
-    strings. This is required when `@Index`_ is used at the class level.
+    strings. This is required when `#[Index]`_ is used at the class level.
 -
     ``options`` - Options for creating the index. Options are documented in the
     :ref:`indexes chapter <indexes>`.
@@ -552,24 +532,27 @@ ODM allows mapped field names (i.e. PHP property names) to be used when defining
 
     <?php
 
-    /**
-     * @Document
-     * @Index(keys={"username"="desc"}, options={"unique"=true})
-     */
+    #[Document]
+    #[Index(keys: ['username' => 'desc' ], options: ['unique' => true])]
     class User
     {
         //...
     }
 
-If you are creating a single-field index, you can simply specify an `@Index`_ or
-`@UniqueIndex`_ on a mapped property:
+If you are creating a single-field index, you can simply specify an `#[Index]`_ or
+`#[UniqueIndex]`_ on a mapped property:
 
 .. code-block:: php
 
     <?php
 
-    /** @Field(type="string") @UniqueIndex */
-    private $username;
+    #[Document]
+    class User
+    {
+        #[Field(type: 'string')]
+        #[UniqueIndex]
+        private $username;
+    }
 
 .. note::
 
@@ -580,36 +563,34 @@ If you are creating a single-field index, you can simply specify an `@Index`_ or
     can cause errors due to excessive index name length. In this case, try
     shortening the index name or embedded field path.
 
-@Indexes
---------
+#[Indexes]
+----------
 
 .. note::
-    The ``@Indexes`` annotation was deprecated in 2.2 and will be removed in 3.0.
-    Please move all nested ``@Index`` annotations to a class level.
+    The ``#[Indexes]`` attribute was deprecated in 2.2 and will be removed in 3.0.
+    Please move all nested ``new Index`` instances to a class level attributes.
 
-This annotation may be used at the class level to specify an array of `@Index`_
-annotations. It is functionally equivalent to specifying multiple ``@Index``
-annotations on a class level.
+This attribute may be used at the class level to specify an array of `#[Index]`_
+attributes. It is functionally equivalent to specifying multiple ``#[Index]``
+attributes on a class level.
 
 .. code-block:: php
 
     <?php
 
-    /**
-     * @Document
-     * @Indexes({
-     *   @Index(keys={"username"="desc"}, options={"unique"=true})
-     * })
-     */
+    #[Document]
+    #[Indexes([
+        new Index(keys: ['username' => 'desc'], options: ['unique' => true]),
+    ])]
     class User
     {
         //...
     }
 
-@InheritanceType
-----------------
+#[InheritanceType]
+------------------
 
-This annotation must appear on the top-most class in an
+This attribute must appear on the top-most class in an
 :ref:`inheritance hierarchy <inheritance_mapping>`. ``SINGLE_COLLECTION`` and
 ``COLLECTION_PER_CLASS`` are currently supported.
 
@@ -619,43 +600,44 @@ Examples:
 
     <?php
 
-    /**
-     * @Document
-     * @InheritanceType("COLLECTION_PER_CLASS")
-     */
+    #[Document]
+    #[InheritanceType('COLLECTION_PER_CLASS')]
     class Person
     {
         // ...
     }
 
-    /**
-     * @Document
-     * @InheritanceType("SINGLE_COLLECTION")
-     * @DiscriminatorField("type")
-     * @DiscriminatorMap({"person"=Person::class, "employee"=Employee::class})
-     */
+    #[Document]
+    #[InheritanceType('SINGLE_COLLECTION')]
+    #[DiscriminatorField('type')]
+    #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
     class Person
     {
         // ...
     }
 
-@Lock
------
+#[Lock]
+-------
 
 The annotated instance variable will be used to store lock information for :ref:`pessimistic locking <transactions_and_concurrency_pessimistic_locking>`.
-This is only compatible with the ``int`` type, and cannot be combined with `@Id`_.
+This is only compatible with the ``int`` type, and cannot be combined with `#[Id]`_.
 
 .. code-block:: php
 
     <?php
 
-    /** @Field(type="int") @Lock */
-    private $lock;
+    #[Document]
+    class Thing
+    {
+        #[Field(type: 'int')]
+        #[Lock]
+        private $lock;
+    }
 
-@MappedSuperclass
------------------
+#[MappedSuperclass]
+-------------------
 
-The annotation is used to specify classes that are parents of document classes
+The attribute is used to specify classes that are parents of document classes
 and should not be managed directly. See
 :ref:`inheritance mapping <inheritance_mapping>` for additional information.
 
@@ -663,29 +645,30 @@ and should not be managed directly. See
 
     <?php
 
-    /** @MappedSuperclass */
+    #[MappedSuperclass]
     class BaseDocument
     {
         // ...
     }
 
-@PostLoad
----------
+#[PostLoad]
+-----------
 
 Marks a method on the document class to be called on the ``postLoad`` event. The
-`@HasLifecycleCallbacks`_ annotation must be present on the same class for the
+`#[HasLifecycleCallbacks]`_ attribute must be present on the same class for the
 method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PostLoad */
+        #[PostLoad]
         public function postLoad(): void
         {
             // ...
@@ -694,23 +677,24 @@ method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PostPersist
-------------
+#[PostPersist]
+--------------
 
 Marks a method on the document class to be called on the ``postPersist`` event.
-The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+The `#[HasLifecycleCallbacks]`_ attribute must be present on the same class for
 the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PostPersist */
+        #[PostPersist]
         public function postPersist(): void
         {
             // ...
@@ -719,23 +703,24 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PostRemove
------------
+#[PostRemove]
+-------------
 
 Marks a method on the document class to be called on the ``postRemove`` event.
-The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+The `#[HasLifecycleCallbacks]`_ attribute must be present on the same class for
 the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PostRemove */
+        #[PostRemove]
         public function postRemove(): void
         {
             // ...
@@ -744,23 +729,24 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PostUpdate
------------
+#[PostUpdate]
+-------------
 
 Marks a method on the document class to be called on the ``postUpdate`` event.
-The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+The `#[HasLifecycleCallbacks]`_ attribute must be present on the same class for
 the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PostUpdate */
+        #[PostUpdate]
         public function postUpdate(): void
         {
             // ...
@@ -769,23 +755,24 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PreFlush
----------
+#[PreFlush]
+-----------
 
 Marks a method on the document class to be called on the ``preFlush`` event. The
-`@HasLifecycleCallbacks`_ annotation must be present on the same class for the
+`#[HasLifecycleCallbacks]`_ attribute must be present on the same class for the
 method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PreFlush */
+        #[PreFlush]
         public function preFlush(): void
         {
             // ...
@@ -794,11 +781,11 @@ method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PreLoad
---------
+#[PreLoad]
+----------
 
 Marks a method on the document class to be called on the ``preLoad`` event. The
-`@HasLifecycleCallbacks`_ annotation must be present on the same class for the
+`#[HasLifecycleCallbacks]`_ attribute must be present on the same class for the
 method to be registered.
 
 .. code-block:: php
@@ -807,12 +794,13 @@ method to be registered.
 
     use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PreLoad */
+        #[PreLoad]
         public function preLoad(PreLoadEventArgs $eventArgs): void
         {
             // ...
@@ -821,23 +809,24 @@ method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PrePersist
------------
+#[PrePersist]
+-------------
 
 Marks a method on the document class to be called on the ``prePersist`` event.
-The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+The `#[HasLifecycleCallbacks]`_ attribute must be present on the same class for
 the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PrePersist */
+        #[PrePersist]
         public function prePersist(): void
         {
             // ...
@@ -846,23 +835,24 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PreRemove
-----------
+#[PreRemove]
+------------
 
 Marks a method on the document class to be called on the ``preRemove`` event.
-The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+The `#[HasLifecycleCallbacks]`_ attribute must be present on the same class for
 the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PreRemove */
+        #[PreRemove]
         public function preRemove(): void
         {
             // ...
@@ -871,23 +861,24 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@PreUpdate
-----------
+#[PreUpdate]
+------------
 
 Marks a method on the document class to be called on the ``preUpdate`` event.
-The `@HasLifecycleCallbacks`_ annotation must be present on the same class for
+The `#[HasLifecycleCallbacks]`_ attribute must be present on the same class for
 the method to be registered.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Article
     {
         // ...
 
-        /** @PreUpdate */
+        #[PreUpdate]
         public function preUpdated(): void
         {
             // ...
@@ -896,8 +887,8 @@ the method to be registered.
 
 See :ref:`lifecycle_events` for more information.
 
-@ReadPreference
----------------
+#[ReadPreference]
+-----------------
 
 Specifies `Read Preference <https://docs.mongodb.com/manual/core/read-preference/>_`
 that will be applied when querying for the annotated document.
@@ -908,22 +899,20 @@ that will be applied when querying for the annotated document.
 
     namespace Documents;
 
-    /**
-     * @Document
-     * @ODM\ReadPreference("primaryPreferred", tags={
-     *   { "dc"="east" },
-     *   { "dc"="west" },
-     *   {  }
-     * })
-     */
+    #[Document]
+    #[ODM\ReadPreference('primaryPreferred', tags: [
+        [ 'dc' => 'east' ],
+        [ 'dc' => 'west' ],
+        []
+    ])]
     class User
     {
     }
 
-.. _annotations_reference_reference_many:
+.. _attributes_reference_reference_many:
 
-@ReferenceMany
---------------
+#[ReferenceMany]
+----------------
 
 Defines that the annotated instance variable holds a collection of referenced
 documents.
@@ -988,26 +977,27 @@ Optional attributes:
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *     strategy="set",
-     *     targetDocument=Documents\Item::class,
-     *     cascade="all",
-     *     sort={"sort_field": "asc"}
-     *     discriminatorField="type",
-     *     discriminatorMap={
-     *         "book"=Documents\BookItem::class,
-     *         "song"=Documents\SongItem::class
-     *     },
-     *     defaultDiscriminatorValue="book"
-     * )
-     */
-    private $cart;
+    class User
+    {
+        #[ReferenceMany(
+            strategy: 'set',
+            targetDocument: Documents\Item::class,
+            cascade: 'all',
+            sort: ['sort_field' => 'asc'],
+            discriminatorField: 'type',
+            discriminatorMap: [
+                'book' => Documents\BookItem::class,
+                'song' => Documents\SongItem::class,
+            ],
+            defaultDiscriminatorValue: 'book',
+        )]
+        private $cart;
+    }
 
-.. _annotations_reference_reference_one:
+.. _attributes_reference_reference_one:
 
-@ReferenceOne
--------------
+#[ReferenceOne]
+---------------
 
 Defines an instance variable holds a related document instance.
 
@@ -1059,24 +1049,25 @@ Optional attributes:
 
     <?php
 
-    /**
-     * @ReferenceOne(
-     *     targetDocument=Documents\Item::class,
-     *     cascade="all",
-     *     discriminatorField="type",
-     *     discriminatorMap={
-     *         "book"=Documents\BookItem::class,
-     *         "song"=Documents\SongItem::class
-     *     },
-     *     defaultDiscriminatorValue="book"
-     * )
-     */
-    private $cart;
+    class User
+    {
+        #[ReferenceOne(
+            targetDocument: Documents\Item::class,
+            cascade: 'all',
+            discriminatorField: 'type',
+            discriminatorMap: [
+                'book' => Documents\BookItem::class,
+                'song' => Documents\SongItem::class,
+            ],
+            defaultDiscriminatorValue: 'book'
+        )]
+        private $cart;
+    }
 
-@SearchIndex
-------------
+#[SearchIndex]
+--------------
 
-This annotation is used to specify :ref:`search indexes <search_indexes>` for
+This attribute is used to specify :ref:`search indexes <search_indexes>` for
 `MongoDB Atlas Search <https://www.mongodb.com/docs/atlas/atlas-search/>`__.
 
 The attributes correspond to arguments for
@@ -1121,49 +1112,51 @@ Optional attributes:
 
 .. note::
 
-    Search indexes have some notable differences from `@Index`_. They may only
+    Search indexes have some notable differences from `#[Index]`_. They may only
     be defined on document classes. Definitions will not be incorporated from
     embedded documents. Additionally, ODM will **NOT** translate field names in
     search index definitions. Database field names must be used instead of
     mapped field names (i.e. PHP property names).
 
-@ShardKey
----------
+#[ShardKey]
+-----------
 
-This annotation may be used at the class level to specify a shard key to be used
+This attribute may be used at the class level to specify a shard key to be used
 for sharding the document collection.
 
 .. code-block:: php
 
     <?php
 
-    /**
-     * @Document
-     * @ShardKey(keys={"username"="asc"})
-     */
+    #[Document]
+    #[ShardKey(keys: ['username' => 'asc'])]
     class User
     {
         //...
     }
 
-@UniqueIndex
-------------
+#[UniqueIndex]
+--------------
 
-Alias of `@Index`_, with the ``unique`` option set by default.
+Alias of `#[Index]`_, with the ``unique`` option set by default.
 
 .. code-block:: php
 
     <?php
 
-    /** @Field(type="string") @UniqueIndex */
-    private $email;
+    class User
+    {
+        #[Field(type: 'string')]
+        #[UniqueIndex]
+        private $email;
+    }
 
-.. _annotations_reference_version:
+.. _attributes_reference_version:
 
-@Validation
------------
+#[Validation]
+-------------
 
-This annotation may be used at the class level to specify the validation schema
+This attribute may be used at the class level to specify the validation schema
 for the related collection.
 
 -
@@ -1176,10 +1169,7 @@ for the related collection.
    The recommended way to fill up this property is to create a class constant
    (eg. ``::VALIDATOR``) using the
    `HEREDOC/NOWDOC syntax <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.nowdoc>`_
-   for clarity and to reference it as the annotation value.
-   Please note that if you decide to insert the schema directly in the annotation without
-   using a class constant then double quotes ``"`` have to be escaped by doubling them ``""``.
-   This method also requires that you don't prefix multiline strings by the Docblock asterisk symbol ``*``.
+   for clarity and to reference it as the attribute value.
 -
    ``action`` - Determines how MongoDB handles documents that violate
    the validation rules. Please refer to the related
@@ -1195,7 +1185,7 @@ for the related collection.
       - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR``
       - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN``
 
-   Import the ``ClassMetadata`` namespace to use those constants in your annotation.
+   Import the ``ClassMetadata`` namespace to use those constants in your attribute.
 -
    ``level`` - Determines which operations MongoDB applies the
    validation rules. Please refer to the related
@@ -1213,7 +1203,7 @@ for the related collection.
       - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT``
       - ``\Doctrine\ODM\MongoDB\Mapping\ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE``
 
-   Import the ``ClassMetadata`` namespace to use those constants in your annotation.
+   Import the ``ClassMetadata`` namespace to use those constants in your attribute.
 
 .. code-block:: php
 
@@ -1222,52 +1212,54 @@ for the related collection.
     use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
     // ... other imports
 
-    /**
-     * @Document
-     * @Validation(
-     *     validator=SchemaValidated::VALIDATOR,
-     *     action=ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
-     *     level=ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
-     * )
-     */
+    #[Document]
+    #[Validation(
+        validator: SchemaValidated::VALIDATOR,
+        action: ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
+        level: ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+    )]
     class SchemaValidated
     {
         public const VALIDATOR = <<<'EOT'
-    {
-        "$jsonSchema": {
-            "required": ["name"],
-            "properties": {
-                "name": {
-                    "bsonType": "string",
-                    "description": "must be a string and is required"
-                }
+            {
+                "$jsonSchema": {
+                    "required": ["name"],
+                    "properties": {
+                        "name": {
+                            "bsonType": "string",
+                            "description": "must be a string and is required"
+                        }
+                    }
+                },
+                "$or": [
+                    { "phone": { "$type": "string" } },
+                    { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
+                    { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+                ]
             }
-        },
-        "$or": [
-            { "phone": { "$type": "string" } },
-            { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
-            { "status": { "$in": [ "Unknown", "Incomplete" ] } }
-        ]
-    }
-    EOT;
+            EOT;
 
         // rest of the class code...
     }
 
-@Version
---------
+#[Version]
+----------
 
 The annotated instance variable will be used to store version information for :ref:`optimistic locking <transactions_and_concurrency_optimistic_locking>`.
 This is only compatible with types implementing the ``\Doctrine\ODM\MongoDB\Types\Versionable`` interface and cannot be
-combined with `@Id`_. Following ODM types can be used for versioning: ``int``, ``decimal128``, ``date``, and
+combined with `#[Id]`_. Following ODM types can be used for versioning: ``int``, ``decimal128``, ``date``, and
 ``date_immutable``.
 
 .. code-block:: php
 
     <?php
 
-    /** @Field(type="int") @Version */
-    private $version;
+    class Thing
+    {
+        #[Field(type: 'int')]
+        #[Version]
+        private $version;
+    }
 
 By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and
 :ref:`reference-many <reference_many>` collections in separate write operations,
@@ -1277,10 +1269,10 @@ encouraged to use the :ref:`atomicSet <atomic_set>` or
 will ensure that collections are updated in the same write operation as the
 versioned parent document.
 
-@View
------
+#[View]
+-------
 
-Required annotation to mark a PHP class as a view. Views are created from
+Required attribute to mark a PHP class as a view. Views are created from
 aggregation pipelines, which are returned from a special repository method.
 Views can be used like collections for any read operations. Result documents are
 not managed and cannot be referenced using the :ref:`reference-many <reference_many>`
@@ -1308,13 +1300,11 @@ Optional attributes:
 
     <?php
 
-    /**
-     * @View(
-     *     db="documents",
-     *     rootClass=User::class,
-     *     repositoryClass=UserNameRepository::class,
-     * )
-     */
+    #[View(
+        db: 'documents',
+        rootClass: User::class,
+        repositoryClass: UserNameRepository::class,
+    )]
     class UserName
     {
         //...

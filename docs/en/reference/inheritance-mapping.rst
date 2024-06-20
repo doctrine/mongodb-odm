@@ -34,7 +34,7 @@ Example:
 
         namespace Documents;
 
-        /** @MappedSuperclass */
+        #[MappedSuperclass]
         abstract class BaseDocument
         {
         }
@@ -68,20 +68,16 @@ Simple example:
 
         namespace Documents;
 
-        /**
-         * @Document
-         * @InheritanceType("SINGLE_COLLECTION")
-         * @DiscriminatorField("type")
-         * @DiscriminatorMap({"person"=Person::class, "employee"=Employee::class})
-         */
+        #[Document]
+        #[InheritanceType('SINGLE_COLLECTION')]
+        #[DiscriminatorField('type')]
+        #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
         class Person
         {
             // ...
         }
 
-        /**
-         * @Document
-         */
+        #[Document]
         class Employee extends Person
         {
             // ...
@@ -145,21 +141,17 @@ discriminator field:
 
         namespace Documents;
 
-        /**
-         * @Document
-         * @InheritanceType("SINGLE_COLLECTION")
-         * @DiscriminatorField("type")
-         * @DiscriminatorMap({"person"=Person::class, "employee"=Employee::class})
-         * @DefaultDiscriminatorValue("person")
-         */
+        #[Document]
+        #[InheritanceType('SINGLE_COLLECTION')]
+        #[DiscriminatorField('type')]
+        #[DiscriminatorMap(['person' => Person::class, 'employee' => Employee::class])]
+        #[DefaultDiscriminatorValue('person')]
         class Person
         {
             // ...
         }
 
-        /**
-         * @Document
-         */
+        #[Document]
         class Employee extends Person
         {
             // ...
@@ -207,18 +199,14 @@ collection and contains all inherited fields:
 
         namespace Documents;
 
-        /**
-         * @Document
-         * @InheritanceType("COLLECTION_PER_CLASS")
-         */
+        #[Document]
+        #[InheritanceType('COLLECTION_PER_CLASS')]
         class Person
         {
             // ...
         }
 
-        /**
-         * @Document
-         */
+        #[Document]
         class Employee extends Person
         {
             // ...

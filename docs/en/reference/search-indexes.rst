@@ -75,28 +75,26 @@ mapping.
 
         <?php
 
-        /**
-         * @Document
-         * @SearchIndex(
-         *   name="usernameAndAddresses",
-         *   fields={
-         *     "username"={
-         *       {"type"="string"},
-         *       {"type"="autocomplete"},
-         *     },
-         *     "addresses"={"type"="embeddedDocuments", "dynamic"=true},
-         *   },
-         * )
-         */
+        #[Document]
+        #[SearchIndex(
+          name: 'usernameAndAddresses',
+          fields: [
+            'username' => [
+              ['type' => 'string'],
+              ['type' => 'autocomplete'],
+            ],
+            'addresses' => ['type' => 'embeddedDocuments', 'dynamic' => true],
+          ],
+        )]
         class User
         {
-            /** @Id */
+            #[Id]
             private $id;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             private $username;
 
-            /** @EmbedMany(targetDocument=Address::class) */
+            #[EmbedMany(targetDocument: Address::class)]
             private $addresses;
 
             // ...
@@ -153,19 +151,17 @@ mapping:
 
         <?php
 
-        /**
-         * @Document
-         * @SearchIndex(dynamic=true)
-         */
+        #[Document]
+        #[SearchIndex(dynamic: true)]
         class BlogPost
         {
-            /** @Id */
+            #[Id]
             private $id;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             private $title;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             private $body;
 
             // ...

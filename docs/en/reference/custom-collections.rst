@@ -17,14 +17,12 @@ persistence-related features.
 
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Document */
+    #[Document]
     class Application
     {
         // ...
 
-        /**
-         * @EmbedMany(targetDocument=Section::class)
-         */
+        #[EmbedMany(targetDocument: Section::class)]
         private $sections;
 
         public function __construct()
@@ -49,7 +47,7 @@ Custom Collection Classes
     aims to kickstart development of your own collections.
 
 Using your own ``Collection`` implementation is as simple as specifying the
-``collectionClass`` parameter in the ``@EmbedMany`` or ``@ReferenceMany`` mapping
+``collectionClass`` parameter in the ``#[EmbedMany]`` or ``#[ReferenceMany]`` mapping
 and ensuring that your custom class is initialized in the owning class' constructor:
 
 .. code-block:: php
@@ -58,17 +56,15 @@ and ensuring that your custom class is initialized in the owning class' construc
 
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Document */
+    #[Document]
     class Application
     {
         // ...
 
-        /**
-         * @EmbedMany(
-         *  collectionClass=SectionCollection::class
-         *  targetDocument=Section::class
-         * )
-         */
+        #[EmbedMany(
+            collectionClass: SectionCollection::class,
+            targetDocument: Section::class,
+        )]
         private $sections;
 
         public function __construct()

@@ -15,10 +15,10 @@ Consider the following abbreviated model:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class User
     {
-        /** @ReferenceMany(targetDocument=Account::class) */
+        #[ReferenceMany(targetDocument: Account::class)]
         private $accounts;
     }
 
@@ -108,10 +108,10 @@ specifying them in the mapping:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class User
     {
-        /** @ReferenceMany(targetDocument=Account::class, prime={"user"}) */
+        #[ReferenceMany(targetDocument: Account::class, prime: ['user'])]
         private $accounts;
     }
 

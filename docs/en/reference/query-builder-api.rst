@@ -548,7 +548,7 @@ Read more about the
 `$or operator <https://docs.mongodb.com/manual/reference/operator/query/or/>`_ in the Mongo docs.
 
 The ``references()`` method may be used to query the owning side of a
-:ref:`@ReferenceOne <annotations_reference_reference_one>` relationship. In the
+:ref:`#[ReferenceOne] <attributes_reference_reference_one>` relationship. In the
 following example, we query for all articles written by a particular user.
 
 .. code-block:: php
@@ -560,7 +560,7 @@ following example, we query for all articles written by a particular user.
         ->field('user')->references($user);
 
 The ``includesReferenceTo()`` method may be used to query the owning side of a
-:ref:`@ReferenceMany <annotations_reference_reference_many>` relationship. In
+:ref:`#[ReferenceMany] <attributes_reference_reference_many>` relationship. In
 the following example, we query for the user(s) that have access to a particular
 account.
 
@@ -584,19 +584,17 @@ document with a text index:
 
         <?php
 
-        /**
-         * @Document
-         * @Index(keys={"description"="text"})
-         */
+        #[Document]
+        #[Index(keys: ['description' => 'text'])]
         class Document
         {
-            /** @Id */
+            #[Id]
             public $id;
 
-            /** @Field(type="string") */
+            #[Field(type: 'string')]
             public $description;
 
-            /** @Field(notSaved=true) */
+            #[Field(notSaved: true)]
             public $score;
         }
 

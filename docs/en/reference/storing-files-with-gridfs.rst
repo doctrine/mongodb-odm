@@ -44,25 +44,25 @@ Mapping documents as GridFS files
     use Doctrine\ODM\MongoDB\Mapping\Annotations\File;
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 
-    /** @File(bucketName='image') */
+    #[File(bucketName: 'image')]
     class Image
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @File\Filename */
+        #[File\Filename]
         private $name;
 
-        /** @File\UploadDate */
+        #[File\UploadDate]
         private $uploadDate;
 
-        /** @File\Length */
+        #[File\Length]
         private $length;
 
-        /** @File\ChunkSize */
+        #[File\ChunkSize]
         private $chunkSize;
 
-        /** @File\Metadata(targetDocument=ImageMetadata::class) */
+        #[File\Metadata(targetDocument: ImageMetadata::class)]
         private $metadata;
 
         public function getId(): ?string
@@ -134,10 +134,10 @@ The ``ImageMetadata`` class must be an embedded document:
     use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class ImageMetadata
     {
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $contentType;
 
         public function __construct(string $contentType)
@@ -219,7 +219,7 @@ uploading:
     $stream = fopen('tmp/path/to/copy', 'w+');
     try {
         $repository->downloadToStream($file->getId(), $stream);
-    finally {
+    } finally {
         fclose($stream);
     }
 
@@ -246,7 +246,7 @@ a stream from where you can read file contents:
     $stream = $repository->openDownloadStream($file->getId());
     try {
         $contents = stream_get_contents($stream);
-    finally {
+    } finally {
         fclose($stream);
     }
 

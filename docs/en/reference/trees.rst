@@ -11,34 +11,34 @@ Full Tree in Single Document
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $title;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $body;
 
-        /** @EmbedMany(targetDocument=Comment::class) */
+        #[EmbedMany(targetDocument: Comment::class)]
         private $comments = [];
 
         // ...
     }
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Comment
     {
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $by;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $text;
 
-        /** @EmbedMany(targetDocument=Comment::class) */
+        #[EmbedMany(targetDocument: Comment::class)]
         private $replies = [];
 
         // ...
@@ -67,19 +67,17 @@ Parent Reference
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Category
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $name;
 
-        /**
-         * @ReferenceOne(targetDocument=Category::class)
-         * @Index
-         */
+        #[ReferenceOne(targetDocument: Category::class)]
+        #[Index]
         private $parent;
 
         // ...
@@ -106,19 +104,17 @@ Child Reference
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Category
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $name;
 
-        /**
-         * @ReferenceMany(targetDocument=Category::class)
-         * @Index
-         */
+        #[ReferenceMany(targetDocument: Category::class)]
+        #[Index]
         private $children = [];
 
         // ...
@@ -158,37 +154,33 @@ Array of Ancestors
 
     <?php
 
-    /** @MappedSuperclass */
+    #[MappedSuperclass]
     class BaseCategory
     {
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $name;
 
         // ...
     }
 
-    /** @Document */
+    #[Document]
     class Category extends BaseCategory
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /**
-         * @ReferenceMany(targetDocument=Category::class)
-         * @Index
-         */
+        #[ReferenceMany(targetDocument: Category::class)]
+        #[Index]
         private $ancestors = [];
 
-        /**
-         * @ReferenceOne(targetDocument=Category::class)
-         * @Index
-         */
+        #[ReferenceOne(targetDocument: Category::class)]
+        #[Index]
         private $parent;
 
         // ...
     }
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class SubCategory extends BaseCategory
     {
     }
@@ -227,16 +219,16 @@ Materialized Paths
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Category
     {
-        /** @Id */
+        #[Id]
         private $id;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $name;
 
-        /** @Field(type="string") */
+        #[Field(type: 'string')]
         private $path;
 
         // ...

@@ -129,16 +129,16 @@ they can't be persisted to the database.
 
         namespace Documents;
 
-        /** @QueryResultDocument */
+        #[QueryResultDocument]
         class UserPurchases
         {
-            /** @ReferenceOne(targetDocument=User::class, name="_id") */
+            #[ReferenceOne(targetDocument: User::class, name: '_id')]
             private $user;
 
-            /** @Field(type="int") */
+            #[Field(type: 'int')]
             private $numPurchases;
 
-            /** @Field(type="float") */
+            #[Field(type: 'float')]
             private $amount;
         }
 

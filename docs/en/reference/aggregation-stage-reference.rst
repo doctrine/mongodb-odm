@@ -377,14 +377,17 @@ pipeline stages. Take the following relationship for example:
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *     targetDocument=Documents\Item::class,
-     *     cascade="all",
-     *     storeAs="id"
-     * )
-     */
-    private $items;
+    namespace Documents;
+
+    class Orders
+    {
+        #[ReferenceMany(
+            targetDocument: Item::class,
+            cascade: 'all',
+            storeAs: 'id',
+        )]
+        private $items;
+    }
 
 .. code-block:: php
 
@@ -405,14 +408,17 @@ to be considered when looking up one-to-one relationships:
 
     <?php
 
-    /**
-     * @ReferenceOne(
-     *     targetDocument=Documents\Item::class,
-     *     cascade="all",
-     *     storeAs="id"
-     * )
-     */
-    private $items;
+    namespace Documents;
+
+    class Orders
+    {
+        #[ReferenceOne(
+            targetDocument: Item::class,
+            cascade: 'all',
+            storeAs: 'id',
+        )]
+        private $items;
+    }
 
 .. code-block:: php
 
@@ -629,7 +635,7 @@ field on all document levels and evaluates it to grant or deny access:
                 $builder->expr()->gte('$$level', 5),
                 '$$PRUNE',
                 '$$DESCEND'
-            )
+            );
 
 $replaceRoot
 ------------

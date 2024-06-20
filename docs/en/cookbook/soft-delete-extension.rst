@@ -73,15 +73,13 @@ An implementation might look like this in a ``User`` document:
     use Doctrine\ODM\MongoDB\SoftDelete\SoftDeleteable;
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-    /** @ODM\Document */
+    #[ODM\Document]
     class User implements SoftDeleteable
     {
         // ...
 
-        /**
-         * @ODM\Field(type="date")
-         * @ODM\Index
-         */
+        #[Field(type: 'date')]
+        #[Index]
         private $deletedAt;
 
         public function getDeletedAt(): ?\DateTime
@@ -200,7 +198,7 @@ You just need to setup an event listener like the following:
             $sdm = $args->getSoftDeleteManager();
             $document = $args->getDocument();
             if ($document instanceof User) {
-                $sdm->deleteBy(Post:class, ['user.id' => $document->getId()]);
+                $sdm->deleteBy(Post::class, ['user.id' => $document->getId()]);
             }
         }
 

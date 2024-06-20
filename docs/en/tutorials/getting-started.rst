@@ -70,37 +70,37 @@ You can provide your mapping information in Annotations or XML:
         <?php
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-        /** @ODM\Document */
+        #[ODM\Document]
         class User
         {
-            /** @ODM\Id */
+            #[ODM\Id]
             private $id;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $name;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $email;
 
-            /** @ODM\ReferenceMany(targetDocument=BlogPost::class, cascade="all") */
+            #[ODM\ReferenceMany(targetDocument: BlogPost::class, cascade: 'all')]
             private $posts = [];
 
             // ...
         }
 
-        /** @ODM\Document */
+        #[ODM\Document]
         class BlogPost
         {
-            /** @ODM\Id */
+            #[ODM\Id]
             private $id;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $title;
 
-            /** @ODM\Field(type="string") */
+            #[ODM\Field(type: 'string')]
             private $body;
 
-            /** @ODM\Field(type="date") */
+            #[ODM\Field(type: 'date')]
             private $createdAt;
 
             // ...
@@ -149,6 +149,7 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
 
     use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
     require_once('path/to/vendor/autoload.php');
 
@@ -157,7 +158,7 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
     $config->setProxyNamespace('Proxies');
     $config->setHydratorDir('/path/to/generate/hydrators');
     $config->setHydratorNamespace('Hydrators');
-    $config->setMetadataDriverImpl(AnnotationDriver::create('/path/to/document/classes'));
+    $config->setMetadataDriverImpl(AttributeDriver::create('/path/to/document/classes'));
 
     $dm = DocumentManager::create(null, $config);
 
