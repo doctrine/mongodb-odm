@@ -231,6 +231,15 @@ something like this:
 
     {
         $inc: { changes: 1 },
+        $set: {
+            notes: [
+                "Gave user 100k a year raise"
+            ],
+            salary: 200000
+        },
+    }
+
+    {
         $push: {
             projects: {
                 $each: [
@@ -240,12 +249,6 @@ something like this:
                     }
                 ]
             }
-        },
-        $set: {
-            notes: [
-                "Gave user 100k a year raise"
-            ],
-            salary: 200000
         },
     }
 
