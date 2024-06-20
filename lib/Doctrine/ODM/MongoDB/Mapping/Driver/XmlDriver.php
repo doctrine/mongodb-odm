@@ -44,6 +44,7 @@ use function trim;
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @psalm-import-type FieldMappingConfig from ClassMetadata
+ * @template-extends FileDriver<SimpleXMLElement>
  */
 class XmlDriver extends FileDriver
 {

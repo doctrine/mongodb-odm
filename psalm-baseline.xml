@@ -88,42 +88,6 @@
       <code><![CDATA[$mapping]]></code>
       <code><![CDATA[$options]]></code>
     </InvalidArgument>
-    <InvalidPropertyFetch>
-      <code><![CDATA[$xmlRoot->field]]></code>
-      <code><![CDATA[$xmlRoot->id]]></code>
-      <code><![CDATA[$xmlRoot->indexes]]></code>
-      <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
-      <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
-      <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
-      <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
-      <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
-      <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
-      <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
-      <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
-      <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
-      <code><![CDATA[$xmlRoot->{'search-indexes'}]]></code>
-      <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
-    </InvalidPropertyFetch>
-    <NoInterfaceProperties>
-      <code><![CDATA[$xmlRoot->field]]></code>
-      <code><![CDATA[$xmlRoot->id]]></code>
-      <code><![CDATA[$xmlRoot->indexes]]></code>
-      <code><![CDATA[$xmlRoot->{'also-load-methods'}]]></code>
-      <code><![CDATA[$xmlRoot->{'default-discriminator-value'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-field'}]]></code>
-      <code><![CDATA[$xmlRoot->{'discriminator-map'}]]></code>
-      <code><![CDATA[$xmlRoot->{'embed-many'}]]></code>
-      <code><![CDATA[$xmlRoot->{'embed-one'}]]></code>
-      <code><![CDATA[$xmlRoot->{'lifecycle-callbacks'}]]></code>
-      <code><![CDATA[$xmlRoot->{'read-preference'}]]></code>
-      <code><![CDATA[$xmlRoot->{'reference-many'}]]></code>
-      <code><![CDATA[$xmlRoot->{'reference-one'}]]></code>
-      <code><![CDATA[$xmlRoot->{'schema-validation'}]]></code>
-      <code><![CDATA[$xmlRoot->{'search-indexes'}]]></code>
-      <code><![CDATA[$xmlRoot->{'shard-key'}]]></code>
-    </NoInterfaceProperties>
     <RedundantCast>
       <code><![CDATA[(bool) $mapping['background']]]></code>
       <code><![CDATA[(bool) $mapping['sparse']]]></code>
@@ -165,12 +129,6 @@
       <code><![CDATA[isset($xmlShardkey->option)]]></code>
     </RedundantCondition>
     <TypeDoesNotContainType>
-      <code><![CDATA[$xmlRoot->getName() === 'document']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'embedded-document']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'gridfs-file']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'mapped-superclass']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'query-result-document']]></code>
-      <code><![CDATA[$xmlRoot->getName() === 'view']]></code>
       <code><![CDATA[isset($xmlRoot->metadata)]]></code>
       <code><![CDATA[isset($xmlRoot->{'also-load-methods'})]]></code>
     </TypeDoesNotContainType>
