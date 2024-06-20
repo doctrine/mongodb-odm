@@ -1,7 +1,7 @@
 Implementing Wakeup or Clone
 ============================
 
-.. sectionauthor:: Roman Borschel (roman@code-factory.org)
+.. sectionauthor:: Roman Borschel <roman@code-factory.org>
 
 As explained in the
 :doc:`restrictions for document classes in the manual <../reference/architecture>`.

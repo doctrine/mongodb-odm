@@ -1,0 +1,43 @@
+name: "Documentation"
+
+on:
+  pull_request:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/documentation.yml
+      - docs/**
+  push:
+    branches:
+      - "*.x"
+    paths:
+      - .github/workflows/documentation.yml
+      - docs/**
+
+jobs:
+  validate-with-guides:
+    name: "Validate documentation with phpDocumentor/guides"
+    runs-on: "ubuntu-22.04"
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.3"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v3"
+        with:
+          working-directory: "docs"
+          dependency-versions: "highest"
+
+      - name: "Add orphan metadata where needed"
+        run: |
+          printf '%s\n\n%s\n' ":orphan:" "$(cat docs/en/sidebar.rst)" > docs/en/sidebar.rst
+
+      - name: "Run guides-cli"
+        run: "docs/vendor/bin/guides -vvv --no-progress docs/en 2>&1 | grep -v 'No template found for rendering directive' | ( ! grep WARNING )"
