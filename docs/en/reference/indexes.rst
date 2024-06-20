@@ -311,10 +311,10 @@ options structures manually:
         #[EmbeddedDocument]
         class Coordinates
         {
-           #[Field(type: 'float')]
+            #[Field(type: 'float')]
             public $latitude;
 
-           #[Field(type: 'float')]
+            #[Field(type: 'float')]
             public $longitude;
         }
 
