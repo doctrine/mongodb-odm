@@ -149,8 +149,8 @@ MongoDB ≥ 3.6 offers the capability to validate documents during
 insertions and updates through a schema associated to the collection
 (cf. `MongoDB documentation <https://docs.mongodb.com/manual/core/schema-validation/>`_).
 
-Doctrine MongoDB ODM now provides a way to take advantage of this functionality
-thanks to the new :doc:`#[Validation] <../reference/annotations-reference#validation>`
+Doctrine MongoDB ODM provides a way to take advantage of this functionality
+thanks to the :doc:`#[Validation] <../reference/annotations-reference#validation>`
 attribute and its properties (also available with XML mapping):
 
 -
