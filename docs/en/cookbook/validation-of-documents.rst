@@ -150,7 +150,7 @@ insertions and updates through a schema associated to the collection
 (cf. `MongoDB documentation <https://docs.mongodb.com/manual/core/schema-validation/>`_).
 
 Doctrine MongoDB ODM provides a way to take advantage of this functionality
-thanks to the :doc:`#[Validation] <../reference/annotations-reference#validation>`
+thanks to the :doc:`#[Validation] <../reference/attributes-reference#validation>`
 attribute and its properties (also available with XML mapping):
 
 -
@@ -251,5 +251,5 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
             </document>
         </doctrine-mongo-mapping>
 
-Please refer to the :doc:`#[Validation] <../reference/annotations-reference#document>` attributes reference
+Please refer to the :doc:`#[Validation] <../reference/attributes-reference#document>` attributes reference
 for more details on how to use this feature.
