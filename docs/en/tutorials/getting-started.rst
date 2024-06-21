@@ -84,6 +84,8 @@ You can provide your mapping information in Annotations or XML:
         <?php
 
         use DateTimeImmutable;
+        use Doctrine\Common\Collections\ArrayCollection;
+        use Doctrine\Common\Collections\Collection;
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
         #[ODM\Document]
@@ -100,7 +102,7 @@ You can provide your mapping information in Annotations or XML:
                 public string $email = '',
 
                 #[ODM\ReferenceMany(targetDocument: BlogPost::class, cascade: 'all')]
-                public ArrayCollection $posts = new ArrayCollection(),
+                public Collection $posts = new ArrayCollection(),
             ) {
             }
 
@@ -120,7 +122,7 @@ You can provide your mapping information in Annotations or XML:
                 #[ODM\Field(type: 'string')]
                 public string $body = '',
 
-                #[ODM\Field(type: 'date')]
+                #[ODM\Field(type: 'date_immutable')]
                 public DateTimeImmutable $createdAt = new DateTimeImmutable(),
             ) {
             }
@@ -230,9 +232,9 @@ Here is how you would use your models now:
     Note that you do not need to explicitly call persist on the ``$post`` because the operation
     will cascade on to the reference automatically.
 
-After running this code, you should have those two objects stored in MongoDB in
-the collections "User" and "BlogPost". You can use the `MongoDB Compass`_
-to inspect the contents of your database, where you will see this documents:
+After running this code, you should have those two objects stored in the
+collections "User" and "BlogPost". You can use `MongoDB Compass`_ to inspect
+the contents of your database, where you will see this documents:
 
 ::
 
@@ -283,11 +285,17 @@ If you want to iterate over the posts the user references it is as easy as the f
         echo $post->title;
     }
 
+.. note::
+
+    When retrieved from the database, ``$user->posts`` is an instance of
+    ``Doctrine\ODM\MongoDB\PersistentCollection``. This class lazy-loads the
+    referenced documents from the database when you access them. It keeps track
+    of changes to the collection and will automatically update the database when
+    you call ``flush()``.
+
 You will notice that working with objects is nothing magical and you only have
-access to the properties and methods that you have defined yourself so the
-semantics are very clear. You can continue reading about the MongoDB in the
-:doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`.
+access to the properties and methods that you have defined yourself. You can
+continue reading :doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`.
 
 .. _MongoDB Compass: https://www.mongodb.com/products/tools/compass
 .. _ObjectId: https://www.php.net/manual/en/class.mongodb-bson-objectid.php
-
