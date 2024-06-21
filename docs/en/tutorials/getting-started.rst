@@ -12,16 +12,18 @@ overview of what could be accomplished using Doctrine MongoDB ODM.
 Example Model: Simple Blog
 --------------------------
 
-To create the simplest example, let’s assume the following in a simple blog web application:
+To create the simplest example, let’s assume the following in a simple blog web
+application:
 
--  Blog has a user.
--  Blog user can make blog posts
+-  a Blog has a "user".
+-  a Blog "user" can make "blog posts"
 
 A first prototype
 -----------------
 
-For the above mentioned example, something as simple as this could be modeled with plain PHP classes.
-First define the ``User`` document:
+For the above mentioned example, we start by defining two simple PHP classes:
+``User`` and ``BlogPost``. The ``User`` class will have a collection of
+``BlogPost`` objects.
 
 .. code-block:: php
 
@@ -31,14 +33,18 @@ First define the ``User`` document:
 
     class User
     {
-        private $name;
-        private $email;
-        private $posts = [];
+        public function __construct(
+            public string $name = '',
+            public string $email = '',
+            public array $posts = [],
+        ) {
+        }
 
         // ...
     }
 
-Now define the ``BlogPost`` document:
+Now define the ``BlogPost`` document that contains the title, body and the date
+of creation:
 
 .. code-block:: php
 
@@ -46,20 +52,28 @@ Now define the ``BlogPost`` document:
 
     namespace Documents;
 
+    use DateTimeImmutable;
+
     class BlogPost
     {
-        private $title;
-        private $body;
-        private $createdAt;
+        public function __construct(
+            public string $title = '',
+            public string $body = '',
+            public DateTimeImmutable $createdAt = new DateTimeImmutable(),
+        ) {
+        }
 
         // ...
     }
 
+
+
 Persistent Models
 -----------------
 
-To make the above classes persistent, all we need to do is provide Doctrine with some mapping
-information so that it knows how to consume the objects and persist them to the database.
+To make the above classes persistent, all we need to do is provide Doctrine with
+some mapping information so that it knows how to consume the objects and persist
+them to the database.
 
 You can provide your mapping information in Annotations or XML:
 
@@ -68,22 +82,27 @@ You can provide your mapping information in Annotations or XML:
     .. code-block:: php
 
         <?php
+
+        use DateTimeImmutable;
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
         #[ODM\Document]
         class User
         {
-            #[ODM\Id]
-            private $id;
+            public function __construct(
+                #[ODM\Id]
+                public ?string $id = null,
 
-            #[ODM\Field(type: 'string')]
-            private $name;
+                #[ODM\Field(type: 'string')]
+                public string $name = '',
 
-            #[ODM\Field(type: 'string')]
-            private $email;
+                #[ODM\Field(type: 'string')]
+                public string $email = '',
 
-            #[ODM\ReferenceMany(targetDocument: BlogPost::class, cascade: 'all')]
-            private $posts = [];
+                #[ODM\ReferenceMany(targetDocument: BlogPost::class, cascade: 'all')]
+                public ArrayCollection $posts = new ArrayCollection(),
+            ) {
+            }
 
             // ...
         }
@@ -91,17 +110,20 @@ You can provide your mapping information in Annotations or XML:
         #[ODM\Document]
         class BlogPost
         {
-            #[ODM\Id]
-            private $id;
+            public function __construct(
+                #[ODM\Id]
+                public ?string $id = null,
 
-            #[ODM\Field(type: 'string')]
-            private $title;
+                #[ODM\Field(type: 'string')]
+                public string $title = '',
 
-            #[ODM\Field(type: 'string')]
-            private $body;
+                #[ODM\Field(type: 'string')]
+                public string $body = '',
 
-            #[ODM\Field(type: 'date')]
-            private $createdAt;
+                #[ODM\Field(type: 'date')]
+                public DateTimeImmutable $createdAt = new DateTimeImmutable(),
+            ) {
+            }
 
             // ...
         }
@@ -138,6 +160,13 @@ You can provide your mapping information in Annotations or XML:
           </document>
         </doctrine-mongo-mapping>
 
+.. note::
+
+   The `$id` property is a special property that is used to store the unique
+   identifier of the document. If you do not provide a value for `$id`,
+   Doctrine will automatically generate an `ObjectId`_ when you persist the
+   document.
+
 That’s it, we have our models, and we can save and retrieve them. Now
 all we need to do is to properly instantiate the ``DocumentManager``
 instance. Read more about setting up the Doctrine MongoDB ODM in the
@@ -151,16 +180,16 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
-    require_once('path/to/vendor/autoload.php');
+    require_once __DIR__ . '/vendor/autoload.php';
 
     $config = new Configuration();
-    $config->setProxyDir('/path/to/generate/proxies');
+    $config->setProxyDir(__DIR__ . '/generated/proxies');
     $config->setProxyNamespace('Proxies');
-    $config->setHydratorDir('/path/to/generate/hydrators');
+    $config->setHydratorDir(__DIR__ . '/generated/hydrators');
     $config->setHydratorNamespace('Hydrators');
-    $config->setMetadataDriverImpl(AttributeDriver::create('/path/to/document/classes'));
+    $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/src'));
 
-    $dm = DocumentManager::create(null, $config);
+    $dm = DocumentManager::create(config: $config);
 
     spl_autoload_register($config->getProxyManagerConfiguration()->getProxyAutoloader());
 
@@ -176,20 +205,22 @@ Here is how you would use your models now:
     // ...
 
     // create user
-    $user = new User();
-    $user->setName('Bulat S.');
-    $user->setEmail('email@example.com');
+    $user = new User(
+        name: 'Bulat S.',
+        email: 'email@example.com',
+    );
 
-    // tell Doctrine 2 to save $user on the next flush()
+    // tell Doctrine to save $user on the next flush()
     $dm->persist($user);
 
     // create blog post
-    $post = new BlogPost();
-    $post->setTitle('My First Blog Post');
-    $post->setBody('MongoDB + Doctrine 2 ODM = awesomeness!');
-    $post->setCreatedAt(new DateTime());
+    $post = new BlogPost(
+        title: 'My First Blog Post',
+        body: 'MongoDB + Doctrine 2 ODM = awesomeness!',
+    );
 
-    $user->addPost($post);
+    // link the blog post to the user
+    $user->posts->add($post);
 
     // store everything to MongoDB
     $dm->flush();
@@ -199,44 +230,29 @@ Here is how you would use your models now:
     Note that you do not need to explicitly call persist on the ``$post`` because the operation
     will cascade on to the reference automatically.
 
-Now if you did everything correctly, you should have those two objects
-stored in MongoDB in correct collections and databases. You can use the
-`php-mongodb-admin project, hosted on github`_ to look at your
-``BlogPost`` collection, where you will see only one document:
+After running this code, you should have those two objects stored in MongoDB in
+the collections "User" and "BlogPost". You can use the `MongoDB Compass`_
+to inspect the contents of your database, where you will see this documents:
 
 ::
 
-    Array
-    (
-        [_id] => 4bec5869fdc212081d000000
-        [title] => My First Blog Post
-        [body] => MongoDB + Doctrine 2 ODM = awesomeness!
-        [createdAt] => MongoDB\BSON\UTCDateTime Object
-            (
-                [sec] => 1273723200
-                [usec] => 0
-            )
-    )
+    // BlogPost collection
+    {
+        _id: ObjectId("4bec5869fdc212081d000000"),
+        title: "My First Blog Post",
+        body: "MongoDB + Doctrine 2 ODM = awesomeness!",
+        createdAt: Date("2010-05-13T18:00:00Z")
+    }
 
-And the ``User`` collection would consist of the following:
-
-::
-
-    Array
-    (
-        [_id] => 4bec5869fdc212081d010000
-        [name] => Bulat S.
-        [email] => email@example.com
-        [posts] => Array
-            (
-                [0] => Array
-                    (
-                        [$ref] => blog_posts
-                        [$id] => 4bec5869fdc212081d000000
-                        [$db] => test_database
-                    )
-            )
-    )
+    // User collection
+    {
+        _id: ObjectId("4bec5869fdc212081d010000"),
+        name: "Bulat S.",
+        email: "email@example.com",
+        posts: [
+            DBRef("BlogPost", "4bec5869fdc212081d000000")
+        ],
+    }
 
 You can retrieve the user later by its identifier:
 
@@ -263,12 +279,15 @@ If you want to iterate over the posts the user references it is as easy as the f
 
     <?php
 
-    $posts = $dm->getPosts();
-    foreach ($posts as $post) {
+    foreach ($user->posts as $post) {
+        echo $post->title;
     }
 
-You will notice that working with objects is nothing magical and you only have access to the properties,
-getters and setters that you have defined yourself so the semantics are very clear. You can continue
-reading about the MongoDB in the :doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`.
+You will notice that working with objects is nothing magical and you only have
+access to the properties and methods that you have defined yourself so the
+semantics are very clear. You can continue reading about the MongoDB in the
+:doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`.
 
-.. _php-mongodb-admin project, hosted on github: http://github.com/jwage/php-mongodb-admin
+.. _MongoDB Compass: https://www.mongodb.com/products/tools/compass
+.. _ObjectId: https://www.php.net/manual/en/class.mongodb-bson-objectid.php
+
