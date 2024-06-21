@@ -216,7 +216,7 @@ Here is how you would use your models now:
     // create blog post
     $post = new BlogPost(
         title: 'My First Blog Post',
-        body: 'MongoDB + Doctrine 2 ODM = awesomeness!',
+        body: 'MongoDB + Doctrine ODM = awesomeness!',
     );
 
     // link the blog post to the user
@@ -240,7 +240,7 @@ to inspect the contents of your database, where you will see this documents:
     {
         _id: ObjectId("4bec5869fdc212081d000000"),
         title: "My First Blog Post",
-        body: "MongoDB + Doctrine 2 ODM = awesomeness!",
+        body: "MongoDB + Doctrine ODM = awesomeness!",
         createdAt: Date("2010-05-13T18:00:00Z")
     }
 
