@@ -4,10 +4,10 @@ Introduction
 What is Doctrine MongoDB ODM?
 -----------------------------
 
-Doctrine MongoDB ODM (Object Document Mapper) is a PHP 8.1+ library that provides
-an abstraction layer to work with `MongoDB`_ documents in PHP applications.
-It allows developers to map PHP objects to MongoDB documents, enabling an
-intuitive and structured approach to handling data within a MongoDB database.
+Doctrine MongoDB ODM (Object Document Mapper) is an object modeling library for
+PHP applications. It allows developers to map PHP objects to `MongoDB`_
+documents, enabling an intuitive and structured approach to handling data within
+a MongoDB database.
 
 Features Overview
 -----------------
@@ -172,13 +172,13 @@ The above would insert the following documents into MongoDB collections:
 
     // Project collection
     {
-        _id: ObjectId("..2"),
+        _id: ObjectId("6674375a140216f6730b2263"),
         name: "New Project"
     }
 
     // Manager collection
     {
-        _id: ObjectId("..3"),
+        _id: ObjectId("6674375a140216f6730b2264"),
         changes: 0,
         notes: [],
         name: "Manager",
@@ -194,7 +194,7 @@ The above would insert the following documents into MongoDB collections:
 
     // Employee collection
     {
-        _id: ObjectId("..1"),
+        _id: ObjectId("6674375a140216f6730b2262"),
         changes: 0,
         notes: [],
         name: "Employee",
@@ -224,7 +224,7 @@ efficient update query using the atomic operators:
     $dm->persist($newProject);
     $dm->flush();
 
-The above could would produce an update to Manager's collection that looks
+The above code would produce an update to Manager's collection that looks
 something like this:
 
 ::
@@ -245,7 +245,7 @@ something like this:
                 $each: [
                     {
                         $ref: "Project",
-                        $id: ObjectId("..5")
+                        $id: ObjectId("6674375a140216f6730b2265")
                     }
                 ]
             }
