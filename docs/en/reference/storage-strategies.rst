@@ -6,8 +6,8 @@ Storage Strategies
 Doctrine MongoDB ODM implements several different strategies for persisting changes
 to mapped fields. These strategies apply to the following mapping types:
 
-- `int`
-- `float`
+- ``int``
+- ``float``
 - :ref:`embed_many`
 - :ref:`reference_many`
 
