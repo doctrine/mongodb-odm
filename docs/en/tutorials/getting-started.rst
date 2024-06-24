@@ -71,8 +71,8 @@ of creation:
 Persistent Models
 -----------------
 
-To make the above classes persistent, all we need to do is provide Doctrine with
-some mapping information so that it knows how to consume the objects and persist
+To make the above classes persistent, we need to provide Doctrine with some
+mapping information so that it knows how to consume the objects and persist
 them to the database.
 
 You can provide your mapping information in Annotations or XML:
@@ -164,10 +164,10 @@ You can provide your mapping information in Annotations or XML:
 
 .. note::
 
-   The `$id` property is a special property that is used to store the unique
-   identifier of the document. If you do not provide a value for `$id`,
-   Doctrine will automatically generate an `ObjectId`_ when you persist the
-   document.
+   The ``$id`` property above is annotated with the ``#[Id]`` attribute, which
+   makes it special. It will be use dby Doctrine to store the unique identifier
+   of the document. If you do not provide a value for ``$id``, Doctrine will
+   automatically generate an `ObjectId`_ when you persist the document.
 
 That’s it, we have our models, and we can save and retrieve them. Now
 all we need to do is to properly instantiate the ``DocumentManager``
