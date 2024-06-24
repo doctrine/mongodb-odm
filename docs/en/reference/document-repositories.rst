@@ -146,8 +146,9 @@ event dispatcher to the repository constructor.
     final class YourRepositoryFactory extends AbstractRepositoryFactory
     {
         public function __construct(
-            private EventDispatcherInterface $eventDispatcher
-        ) {}
+            private EventDispatcherInterface $eventDispatcher,
+        ) {
+        }
 
         protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata)
         {
@@ -155,6 +156,7 @@ event dispatcher to the repository constructor.
                 UserRepository::class => new UserRepository($this->eventDispatcher, $documentManager, $metadata),
                 default               => new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata),
             };
+            }
         }
     }
 

@@ -247,7 +247,7 @@ Here is an example:
         class User
         {
             #[Id]
-            private $id;
+            private string $id;
         }
 
     .. code-block:: xml
@@ -284,7 +284,7 @@ Here is an example how to manually set a string identifier for your documents:
         class MyPersistentClass
         {
             #[Id(strategy: 'NONE', type: 'string')]
-            private $id;
+            private string $id;
 
             public function setId(string $id): void
             {
@@ -362,7 +362,7 @@ Then specify the ``class`` option for the ``CUSTOM`` strategy:
         class MyPersistentClass
         {
             #[Id(strategy: 'CUSTOM', type: 'string', options: ['class' => \Vendor\Specific\Generator::class])]
-            private $id;
+            private string $id;
 
             public function setId(string $id): void
             {
@@ -412,7 +412,7 @@ Example:
             // ...
 
             #[Field(type: 'string')]
-            private $username;
+            private string $username;
         }
 
     .. code-block:: xml
@@ -443,7 +443,7 @@ as follows:
         <?php
 
         #[Field(name: 'db_name')]
-        private $name;
+        private string $name;
 
     .. code-block:: xml
 

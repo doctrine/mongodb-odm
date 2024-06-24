@@ -22,7 +22,11 @@ persistence-related features.
 
         /** @var Collection<Section> */
         #[EmbedMany(targetDocument: Section::class)]
+<<<<<<< HEAD
         public Collection $sections;
+=======
+        private Collection $sections;
+>>>>>>> 4f01d6eb (Add type to properties)
 
         public function __construct()
         {
@@ -55,6 +59,7 @@ and ensuring that your custom class is initialized in the owning class' construc
     {
         // ...
 
+        /** @var Collection<Section> */
         #[EmbedMany(
             collectionClass: SectionCollection::class,
             targetDocument: Section::class,
@@ -100,7 +105,12 @@ Alternatively, you may want to implement the whole class from scratch:
     {
         public function __construct(
             private array $elements = []
+<<<<<<< HEAD
         ) {}
+=======
+        ) {
+        }
+>>>>>>> 4f01d6eb (Add type to properties)
 
         // your implementation of all methods interface requires
     }

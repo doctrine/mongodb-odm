@@ -31,7 +31,7 @@ class:
         public function convertToPHPValue($value): \DateTime
         {
             // This is called to convert a Mongo value to a PHP representation
-            return new \DateTime('@' . $value->sec);
+            return $value->toDateTime();
         }
 
         public function convertToDatabaseValue($value): UTCDateTime
@@ -88,7 +88,7 @@ type in your mapping like this:
         class MyPersistentClass
         {
             #[Field(type: 'mytype')]
-            private $field;
+            private \DateTime $field;
         }
 
     .. code-block:: xml

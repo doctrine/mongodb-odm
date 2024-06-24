@@ -28,10 +28,10 @@ Let's say you have a simple document that starts off with the following fields:
     class Person
     {
         #[Id]
-        public $id;
+        public string $id;
 
         #[Field(type: 'string')]
-        public $name;
+        public string $name;
     }
 
 Later on, you need rename ``name`` to ``fullName``; however, you'd like to
@@ -45,11 +45,11 @@ hydrate ``fullName`` from ``name`` if the new field doesn't exist.
     class Person
     {
         #[Id]
-        public $id;
+        public string $id;
 
         #[Field(type: 'string')]
         #[AlsoLoad('name')]
-        public $fullName;
+        public string $fullName;
     }
 
 When a Person is loaded, the ``fullName`` field will be populated with the value
@@ -80,13 +80,13 @@ before normal hydration.
     class Person
     {
         #[Id]
-        public $id;
+        public string $id;
 
         #[Field(type: 'string')]
-        public $firstName;
+        public string $firstName;
 
         #[Field(type: 'string')]
-        public $lastName;
+        public string $lastName;
 
         #[AlsoLoad(['name', 'fullName'])]
         public function populateFirstAndLastName(string $fullName): void
@@ -125,16 +125,16 @@ Imagine you have some address-related fields on a Person document:
     class Person
     {
         #[Id]
-        public $id;
+        public string $id;
 
         #[Field(type: 'string')]
-        public $name;
+        public string $name;
 
         #[Field(type: 'string')]
-        public $street;
+        public string $street;
 
         #[Field(type: 'string')]
-        public $city;
+        public string $city;
     }
 
 Later on, you may want to migrate this data into an embedded Address document:
@@ -146,16 +146,13 @@ Later on, you may want to migrate this data into an embedded Address document:
     #[EmbeddedDocument]
     class Address
     {
-        #[Field(type: 'string')]
-        public $street;
+        public function __construct(
+            #[Field(type: 'string')]
+            public string $street,
 
-        #[Field(type: 'string')]
-        public $city;
-
-        public function __construct(string $street, string $city)
-        {
-            $this->street = $street;
-            $this->city = $city;
+            #[Field(type: 'string')]
+            public string $city,
+        ) {
         }
     }
 
@@ -164,19 +161,19 @@ Later on, you may want to migrate this data into an embedded Address document:
     class Person
     {
         #[Id]
-        public $id;
+        public string $id;
 
         #[Field(type: 'string')]
-        public $name;
+        public string $name;
 
         #[Field(notSaved: true)]
-        public $street;
+        public string $street;
 
         #[Field(notSaved: true)]
-        public $city;
+        public string $city;
 
         #[EmbedOne(targetDocument: Address::class)]
-        public $address;
+        public Address $address;
 
         #[PostLoad]
         public function postLoad(): void

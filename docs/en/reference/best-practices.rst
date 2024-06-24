@@ -56,15 +56,12 @@ Example:
     namespace MyProject\Model;
 
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
     class User
     {
-
-        /** @var ArrayCollection  */
-        private $addresses;
-
-        /** @var ArrayCollection  */
-        private $articles;
+        private Collection $addresses;
+        private Collection $articles;
 
         public function __construct()
         {

@@ -119,7 +119,7 @@ The following example designates a version field using the ``int`` type:
         <?php
         #[Version]
         #[Field(type: 'int')]
-        private $version;
+        private int $version = 0;
 
     .. code-block:: xml
 
@@ -134,7 +134,7 @@ Or with ``decimal128`` type:
         <?php
         #[Version]
         #[Field(type: 'decimal128')]
-        private $version;
+        private Decimal128 $version;
 
     .. code-block:: xml
 
@@ -149,7 +149,7 @@ Alternatively, the ``date`` type may be used:
         <?php
         #[Version]
         #[Field(type: 'date')]
-        private $version;
+        private \DateTime $version;
 
     .. code-block:: xml
 
@@ -164,7 +164,7 @@ Or its immutable counterpart ``date_immutable``:
         <?php
         #[Version]
         #[Field(type: "date_immutable")]
-        private $version;
+        private \DateTimeImmutable $version;
 
     .. code-block:: xml
 
@@ -323,7 +323,7 @@ Pessimistic locking requires a document to designate a lock field using the ``in
         <?php
         #[Lock]
         #[Field(type="int")]
-        private $lock;
+        private int $lock;
 
     .. code-block:: xml
 

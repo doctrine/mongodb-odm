@@ -21,11 +21,11 @@ property:
         class User
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
             #[Index]
-            public $username;
+            public string $username;
         }
 
     .. code-block:: xml
@@ -80,11 +80,11 @@ Unique Index
         class User
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
             #[Index(unique: true, order: 'asc')]
-            public $username;
+            public string $username;
         }
 
     .. code-block:: xml
@@ -105,11 +105,11 @@ For your convenience you can quickly specify a unique index with
         class User
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
             #[UniqueIndex(order: 'asc')]
-            public $username;
+            public string $username;
         }
 
     .. code-block:: xml
@@ -132,13 +132,13 @@ you can specify them on the class doc block:
         class User
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'int')]
-            public $accountId;
+            public int $accountId;
 
             #[Field(type: 'string')]
-            public $username;
+            public string $username;
         }
 
     .. code-block:: xml
@@ -174,13 +174,13 @@ attribute:
         class User
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[ODM\Field(type: 'int')]
-            public $accountId;
+            public int $accountId;
 
             #[Field(type: 'string')]
-            public $username;
+            public string $username;
         }
 
     .. code-block:: xml
@@ -220,7 +220,7 @@ documents.
     {
         #[Field(type: 'date')]
         #[Index]
-        private $date;
+        private \DateTime $date;
 
         // ...
     }
@@ -233,6 +233,8 @@ Now if we had a ``BlogPost`` document with the ``Comment`` document embedded man
 
     namespace Documents;
 
+    use Doctrine\Common\Collections\Collection;
+
     #[Document]
     class BlogPost
     {
@@ -240,10 +242,10 @@ Now if we had a ``BlogPost`` document with the ``Comment`` document embedded man
 
         #[Field(type: 'string')]
         #[Index]
-        private $slug;
+        private string $slug;
 
         #[EmbedMany(targetDocument: Comment::class)]
-        private $comments;
+        private Collection $comments;
     }
 
 If we were to create the indexes with the ``SchemaManager``:
@@ -302,20 +304,20 @@ options structures manually:
         class Place
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[EmbedOne(targetDocument: Coordinates::class)]
-            public $coordinates;
+            public ?Coordinates $coordinates;
         }
 
         #[EmbeddedDocument]
         class Coordinates
         {
             #[Field(type: 'float')]
-            public $latitude;
+            public float $latitude;
 
             #[Field(type: 'float')]
-            public $longitude;
+            public float $longitude;
         }
 
     .. code-block:: xml
@@ -343,13 +345,13 @@ index.
         class Place
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
-            public $city;
+            public string $city;
 
             #[ODM\Field(type: 'int')]
-            public $version;
+            public int $version;
         }
 
     .. code-block:: xml

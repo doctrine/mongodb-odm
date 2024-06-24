@@ -35,16 +35,18 @@ querying by the BlogPost's ID.
     {
         // ...
 
+        /** @var Collection<Comment> */
         #[ReferenceMany(targetDocument: Comment::class, mappedBy: 'blogPost')]
-        private $comments;
+        private Collection $comments;
 
+        /** @var Collection<Comment> */
         #[ReferenceMany(
              targetDocument: Comment::class,
              mappedBy: 'blogPost',
              sort: ['date' => 'desc'],
              limit: 5,
         )]
-        private $last5Comments;
+        private Collection $last5Comments;
     }
 
     #[Document]
@@ -53,7 +55,7 @@ querying by the BlogPost's ID.
         // ...
 
         #[ReferenceOne(targetDocument: BlogPost::class, inversedBy: 'comments')]
-        private $blogPost;
+        private BlogPost $blogPost;
     }
 
 You can also use ``mappedBy`` for referencing a single document, as in the
@@ -70,7 +72,7 @@ following example:
              mappedBy: 'blogPost',
              sort: ['date' => 'desc']
         )]
-        private $lastComment;
+        private ?Comment $lastComment = null;
     }
 
 ``criteria`` Example
@@ -86,12 +88,13 @@ administrators:
 
     class BlogPost
     {
+        /** @var Collection<Comment> */
         #[ReferenceMany(
              targetDocument: Comment::class,
              mappedBy: 'blogPost',
              criteria: ['isByAdmin' => true]
         )]
-        private $commentsByAdmin;
+        private Collection $commentsByAdmin;
     }
 
 ``repositoryMethod`` Example
@@ -106,12 +109,13 @@ call on the Comment repository class to populate the reference.
 
     class BlogPost
     {
+        /** @var Collection<Comment> */
         #[ReferenceMany(
              targetDocument: Comment::class,
              mappedBy: 'blogPost',
              repositoryMethod: 'findSomeComments',
         )]
-        private $someComments;
+        private Collection $someComments;
     }
 
 The ``Comment`` class will need to have a custom repository class configured:

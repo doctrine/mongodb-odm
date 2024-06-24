@@ -23,7 +23,7 @@ Embed a single document:
             // ...
 
             #[EmbedOne(targetDocument: Address::class)]
-            private $address;
+            private ?Address $address;
 
             // ...
         }
@@ -32,7 +32,7 @@ Embed a single document:
         class Address
         {
             #[Field(type: 'string')]
-            private $street;
+            private string $street;
 
             // ...
         }
@@ -73,8 +73,9 @@ Embed many documents:
         {
             // ...
 
+            /** @var Collection<PhoneNumber>
             #[EmbedMany(targetDocument: Phonenumber::class)]
-            private $phoneNumbers;
+            private Collection $phoneNumbers;
 
             // ...
             public function __construct()
@@ -87,7 +88,7 @@ Embed many documents:
         class PhoneNumber
         {
             #[Field(type: 'string')]
-            private $number;
+            private string $number;
 
             // ...
         }
@@ -130,7 +131,7 @@ you can simply omit the ``targetDocument`` option:
             // ..
 
             #[EmbedMany]
-            private $tasks;
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -162,7 +163,7 @@ the embedded document. The field name can be customized with the
             // ..
 
             #[EmbedMany(discriminatorField: 'type')]
-            private $tasks;
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -199,7 +200,7 @@ in each embedded document:
                   'build' => BuildTask::class,
               ]
             )]
-            private $tasks;
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -239,7 +240,7 @@ discriminator:
                 ],
                 defaultDiscriminatorValue: 'download',
             )]
-            private $tasks = [];
+            private Collection $tasks;
 
             // ...
         }
@@ -282,7 +283,7 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
         {
             // ...
             #[EmbedMany(targetDocument: PhoneNumber::class, storeEmptyArray: true)]
-            private $phoneNumbers = [];
+            private Collection $phoneNumbers;
             // ...
         }
     .. code-block:: xml
