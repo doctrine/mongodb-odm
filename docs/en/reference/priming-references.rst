@@ -18,6 +18,7 @@ Consider the following abbreviated model:
     #[Document]
     class User
     {
+        /** @var Collection<Account> */
         #[ReferenceMany(targetDocument: Account::class)]
         private Collection $accounts;
     }
@@ -111,6 +112,7 @@ specifying them in the mapping:
     #[Document]
     class User
     {
+        /** @var Collection<Account> */
         #[ReferenceMany(targetDocument: Account::class, prime: ['user'])]
         private Collection $accounts;
     }

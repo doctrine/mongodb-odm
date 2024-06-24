@@ -217,6 +217,7 @@ Optional attributes:
 
     class User
     {
+        /** @var Collection<BookTag|SongTag> */
         #[EmbedMany(
             strategy:'set',
             discriminatorField:'type',
@@ -989,13 +990,13 @@ Optional attributes:
         /** @var Collection<Item> */
         #[ReferenceMany(
             strategy: 'set',
-            targetDocument: Documents\Item::class,
+            targetDocument: Item::class,
             cascade: 'all',
             sort: ['sort_field' => 'asc'],
             discriminatorField: 'type',
             discriminatorMap: [
-                'book' => Documents\BookItem::class,
-                'song' => Documents\SongItem::class,
+                'book' => BookItem::class,
+                'song' => SongItem::class,
             ],
             defaultDiscriminatorValue: 'book',
         )]

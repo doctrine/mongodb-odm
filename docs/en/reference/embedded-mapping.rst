@@ -73,7 +73,7 @@ Embed many documents:
         {
             // ...
 
-            /** @var Collection<PhoneNumber>
+            /** @var Collection<PhoneNumber> */
             #[EmbedMany(targetDocument: Phonenumber::class)]
             private Collection $phoneNumbers;
 
@@ -282,6 +282,8 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
         class User
         {
             // ...
+
+            /** @var Collection<PhoneNumber> */
             #[EmbedMany(targetDocument: PhoneNumber::class, storeEmptyArray: true)]
             private Collection $phoneNumbers;
             // ...
@@ -299,5 +301,6 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
                 <field name="number" type="string" />
           </embedded-document>
         </doctrine-mongo-mapping>
+
 Now, when the `$phoneNumbers` collection is empty, an empty array will be stored in the database for the `User`
 document's embedded `phoneNumbers` collection, even if there are no actual embedded documents in the collection.

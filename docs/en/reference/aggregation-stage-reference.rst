@@ -381,6 +381,7 @@ pipeline stages. Take the following relationship for example:
 
     class Orders
     {
+        /** @var Collection<Item> */
         #[ReferenceMany(
             targetDocument: Item::class,
             cascade: 'all',
@@ -412,6 +413,7 @@ to be considered when looking up one-to-one relationships:
 
     class Orders
     {
+        /** @var Collection<Item> */
         #[ReferenceOne(
             targetDocument: Item::class,
             cascade: 'all',

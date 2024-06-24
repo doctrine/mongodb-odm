@@ -69,3 +69,10 @@ Example:
             $this->articles = new ArrayCollection();
         }
     }
+
+.. note::
+
+   The properties' type hints must be ``Collection``, and cannot be
+   ``ArrayCollection``. When the ``User`` object is retrieved from the database,
+   the properties ``$addresses`` and ``$articles`` are instances of
+   ``Doctrine\ODM\MongoDB\PersistentCollection`` to track changes.

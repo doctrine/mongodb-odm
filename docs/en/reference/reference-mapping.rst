@@ -200,6 +200,7 @@ in each `DBRef`_ object:
         {
             // ..
 
+            /** @var Collection<Album|Song> */
             #[ReferenceMany(
                 discriminatorMap: [
                     'album' => Album::class,
@@ -277,8 +278,11 @@ Example:
 
         <?php
 
-        #[ReferenceOne(targetDocument: Profile::class, storeAs: 'id')]
-        private Profile $profile;
+        class User
+        {
+            #[ReferenceOne(targetDocument: Profile::class, storeAs: 'id')]
+            private Profile $profile;
+        }
 
     .. code-block:: xml
 
@@ -323,8 +327,11 @@ referenced documents. You must explicitly enable this functionality:
 
         <?php
 
-        #[ReferenceOne(targetDocument: Profile::class, cascade: ['persist'])]
-        private Profile $profile;
+        class User
+        {
+            #[ReferenceOne(targetDocument: Profile::class, cascade: ['persist'])]
+            private Profile $profile;
+        }
 
     .. code-block:: xml
 
@@ -435,13 +442,16 @@ You can achieve this behavior by using the `storeEmptyArray` option.
 
     .. code-block:: php
         <?php
+
         #[Document]
         class User
         {
             // ...
+
             /** @var Collection<Account> */
             #[ReferenceMany(targetDocument: Account::class, storeEmptyArray: true)]
-            private Collection $accounts = [];
+            private Collection $accounts;
+
             // ...
         }
     .. code-block:: xml
