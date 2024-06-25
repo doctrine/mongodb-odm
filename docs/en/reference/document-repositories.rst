@@ -103,11 +103,6 @@ implementation for all documents (unless overridden by the mapping):
 Repositories with Additional Dependencies
 -----------------------------------------
 
-.. note::
-
-    Implementing your own RepositoryFactory is possible since version 1.0, but the
-    ``AbstractRepositoryFactory`` class used in this example is only available since 1.2.
-
 By default, Doctrine assumes that it can instantiate your repositories in same manner
 as its default one:
 
@@ -117,42 +112,49 @@ as its default one:
 
     namespace Repositories;
 
+    use Doctrine\ODM\MongoDB\DocumentRepository;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+    use Doctrine\ODM\MongoDB\UnitOfWork;
+
     class UserRepository extends DocumentRepository
     {
         public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
         {
-            /* constructor is inherited from DocumentRepository */
-            /* ... */
+            // The constructor arguments are inherited from DocumentRepository
+            parent::__construct($dm, $uow, $classMetadata);
         }
     }
 
-In order to change the way Doctrine instantiates repositories, you will need to implement your own
-`RepositoryFactory <https://github.com/doctrine/mongodb-odm/blob/2.2.x/lib/Doctrine/ODM/MongoDB/Repository/RepositoryFactory.php>`_
+In order to change the way Doctrine instantiates repositories, you will need to
+implement your own `RepositoryFactory <https://github.com/doctrine/mongodb-odm/blob/2.9.x/lib/Doctrine/ODM/MongoDB/Repository/RepositoryFactory.php>`_
+
+In the following example, we create a custom repository factory to pass Symfony's
+event dispatcher to the repository constructor.
 
 .. code-block:: php
 
     <?php
 
+    use Doctrine\ODM\MongoDB\DocumentRepository;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
     use Doctrine\ODM\MongoDB\Repository\AbstractRepositoryFactory;
+    use Doctrine\ODM\MongoDB\UnitOfWork;
     use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
     final class YourRepositoryFactory extends AbstractRepositoryFactory
     {
-        private $eventDispatcher;
-
-        public function __construct(EventDispatcherInterface $eventDispatcher)
-        {
-            $this->eventDispatcher = $eventDispatcher;
-        }
+        public function __construct(
+            private EventDispatcherInterface $eventDispatcher
+        ) {}
 
         protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata)
         {
-            switch ($repositoryClassName) {
-                case UserRepository::class:
-                    return new UserRepository($this->eventDispatcher, $documentManager, $metadata);
-                default:
-                    return new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata);
-            }
+            return match ($repositoryClassName) {
+                UserRepository::class => new UserRepository($this->eventDispatcher, $documentManager, $metadata),
+                default               => new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata),
+            };
         }
     }
 
