@@ -115,9 +115,9 @@ custom collection class(es).
 
 For this example, we assume that you want to pass Symfony's event dispatcher
 to your custom collection class. To do this, you need to modify the
-constructor to accept the event dispatcher. You also need to override the
-``createFrom`` method to allow Doctrine to pass the dependencies to the
-collection constructor.
+constructor to accept this dependency. You also need to override the
+``createFrom`` method to pass the dependency to the collection constructor when
+methods such as ``map`` or ``filter`` are called:
 
 .. code-block:: php
 
@@ -141,10 +141,44 @@ collection constructor.
         // your custom methods
     }
 
-This requires you to create a ``PersistentCollectionFactory`` implementation,
+When you instantiate a new document, it's your responsibility to pass the
+dependency to the collection constructor.
+
+.. code-block:: php
+
+    <?php
+
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher */
+    $eventDispatcher = $container->get('event_dispatcher');
+    $sections = new SectionCollection($eventDispatcher);
+    $application = new Application($sections);
+
+The ``$sections`` property cannot have a default value in the ``Application``
+class::
+
+.. code-block:: php
+
+    <?php
+
+    #[Document]
+    class Application
+    {
+        #[EmbedMany(
+            collectionClass: SectionCollection::class,
+            targetDocument: Section::class,
+        )]
+        private Collection $sections;
+
+        public function __construct(
+            SectionCollection $sections,
+        ) {
+            $this->sections = $sections;
+        }
+    }
+
+In addition, you need to create a class that implement ``PersistentCollectionFactory``,
 which Doctrine ODM will then use to construct its persistent collections.
-You may decide to implement this class from scratch or extend our
-``AbstractPersistentCollectionFactory``:
+You should extend ``AbstractPersistentCollectionFactory``:
 
 .. code-block:: php
 
@@ -169,7 +203,7 @@ You may decide to implement this class from scratch or extend our
         }
     }
 
-The factory class must then be registered in the ``Configuration``:
+The factory class is then registered in the ``Configuration``:
 
 .. code-block:: php
 
