@@ -63,8 +63,8 @@
         "psr-4": {
             "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
+            "Documentation\\": "tests/Documentation",
             "Documents\\": "tests/Documents",
-            "Documents81\\": "tests/Documents81",
             "Stubs\\": "tests/Stubs",
             "TestDocuments\\" :"tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures"
         }
