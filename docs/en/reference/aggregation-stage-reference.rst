@@ -413,13 +413,12 @@ to be considered when looking up one-to-one relationships:
 
     class Orders
     {
-        /** @var Collection<Item> */
         #[ReferenceOne(
             targetDocument: Item::class,
             cascade: 'all',
             storeAs: 'id',
         )]
-        private Collection $items;
+        private Item $items;
     }
 
 .. code-block:: php

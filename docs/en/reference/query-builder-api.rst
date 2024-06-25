@@ -594,7 +594,7 @@ document with a text index:
             #[Field(type: 'string')]
             public string $description;
 
-            #[Field(notSaved: true)]
+            #[Field(type: 'int', notSaved: true)]
             public int $score;
         }
 

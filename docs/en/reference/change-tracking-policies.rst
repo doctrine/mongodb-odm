@@ -85,6 +85,7 @@ follows:
     {
         // ...
 
+        /** @var PropertyChangedListener[] */
         private array $listeners = [];
 
         public function addPropertyChangedListener(PropertyChangedListener $listener): void

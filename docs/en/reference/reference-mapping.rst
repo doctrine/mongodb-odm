@@ -53,7 +53,7 @@ Reference one document:
             // ...
 
             #[ReferenceOne(targetDocument: Shipping::class)]
-            private Shipping $shipping;
+            private ?Shipping $shipping = null;
 
             // ...
         }
@@ -97,6 +97,11 @@ Reference many documents:
             /** @var Collection<Account> */
             #[ReferenceMany(targetDocument: Account::class)]
             private Collection $accounts;
+
+            public function __construct()
+            {
+                $this->accounts = new ArrayCollection();
+            }
 
             // ...
         }
