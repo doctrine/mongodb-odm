@@ -442,8 +442,11 @@ as follows:
 
         <?php
 
-        #[Field(name: 'db_name')]
-        private string $name;
+        class User
+        {
+            #[Field(name: 'db_name')]
+            private string $name;
+        }
 
     .. code-block:: xml
 

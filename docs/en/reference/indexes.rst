@@ -76,7 +76,9 @@ Unique Index
 
         <?php
 
-        namespace Documents;#[Document */]
+        namespace Documents;
+
+        #[Document]
         class User
         {
             #[Id]

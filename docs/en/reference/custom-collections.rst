@@ -22,11 +22,7 @@ persistence-related features.
 
         /** @var Collection<Section> */
         #[EmbedMany(targetDocument: Section::class)]
-<<<<<<< HEAD
         public Collection $sections;
-=======
-        private Collection $sections;
->>>>>>> 4f01d6eb (Add type to properties)
 
         public function __construct()
         {
@@ -105,12 +101,8 @@ Alternatively, you may want to implement the whole class from scratch:
     {
         public function __construct(
             private array $elements = []
-<<<<<<< HEAD
-        ) {}
-=======
         ) {
         }
->>>>>>> 4f01d6eb (Add type to properties)
 
         // your implementation of all methods interface requires
     }
@@ -136,12 +128,13 @@ methods such as ``map`` or ``filter`` are called:
     use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\Common\Collections\Collection;
 
-    class SectionCollection extend ArrayCollection
+    class SectionCollection extends ArrayCollection
     {
         public function __construct(
             private EventDispatcherInterface $eventDispatcher,
             private array $elements = [],
-        ) {}
+        ) {
+        }
 
         public function createFrom(array $elements): static
         {

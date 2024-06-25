@@ -156,7 +156,6 @@ event dispatcher to the repository constructor.
                 UserRepository::class => new UserRepository($this->eventDispatcher, $documentManager, $metadata),
                 default               => new $repositoryClassName($documentManager, $documentManager->getUnitOfWork(), $metadata),
             };
-            }
         }
     }
 

@@ -196,7 +196,7 @@ in each embedded document:
 
             #[EmbedMany(
               discriminatorMap: [
-                  'download" => DownloadTask::class,
+                  'download' => DownloadTask::class,
                   'build' => BuildTask::class,
               ]
             )]
@@ -235,7 +235,7 @@ discriminator:
 
             #[EmbedMany(
                 discriminatorMap: [
-                  'download" => DownloadTask::class,
+                  'download' => DownloadTask::class,
                   'build' => BuildTask::class,
                 ],
                 defaultDiscriminatorValue: 'download',
