@@ -1,9 +1,9 @@
 Mapping Classes to the ORM and ODM
 ==================================
 
-Because of the non-intrusive design of Doctrine, it is possible for you to have plain PHP classes
-that are mapped to both a relational database (with the Doctrine2 Object Relational Mapper) and
-MongoDB (with the Doctrine MongoDB Object Document Mapper), or any other persistence layer that
+Because of the non-intrusive design of Doctrine, it is possible to map PHP
+classes to both a relational database (with the Doctrine ORM) and
+MongoDB (with the Doctrine MongoDB ODM), or any other persistence layer that
 implements the Doctrine Persistence `persistence`_ interfaces.
 
 Test Subject
@@ -21,18 +21,16 @@ for multiple Doctrine persistence layers:
 
     class BlogPost
     {
-        private $id;
-        private $title;
-        private $body;
-
-        // ...
+        public string $id;
+        public string $title;
+        public string $body;
     }
 
 Mapping Information
 -------------------
 
-Now we just need to provide the mapping information for the Doctrine persistence layers so they know
-how to consume the objects and persist them to the database.
+Now we just need to provide the mapping information for the Doctrine persistence
+layers so they know how to consume the objects and persist them to the database.
 
 ORM
 ~~~
@@ -48,21 +46,20 @@ First define the mapping for the ORM:
         namespace Documents\Blog;
 
         use Documents\Blog\Repository\ORM\BlogPostRepository;
+        use Doctrine\ORM\Mapping as ORM;
 
-        #[Entity(repositoryClass: BlogPostRepository::class)]
+        #[ORM\Entity(repositoryClass: BlogPostRepository::class)]
         class BlogPost
         {
-            #[Id]
-            #[Column(type: 'int')]
-            private $id;
+            #[ORM\Id]
+            #[ORM\Column(type: 'int')]
+            public string $id;
 
-            #[Column(type: 'string')]
-            private $title;
+            #[ORM\Column(type: 'string')]
+            public string $title;
 
-            #[Column(type: 'text')]
-            private $body;
-
-            // ...
+            #[ORM\Column(type: 'text')]
+            public string $body;
         }
 
     .. code-block:: xml
@@ -80,14 +77,15 @@ First define the mapping for the ORM:
             </entity>
         </doctrine-mapping>
 
-Now you are able to persist the ``Documents\Blog\BlogPost`` with an instance of ``EntityManager``:
+Now you are able to persist the ``Documents\Blog\BlogPost`` with an instance of
+``EntityManager``:
 
 .. code-block:: php
 
     <?php
 
     $blogPost = new BlogPost();
-    $blogPost->setTitle('test');
+    $blogPost->title = 'test';
 
     $em->persist($blogPost);
     $em->flush();
@@ -98,7 +96,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $em->getRepository(BlogPost::class)->findOneBy(array('title' => 'test'));
+    $blogPost = $em->getRepository(BlogPost::class)->findOneBy(['title' => 'test']);
 
 MongoDB ODM
 ~~~~~~~~~~~
@@ -114,20 +112,19 @@ Now map the same class to the Doctrine MongoDB ODM:
         namespace Documents\Blog;
 
         use Documents\Blog\Repository\ODM\BlogPostRepository;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-        #[Document(repositoryClass: BlogPostRepository::class)]
+        #[ODM\Document(repositoryClass: BlogPostRepository::class)]
         class BlogPost
         {
-            #[Id]
-            private $id;
+            #[ODM\Id]
+            public string $id;
 
-            #[Field(type: 'string')]
-            private $title;
+            #[ODM\Field]
+            public string $title;
 
-            #[Field(type: 'string')]
-            private $body;
-
-            // ...
+            #[ODM\Field]
+            public string $body;
         }
 
     .. code-block:: xml
@@ -152,7 +149,7 @@ Now the same class is able to be persisted in the same way using an instance of 
     <?php
 
     $blogPost = new BlogPost();
-    $blogPost->setTitle('test');
+    $blogPost->title = 'test';
 
     $dm->persist($blogPost);
     $dm->flush();
@@ -163,12 +160,13 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $dm->getRepository(BlogPost::class)->findOneBy(array('title' => 'test'));
+    $blogPost = $dm->getRepository(BlogPost::class)->findOneBy(['title' => 'test']);
 
 Repository Classes
 ------------------
 
-You can implement the same repository interface for the ORM and MongoDB ODM easily, e.g. by creating ``BlogPostRepositoryInterface``:
+You can implement the same repository interface for the ORM and MongoDB ODM
+easily, e.g. by creating ``BlogPostRepositoryInterface``:
 
 .. code-block:: php
 
