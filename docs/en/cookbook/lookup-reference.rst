@@ -1,11 +1,21 @@
 Loading references with Lookup
 ==============================
 
-When you have a reference to a document, Doctrine ODM can load the referenced
-by running a distinct query. This is called "lazy loading". However, when you
-need to load a reference with a query, you can use the ``$lookup`` stage in
-MongoDB's aggregation pipeline. It's similar to a SQL join, without duplication
-of data in the result set.
+Doctrine ODM provides a way to load reference documents from other collections
+using the ``#[ReferenceOne]`` and ``#[ReferenceMany]`` annotations. This is
+perfect to keep independent document updates and avoid data duplication. But
+sometimes you need to load the referenced documents with the main document in a
+single query. This is where MongoDB's aggregation pipeline and the ``$lookup``
+stage come into play.
+
+By default, referenced documents are loaded with a separate query. When you
+access them. This is called "lazy loading". However, when you know you will
+need the referenced documents, you can use the ``$lookup`` stage in MongoDB's
+aggregation pipeline. It's similar to a SQL join, without duplication of data in
+the result set when there is many references to load.
+
+Introduction of the example
+---------------------------
 
 For this cookbook, we will use 3 collections:
 - ``users``: contains the users who can pass orders
@@ -156,6 +166,9 @@ without stage, you will get the following documents with reference ids for
         ]
     ];
 
+Embed a list of referenced documents
+------------------------------------
+
 Now, let's see how to load items with each order using an aggregation pipeline.
 MongoDB's ``$lookup`` stage requires a local field and a foreign field to match
 documents. In our case, this parameters are extracted automatically from the
@@ -216,10 +229,12 @@ documents.
         ]
     ];
 
+Embed a single referenced document
+----------------------------------
+
 To get the user, you can also use the ``$lookup`` stage. It will always return a
 list of documents. You need to add the ``$unwind`` stage to reduce to a single
 document.
-
 
 .. code-block:: php
 
@@ -270,6 +285,9 @@ document.
         ]
     ];
 
+Combine multiple lookups
+------------------------
+
 Both ``$lookup`` stages can be combined in a single pipeline to get the full
 order document, with user and items.
 
@@ -283,9 +301,6 @@ order document, with user and items.
             ->lookup('user')
                 ->alias('user')
             ->unwind('$user');
-
-.. code-block:: php
-
 
 .. code-block:: php
 
@@ -342,8 +357,12 @@ order document, with user and items.
 The result is still an array. You may be tempted to hydrate the result into the
 ``Order`` class, but this will fail because the ``items`` and ``user`` fields
 contains embedded documents instead of reference ids as expected by the
-``ReferenceMany`` and ``ReferenceOne`` mappings. You need to create a new class
-to hold the result of the aggregation.
+``ReferenceMany`` and ``ReferenceOne`` mappings.
+
+Hydrate the result into a custom class
+--------------------------------------
+
+You need to create a new class to hold the result of the aggregation.
 
 .. code-block:: php
 
@@ -438,6 +457,9 @@ as an array of ``OrderResult`` instances.
 Perfect, now you know how to load references with the ``$lookup`` and hydrate
 the result into a custom class as embedded documents.
 
+Embed relations from another collection
+---------------------------------------
+
 Let's see how to embed relations in the inverse way: load users with their
 orders. Remember, it's the "order" documents that have a reference to the user.
 We now wish to load the users first and use ``$lookup`` to load the list of
@@ -488,6 +510,9 @@ list of order documents.
             ],
         ]
     ]
+
+Embed 2 levels of references in a single query
+----------------------------------------------
 
 It becomes more complex when you want to load the items of each order. You need
 to ``$unwind`` all the orders in separate results, then ``$lookup`` the items
@@ -672,3 +697,6 @@ will return the result as an array of ``UserResult`` instances.
             ],
         ]
     ]
+
+That's it! You now know how to embed references with the ``$lookup`` stage and
+hydrate the result into custom classes.
