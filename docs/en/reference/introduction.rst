@@ -42,7 +42,8 @@ the features.
 
     <?php
 
-    use DateTime, DateTimeImmutable;
+    use DateTime;
+    use DateTimeImmutable;
     use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\Common\Collections\Collection;
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
