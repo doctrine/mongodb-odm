@@ -141,28 +141,28 @@ without stage, you will get the following documents with reference ids for
 
     [
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-            'date' => new MongoDB\BSON\UTCDateTime('-147398400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+            'date' => MongoDB\BSON\UTCDateTime('-147398400000'),
             'items' => [
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613')
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010613')
             ],
-            'user' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
+            'user' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
-            'date' => new MongoDB\BSON\UTCDateTime('141868800000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+            'date' => MongoDB\BSON\UTCDateTime('141868800000'),
             'items' => [],
-            'user' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+            'user' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
-            'date' => new MongoDB\BSON\UTCDateTime('399686400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
+            'date' => MongoDB\BSON\UTCDateTime('399686400000'),
             'items' => [
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
             ],
-            'user' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+            'user' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
         ]
     ];
 
@@ -192,40 +192,40 @@ documents.
 
     [
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-            'date' => new MongoDB\BSON\UTCDateTime('-147398400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+            'date' => MongoDB\BSON\UTCDateTime('-147398400000'),
             'items' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
                     'name' => 'Wheel',
                 ]
             ],
-            'user' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
+            'user' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
-            'date' => new MongoDB\BSON\UTCDateTime('141868800000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+            'date' => MongoDB\BSON\UTCDateTime('141868800000'),
             'items' => [],
-            'user' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+            'user' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
-            'date' => new MongoDB\BSON\UTCDateTime('399686400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
+            'date' => MongoDB\BSON\UTCDateTime('399686400000'),
             'items' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
                     'name' => 'Pedals',
                 ],
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
                     'name' => 'Wheel',
                 ],
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
                     'name' => 'Handlebars',
                 ]
             ],
-            'user' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+            'user' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
         ]
     ];
 
@@ -251,35 +251,35 @@ document.
 
     [
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-            'date' => new MongoDB\BSON\UTCDateTime('-147398400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+            'date' => MongoDB\BSON\UTCDateTime('-147398400000'),
             'items' => [
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613')
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010613')
             ],
             'user' => [
-                '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
+                '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
                 'name' => 'Eddy Merckx',
             ],
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
-            'date' => new MongoDB\BSON\UTCDateTime('141868800000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+            'date' => MongoDB\BSON\UTCDateTime('141868800000'),
             'items' => [],
             'user' => [
-                '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+                '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
                 'name' => 'Jacques Anquetil',
             ],
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
-            'date' => new MongoDB\BSON\UTCDateTime('399686400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
+            'date' => MongoDB\BSON\UTCDateTime('399686400000'),
             'items' => [
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
-                new MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
             ],
             'user' => [
-                '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+                '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
                 'name' => 'Jacques Anquetil',
             ],
         ]
@@ -308,47 +308,47 @@ order document, with user and items.
 
     [
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-            'date' => new MongoDB\BSON\UTCDateTime('-147398400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+            'date' => MongoDB\BSON\UTCDateTime('-147398400000'),
             'items' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
                     'name' => 'Wheel',
                 ]
             ],
             'user' => [
-                '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
+                '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
                 'name' => 'Eddy Merckx',
             ],
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
-            'date' => new MongoDB\BSON\UTCDateTime('141868800000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+            'date' => MongoDB\BSON\UTCDateTime('141868800000'),
             'items' => [],
             'user' => [
-                '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+                '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
                 'name' => 'Jacques Anquetil',
             ],
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
-            'date' => new MongoDB\BSON\UTCDateTime('399686400000'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061a'),
+            'date' => MongoDB\BSON\UTCDateTime('399686400000'),
             'items' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
                     'name' => 'Pedals',
                 ],
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
                     'name' => 'Wheel',
                 ],
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
                     'name' => 'Handlebars',
                 ]
             ],
             'user' => [
-                '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+                '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
                 'name' => 'Jacques Anquetil',
             ],
         ]
@@ -371,21 +371,26 @@ You need to create a new class to hold the result of the aggregation.
     #[QueryResultDocument]
     class OrderResult
     {
-        public function __construct(
-            #[Id]
-            public string $id,
+        #[Id]
+        public string $id;
 
-            #[Field(type: 'date_immutable')]
-            public DateTimeImmutable $date,
+        #[Field(type: 'date_immutable')]
+        public DateTimeImmutable $date;
 
-            /** @var Collection<Item> */
-            #[EmbedMany(targetDocument: Item::class)]
-            public Collection $items,
+        /** @var Collection<Item> */
+        #[EmbedMany(targetDocument: Item::class)]
+        public Collection $items;
 
-            #[EmbedOne(targetDocument: User::class)]
-            public User $user,
-        ) {}
+        #[EmbedOne(targetDocument: User::class)]
+        public User $user;
     }
+
+.. note::
+
+    You don't need to initialize the collections in the constructor, as the
+    ``QueryResultDocument`` are only used to hydrate the results from the
+    database. Doctrine will create the collections. You will never instantiate
+    this class directly.
 
 Now, you can use the ``AggregationBuilder::hydrate()`` method to get the result
 as an array of ``OrderResult`` instances.
@@ -408,46 +413,46 @@ as an array of ``OrderResult`` instances.
 
     [
         new OrderResult(
-            id: new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-            date: new DateTimeImmutable('1965-05-01'),
-            items: new Doctrine\ODM\MongoDB\PersistentCollection([
-                new Item(
+            id: MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+            date: DateTimeImmutable('1965-05-01'),
+            items: Doctrine\ODM\MongoDB\PersistentCollection([
+                Item(
                     id: '667b034c75590cbbe6010613',
                     name: 'Wheel',
                 ),
             ]),
-            user: new User(
+            user: User(
                 id: '667b034c75590cbbe6010619',
                 name: 'Eddy Merckx',
             ),
         ),
-        new OrderResult(
-            id: new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
-            date: new DateTimeImmutable('1974-07-01'),
-            items: new Doctrine\ODM\MongoDB\PersistentCollection([]),
-            user: new User(
+        OrderResult(
+            id: MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+            date: DateTimeImmutable('1974-07-01'),
+            items: Doctrine\ODM\MongoDB\PersistentCollection([]),
+            user: User(
                 id: '667b034c75590cbbe6010618',
                 name: 'Jacques Anquetil',
             ),
         ),
-        new OrderResult(
-            id: new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-            date: new DateTimeImmutable('1982-09-01'),
-            items: new Doctrine\ODM\MongoDB\PersistentCollection([
-                new Item(
+        OrderResult(
+            id: MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+            date: DateTimeImmutable('1982-09-01'),
+            items: Doctrine\ODM\MongoDB\PersistentCollection([
+                Item(
                     id: '667b034c75590cbbe6010617',
                     name: 'Pedals',
                 ),
-                new Item(
+                Item(
                     id: '667b034c75590cbbe6010613',
                     name: 'Wheel',
                 ),
-                new Item(
+                Item(
                     id: '667b034c75590cbbe6010615',
                     name: 'Handlebars',
                 ),
             ]),
-            user: new User(
+            user: User(
                 id: '667b034c75590cbbe6010618',
                 name: 'Jacques Anquetil',
             ),
@@ -486,25 +491,25 @@ list of order documents.
 
     [
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
             'name' => 'Eddy Merckx',
             'orders' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
                     // all other fields
                 ]
             ],
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
             'name' => 'Jacques Anquetil',
             'orders' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
                     // all other fields
                 ],
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
                     // all other fields
                 ]
             ],
@@ -560,15 +565,15 @@ contains the list of items.
 
     [
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010619'),
             'name' => 'Eddy Merckx',
             'orders' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
-                    'date' => new MongoDB\BSON\UTCDateTime('-147398400000'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+                    'date' => MongoDB\BSON\UTCDateTime('-147398400000'),
                     'items' => [
                         [
-                            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
                             'name' => 'Wheel',
                         ]
                     ],
@@ -576,30 +581,30 @@ contains the list of items.
             ],
         ],
         [
-            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
+            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010618'),
             'name' => 'Jacques Anquetil',
             'orders' => [
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061b'),
 
-                    'date' => new MongoDB\BSON\UTCDateTime('141868800000'),
+                    'date' => MongoDB\BSON\UTCDateTime('141868800000'),
                     'items' => [],
                 ],
                 [
-                    '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
+                    '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe601061c'),
 
-                    'date' => new MongoDB\BSON\UTCDateTime('399686400000'),
+                    'date' => MongoDB\BSON\UTCDateTime('399686400000'),
                     'items' => [
                         [
-                            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
+                            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010617'),
                             'name' => 'Pedals',
                         ],
                         [
-                            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
+                            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010613'),
                             'name' => 'Wheel',
                         ],
                         [
-                            '_id' => new MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
+                            '_id' => MongoDB\BSON\ObjectId('667b034c75590cbbe6010615'),
                             'name' => 'Handlebars',
                         ]
                     ],
@@ -651,15 +656,15 @@ will return the result as an array of ``UserResult`` instances.
 .. code-block:: php
 
     [
-        new UserResult(
+        UserResult(
             id: '667b034c75590cbbe6010619',
             name: 'Eddy Merckx',
             orders: [
-                new UserOrderResult(
+                UserOrderResult(
                     id: '667b034c75590cbbe601061c',
-                    date: new DateTimeImmutable('1965-05-01'),
+                    date: DateTimeImmutable('1965-05-01'),
                     items: [
-                        new Item(
+                        Item(
                             id: '667b034c75590cbbe6010613',
                             name: 'Wheel',
                         ),
@@ -667,28 +672,28 @@ will return the result as an array of ``UserResult`` instances.
                 ]
             ],
         ),
-        new UserResult(
+        UserResult(
             id: '667b034c75590cbbe6010618',
             name: 'Jacques Anquetil',
             orders: [
                 [
                     id: '667b034c75590cbbe601061b',
-                    date: new DateTimeImmutable('1974-07-01'),
+                    date: DateTimeImmutable('1974-07-01'),
                     items: [],
                 ],
                 [
                     id: '667b034c75590cbbe601061c',
-                    date: new DateTimeImmutable('1982-09-01'),
+                    date: DateTimeImmutable('1982-09-01'),
                     items: [
-                        new Item(
+                        Item(
                             id: '667b034c75590cbbe6010617',
                             name: 'Pedals',
                         ),
-                        new Item(
+                        Item(
                             id: '667b034c75590cbbe6010613',
                             name: 'Wheel',
                         ),
-                        new Item(
+                        Item(
                             id: '667b034c75590cbbe6010615',
                             name: 'Handlebars',
                        )]
