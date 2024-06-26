@@ -133,13 +133,13 @@ they can't be persisted to the database.
         class UserPurchases
         {
             #[ReferenceOne(targetDocument: User::class, name: '_id')]
-            private $user;
+            private User $user;
 
             #[Field(type: 'int')]
-            private $numPurchases;
+            private int $numPurchases;
 
             #[Field(type: 'float')]
-            private $amount;
+            private float $amount;
         }
 
     .. code-block:: xml

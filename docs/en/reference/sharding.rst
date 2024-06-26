@@ -23,13 +23,13 @@ the document as well as an appropriate index:
         class User
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'int')]
-            public $accountId;
+            public int $accountId;
 
             #[Field(type: 'string')]
-            public $username;
+            public string $username;
         }
 
     .. code-block:: xml

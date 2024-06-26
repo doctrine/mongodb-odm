@@ -42,6 +42,7 @@ the features.
 
     <?php
 
+    use DateTime;
     use DateTimeImmutable;
     use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\Common\Collections\Collection;
@@ -66,11 +67,11 @@ the features.
         #[ODM\Field(type: 'int')]
         public int $salary;
 
-        #[ODM\Field(type: 'date')]
+        #[ODM\Field(type: 'date_immutable')]
         public DateTimeImmutable $started;
 
         #[ODM\Field(type: 'date')]
-        public DateTimeImmutable $left;
+        public DateTime $left;
 
         #[ODM\EmbedOne(targetDocument: Address::class)]
         public Address $address;

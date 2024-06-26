@@ -18,7 +18,7 @@ does not exist.
     {
         #[Field(type: 'string')]
         #[AlsoLoad('name')]
-        public $fullName;
+        public string $fullName;
     }
 
 The ``$fullName`` property will be loaded from ``fullName`` if it exists, but
@@ -217,6 +217,7 @@ Optional attributes:
 
     class User
     {
+        /** @var Collection<BookTag|SongTag> */
         #[EmbedMany(
             strategy:'set',
             discriminatorField:'type',
@@ -226,7 +227,7 @@ Optional attributes:
             ],
             defaultDiscriminatorValue: 'book',
         )]
-        private $tags = [];
+        private Collection $tags;
     }
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
@@ -281,7 +282,7 @@ Optional attributes:
              ],
              defaultDiscriminatorValue: 'user',
         )]
-        private $creator;
+        private User|Author $creator;
     }
 
 Depending on the embedded document's class, a value of ``user`` or ``author``
@@ -304,7 +305,7 @@ relationship.
     class Money
     {
         #[Field(type: 'float')]
-        private $amount;
+        private float $amount;
 
         public function __construct(float $amount)
         {
@@ -317,7 +318,7 @@ relationship.
     class Wallet
     {
         #[EmbedOne(targetDocument: Money::class)]
-        private $money;
+        private Money $money;
 
         public function setMoney(Money $money): void
         {
@@ -374,13 +375,13 @@ Examples:
     class User
     {
         #[Field(type: 'string')]
-        protected $username;
+        protected string $username;
 
         #[Field(type: 'string', name: 'co')]
-        protected $country;
+        protected string $country;
 
         #[Field(type: 'float')]
-        protected $height;
+        protected float $height;
     }
 
 .. _file:
@@ -501,8 +502,15 @@ customize this via the :ref:`strategy <basic_mapping_identifiers>` attribute.
     class User
     {
         #[Id]
-        protected $id;
+        protected string $id;
     }
+
+.. note::
+
+   The property annotated with `#[Id]`_ cannot be ``readonly`` even if the
+   value is set only once and should never be updated. This is because the
+   property is set outside of the scope of the class, which is not allowed in
+   PHP for ``readonly`` properties.
 
 #[Index]
 --------
@@ -551,7 +559,7 @@ If you are creating a single-field index, you can simply specify an `#[Index]`_ 
     {
         #[Field(type: 'string')]
         #[UniqueIndex]
-        private $username;
+        private string $username;
     }
 
 .. note::
@@ -631,7 +639,7 @@ This is only compatible with the ``int`` type, and cannot be combined with `#[Id
     {
         #[Field(type: 'int')]
         #[Lock]
-        private $lock;
+        private int $lock;
     }
 
 #[MappedSuperclass]
@@ -979,19 +987,20 @@ Optional attributes:
 
     class User
     {
+        /** @var Collection<Item> */
         #[ReferenceMany(
             strategy: 'set',
-            targetDocument: Documents\Item::class,
+            targetDocument: Item::class,
             cascade: 'all',
             sort: ['sort_field' => 'asc'],
             discriminatorField: 'type',
             discriminatorMap: [
-                'book' => Documents\BookItem::class,
-                'song' => Documents\SongItem::class,
+                'book' => BookItem::class,
+                'song' => SongItem::class,
             ],
             defaultDiscriminatorValue: 'book',
         )]
-        private $cart;
+        private Collection $cart;
     }
 
 .. _attributes_reference_reference_one:
@@ -1061,7 +1070,7 @@ Optional attributes:
             ],
             defaultDiscriminatorValue: 'book'
         )]
-        private $cart;
+        private Item $cart;
     }
 
 #[SearchIndex]
@@ -1148,7 +1157,7 @@ Alias of `#[Index]`_, with the ``unique`` option set by default.
     {
         #[Field(type: 'string')]
         #[UniqueIndex]
-        private $email;
+        private string $email;
     }
 
 .. _attributes_reference_version:
@@ -1258,7 +1267,7 @@ combined with `#[Id]`_. Following ODM types can be used for versioning: ``int``,
     {
         #[Field(type: 'int')]
         #[Version]
-        private $version;
+        private int $version;
     }
 
 By default, Doctrine ODM updates :ref:`embed-many <embed_many>` and

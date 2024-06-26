@@ -89,13 +89,13 @@ mapping.
         class User
         {
             #[Id]
-            private $id;
+            private string $id;
 
             #[Field(type: 'string')]
-            private $username;
+            private string $username;
 
             #[EmbedMany(targetDocument: Address::class)]
-            private $addresses;
+            private ?Address $addresses;
 
             // ...
         }
@@ -156,13 +156,13 @@ mapping:
         class BlogPost
         {
             #[Id]
-            private $id;
+            private string $id;
 
             #[Field(type: 'string')]
-            private $title;
+            private string $title;
 
             #[Field(type: 'string')]
-            private $body;
+            private string $body;
 
             // ...
         }

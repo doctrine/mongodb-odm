@@ -20,23 +20,23 @@ First, setup some documents like the following:
         class City
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
-            public $name;
+            public string $name;
 
             #[EmbedOne(targetDocument: Coordinates::class)]
-            public $coordinates;
+            public ?Coordinates $coordinates;
         }
 
         #[EmbeddedDocument]
         class Coordinates
         {
             #[Field(type: 'float')]
-            public $x;
+            public float $x;
 
             #[Field(type: 'float')]
-            public $y;
+            public float $y;
         }
 
     .. code-block:: xml

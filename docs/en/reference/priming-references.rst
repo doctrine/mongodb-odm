@@ -18,8 +18,9 @@ Consider the following abbreviated model:
     #[Document]
     class User
     {
+        /** @var Collection<Account> */
         #[ReferenceMany(targetDocument: Account::class)]
-        private $accounts;
+        private Collection $accounts;
     }
 
 We would like to query for 100 users and then iterate over their referenced
@@ -111,8 +112,9 @@ specifying them in the mapping:
     #[Document]
     class User
     {
+        /** @var Collection<Account> */
         #[ReferenceMany(targetDocument: Account::class, prime: ['user'])]
-        private $accounts;
+        private Collection $accounts;
     }
 
 When the collection is initialized, the configured primers are automatically

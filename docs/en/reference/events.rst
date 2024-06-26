@@ -29,17 +29,12 @@ Now we can add some event listeners to the ``$evm``. Let's create a
 
     class EventTest
     {
-        const preFoo = 'preFoo';
-        const postFoo = 'postFoo';
-
-        private $_evm;
-
-        public $preFooInvoked = false;
-        public $postFooInvoked = false;
+        public bool $preFooInvoked = false;
+        public bool $postFooInvoked = false;
 
         public function __construct(EventManager $evm)
         {
-            $evm->addEventListener([self::preFoo, self::postFoo], $this);
+            $evm->addEventListener(['preFoo', 'postFoo'], $this);
         }
 
         public function preFoo(EventArgs $e): void
@@ -88,7 +83,7 @@ array of events it should be subscribed to.
     {
         const preFoo = 'preFoo';
 
-        public $preFooInvoked = false;
+        public bool $preFooInvoked = false;
 
         public function preFoo(): void
         {
@@ -248,15 +243,15 @@ event occurs.
         // ...
 
         #[Field]
-        public $value;
+        public string $value;
 
         #[Field]
-        private $createdAt;
+        private \DateTimeInterface $createdAt;
 
         #[PrePersist]
         public function doStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
-            $this->createdAt = date('Y-m-d H:i:s');
+            $this->createdAt = new DateTimeImmutable();
         }
 
         #[PrePersist]

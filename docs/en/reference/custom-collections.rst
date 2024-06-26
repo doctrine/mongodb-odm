@@ -55,6 +55,7 @@ and ensuring that your custom class is initialized in the owning class' construc
     {
         // ...
 
+        /** @var Collection<Section> */
         #[EmbedMany(
             collectionClass: SectionCollection::class,
             targetDocument: Section::class,
@@ -100,7 +101,8 @@ Alternatively, you may want to implement the whole class from scratch:
     {
         public function __construct(
             private array $elements = []
-        ) {}
+        ) {
+        }
 
         // your implementation of all methods interface requires
     }
@@ -126,12 +128,13 @@ methods such as ``map`` or ``filter`` are called:
     use Doctrine\Common\Collections\ArrayCollection;
     use Doctrine\Common\Collections\Collection;
 
-    class SectionCollection extend ArrayCollection
+    class SectionCollection extends ArrayCollection
     {
         public function __construct(
             private EventDispatcherInterface $eventDispatcher,
             private array $elements = [],
-        ) {}
+        ) {
+        }
 
         public function createFrom(array $elements): static
         {

@@ -85,11 +85,12 @@ follows:
     {
         // ...
 
-        private $_listeners = [];
+        /** @var PropertyChangedListener[] */
+        private array $listeners = [];
 
         public function addPropertyChangedListener(PropertyChangedListener $listener): void
         {
-            $this->_listeners[] = $listener;
+            $this->listeners[] = $listener;
         }
     }
 

@@ -589,13 +589,13 @@ document with a text index:
         class Document
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
-            public $description;
+            public string $description;
 
-            #[Field(notSaved: true)]
-            public $score;
+            #[Field(type: 'int', notSaved: true)]
+            public int $score;
         }
 
 You can then run queries using the text operator:

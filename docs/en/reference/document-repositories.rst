@@ -146,8 +146,9 @@ event dispatcher to the repository constructor.
     final class YourRepositoryFactory extends AbstractRepositoryFactory
     {
         public function __construct(
-            private EventDispatcherInterface $eventDispatcher
-        ) {}
+            private EventDispatcherInterface $eventDispatcher,
+        ) {
+        }
 
         protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata)
         {

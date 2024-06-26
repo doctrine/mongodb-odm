@@ -15,16 +15,17 @@ Full Tree in Single Document
     class BlogPost
     {
         #[Id]
-        private $id;
+        private string $id;
 
         #[Field(type: 'string')]
-        private $title;
+        private string $title;
 
         #[Field(type: 'string')]
-        private $body;
+        private string $body;
 
+        /** @var Collection<Comment> */
         #[EmbedMany(targetDocument: Comment::class)]
-        private $comments = [];
+        private Collection $comments;
 
         // ...
     }
@@ -33,13 +34,14 @@ Full Tree in Single Document
     class Comment
     {
         #[Field(type: 'string')]
-        private $by;
+        private string $by;
 
         #[Field(type: 'string')]
-        private $text;
+        private string $text;
 
+        /** @var Collection<Comment> */
         #[EmbedMany(targetDocument: Comment::class)]
-        private $replies = [];
+        private Collection $replies;
 
         // ...
     }
@@ -71,14 +73,14 @@ Parent Reference
     class Category
     {
         #[Id]
-        private $id;
+        private string $id;
 
         #[Field(type: 'string')]
-        private $name;
+        private string $name;
 
         #[ReferenceOne(targetDocument: Category::class)]
         #[Index]
-        private $parent;
+        private ?Category $parent = null;
 
         // ...
     }
@@ -108,14 +110,15 @@ Child Reference
     class Category
     {
         #[Id]
-        private $id;
+        private string $id;
 
         #[Field(type: 'string')]
-        private $name;
+        private string $name;
 
+        /** @var Collection<Category> */
         #[ReferenceMany(targetDocument: Category::class)]
         #[Index]
-        private $children = [];
+        private Collection $children;
 
         // ...
     }
@@ -158,7 +161,7 @@ Array of Ancestors
     class BaseCategory
     {
         #[Field(type: 'string')]
-        private $name;
+        private string $name;
 
         // ...
     }
@@ -167,15 +170,17 @@ Array of Ancestors
     class Category extends BaseCategory
     {
         #[Id]
-        private $id;
+        private string $id;
 
+        /** @var Collection<Category> */
         #[ReferenceMany(targetDocument: Category::class)]
         #[Index]
-        private $ancestors = [];
+        private Collection $ancestors;
 
+        /** @var Collection<Category> */
         #[ReferenceOne(targetDocument: Category::class)]
         #[Index]
-        private $parent;
+        private ?Category $parent = null;
 
         // ...
     }
@@ -223,13 +228,13 @@ Materialized Paths
     class Category
     {
         #[Id]
-        private $id;
+        private string $id;
 
         #[Field(type: 'string')]
-        private $name;
+        private string $name;
 
         #[Field(type: 'string')]
-        private $path;
+        private string $path;
 
         // ...
     }

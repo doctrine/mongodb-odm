@@ -31,10 +31,10 @@ the ``#[Document]`` attribute:
         class Category
         {
             #[Id]
-            public $id;
+            public string $id;
 
             #[Field(type: 'string')]
-            public $name;
+            public string $name;
         }
 
     .. code-block:: xml

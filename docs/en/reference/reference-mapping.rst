@@ -53,7 +53,7 @@ Reference one document:
             // ...
 
             #[ReferenceOne(targetDocument: Shipping::class)]
-            private $shipping;
+            private ?Shipping $shipping = null;
 
             // ...
         }
@@ -94,8 +94,14 @@ Reference many documents:
         {
             // ...
 
+            /** @var Collection<Account> */
             #[ReferenceMany(targetDocument: Account::class)]
-            private $accounts = [];
+            private Collection $accounts;
+
+            public function __construct()
+            {
+                $this->accounts = new ArrayCollection();
+            }
 
             // ...
         }
@@ -138,7 +144,7 @@ omit the ``targetDocument`` option:
             // ..
 
             #[ReferenceMany]
-            private $favorites = [];
+            private Collection $favorites;
 
             // ...
         }
@@ -174,7 +180,7 @@ The name of the field within the DBRef object can be customized via the
             // ..
 
             #[ReferenceMany(discriminatorField: 'type')]
-            private $favorites = [];
+            private Collection $favorites;
 
             // ...
         }
@@ -199,13 +205,14 @@ in each `DBRef`_ object:
         {
             // ..
 
+            /** @var Collection<Album|Song> */
             #[ReferenceMany(
                 discriminatorMap: [
                     'album' => Album::class,
                     'song' => Song::class,
                 ]
             )]
-            private $favorites = [];
+            private Collection $favorites;
 
             // ...
         }
@@ -233,6 +240,7 @@ a certain class, you can optionally specify a default discriminator value:
         {
             // ..
 
+            /** @var Collection<Album|Song> */
             #[ReferenceMany(
                 discriminatorMap: [
                     'album' => Album::class,
@@ -240,7 +248,7 @@ a certain class, you can optionally specify a default discriminator value:
                 ],
                 defaultDiscriminatorValue: 'album',
             )]
-            private $favorites = [];
+            private Collection $favorites;
 
             // ...
         }
@@ -275,8 +283,11 @@ Example:
 
         <?php
 
-        #[ReferenceOne(targetDocument: Profile::class, storeAs: 'id')]
-        private $profile;
+        class User
+        {
+            #[ReferenceOne(targetDocument: Profile::class, storeAs: 'id')]
+            private Profile $profile;
+        }
 
     .. code-block:: xml
 
@@ -321,8 +332,11 @@ referenced documents. You must explicitly enable this functionality:
 
         <?php
 
-        #[ReferenceOne(targetDocument: Profile::class, cascade: ['persist'])]
-        private $profile;
+        class User
+        {
+            #[ReferenceOne(targetDocument: Profile::class, cascade: ['persist'])]
+            private Profile $profile;
+        }
 
     .. code-block:: xml
 
@@ -368,18 +382,19 @@ and StandingData:
     namespace Addressbook;
 
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
     #[Document]
     class Contact
     {
         #[Id]
-        private $id;
+        private string $id;
 
         #[ReferenceOne(targetDocument: StandingData::class, orphanRemoval: true)]
-        private $standingData;
+        private ?StandingData $standingData;
 
         #[ReferenceMany(targetDocument: Address::class, mappedBy: 'contact', orphanRemoval: true)]
-        private $addresses;
+        private Collection $addresses;
 
         public function __construct()
         {
@@ -432,12 +447,16 @@ You can achieve this behavior by using the `storeEmptyArray` option.
 
     .. code-block:: php
         <?php
+
         #[Document]
         class User
         {
             // ...
+
+            /** @var Collection<Account> */
             #[ReferenceMany(targetDocument: Account::class, storeEmptyArray: true)]
-            private $accounts = [];
+            private Collection $accounts;
+
             // ...
         }
     .. code-block:: xml

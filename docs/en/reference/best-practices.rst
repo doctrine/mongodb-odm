@@ -56,15 +56,12 @@ Example:
     namespace MyProject\Model;
 
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
     class User
     {
-
-        /** @var ArrayCollection  */
-        private $addresses;
-
-        /** @var ArrayCollection  */
-        private $articles;
+        private Collection $addresses;
+        private Collection $articles;
 
         public function __construct()
         {
@@ -72,3 +69,10 @@ Example:
             $this->articles = new ArrayCollection();
         }
     }
+
+.. note::
+
+   The properties' type hints must be ``Collection``, and cannot be
+   ``ArrayCollection``. When the ``User`` object is retrieved from the database,
+   the properties ``$addresses`` and ``$articles`` are instances of
+   ``Doctrine\ODM\MongoDB\PersistentCollection`` to track changes.

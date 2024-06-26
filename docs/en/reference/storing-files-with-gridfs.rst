@@ -48,22 +48,22 @@ Mapping documents as GridFS files
     class Image
     {
         #[Id]
-        private $id;
+        private ?string $id;
 
         #[File\Filename]
-        private $name;
+        private ?string $name;
 
         #[File\UploadDate]
-        private $uploadDate;
+        private \DateTimeInterface $uploadDate;
 
         #[File\Length]
-        private $length;
+        private ?int $length;
 
         #[File\ChunkSize]
-        private $chunkSize;
+        private ?int $chunkSize;
 
         #[File\Metadata(targetDocument: ImageMetadata::class)]
-        private $metadata;
+        private ImageMetadata $metadata;
 
         public function getId(): ?string
         {
@@ -138,7 +138,7 @@ The ``ImageMetadata`` class must be an embedded document:
     class ImageMetadata
     {
         #[Field(type: 'string')]
-        private $contentType;
+        private string $contentType;
 
         public function __construct(string $contentType)
         {

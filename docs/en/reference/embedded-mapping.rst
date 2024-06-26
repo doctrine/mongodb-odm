@@ -23,7 +23,7 @@ Embed a single document:
             // ...
 
             #[EmbedOne(targetDocument: Address::class)]
-            private $address;
+            private ?Address $address;
 
             // ...
         }
@@ -32,7 +32,7 @@ Embed a single document:
         class Address
         {
             #[Field(type: 'string')]
-            private $street;
+            private string $street;
 
             // ...
         }
@@ -73,8 +73,9 @@ Embed many documents:
         {
             // ...
 
+            /** @var Collection<PhoneNumber> */
             #[EmbedMany(targetDocument: Phonenumber::class)]
-            private $phoneNumbers;
+            private Collection $phoneNumbers;
 
             // ...
             public function __construct()
@@ -87,7 +88,7 @@ Embed many documents:
         class PhoneNumber
         {
             #[Field(type: 'string')]
-            private $number;
+            private string $number;
 
             // ...
         }
@@ -130,7 +131,7 @@ you can simply omit the ``targetDocument`` option:
             // ..
 
             #[EmbedMany]
-            private $tasks;
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -162,7 +163,7 @@ the embedded document. The field name can be customized with the
             // ..
 
             #[EmbedMany(discriminatorField: 'type')]
-            private $tasks;
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -195,11 +196,11 @@ in each embedded document:
 
             #[EmbedMany(
               discriminatorMap: [
-                  'download" => DownloadTask::class,
+                  'download' => DownloadTask::class,
                   'build' => BuildTask::class,
               ]
             )]
-            private $tasks;
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -234,12 +235,12 @@ discriminator:
 
             #[EmbedMany(
                 discriminatorMap: [
-                  'download" => DownloadTask::class,
+                  'download' => DownloadTask::class,
                   'build' => BuildTask::class,
                 ],
                 defaultDiscriminatorValue: 'download',
             )]
-            private $tasks = [];
+            private Collection $tasks;
 
             // ...
         }
@@ -281,8 +282,10 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
         class User
         {
             // ...
+
+            /** @var Collection<PhoneNumber> */
             #[EmbedMany(targetDocument: PhoneNumber::class, storeEmptyArray: true)]
-            private $phoneNumbers = [];
+            private Collection $phoneNumbers;
             // ...
         }
     .. code-block:: xml
@@ -298,5 +301,6 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
                 <field name="number" type="string" />
           </embedded-document>
         </doctrine-mongo-mapping>
+
 Now, when the `$phoneNumbers` collection is empty, an empty array will be stored in the database for the `User`
 document's embedded `phoneNumbers` collection, even if there are no actual embedded documents in the collection.

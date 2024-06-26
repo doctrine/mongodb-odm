@@ -381,12 +381,13 @@ pipeline stages. Take the following relationship for example:
 
     class Orders
     {
+        /** @var Collection<Item> */
         #[ReferenceMany(
             targetDocument: Item::class,
             cascade: 'all',
             storeAs: 'id',
         )]
-        private $items;
+        private Collection $items;
     }
 
 .. code-block:: php
@@ -417,7 +418,7 @@ to be considered when looking up one-to-one relationships:
             cascade: 'all',
             storeAs: 'id',
         )]
-        private $items;
+        private Item $items;
     }
 
 .. code-block:: php
