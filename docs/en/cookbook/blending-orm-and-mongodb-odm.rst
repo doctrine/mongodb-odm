@@ -1,9 +1,13 @@
 Blending the ORM and MongoDB ODM
 ================================
 
-Since the start of the `Doctrine MongoDB Object Document Mapper`_ project people have asked how it can be integrated with the `ORM`_. This article will demonstrates how you can integrate the two transparently, maintaining a clean domain model.
+Since the start of the `Doctrine MongoDB Object Document Mapper`_ project people
+have asked how it can be integrated with the `ORM`_. This article will
+demonstrates how you can integrate the two transparently, maintaining a clean
+domain model.
 
-This example will have a ``Product`` that is stored in MongoDB and the ``Order`` stored in a MySQL database.
+This example will have a ``Product`` that is stored in MongoDB and the ``Order``
+stored in a SQL database like MySQL, PostgreSQL or SQLite.
 
 Define Product
 --------------
@@ -20,31 +24,17 @@ First lets define our ``Product`` document:
     class Product
     {
         #[Id]
-        private $id;
+        public string $id;
 
         #[Field(type: 'string')]
-        private $title;
-
-        public function getId(): ?string
-        {
-            return $this->id;
-        }
-
-        public function getTitle(): ?string
-        {
-            return $this->title;
-        }
-
-        public function setTitle(string $title): void
-        {
-            $this->title = $title;
-        }
+        public string $title;
     }
 
 Define Entity
 -------------
 
-Next create the ``Order`` entity that has a ``$product`` and ``$productId`` property linking it to the ``Product`` that is stored with MongoDB:
+Next create the ``Order`` entity that has a ``$product`` and ``$productId``
+property linking it to the ``Product`` that is stored with MongoDB:
 
 .. code-block:: php
 
@@ -61,15 +51,12 @@ Next create the ``Order`` entity that has a ``$product`` and ``$productId`` prop
         #[Id]
         #[Column(type: 'int')]
         #[GeneratedValue(strategy: 'AUTO')]
-        private $id;
+        public int $id;
 
         #[Column(type: 'string')]
-        private $productId;
+        private string $productId;
 
-        /**
-         * @var Documents\Product
-         */
-        private $product;
+        private Product $product;
 
         public function getId(): ?int
         {
@@ -96,7 +83,10 @@ Next create the ``Order`` entity that has a ``$product`` and ``$productId`` prop
 Event Subscriber
 ----------------
 
-Now we need to setup an event subscriber that will set the ``$product`` property of all ``Order`` instances to a reference to the document product so it can be lazily loaded when it is accessed the first time. So first register a new event subscriber:
+Now we need to setup an event subscriber that will set the ``$product`` property
+of all ``Order`` instances to a reference to the document product so it can be
+lazily loaded when it is accessed the first time. So first register a new event
+subscriber:
 
 .. code-block:: php
 
@@ -107,15 +97,17 @@ Now we need to setup an event subscriber that will set the ``$product`` property
         [\Doctrine\ORM\Events::postLoad], new MyEventSubscriber($dm)
     );
 
-or in .yaml
+or in YAML configuration of the Symfony container:
 
 .. code-block:: yaml    
     
     App\Listeners\MyEventSubscriber:
         tags:
-            - { name: doctrine.event_listener, connection: default, event: postLoad}
+            - { name: doctrine.event_listener, connection: default, event: postLoad }
 
-So now we need to define a class named ``MyEventSubscriber`` and pass ``DocumentManager`` as a dependency. It will have a ``postLoad()`` method that sets the product document reference:
+So now we need to define a class named ``MyEventSubscriber`` and pass
+``DocumentManager`` as a dependency. It will have a ``postLoad()`` method that
+sets the product document reference:
 
 .. code-block:: php
 
@@ -126,10 +118,9 @@ So now we need to define a class named ``MyEventSubscriber`` and pass ``Document
 
     class MyEventSubscriber
     {
-        public function __construct(DocumentManager $dm)
-        {
-            $this->dm = $dm;
-        }
+        public function __construct(
+            private readonly DocumentManager $dm,
+        ) {}
 
         public function postLoad(LifecycleEventArgs $eventArgs): void
         {
@@ -139,13 +130,13 @@ So now we need to define a class named ``MyEventSubscriber`` and pass ``Document
                 return;
             }
 
-            $em = $eventArgs->getEntityManager();
-            $productReflProp = $em->getClassMetadata(Order::class)
-                ->reflClass->getProperty('product');
-            $productReflProp->setAccessible(true);
-            $productReflProp->setValue(
-                $order, $this->dm->getReference(Product::class, $order->getProductId())
-            );
+            $product = $this->dm->getReference(Product::class, $order->getProductId());
+
+            $eventArgs->getObjectManager()
+                ->getClassMetadata(Order::class)
+                ->reflClass
+                ->getProperty('product')
+                ->setValue($order, $product);
         }
     }
 
@@ -165,7 +156,7 @@ First create a new ``Product``:
     <?php
 
     $product = new \Documents\Product();
-    $product->setTitle('Test Product');
+    $product->title = 'Test Product';
     $dm->persist($product);
     $dm->flush();
 
@@ -180,19 +171,21 @@ Now create a new ``Order`` and link it to a ``Product`` in MySQL:
     $em->persist($order);
     $em->flush();
 
-Later we can retrieve the entity and lazily load the reference to the document in MongoDB:
+Later we can retrieve the entity and lazily load the reference to the document
+in MongoDB:
 
 .. code-block:: php
 
     <?php
 
-    $order = $em->find(Order::class, $order->getId());
+    $order = $em->find(Order::class, $order->id);
 
     $product = $order->getProduct();
 
-    echo "Order Title: " . $product->getTitle();
+    echo "Order Title: " . $product->title;
 
-If you were to print the ``$order`` you would see that we got back regular PHP objects:
+If you were to print the ``$order`` you would see that we got back regular PHP
+objects:
 
 .. code-block:: php
 
