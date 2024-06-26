@@ -14,15 +14,15 @@ need the referenced documents, you can use the ``$lookup`` stage in MongoDB's
 aggregation pipeline. It's similar to a SQL join, without duplication of data in
 the result set when there is many references to load.
 
-Introduction of the example
----------------------------
+Example setup
+-------------
 
-For this cookbook, we will use 3 collections:
+For this example, we will use 3 collections:
 - ``users``: contains the users who can pass orders
 - ``orders`` are affected to a user and contain a list of ``items``
 - ``items``: contains the products
 
-The document classes ``User`` and ``Item`` contains only an id and a name.
+The document classes ``User`` and ``Item`` contain only an id and a name.
 
 .. code-block:: php
 
@@ -45,7 +45,7 @@ The document classes ``User`` and ``Item`` contains only an id and a name.
     class Item
     {
         #[Id]
-        public ?string $id = null;
+        public string $id;
 
         public function __construct(
             #[Field(type: 'string')]
@@ -54,7 +54,7 @@ The document classes ``User`` and ``Item`` contains only an id and a name.
         }
     }
 
-The ``Order`` class as references to one ``User`` and a list of ``Item``, an id
+The ``Order`` class has references to one ``User``, a list of ``Item``, an id,
 and a date.
 
 .. code-block:: php
@@ -171,9 +171,10 @@ Embed a list of referenced documents
 
 Now, let's see how to load items with each order using an aggregation pipeline.
 MongoDB's ``$lookup`` stage requires a local field and a foreign field to match
-documents. In our case, this parameters are extracted automatically from the
+documents. In our case, these parameters are extracted automatically from the
 ``#[ReferenceMany]`` mapping. The alias is the name of the field in the
-resulting document.
+resulting document. In this case, we replace the original list of references
+with a list of ``Item`` documents.
 
 .. code-block:: php
 
@@ -183,7 +184,7 @@ resulting document.
             ->lookup('items')
                 ->alias('items');
 
-The result is a list of "order" document, each one containing a list of "item"
+The result is a list of ``Order`` documents, each one containing a list of ``Item``
 documents.
 
 .. code-block:: php
@@ -388,9 +389,8 @@ You need to create a new class to hold the result of the aggregation.
 .. note::
 
     You don't need to initialize the collections in the constructor, as the
-    ``QueryResultDocument`` are only used to hydrate the results from the
-    database. Doctrine will create the collections. You will never instantiate
-    this class directly.
+    ``QueryResultDocument`` is only used to hydrate the results from the
+    database and you should never instantiate this class directly.
 
 Now, you can use the ``AggregationBuilder::hydrate()`` method to get the result
 as an array of ``OrderResult`` instances.
@@ -516,8 +516,8 @@ list of order documents.
         ]
     ]
 
-Embed 2 levels of references in a single query
-----------------------------------------------
+Embed two levels of references in a single query
+------------------------------------------------
 
 It becomes more complex when you want to load the items of each order. You need
 to ``$unwind`` all the orders in separate results, then ``$lookup`` the items
@@ -614,7 +614,7 @@ contains the list of items.
     ]
 
 The last challenge is to hydrate the result into a custom class. You need to
-create 2 classes: one for the user ``UserResult`` that can embed an ``order``
+create two classes: one for the user ``UserResult`` that can embed an ``order``
 list, and one for the order ``UserOrderResult`` that embeds the items list
 but not the user.
 
