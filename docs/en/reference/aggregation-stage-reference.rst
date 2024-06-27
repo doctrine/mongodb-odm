@@ -460,6 +460,9 @@ document:
             ->foreignField('userId')
             ->alias('items');
 
+To learn how to load references in embedded documents using the ``$lookup``
+stage, see the :doc:`Loading references with Lookup cookbook <../cookbook/lookup-reference>`.
+
 $match
 ------
 
