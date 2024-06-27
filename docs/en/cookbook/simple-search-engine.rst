@@ -166,7 +166,7 @@ you would have to do the following:
 This is a very basic search engine example and can work for many small and
 simple applications. If you need better searching functionality you can look at
 `MongoDB Atlas Search`_, which can be integrated using
-:doc:`Search Indexes <../reference/seach-indexes>`
+:doc:`Search Indexes <../reference/search-indexes>`
 
 .. _AlchemyAPI: http://www.alchemyapi.com
 .. _MongoDB Atlas Search: https://www.mongodb.com/products/platform/atlas-search
