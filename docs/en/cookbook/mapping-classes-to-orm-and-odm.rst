@@ -21,7 +21,7 @@ for multiple Doctrine persistence layers:
 
     class BlogPost
     {
-        public string $id;
+        public int $id;
         public string $title;
         public string $body;
     }
@@ -52,8 +52,9 @@ First define the mapping for the ORM:
         class BlogPost
         {
             #[ORM\Id]
-            #[ORM\Column(type: 'int')]
-            public string $id;
+            #[ORM\Column(type: 'integer')]
+            #[ORM\GeneratedValue(strategy: 'AUTO')]
+            public int $id;
 
             #[ORM\Column(type: 'string')]
             public string $title;
@@ -85,7 +86,7 @@ Now you are able to persist the ``Documents\Blog\BlogPost`` with an instance of
     <?php
 
     $blogPost = new BlogPost();
-    $blogPost->title = 'test';
+    $blogPost->title = 'Hello World!';
 
     $em->persist($blogPost);
     $em->flush();
@@ -96,7 +97,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $em->getRepository(BlogPost::class)->findOneBy(['title' => 'test']);
+    $blogPost = $em->getRepository(BlogPost::class)->findOneBy(['title' => 'Hello World!']);
 
 MongoDB ODM
 ~~~~~~~~~~~
@@ -117,8 +118,8 @@ Now map the same class to the Doctrine MongoDB ODM:
         #[ODM\Document(repositoryClass: BlogPostRepository::class)]
         class BlogPost
         {
-            #[ODM\Id]
-            public string $id;
+            #[ODM\Id(type: 'int', strategy: 'INCREMENT')]
+            public int $id;
 
             #[ODM\Field]
             public string $title;
@@ -142,14 +143,21 @@ Now map the same class to the Doctrine MongoDB ODM:
             </document>
         </doctrine-mongo-mapping>
 
-Now the same class is able to be persisted in the same way using an instance of ``DocumentManager``:
+.. note::
+
+    We use the ``INCREMENT`` strategy for the MongoDB ODM for compatibility with
+    the ORM mapping. But you can also use the default ``AUTO`` strategy
+    and store a generated MongoDB ObjectId as a string in the SQL database.
+
+Now the same class is able to be persisted in the same way using an instance of
+``DocumentManager``:
 
 .. code-block:: php
 
     <?php
 
     $blogPost = new BlogPost();
-    $blogPost->title = 'test';
+    $blogPost->title = 'Hello World!';
 
     $dm->persist($blogPost);
     $dm->flush();
@@ -160,7 +168,7 @@ You can find the blog post:
 
     <?php
 
-    $blogPost = $dm->getRepository(BlogPost::class)->findOneBy(['title' => 'test']);
+    $blogPost = $dm->getRepository(BlogPost::class)->findOneBy(['title' => 'Hello World!']);
 
 Repository Classes
 ------------------
@@ -224,5 +232,12 @@ As you can see the repositories are the same and the final returned data is the 
 PHP objects. The data is transparently injected to the objects for you automatically so you
 are not forced to extend some base class or shape your domain in any certain way for it to work
 with the Doctrine persistence layers.
+
+.. note::
+
+    If the same class is mapped to both the ORM and ODM, and you persist the
+    instance in both, you will have two separate instances in memory. This is
+    because the ORM and ODM are separate libraries and do not share the same
+    object manager.
 
 .. _persistence: https://github.com/doctrine/persistence
