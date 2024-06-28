@@ -9,7 +9,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\ORMSetup;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 
+#[RequiresPhpExtension('pdo_sqlite')]
 class BlendingOrmTest extends BaseTestCase
 {
     public function testTest(): void
