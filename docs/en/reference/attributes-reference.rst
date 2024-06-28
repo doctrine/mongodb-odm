@@ -1229,7 +1229,7 @@ for the related collection.
     )]
     class SchemaValidated
     {
-        public const VALIDATOR = <<<'EOT'
+        private const VALIDATOR = <<<'EOT'
             {
                 "$jsonSchema": {
                     "required": ["name"],

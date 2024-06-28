@@ -34,6 +34,7 @@ is allowed to:
 
     <?php
 
+    #[Document]
     class Order
     {
         public function assertCustomerAllowedBuying(): void
@@ -68,8 +69,7 @@ First Attributes:
         #[HasLifecycleCallbacks]
         class Order
         {
-            #[PrePersist]
-            #[PreUpdate]
+            #[PreFlush]
             public function assertCustomerAllowedBuying(): void {}
         }
 
@@ -78,17 +78,21 @@ First Attributes:
         <doctrine-mapping>
             <document name="Order">
                 <lifecycle-callbacks>
-                    <lifecycle-callback type="prePersist" method="assertCustomerallowedBuying" />
-                    <lifecycle-callback type="preUpdate" method="assertCustomerallowedBuying" />
+                    <lifecycle-callback type="preFlush" method="assertCustomerallowedBuying" />
                 </lifecycle-callbacks>
             </document>
         </doctrine-mapping>
 
-Now validation is performed whenever you call
-``DocumentManager#persist($order)`` or when you call
-``DocumentManager#flush()`` and an order is about to be updated. Any
-Exception that happens in the lifecycle callbacks will be cached by
-the DocumentManager.
+Now validation is performed when you call ``DocumentManager#flush()`` and an
+order is about to be inserted or updated. Any Exception that happens in the
+lifecycle callbacks will stop the flush operation and the exception will be
+propagated.
+
+You might want to use the ``PrePersist`` instead of ``PreFlush`` to validate
+the document sooner, when you call ``DocumentManager#persist()``. This way you
+can catch validation errors earlier in your application flow. But be aware that
+if the document is modified after the ``PrePersist`` event, the validation
+might not be triggered again and an invalid document can be persisted.
 
 Of course you can do any type of primitive checks, not null,
 email-validation, string size, integer and date ranges in your
@@ -102,8 +106,7 @@ validation callbacks.
     #[HasLifecycleCallbacks]
     class Order
     {
-        #[PrePersist]
-        #[PreUpdate]
+        #[PreFlush]
         public function validate(): void
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
@@ -128,11 +131,8 @@ can register multiple methods for validation in "PrePersist" or
 "PreUpdate" or mix and share them in any combinations between those
 two events.
 
-There is no limit to what you can and can't validate in
-"PrePersist" and "PreUpdate" as long as you don't create new document
-instances. This was already discussed in the previous blog post on
-the Versionable extension, which requires another type of event
-called "onFlush".
+There is no limit to what you can validate in ``PreFlush``, ``PrePersist`` and
+``PreUpdate`` as long as you don't create new document instances.
 
 Further readings: :doc:`Lifecycle Events <../reference/events>`
 
@@ -181,44 +181,44 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
         #[ODM\Document]
         #[ODM\Validation(
             validator: self::VALIDATOR,
-            action: ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
-            level: ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
+            action: ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
+            level: ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
         )]
         class SchemaValidated
         {
-            public const VALIDATOR = <<<'EOT'
-        {
-            "$jsonSchema": {
-                "required": ["name"],
-                "properties": {
-                    "name": {
-                        "bsonType": "string",
-                        "description": "must be a string and is required"
-                    }
+            private const VALIDATOR = <<<'EOT'
+                {
+                    "$jsonSchema": {
+                        "required": ["name"],
+                        "properties": {
+                            "name": {
+                                "bsonType": "string",
+                                "description": "must be a string and is required"
+                            }
+                        }
+                    },
+                    "$or": [
+                        { "phone": { "$type": "string" } },
+                        { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
+                        { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+                    ]
                 }
-            },
-            "$or": [
-                { "phone": { "$type": "string" } },
-                { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
-                { "status": { "$in": [ "Unknown", "Incomplete" ] } }
-            ]
-        }
-        EOT;
+                EOT;
 
             #[ODM\Id]
-            private $id;
+            public string $id;
 
             #[ODM\Field(type: 'string')]
-            private $name;
+            public string $name;
 
             #[ODM\Field(type: 'string')]
-            private $phone;
+            public string $phone;
 
             #[ODM\Field(type: 'string')]
-            private $email;
+            public string $email;
 
             #[ODM\Field(type: 'string')]
-            private $status;
+            public string $status;
         }
 
     .. code-block:: xml

@@ -1116,6 +1116,16 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/UnitOfWorkTest.php
 
 		-
+			message: "#^Dead catch \\- Documentation\\\\Validation\\\\CustomerOrderLimitExceededException is never thrown in the try block\\.$#"
+			count: 1
+			path: tests/Documentation/Validation/ValidationTest.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: tests/Documentation/Validation/ValidationTest.php
+
+		-
 			message: "#^Property Documents\\\\Account\\:\\:\\$id is never written, only read\\.$#"
 			count: 1
 			path: tests/Documents/Account.php
