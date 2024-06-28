@@ -8,7 +8,9 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 
+#[RequiresPhpExtension('pdo_sqlite')]
 class MappingOrmAndOdmTest extends BaseTestCase
 {
     public function testTest(): void
