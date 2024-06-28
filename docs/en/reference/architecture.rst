@@ -15,11 +15,8 @@ be any regular PHP class observing the following restrictions:
 -  All persistent properties/field of any document class should
    always be private or protected, otherwise lazy-loading might not
    work as expected.
--  A document class must not implement ``__clone`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
--  A document class must not implement ``__wakeup`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
-   Also consider implementing
+-  A document class must not implement ``__clone``.
+-  A document class must not implement ``__wakeup``. Consider implementing
    `Serializable <https://www.php.net/manual/en/class.serializable.php>`_
    instead.
 -  Any two document classes in a class hierarchy that inherit
