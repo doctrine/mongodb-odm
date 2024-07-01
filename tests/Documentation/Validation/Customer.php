@@ -15,7 +15,7 @@ class Customer
     public string $id;
 
     public function __construct(
-        #[Field(type: 'float')]
+        #[Field]
         public float $orderLimit,
     ) {
     }

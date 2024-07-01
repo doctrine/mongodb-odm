@@ -15,7 +15,7 @@ class OrderLine
     public string $id;
 
     public function __construct(
-        #[Field(type: 'float')]
+        #[Field]
         public float $amount,
     ) {
     }

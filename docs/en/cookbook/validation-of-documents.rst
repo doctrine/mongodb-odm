@@ -208,16 +208,16 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
             #[ODM\Id]
             public string $id;
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $name;
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $phone;
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $email;
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $status;
         }
 
