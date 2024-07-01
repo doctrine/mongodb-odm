@@ -78,7 +78,7 @@ First Attributes:
         <doctrine-mapping>
             <document name="Order">
                 <lifecycle-callbacks>
-                    <lifecycle-callback type="preFlush" method="assertCustomerallowedBuying" />
+                    <lifecycle-callback type="preFlush" method="assertCustomerAllowedBuying" />
                 </lifecycle-callbacks>
             </document>
         </doctrine-mapping>
@@ -88,9 +88,9 @@ order is about to be inserted or updated. Any Exception that happens in the
 lifecycle callbacks will stop the flush operation and the exception will be
 propagated.
 
-You might want to use the ``PrePersist`` instead of ``PreFlush`` to validate
+You might want to use ``PrePersist`` instead of ``PreFlush`` to validate
 the document sooner, when you call ``DocumentManager#persist()``. This way you
-can catch validation errors earlier in your application flow. But be aware that
+can catch validation errors earlier in your application flow. Be aware that
 if the document is modified after the ``PrePersist`` event, the validation
 might not be triggered again and an invalid document can be persisted.
 
