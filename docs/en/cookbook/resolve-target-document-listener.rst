@@ -13,8 +13,8 @@ when no mapping metadata has been found for the original class name.
 Background
 ----------
 
-In the following example, we have an `InvoiceModule` that provides invoicing
-functionality, and a `CustomerModule` that contains customer management tools.
+In the following example, we have an ``InvoiceModule`` that provides invoicing
+functionality, and a ``CustomerModule`` that contains customer management tools.
 We want to keep these separated, because they can be used in other systems
 without each other; however, we'd like to use them together in our application.
 
@@ -44,7 +44,7 @@ the application:
         #[Id]
         public string $id;
 
-        #[Field(type: 'string')]
+        #[Field]
         public string $name;
     }
 
@@ -64,7 +64,7 @@ An ``Invoice`` document in the ``InvoiceModule``:
         #[Id]
         public string $id;
 
-        #[ReferenceOne(targetDocument: \Acme\InvoiceModule\Model\InvoiceSubjectInterface::class)]
+        #[ReferenceOne]
         public InvoiceSubjectInterface $subject;
     }
 

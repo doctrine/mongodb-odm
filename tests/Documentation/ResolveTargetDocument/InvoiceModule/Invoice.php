@@ -14,6 +14,6 @@ class Invoice
     #[Id]
     public string $id;
 
-    #[ReferenceOne(targetDocument: InvoiceSubjectInterface::class)]
+    #[ReferenceOne]
     public InvoiceSubjectInterface $subject;
 }

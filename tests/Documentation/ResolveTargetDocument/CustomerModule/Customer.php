@@ -14,6 +14,6 @@ abstract class Customer
     #[Id]
     public string $id;
 
-    #[Field(type: 'string')]
+    #[Field]
     public string $name;
 }
