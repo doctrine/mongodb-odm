@@ -95,10 +95,10 @@ You can provide your mapping information in Annotations or XML:
                 #[ODM\Id]
                 public ?string $id = null,
 
-                #[ODM\Field(type: 'string')]
+                #[ODM\Field]
                 public string $name = '',
 
-                #[ODM\Field(type: 'string')]
+                #[ODM\Field]
                 public string $email = '',
 
                 #[ODM\ReferenceMany(targetDocument: BlogPost::class, cascade: 'all')]
@@ -116,13 +116,13 @@ You can provide your mapping information in Annotations or XML:
                 #[ODM\Id]
                 public ?string $id = null,
 
-                #[ODM\Field(type: 'string')]
+                #[ODM\Field]
                 public string $title = '',
 
-                #[ODM\Field(type: 'string')]
+                #[ODM\Field]
                 public string $body = '',
 
-                #[ODM\Field(type: 'date_immutable')]
+                #[ODM\Field]
                 public DateTimeImmutable $createdAt = new DateTimeImmutable(),
             ) {
             }

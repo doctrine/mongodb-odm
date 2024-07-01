@@ -54,23 +54,23 @@ the features.
         #[ODM\Id]
         public string $id;
 
-        #[ODM\Field(type: 'int', strategy: 'increment')]
+        #[ODM\Field(strategy: 'increment')]
         public int $changes = 0;
 
         /** @var string[] */
-        #[ODM\Field(type: 'collection')]
+        #[ODM\Field]
         public array $notes = [];
 
-        #[ODM\Field(type: 'string')]
+        #[ODM\Field]
         public string $name;
 
-        #[ODM\Field(type: 'int')]
+        #[ODM\Field]
         public int $salary;
 
-        #[ODM\Field(type: 'date_immutable')]
+        #[ODM\Field]
         public DateTimeImmutable $started;
 
-        #[ODM\Field(type: 'date')]
+        #[ODM\Field]
         public DateTime $left;
 
         #[ODM\EmbedOne(targetDocument: Address::class)]
@@ -101,16 +101,16 @@ the features.
     class Address
     {
         public function __construct(
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $address,
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $city,
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $state,
 
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $zipcode,
         ) {
         }
@@ -123,7 +123,7 @@ the features.
         public string $id;
 
         public function __construct(
-            #[ODM\Field(type: 'string')]
+            #[ODM\Field]
             public string $name,
         ) {
         }
@@ -160,9 +160,12 @@ Doctrine:
     $manager->started = new DateTimeImmutable();
     $manager->projects->add($project);
 
-    /** @var Doctrine\ODM\MongoDB\DocumentManager $dm */
+    /**
+     * Learn how to setup the DocumentManager in the next chapter.
+     *
+     * @var Doctrine\ODM\MongoDB\DocumentManager $dm
+     */
     $dm->persist($employee);
-    $dm->persist($address);
     $dm->persist($project);
     $dm->persist($manager);
     $dm->flush();
