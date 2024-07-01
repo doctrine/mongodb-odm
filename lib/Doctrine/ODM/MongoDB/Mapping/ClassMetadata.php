@@ -325,20 +325,51 @@ use function trigger_deprecation;
     public const REFERENCE_STORE_AS_REF            = 'ref';
 
     /**
-     * The collection schema validationAction values
+     * Rejects any insert or update that violates the validation criteria.
      *
-     * @see https://docs.mongodb.com/manual/core/schema-validation/#accept-or-reject-invalid-documents
+     * Value for collection schema validationAction.
+     *
+     * @see https://www.mongodb.com/docs/manual/core/schema-validation/handle-invalid-documents/#option-1--reject-invalid-documents
      */
     public const SCHEMA_VALIDATION_ACTION_ERROR = 'error';
-    public const SCHEMA_VALIDATION_ACTION_WARN  = 'warn';
 
     /**
-     * The collection schema validationLevel values
+     * MongoDB allows the operation to proceed, but records the violation in the MongoDB log.
      *
-     * @see https://docs.mongodb.com/manual/core/schema-validation/#existing-documents
+     * Value for collection schema validationAction.
+     *
+     * @see https://www.mongodb.com/docs/manual/core/schema-validation/handle-invalid-documents/#option-2--allow-invalid-documents--but-record-them-in-the-log
      */
-    public const SCHEMA_VALIDATION_LEVEL_OFF      = 'off';
-    public const SCHEMA_VALIDATION_LEVEL_STRICT   = 'strict';
+    public const SCHEMA_VALIDATION_ACTION_WARN = 'warn';
+
+    /**
+     * Disable schema validation for the collection.
+     *
+     * Value of validationLevel.
+     *
+     * @see https://www.mongodb.com/docs/manual/core/schema-validation/specify-validation-level/
+     */
+    public const SCHEMA_VALIDATION_LEVEL_OFF = 'off';
+
+    /**
+     * MongoDB applies the same validation rules to all document inserts and updates.
+     *
+     * Value of validationLevel.
+     *
+     * @see https://www.mongodb.com/docs/manual/core/schema-validation/specify-validation-level/#steps--use-strict-validation
+     */
+    public const SCHEMA_VALIDATION_LEVEL_STRICT = 'strict';
+
+    /**
+     * MongoDB applies the same validation rules to document inserts and updates
+     * to existing valid documents that match the validation rules. Updates to
+     * existing documents in the collection that don't match the validation rules
+     * aren't checked for validity.
+     *
+     * Value of validationLevel.
+     *
+     * @see https://www.mongodb.com/docs/manual/core/schema-validation/specify-validation-level/#steps--use-moderate-validation
+     */
     public const SCHEMA_VALIDATION_LEVEL_MODERATE = 'moderate';
 
     /* The inheritance mapping types */

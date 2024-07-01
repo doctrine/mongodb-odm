@@ -575,6 +575,7 @@ class DocumentManager implements ObjectManager
      * @psalm-param CommitOptions $options
      *
      * @throws MongoDBException
+     * @throws Throwable From event listeners.
      */
     public function flush(array $options = [])
     {
