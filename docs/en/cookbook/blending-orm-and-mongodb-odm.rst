@@ -1,10 +1,9 @@
 Blending the ORM and MongoDB ODM
 ================================
 
-Since the start of the `Doctrine MongoDB Object Document Mapper`_ project people
-have asked how it can be integrated with the `ORM`_. This article will
-demonstrates how you can integrate the two transparently, maintaining a clean
-domain model.
+This article demonstrates how you can integrate the `Doctrine MongoDB ODM`_
+and the `ORM`_ transparently, maintaining a clean domain model. This is
+something that is supported indirectly by the libraries by using the events.
 
 This example will have a ``Product`` that is stored in MongoDB and the ``Order``
 stored in a SQL database like MySQL, PostgreSQL or SQLite.
@@ -209,5 +208,5 @@ The above would output the following:
             )
     )
 
-.. _Doctrine MongoDB Object Document Mapper: http://www.doctrine-project.org/projects/mongodb_odm
+.. _Doctrine MongoDB ODM: http://www.doctrine-project.org/projects/mongodb_odm
 .. _ORM: http://www.doctrine-project.org/projects/orm
