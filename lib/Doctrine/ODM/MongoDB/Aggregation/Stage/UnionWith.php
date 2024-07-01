@@ -24,11 +24,8 @@ use InvalidArgumentException;
  */
 class UnionWith extends Stage
 {
-    /**
-     * @var array|Builder|null
-     * @psalm-var ?PipelineParamType
-     */
-    private $pipeline = null;
+    /** @psalm-var ?PipelineParamType */
+    private array|Builder|Stage|null $pipeline = null;
 
     public function __construct(Builder $builder, private DocumentManager $dm, private string $collection)
     {

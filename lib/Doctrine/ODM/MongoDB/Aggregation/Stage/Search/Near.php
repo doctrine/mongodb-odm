@@ -18,11 +18,9 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;
 
-    /** @var int|float|UTCDateTime|array|Point|null */
-    private $origin;
+    private int|float|UTCDateTime|array|Point|null $origin;
 
-    /** @var int|float|null */
-    private $pivot;
+    private int|float|null $pivot;
 
     /** @var list<string> */
     private array $path;

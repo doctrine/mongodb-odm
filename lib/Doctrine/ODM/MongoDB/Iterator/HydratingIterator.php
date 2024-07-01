@@ -25,7 +25,7 @@ use Traversable;
 final class HydratingIterator implements Iterator
 {
     /** @var Generator<mixed, array<string, mixed>>|null */
-    private $iterator;
+    private ?Generator $iterator;
 
     /**
      * @param Traversable<mixed, array<string, mixed>> $traversable

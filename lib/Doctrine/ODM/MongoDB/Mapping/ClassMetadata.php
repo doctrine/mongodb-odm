@@ -539,17 +539,14 @@ use function trigger_deprecation;
     /**
      * Allows users to specify a validation schema for the collection.
      *
-     * @var array|object|null
      * @psalm-var array<string, mixed>|object|null
      */
-    private $validator;
+    private array|object|null $validator = null;
 
     /**
      * Determines whether to error on invalid documents or just warn about the violations but allow invalid documents to be inserted.
-     *
-     * @var string
      */
-    private $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
+    private string $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
 
     /**
      * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
@@ -813,11 +810,8 @@ use function trigger_deprecation;
 
     private ReflectionService $reflectionService;
 
-    /**
-     * @var string|null
-     * @psalm-var class-string|null
-     */
-    private $rootClass;
+    /** @var class-string|null */
+    private ?string $rootClass;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping

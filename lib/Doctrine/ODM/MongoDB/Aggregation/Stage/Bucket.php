@@ -10,9 +10,7 @@ class Bucket extends AbstractBucket
 {
     /** @var mixed[] */
     private array $boundaries;
-
-    /** @var mixed */
-    private $default;
+    private mixed $default = null;
 
     /**
      * An array of values based on the groupBy expression that specify the

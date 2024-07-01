@@ -41,71 +41,61 @@ trait PersistentCollectionTrait
      *
      * @var array<TKey, T>
      */
-    private $snapshot = [];
+    private array $snapshot = [];
 
     /**
      * Collection's owning document
-     *
-     * @var object|null
      */
-    private $owner;
+    private ?object $owner = null;
 
     /**
-     * @var array|null
+     * @var array<string, mixed>|null
      * @psalm-var FieldMapping|null
      */
-    private $mapping;
+    private ?array $mapping = null;
 
     /**
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
-     *
-     * @var bool
      */
-    private $isDirty = false;
+    private bool $isDirty = false;
 
     /**
      * Whether the collection has already been initialized.
-     *
-     * @var bool
      */
-    private $initialized = true;
+    private bool $initialized = true;
 
     /**
      * The wrapped Collection instance.
      *
      * @var BaseCollection<TKey, T>
      */
-    private $coll;
+    private BaseCollection $coll;
 
     /**
      * The DocumentManager that manages the persistence of the collection.
-     *
-     * @var DocumentManager|null
      */
-    private $dm;
+    private DocumentManager $dm;
 
     /**
      * The UnitOfWork that manages the persistence of the collection.
-     *
-     * @var UnitOfWork
      */
-    private $uow;
+    private UnitOfWork $uow;
 
     /**
      * The raw mongo data that will be used to initialize this collection.
      *
      * @var mixed[]
      */
-    private $mongoData = [];
+    private array $mongoData = [];
 
     /**
      * Any hints to account for during reconstitution/lookup of the documents.
      *
-     * @var array
+     * @var array<int, mixed>
      * @psalm-var Hints
      */
-    private $hints = [];
+    private array $hints = [];
 
     public function setDocumentManager(DocumentManager $dm)
     {
@@ -292,7 +282,7 @@ trait PersistentCollectionTrait
 
     public function getTypeClass()
     {
-        if ($this->dm === null) {
+        if (! isset($this->dm)) {
             throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.');
         }
 
@@ -653,7 +643,7 @@ trait PersistentCollectionTrait
         $arrayAccess ? $this->coll->offsetSet(null, $value) : $this->coll->add($value);
         $this->changed();
 
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+        if (isset($this->uow) && $this->isOrphanRemovalEnabled() && $value !== null) {
             $this->uow->unscheduleOrphanRemoval($value);
         }
 
@@ -702,7 +692,7 @@ trait PersistentCollectionTrait
         $arrayAccess ? $this->coll->offsetSet($offset, $value) : $this->coll->set($offset, $value);
 
         // Handle orphanRemoval
-        if ($this->uow !== null && $this->isOrphanRemovalEnabled() && $value !== null) {
+        if (isset($this->uow) && $this->isOrphanRemovalEnabled() && $value !== null) {
             $this->uow->unscheduleOrphanRemoval($value);
         }
 
@@ -733,7 +723,7 @@ trait PersistentCollectionTrait
      */
     private function needsSchedulingForSynchronization(): bool
     {
-        return $this->owner && $this->dm && ! empty($this->mapping['isOwningSide'])
+        return $this->owner && isset($this->dm) && ! empty($this->mapping['isOwningSide'])
             && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
     }
 

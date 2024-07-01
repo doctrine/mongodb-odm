@@ -496,52 +496,17 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
 		-
-			message: "#^Access to offset 'embedded' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
-			message: "#^Access to offset 'isOwningSide' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-			count: 3
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
-			message: "#^Access to offset 'orphanRemoval' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
-			message: "#^Access to offset 'reference' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
-			message: "#^Access to offset 'strategy' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-			count: 4
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
-			message: "#^Access to offset 'targetDocument' on an unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\.$#"
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:add\\(\\) with return type void returns true but should not return anything\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getHints\\(\\) should return array\\<int, mixed\\> but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\.$#"
+			message: "#^PHPDoc tag @var for property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints with type Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints is incompatible with native type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:getMapping\\(\\) should return array\\{type\\: string, fieldName\\: string, name\\: string, isCascadeRemove\\: bool, isCascadePersist\\: bool, isCascadeRefresh\\: bool, isCascadeMerge\\: bool, isCascadeDetach\\: bool, \\.\\.\\.\\} but returns Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
-			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept default value of type array\\.$#"
+			message: "#^PHPDoc tag @var for property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping with type Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null is not subtype of native type array\\|null\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
@@ -551,17 +516,22 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$hints type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
+
+		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping has unknown class Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping as its type\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
-			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$hints \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\Hints\\) does not accept array\\<int, mixed\\>\\.$#"
+			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\:\\:\\$mapping type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
-			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\<TKey of \\(int\\|string\\),T of object\\>\\:\\:\\$mapping \\(Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\FieldMapping\\|null\\) does not accept array\\<string, array\\<int\\|string, mixed\\>\\|bool\\|int\\|string\\|null\\>\\.$#"
+			message: "#^Right side of && is always true\\.$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
@@ -864,16 +834,6 @@ parameters:
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH1990Document\\:\\:\\$parent is never read, only written\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1990Test.php
-
-		-
-			message: "#^Dead catch \\- MongoDB\\\\Driver\\\\Exception\\\\BulkWriteException is never thrown in the try block\\.$#"
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH580Test.php
 
 		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Functional\\\\Ticket\\\\GH921Post\\:\\:\\$id is never written, only read\\.$#"

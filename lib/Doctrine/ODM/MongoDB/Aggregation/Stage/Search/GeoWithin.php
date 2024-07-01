@@ -25,8 +25,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     private ?object $box     = null;
     private ?object $circle  = null;
 
-    /** @var array|MultiPolygon|Polygon|null */
-    private $geometry = null;
+    private array|MultiPolygon|Polygon|null $geometry = null;
 
     public function __construct(Search $search, string ...$path)
     {

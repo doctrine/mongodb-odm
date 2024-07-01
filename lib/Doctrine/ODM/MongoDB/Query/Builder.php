@@ -85,10 +85,9 @@ class Builder
     /**
      * Array containing the query data.
      *
-     * @var array
      * @psalm-var QueryShape
      */
-    private $query = ['type' => Query::TYPE_FIND];
+    private array $query = ['type' => Query::TYPE_FIND];
 
     /**
      * The Expr instance used for building this query.

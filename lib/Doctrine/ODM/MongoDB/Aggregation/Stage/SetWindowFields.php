@@ -28,8 +28,7 @@ use function strtolower;
  */
 class SetWindowFields extends Stage
 {
-    /** @var mixed|Expr|null */
-    private $partitionBy = null;
+    private mixed $partitionBy = null;
 
     /** @var array<string, int> */
     private array $sortBy = [];

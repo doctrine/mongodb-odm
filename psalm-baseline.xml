@@ -142,7 +142,15 @@
   <file src="lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionTrait.php">
     <RedundantCondition>
       <code><![CDATA[is_object($this->coll)]]></code>
+      <code><![CDATA[isset($this->uow) && $this->isOrphanRemovalEnabled() && $value !== null]]></code>
+      <code><![CDATA[isset($this->uow) && $this->isOrphanRemovalEnabled() && $value !== null]]></code>
     </RedundantCondition>
+    <RedundantPropertyInitializationCheck>
+      <code><![CDATA[$this->owner && isset($this->dm)]]></code>
+      <code><![CDATA[isset($this->dm)]]></code>
+      <code><![CDATA[isset($this->uow)]]></code>
+      <code><![CDATA[isset($this->uow)]]></code>
+    </RedundantPropertyInitializationCheck>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php">
     <RedundantFunctionCall>
