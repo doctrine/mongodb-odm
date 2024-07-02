@@ -1,26 +1,20 @@
 Keeping Your Modules Independent
 ================================
 
-One of the goals of using modules is to create discrete units of functionality
-that do not have many (if any) dependencies, allowing you to use that
-functionality in other applications without including unnecessary items.
-
-Doctrine MongoDB ODM includes a utility called
-``ResolveTargetDocumentListener``, that functions by intercepting certain calls
-inside Doctrine and rewriting ``targetDocument`` parameters in your metadata
-mapping at runtime. This allows your bundle to use an interface or abstract
-class in its mappings while still allowing the mapping to resolve to a concrete
-document class at runtime. It will also rewrite class names when no mapping
-metadata has been found for the original class name.
-
-This functionality allows you to define relationships between different
-documents without creating hard dependencies.
+If you work with independent modules, you may encounter the problem of creating
+relationships between objects in different modules. This is problematic because
+it creates a dependency between the modules. This can be resolved by using
+interfaces or abstract classes to define the relationships between the objects
+and then using the ``ResolveTargetDocumentListener``. This event listener will
+intercept certain calls inside Doctrine and rewrite ``targetDocument``
+parameters in your metadata mapping at runtime. It will also rewrite class names
+when no mapping metadata has been found for the original class name.
 
 Background
 ----------
 
-In the following example, we have an `InvoiceModule` that provides invoicing
-functionality, and a `CustomerModule` that contains customer management tools.
+In the following example, we have an ``InvoiceModule`` that provides invoicing
+functionality, and a ``CustomerModule`` that contains customer management tools.
 We want to keep these separated, because they can be used in other systems
 without each other; however, we'd like to use them together in our application.
 
@@ -32,79 +26,94 @@ with a real class that implements that interface.
 Configuration
 -------------
 
-We're going to use the following basic documents (which are incomplete
-for brevity) to explain how to set up and use the
-``ResolveTargetDocumentListener``.
+We're going to use the following basic documents to explain how to set up and
+use the ``ResolveTargetDocumentListener``.
 
-A Customer document:
+A ``Customer`` class in the ``CustomerModule``. This class will be extended in
+the application:
 
 .. code-block:: php
 
     <?php
-    // src/Acme/AppModule/Document/Customer.php
 
-    namespace Acme\AppModule\Document;
+    namespace Acme\CustomerModule\Document;
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-    use Acme\CustomerModule\Document\Customer as BaseCustomer;
-    use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
-
-    #[ODM\Document]
-    class Customer extends BaseCustomer implements InvoiceSubjectInterface
+    #[Document]
+    class Customer
     {
-        // In our example, any methods defined in the InvoiceSubjectInterface
-        // are already implemented in the BaseCustomer
+        #[Id]
+        public string $id;
+
+        #[Field]
+        public string $name;
     }
 
-An Invoice document:
+An ``Invoice`` document in the ``InvoiceModule``:
 
 .. code-block:: php
 
     <?php
-    // src/Acme/InvoiceModule/Document/Invoice.php
 
     namespace Acme\InvoiceModule\Document;
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
     use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
 
-    #[ODM\Document]
+    #[Document]
     class Invoice
     {
-        #[ReferenceOne(targetDocument: \Acme\InvoiceModule\Model\InvoiceSubjectInterface::class)]
-        protected InvoiceSubjectInterface $subject;
+        #[Id]
+        public string $id;
+
+        #[ReferenceOne]
+        public InvoiceSubjectInterface $subject;
     }
 
-An InvoiceSubjectInterface:
+This class has de reference to the ``InvoiceSubjectInterface``. This interface
+contains the list of methods that the ``InvoiceModule`` will need to access on
+the subject so that we are sure that we have access to those methods. This
+interface is also defined in the ``InvoiceModule``:
 
 .. code-block:: php
 
     <?php
-    // src/Acme/InvoiceModule/Model/InvoiceSubjectInterface.php
 
     namespace Acme\InvoiceModule\Model;
 
-    /**
-     * An interface that the invoice Subject object should implement.
-     * In most circumstances, only a single object should implement
-     * this interface as the ResolveTargetDocumentListener can only
-     * change the target to a single object.
-     */
     interface InvoiceSubjectInterface
     {
-        // List any additional methods that your InvoiceModule
-        // will need to access on the subject so that you can
-        // be sure that you have access to those methods.
-
-        /**
-         * @return string
-         */
         public function getName(): string;
     }
 
-Next, we need to configure the listener. Add this to the area where you setup
-Doctrine MongoDB ODM. You must set this up in the way outlined below, otherwise
-you cannot be guaranteed that the targetDocument resolution will occur reliably:
+In the application, the ``Customer`` document class extends the ``Customer``
+class from the ``CustomerModule`` and implements the ``InvoiceSubjectInterface``
+from the ``InvoiceModule``. In most circumstances, only a single document class
+should implement the ``InvoiceSubjectInterface``.
+The ``ResolveTargetDocumentListener`` can only change the target to a single
+object.
+
+.. code-block:: php
+
+    <?php
+
+    namespace App\Document;
+
+    use Acme\CustomerModule\Document\Customer as BaseCustomer;
+    use Acme\InvoiceModule\Model\InvoiceSubjectInterface;
+
+    #[Document]
+    class Customer extends BaseCustomer implements InvoiceSubjectInterface
+    {
+        public function getName(): string
+        {
+            return $this->name;
+        }
+    }
+
+Next, we need to configure a ``ResolveTargetDocumentListener`` to resolve to the
+``Customer`` class of the application when an instance of
+``InvoiceSubjectInterface`` from ``InvoiceModule`` is expected. This must be
+done in the bootstrap code of your application. This is usually done before the
+instantiation of the ``DocumentManager``:
 
 .. code-block:: php
 
@@ -115,7 +124,7 @@ you cannot be guaranteed that the targetDocument resolution will occur reliably:
     // Adds a target-document class
     $rtdl->addResolveTargetDocument(
         \Acme\InvoiceModule\Model\InvoiceSubjectInterface::class,
-        \Acme\CustomerModule\Document\Customer::class,
+        \App\Document\Customer::class,
         []
     );
 
@@ -125,9 +134,39 @@ you cannot be guaranteed that the targetDocument resolution will occur reliably:
     // Create the document manager as you normally would
     $dm = \Doctrine\ODM\MongoDB\DocumentManager::create(null, $config, $evm);
 
+With this configuration, you can create an ``Invoice`` document and set the
+``subject`` property to a ``Customer`` document. When the invoice is retrieved
+from the database, the ``subject`` property will be an instance of
+``Customer``.
+
+.. code-block:: php
+
+    <?php
+
+    use Acme\InvoiceModule\Document\Invoice;
+    use App\Document\Customer;
+
+    $customer         = new Customer();
+    $customer->name   = 'Example Customer';
+    $invoice          = new Invoice();
+    $invoice->subject = $customer;
+
+    $dm->persist($customer);
+    $dm->persist($invoice);
+    $dm->flush();
+    $dm->clear();
+
+    // Retrieve the invoice from the database
+    $invoice = $dm->find(Invoice::class, $invoice->id);
+
+    // The subject property will be an instance of Customer
+    echo $invoice->subject->getName();
+
+
 Final Thoughts
 --------------
 
-With ``ResolveTargetDocumentListener``, we are able to decouple our bundles so
+With ``ResolveTargetDocumentListener``, we are able to decouple our modules so
 that they are usable by themselves and easier to maintain independently, while
-still being able to define relationships between different objects.
+still being able to define relationships between different objects across
+modules.
