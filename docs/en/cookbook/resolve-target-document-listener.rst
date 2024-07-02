@@ -68,7 +68,7 @@ An ``Invoice`` document in the ``InvoiceModule``:
         public InvoiceSubjectInterface $subject;
     }
 
-This class has de reference to the ``InvoiceSubjectInterface``. This interface
+This class has a reference to an ``InvoiceSubjectInterface``. This interface
 contains the list of methods that the ``InvoiceModule`` will need to access on
 the subject so that we are sure that we have access to those methods. This
 interface is also defined in the ``InvoiceModule``:
