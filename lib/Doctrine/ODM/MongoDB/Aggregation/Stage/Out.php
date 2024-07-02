@@ -19,11 +19,8 @@ use function is_array;
  */
 class Out extends Stage
 {
-    /**
-     * @var array|string
-     * @psalm-var OutputCollection
-     */
-    private $out;
+    /** @psalm-var OutputCollection */
+    private array|string $out;
 
     public function __construct(Builder $builder, string $collection, private DocumentManager $dm)
     {

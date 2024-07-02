@@ -19,8 +19,7 @@ class Equals extends AbstractSearchOperator implements ScoredSearchOperator
 
     private string $path = '';
 
-    /** @var mixed */
-    private $value;
+    private mixed $value;
 
     /** @param string|int|float|ObjectId|UTCDateTime|null $value */
     public function __construct(Search $search, string $path = '', $value = null)

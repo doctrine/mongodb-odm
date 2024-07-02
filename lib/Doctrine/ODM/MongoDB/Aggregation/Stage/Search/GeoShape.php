@@ -24,8 +24,7 @@ class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
     private array $path      = [];
     private string $relation = '';
 
-    /** @var LineString|Point|Polygon|MultiPolygon|array|null */
-    private $geometry = null;
+    private LineString|Point|Polygon|MultiPolygon|array|null $geometry = null;
 
     /** @param LineString|Point|Polygon|MultiPolygon|array|null $geometry */
     public function __construct(Search $search, $geometry = null, string $relation = '', string ...$path)

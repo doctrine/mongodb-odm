@@ -25,7 +25,7 @@ class GeoNear extends MatchStage
     private ?float $minDistance = null;
 
     /** @var array<string, mixed>|array{int|float, int|float} */
-    private $near;
+    private array $near;
 
     private ?int $num = null;
 

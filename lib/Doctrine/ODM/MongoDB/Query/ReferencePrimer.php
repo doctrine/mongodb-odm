@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Query;
 
-use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -44,13 +43,6 @@ use function sprintf;
 final class ReferencePrimer
 {
     /**
-     * The default primer Closure.
-     *
-     * @var Closure
-     */
-    private $defaultPrimer;
-
-    /**
      * The DocumentManager instance.
      */
     private DocumentManager $dm;
@@ -64,23 +56,6 @@ final class ReferencePrimer
     {
         $this->dm  = $dm;
         $this->uow = $uow;
-
-        $this->defaultPrimer = static function (DocumentManager $dm, ClassMetadata $class, array $ids, array $hints): void {
-            if ($class->identifier === null) {
-                return;
-            }
-
-            $qb = $dm->createQueryBuilder($class->name)
-                ->field($class->identifier)->in($ids);
-
-            if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
-                $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
-            }
-
-            $iterator = $qb->getQuery()->execute();
-            assert($iterator instanceof Iterator);
-            $iterator->toArray();
-        };
     }
 
     /**
@@ -124,7 +99,7 @@ final class ReferencePrimer
             throw new LogicException(sprintf('Field "%s" is an identifier reference without a target document class in class "%s"', $fieldName, $class->name));
         }
 
-        $primer     = $primer ?: $this->defaultPrimer;
+        $primer     = $primer ?: self::defaultPrimer(...);
         $groupedIds = [];
 
         foreach ($documents as $document) {
@@ -275,5 +250,27 @@ final class ReferencePrimer
             $id                                     = $class->getPHPIdentifierValue($id);
             $groupedIds[$className][serialize($id)] = $id;
         }
+    }
+
+    /**
+     * @param list<mixed>       $ids
+     * @param array<int, mixed> $hints
+     */
+    private static function defaultPrimer(DocumentManager $dm, ClassMetadata $class, array $ids, array $hints): void
+    {
+        if ($class->identifier === null) {
+            return;
+        }
+
+        $qb = $dm->createQueryBuilder($class->name)
+            ->field($class->identifier)->in($ids);
+
+        if (! empty($hints[Query::HINT_READ_PREFERENCE])) {
+            $qb->setReadPreference($hints[Query::HINT_READ_PREFERENCE]);
+        }
+
+        $iterator = $qb->getQuery()->execute();
+        assert($iterator instanceof Iterator);
+        $iterator->toArray();
     }
 }

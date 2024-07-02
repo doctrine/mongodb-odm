@@ -14,9 +14,7 @@ use Throwable;
 final class Command
 {
     private CommandStartedEvent $startedEvent;
-
-    /** @var CommandSucceededEvent|CommandFailedEvent */
-    private $finishedEvent;
+    private CommandSucceededEvent|CommandFailedEvent $finishedEvent;
 
     private function __construct()
     {

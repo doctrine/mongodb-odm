@@ -48,7 +48,7 @@ class Lookup extends Stage
      * @var Builder|array<array<string, mixed>>|null
      * @psalm-var Builder|PipelineExpression|null
      */
-    private $pipeline = null;
+    private Builder|array|null $pipeline = null;
 
     private bool $excludeLocalAndForeignField = false;
 

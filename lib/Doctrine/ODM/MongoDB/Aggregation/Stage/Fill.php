@@ -32,8 +32,7 @@ use function strtolower;
  */
 class Fill extends Stage
 {
-    /** @var mixed|Expr|null */
-    private $partitionBy = null;
+    private mixed $partitionBy = null;
 
     /** @var array<string> */
     private array $partitionByFields = [];
