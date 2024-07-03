@@ -11,22 +11,18 @@ Mapping Drivers
 Doctrine provides several different ways for specifying object
 document mapping metadata:
 
--  Attributes
--  XML
+-  `Attributes <annotations-reference>`_
+-  `XML <xml-mapping>`_
 -  Raw PHP Code
 
 .. note::
 
-    If you're wondering which mapping driver gives the best
-    performance, the answer is: None. Once the metadata of a class has
-    been read from the source (attributes or xml) it is stored
-    in an instance of the
-    ``Doctrine\ODM\MongoDB\Mapping\ClassMetadata`` class and these
-    instances are stored in the metadata cache. Therefore at the end of
-    the day all drivers perform equally well. If you're not using a
-    metadata cache (not recommended!) then the XML driver might have a
-    slight edge in performance due to the powerful native XML support
-    in PHP.
+    If you're wondering which mapping driver gives the best performance, the
+    answer is: None. Once the metadata of a class has been read from the source
+    (Attributes or XML) it is stored in an instance of the
+    ``Doctrine\ODM\MongoDB\Mapping\ClassMetadata`` class and these instances are
+    stored in the metadata cache. Therefore all drivers perform equally well at
+    runtime.
 
 Introduction to Attributes
 --------------------------
@@ -61,6 +57,8 @@ to be designated as a document. This can be done through the
 
         namespace Documents;
 
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+
         #[Document]
         class User
         {
@@ -89,6 +87,8 @@ option as follows:
         <?php
 
         namespace Documents;
+
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 
         #[Document(db: 'my_db', collection: 'users')]
         class User
@@ -243,11 +243,14 @@ Here is an example:
 
         namespace Documents;
 
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+
         #[Document]
         class User
         {
             #[Id]
-            private string $id;
+            public string $id;
         }
 
     .. code-block:: xml
@@ -280,16 +283,16 @@ Here is an example how to manually set a string identifier for your documents:
 
         <?php
 
+        namespace Documents;
+
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+
         #[Document]
         class MyPersistentClass
         {
             #[Id(strategy: 'NONE', type: 'string')]
-            private string $id;
-
-            public function setId(string $id): void
-            {
-                $this->id = $id;
-            }
+            public string $id;
 
             //...
         }
@@ -406,13 +409,16 @@ Example:
 
         namespace Documents;
 
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+        use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+
         #[Document]
         class User
         {
             // ...
 
             #[Field(type: 'string')]
-            private string $username;
+            public string $username;
         }
 
     .. code-block:: xml
@@ -445,7 +451,7 @@ as follows:
         class User
         {
             #[Field(name: 'db_name')]
-            private string $name;
+            public string $name;
         }
 
     .. code-block:: xml
