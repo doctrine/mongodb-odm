@@ -20,7 +20,7 @@ Change the metadata driver configuration to use the ``AttributeDriver``:
     - $config->setMetadataDriverImpl(AnnotationsDriver::create(__DIR__ . '/Documents'));
     + $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/Documents'));
 
-Replace the `@ORM\Document` annotations with the `#[ORM\Document]` attribute.
+Replace the ``@ORM\Document`` annotations with the ``#[ORM\Document]`` attribute.
 
 .. code-block:: diff
 
