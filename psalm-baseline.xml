@@ -25,9 +25,12 @@
     </TypeDoesNotContainType>
   </file>
   <file src="lib/Doctrine/ODM/MongoDB/DocumentManager.php">
-    <ImplementedReturnTypeMismatch>
-      <code><![CDATA[ClassMetadataFactoryInterface]]></code>
-    </ImplementedReturnTypeMismatch>
+    <InvalidReturnStatement>
+      <code><![CDATA[$this->metadataFactory]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[ClassmetadataFactoryInterface]]></code>
+    </InvalidReturnType>
     <NullableReturnStatement>
       <code><![CDATA[$mapping['targetDocument']]]></code>
     </NullableReturnStatement>

@@ -2974,7 +2974,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @param mixed  $oldValue     The old value of the property.
      * @param mixed  $newValue     The new value of the property.
      */
-    public function propertyChanged($sender, $propertyName, $oldValue, $newValue)
+    public function propertyChanged($sender, $propertyName, $oldValue, $newValue): void
     {
         $oid   = spl_object_hash($sender);
         $class = $this->dm->getClassMetadata($sender::class);
