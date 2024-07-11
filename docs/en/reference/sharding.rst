@@ -18,7 +18,7 @@ the document as well as an appropriate index:
         <?php
 
         #[Document]
-        #Index(keys: ['username' => 'asc'])]
+        #[Index(keys: ['username' => 'asc'])]
         #[ShardKey(keys: ['username' => 'asc'])]
         class User
         {
