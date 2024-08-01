@@ -1057,6 +1057,13 @@ final class SchemaManager
 
     private function isSearchIndexCommandException(CommandException $e): bool
     {
-        return $e->getCode() === self::CODE_COMMAND_NOT_SUPPORTED && str_contains($e->getMessage(), 'Search index');
+        // MongoDB 6.0.7+ and 7.0+: "Search indexes are only available on Atlas"
+        if ($e->getCode() === self::CODE_COMMAND_NOT_SUPPORTED && str_contains($e->getMessage(), 'Search index')) {
+            return true;
+        }
+
+        // Older server versions don't support $listSearchIndexes
+        // We don't check for an error code here as the code is not documented and we can't rely on it
+        return str_contains($e->getMessage(), 'Unrecognized pipeline stage name: \'$listSearchIndexes\'');
     }
 }

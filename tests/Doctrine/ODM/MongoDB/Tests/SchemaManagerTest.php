@@ -484,6 +484,25 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateDocumentSearchIndexes(CmsProduct::class);
     }
 
+    public function testUpdateDocumentSearchIndexesNotSupportedForClassWithoutSearchIndexesOnOlderServers(): void
+    {
+        // Class has no search indexes, so if the server doesn't support them we assume everything is fine
+        $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willThrowException($this->createSearchIndexCommandExceptionForOlderServers());
+        $collection
+            ->expects($this->never())
+            ->method('dropSearchIndex');
+        $collection
+            ->expects($this->never())
+            ->method('updateSearchIndex');
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsProduct::class);
+    }
+
     public function testUpdateDocumentSearchIndexesNotSupportedForClassWithSearchIndexes(): void
     {
         $exception = $this->createSearchIndexCommandException();
@@ -1321,5 +1340,10 @@ EOT;
     private function createSearchIndexCommandException(): CommandException
     {
         return new CommandException('PlanExecutor error during aggregation :: caused by :: Search index commands are only supported with Atlas.', 115);
+    }
+
+    private function createSearchIndexCommandExceptionForOlderServers(): CommandException
+    {
+        return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40234);
     }
 }
