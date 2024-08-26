@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use InvalidArgumentException;
+use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
@@ -32,6 +33,7 @@ use function iterator_count;
 use function iterator_to_array;
 use function ksort;
 use function sprintf;
+use function str_contains;
 
 /**
  * @psalm-import-type IndexMapping from ClassMetadata
@@ -44,6 +46,7 @@ final class SchemaManager
     private const GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
 
     private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
+    private const CODE_COMMAND_NOT_SUPPORTED        = 115;
 
     private const ALLOWED_MISSING_INDEX_OPTIONS = [
         'background',
@@ -408,8 +411,19 @@ final class SchemaManager
         $searchIndexes = $class->getSearchIndexes();
         $collection    = $this->dm->getDocumentCollection($class->name);
 
-        $definedNames  = array_column($searchIndexes, 'name');
-        $existingNames = array_column(iterator_to_array($collection->listSearchIndexes()), 'name');
+        $definedNames = array_column($searchIndexes, 'name');
+        try {
+            $existingNames = array_column(iterator_to_array($collection->listSearchIndexes()), 'name');
+        } catch (CommandException $e) {
+            /* If $listSearchIndexes doesn't exist, only throw if search indexes have been defined.
+             * If no search indexes are defined and the server doesn't support search indexes, there's
+             * nothing for us to do here and we can safely return */
+            if ($definedNames === [] && $this->isSearchIndexCommandException($e)) {
+                return;
+            }
+
+            throw $e;
+        }
 
         foreach (array_diff($existingNames, $definedNames) as $name) {
             $collection->dropSearchIndex($name);
@@ -450,7 +464,18 @@ final class SchemaManager
 
         $collection = $this->dm->getDocumentCollection($class->name);
 
-        foreach ($collection->listSearchIndexes() as $searchIndex) {
+        try {
+            $searchIndexes = $collection->listSearchIndexes();
+        } catch (CommandException $e) {
+            // If the server does not support search indexes, there are no indexes to remove in any case
+            if ($this->isSearchIndexCommandException($e)) {
+                return;
+            }
+
+            throw $e;
+        }
+
+        foreach ($searchIndexes as $searchIndex) {
             $collection->dropSearchIndex($searchIndex['name']);
         }
     }
@@ -1028,5 +1053,17 @@ final class SchemaManager
         }
 
         return $options;
+    }
+
+    private function isSearchIndexCommandException(CommandException $e): bool
+    {
+        // MongoDB 6.0.7+ and 7.0+: "Search indexes are only available on Atlas"
+        if ($e->getCode() === self::CODE_COMMAND_NOT_SUPPORTED && str_contains($e->getMessage(), 'Search index')) {
+            return true;
+        }
+
+        // Older server versions don't support $listSearchIndexes
+        // We don't check for an error code here as the code is not documented and we can't rely on it
+        return str_contains($e->getMessage(), 'Unrecognized pipeline stage name: \'$listSearchIndexes\'');
     }
 }

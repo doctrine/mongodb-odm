@@ -26,6 +26,7 @@ use InvalidArgumentException;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\CollectionInfo;
@@ -420,6 +421,27 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
     }
 
+    public function testCreateDocumentSearchIndexesNotSupported(): void
+    {
+        $exception = $this->createSearchIndexCommandException();
+
+        $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if ($collectionName === $cmsArticleCollectionName) {
+                $collection
+                    ->expects($this->once())
+                    ->method('createSearchIndexes')
+                    ->with($this->anything())
+                    ->willThrowException($exception);
+            } else {
+                $collection->expects($this->never())->method('createSearchIndexes');
+            }
+        }
+
+        $this->expectExceptionObject($exception);
+        $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
+    }
+
     public function testUpdateDocumentSearchIndexes(): void
     {
         $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -443,6 +465,66 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
     }
 
+    public function testUpdateDocumentSearchIndexesNotSupportedForClassWithoutSearchIndexes(): void
+    {
+        // Class has no search indexes, so if the server doesn't support them we assume everything is fine
+        $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willThrowException($this->createSearchIndexCommandException());
+        $collection
+            ->expects($this->never())
+            ->method('dropSearchIndex');
+        $collection
+            ->expects($this->never())
+            ->method('updateSearchIndex');
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsProduct::class);
+    }
+
+    public function testUpdateDocumentSearchIndexesNotSupportedForClassWithoutSearchIndexesOnOlderServers(): void
+    {
+        // Class has no search indexes, so if the server doesn't support them we assume everything is fine
+        $collectionName = $this->dm->getClassMetadata(CmsProduct::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willThrowException($this->createSearchIndexCommandExceptionForOlderServers());
+        $collection
+            ->expects($this->never())
+            ->method('dropSearchIndex');
+        $collection
+            ->expects($this->never())
+            ->method('updateSearchIndex');
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsProduct::class);
+    }
+
+    public function testUpdateDocumentSearchIndexesNotSupportedForClassWithSearchIndexes(): void
+    {
+        $exception = $this->createSearchIndexCommandException();
+
+        // This class has search indexes, so we do expect an exception
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willThrowException($exception);
+        $collection
+            ->expects($this->never())
+            ->method('dropSearchIndex');
+        $collection
+            ->expects($this->never())
+            ->method('updateSearchIndex');
+
+        $this->expectExceptionObject($exception);
+        $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
+    }
+
     public function testDeleteDocumentSearchIndexes(): void
     {
         $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
@@ -455,6 +537,21 @@ class SchemaManagerTest extends BaseTestCase
             ->expects($this->once())
             ->method('dropSearchIndex')
             ->with('default');
+
+        $this->schemaManager->deleteDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testDeleteDocumentSearchIndexesNotSupported(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willThrowException($this->createSearchIndexCommandException());
+        $collection
+            ->expects($this->never())
+            ->method('dropSearchIndex');
 
         $this->schemaManager->deleteDocumentSearchIndexes(CmsArticle::class);
     }
@@ -1238,5 +1335,15 @@ EOT;
 
             return true;
         });
+    }
+
+    private function createSearchIndexCommandException(): CommandException
+    {
+        return new CommandException('PlanExecutor error during aggregation :: caused by :: Search index commands are only supported with Atlas.', 115);
+    }
+
+    private function createSearchIndexCommandExceptionForOlderServers(): CommandException
+    {
+        return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40234);
     }
 }
