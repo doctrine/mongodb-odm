@@ -1061,6 +1061,9 @@ final class SchemaManager
         if ($e->getCode() === self::CODE_COMMAND_NOT_SUPPORTED && str_contains($e->getMessage(), 'Search index')) {
             return true;
         }
+        if ($e->getMessage() === '$listSearchIndexes stage is only allowed on MongoDB Atlas') {
+            return true;
+        }
 
         // Older server versions don't support $listSearchIndexes
         // We don't check for an error code here as the code is not documented and we can't rely on it
