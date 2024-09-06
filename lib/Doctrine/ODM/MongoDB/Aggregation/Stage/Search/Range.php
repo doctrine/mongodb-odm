@@ -15,14 +15,10 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;
 
-    /** @var int|float|UTCDateTime|null */
-    private $gt = null;
-
-    /** @var int|float|UTCDateTime|null */
-    private $lt = null;
-
-    private bool $includeLowerBound = false;
-    private bool $includeUpperBound = false;
+    private int|float|UTCDateTime|null $gt = null;
+    private int|float|UTCDateTime|null $lt = null;
+    private bool $includeLowerBound        = false;
+    private bool $includeUpperBound        = false;
 
     /** @var list<string> */
     private array $path;

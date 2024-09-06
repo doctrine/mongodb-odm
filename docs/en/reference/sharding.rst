@@ -17,21 +17,19 @@ the document as well as an appropriate index:
 
         <?php
 
-        /**
-         * @Document
-         * @Indexes(@Index(keys={"username"="asc"}))
-         * @ShardKey(keys={"username"="asc"})
-         */
+        #[Document]
+        #[Index(keys: ['username' => 'asc'])]
+        #[ShardKey(keys: ['username' => 'asc'])]
         class User
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="int") */
-            public $accountId;
+            #[Field(type: 'int')]
+            public int $accountId;
 
-            /** @Field(type="string") */
-            public $username;
+            #[Field(type: 'string')]
+            public string $username;
         }
 
     .. code-block:: xml

@@ -30,7 +30,7 @@
        reference/trees
        reference/storing-files-with-gridfs
        reference/xml-mapping
-       reference/annotations-reference
+       reference/attributes-reference
        reference/metadata-drivers
        reference/working-with-objects
        reference/document-repositories

@@ -29,17 +29,12 @@ Now we can add some event listeners to the ``$evm``. Let's create a
 
     class EventTest
     {
-        const preFoo = 'preFoo';
-        const postFoo = 'postFoo';
-
-        private $_evm;
-
-        public $preFooInvoked = false;
-        public $postFooInvoked = false;
+        public bool $preFooInvoked = false;
+        public bool $postFooInvoked = false;
 
         public function __construct(EventManager $evm)
         {
-            $evm->addEventListener([self::preFoo, self::postFoo], $this);
+            $evm->addEventListener(['preFoo', 'postFoo'], $this);
         }
 
         public function preFoo(EventArgs $e): void
@@ -88,7 +83,7 @@ array of events it should be subscribed to.
     {
         const preFoo = 'preFoo';
 
-        public $preFooInvoked = false;
+        public bool $preFooInvoked = false;
 
         public function preFoo(): void
         {
@@ -166,7 +161,7 @@ the life-time of their registered documents.
 -
    loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml).
+   (attributes/xml).
 -
    onClassMetadataNotFound - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
@@ -241,65 +236,64 @@ event occurs.
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class User
     {
         // ...
 
-        /**
-         * @Field
-         */
-        public $value;
+        #[Field]
+        public string $value;
 
-        /** @Field */
-        private $createdAt;
+        #[Field]
+        private \DateTimeInterface $createdAt;
 
-        /** @PrePersist */
+        #[PrePersist]
         public function doStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
-            $this->createdAt = date('Y-m-d H:i:s');
+            $this->createdAt = new DateTimeImmutable();
         }
 
-        /** @PrePersist */
+        #[PrePersist]
         public function doOtherStuffOnPrePersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->value = 'changed from prePersist callback!';
         }
 
-        /** @PostPersist */
+        #[PostPersist]
         public function doStuffOnPostPersist(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->value = 'changed from postPersist callback!';
         }
 
-        /** @PreLoad */
+        #[PreLoad]
         public function doStuffOnPreLoad(\Doctrine\ODM\MongoDB\Event\PreLoadEventArgs $eventArgs): void
         {
             $data =& $eventArgs->getData();
             $data['value'] = 'changed from preLoad callback';
         }
 
-        /** @PostLoad */
+        #[PostLoad]
         public function doStuffOnPostLoad(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
         {
             $this->value = 'changed from postLoad callback!';
         }
 
-        /** @PreUpdate */
+        #[PreUpdate]
         public function doStuffOnPreUpdate(\Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs $eventArgs): void
         {
             $this->value = 'changed from preUpdate callback!';
         }
 
-        /** @PreFlush */
+        #[PreFlush]
         public function preFlush(\Doctrine\ODM\MongoDB\Event\PreFlushEventArgs $eventArgs): void
         {
             $this->value = 'changed from preFlush callback!';
         }
     }
 
-Note that when using annotations you have to apply the
-@HasLifecycleCallbacks marker annotation on the document class.
+Note that when using attributes you have to apply the
+``#[HasLifecycleCallbacks]`` marker attribute on the document class.
 
 Listening to Lifecycle Events
 -----------------------------
@@ -357,18 +351,21 @@ transaction and will see data that has not been committed yet.
 
     <?php
 
-    public function someEventListener(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
+    class EventTest
     {
-        // To check if a transaction is active:
-        if ($eventArgs->isInTransaction()) {
-            // Do something
-        }
+        public function someEventListener(\Doctrine\ODM\MongoDB\Event\LifecycleEventArgs $eventArgs): void
+        {
+            // To check if a transaction is active:
+            if ($eventArgs->isInTransaction()) {
+                // Do something
+            }
 
-        // Pass the session to any query you execute
-        $eventArgs->getDocumentManager()->createQueryBuilder(User::class)
-            // Query logic
-            ->getQuery(['session' => $eventArgs->session])
-            ->execute();
+            // Pass the session to any query you execute
+            $eventArgs->getDocumentManager()->createQueryBuilder(User::class)
+                // Query logic
+                ->getQuery(['session' => $eventArgs->session])
+                ->execute();
+        }
     }
 
 .. note::

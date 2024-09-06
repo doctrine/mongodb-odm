@@ -11,35 +11,37 @@ Full Tree in Single Document
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private string $id;
 
-        /** @Field(type="string") */
-        private $title;
+        #[Field(type: 'string')]
+        private string $title;
 
-        /** @Field(type="string") */
-        private $body;
+        #[Field(type: 'string')]
+        private string $body;
 
-        /** @EmbedMany(targetDocument=Comment::class) */
-        private $comments = [];
+        /** @var Collection<Comment> */
+        #[EmbedMany(targetDocument: Comment::class)]
+        private Collection $comments;
 
         // ...
     }
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Comment
     {
-        /** @Field(type="string") */
-        private $by;
+        #[Field(type: 'string')]
+        private string $by;
 
-        /** @Field(type="string") */
-        private $text;
+        #[Field(type: 'string')]
+        private string $text;
 
-        /** @EmbedMany(targetDocument=Comment::class) */
-        private $replies = [];
+        /** @var Collection<Comment> */
+        #[EmbedMany(targetDocument: Comment::class)]
+        private Collection $replies;
 
         // ...
     }
@@ -67,20 +69,18 @@ Parent Reference
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Category
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private string $id;
 
-        /** @Field(type="string") */
-        private $name;
+        #[Field(type: 'string')]
+        private string $name;
 
-        /**
-         * @ReferenceOne(targetDocument=Category::class)
-         * @Index
-         */
-        private $parent;
+        #[ReferenceOne(targetDocument: Category::class)]
+        #[Index]
+        private ?Category $parent = null;
 
         // ...
     }
@@ -106,20 +106,19 @@ Child Reference
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Category
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private string $id;
 
-        /** @Field(type="string") */
-        private $name;
+        #[Field(type: 'string')]
+        private string $name;
 
-        /**
-         * @ReferenceMany(targetDocument=Category::class)
-         * @Index
-         */
-        private $children = [];
+        /** @var Collection<Category> */
+        #[ReferenceMany(targetDocument: Category::class)]
+        #[Index]
+        private Collection $children;
 
         // ...
     }
@@ -158,37 +157,35 @@ Array of Ancestors
 
     <?php
 
-    /** @MappedSuperclass */
+    #[MappedSuperclass]
     class BaseCategory
     {
-        /** @Field(type="string") */
-        private $name;
+        #[Field(type: 'string')]
+        private string $name;
 
         // ...
     }
 
-    /** @Document */
+    #[Document]
     class Category extends BaseCategory
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private string $id;
 
-        /**
-         * @ReferenceMany(targetDocument=Category::class)
-         * @Index
-         */
-        private $ancestors = [];
+        /** @var Collection<Category> */
+        #[ReferenceMany(targetDocument: Category::class)]
+        #[Index]
+        private Collection $ancestors;
 
-        /**
-         * @ReferenceOne(targetDocument=Category::class)
-         * @Index
-         */
-        private $parent;
+        /** @var Collection<Category> */
+        #[ReferenceOne(targetDocument: Category::class)]
+        #[Index]
+        private ?Category $parent = null;
 
         // ...
     }
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class SubCategory extends BaseCategory
     {
     }
@@ -227,17 +224,17 @@ Materialized Paths
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Category
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private string $id;
 
-        /** @Field(type="string") */
-        private $name;
+        #[Field(type: 'string')]
+        private string $name;
 
-        /** @Field(type="string") */
-        private $path;
+        #[Field(type: 'string')]
+        private string $path;
 
         // ...
     }

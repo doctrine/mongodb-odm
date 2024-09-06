@@ -3,9 +3,6 @@
 Custom Collections
 ==================
 
-.. note::
-    This feature was introduced in version 1.1
-
 By default, Doctrine uses ``ArrayCollection`` implementation of its ``Collection``
 interface to hold both embedded and referenced documents. That collection may then
 be wrapped by a ``PersistentCollection`` to allow for change tracking and other
@@ -16,16 +13,16 @@ persistence-related features.
     <?php
 
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
-    /** @Document */
+    #[Document]
     class Application
     {
         // ...
 
-        /**
-         * @EmbedMany(targetDocument=Section::class)
-         */
-        private $sections;
+        /** @var Collection<Section> */
+        #[EmbedMany(targetDocument: Section::class)]
+        public Collection $sections;
 
         public function __construct()
         {
@@ -43,13 +40,8 @@ owning document's class.
 Custom Collection Classes
 -------------------------
 
-.. note::
-    You may want to check `malarzm/collections <https://github.com/malarzm/collections>`_
-    which provides alternative implementations of Doctrine's ``Collection`` interface and
-    aims to kickstart development of your own collections.
-
 Using your own ``Collection`` implementation is as simple as specifying the
-``collectionClass`` parameter in the ``@EmbedMany`` or ``@ReferenceMany`` mapping
+``collectionClass`` parameter in the ``#[EmbedMany]`` or ``#[ReferenceMany]`` mapping
 and ensuring that your custom class is initialized in the owning class' constructor:
 
 .. code-block:: php
@@ -58,18 +50,17 @@ and ensuring that your custom class is initialized in the owning class' construc
 
     use Doctrine\Common\Collections\ArrayCollection;
 
-    /** @Document */
+    #[Document]
     class Application
     {
         // ...
 
-        /**
-         * @EmbedMany(
-         *  collectionClass=SectionCollection::class
-         *  targetDocument=Section::class
-         * )
-         */
-        private $sections;
+        /** @var Collection<Section> */
+        #[EmbedMany(
+            collectionClass: SectionCollection::class,
+            targetDocument: Section::class,
+        )]
+        private Collection $sections;
 
         public function __construct()
         {
@@ -108,11 +99,9 @@ Alternatively, you may want to implement the whole class from scratch:
 
     class SectionCollection implements Collection
     {
-        private $elements = [];
-
-        public function __construct(array $elements = [])
-        {
-            $this->elements = $elements;
+        public function __construct(
+            private array $elements = []
+        ) {
         }
 
         // your implementation of all methods interface requires
@@ -124,40 +113,100 @@ Taking Control of the Collection's Constructor
 By default, Doctrine assumes that it can instantiate your collections in same
 manner as an ``ArrayCollection`` (i.e. the only parameter is an optional PHP
 array); however, you may want to inject additional dependencies into your
-custom collection class(es). This will require you to create a
-`PersistentCollectionFactory implementation <https://github.com/doctrine/mongodb-odm/blob/2.2.x/lib/Doctrine/ODM/MongoDB/PersistentCollection/PersistentCollectionFactory.php>`_,
-which Doctrine will then use to construct its persistent collections.
-You may decide to implement this class from scratch or extend our
-``AbstractPersistentCollectionFactory``:
+custom collection class(es).
+
+For this example, we assume that you want to pass Symfony's event dispatcher
+to your custom collection class. To do this, you need to modify the
+constructor to accept this dependency. You also need to override the
+``createFrom`` method to pass the dependency to the collection constructor when
+methods such as ``map`` or ``filter`` are called:
 
 .. code-block:: php
 
     <?php
 
+    use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
+
+    class SectionCollection extends ArrayCollection
+    {
+        public function __construct(
+            private EventDispatcherInterface $eventDispatcher,
+            private array $elements = [],
+        ) {
+        }
+
+        public function createFrom(array $elements): static
+        {
+            return new static($this->eventDispatcher, $elements);
+        }
+
+        // your custom methods
+    }
+
+When you instantiate a new document, it's your responsibility to pass the
+dependency to the collection constructor.
+
+.. code-block:: php
+
+    <?php
+
+    /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher */
+    $eventDispatcher = $container->get('event_dispatcher');
+    $sections = new SectionCollection($eventDispatcher);
+    $application = new Application($sections);
+
+The ``$sections`` property cannot have a default value in the ``Application``
+class::
+
+.. code-block:: php
+
+    <?php
+
+    #[Document]
+    class Application
+    {
+        #[EmbedMany(
+            collectionClass: SectionCollection::class,
+            targetDocument: Section::class,
+        )]
+        private Collection $sections;
+
+        public function __construct(
+            SectionCollection $sections,
+        ) {
+            $this->sections = $sections;
+        }
+    }
+
+In addition, you need to create a class that implement ``PersistentCollectionFactory``,
+which Doctrine ODM will then use to construct its persistent collections.
+You should extend ``AbstractPersistentCollectionFactory``:
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\Common\Collections\Collection;
     use Doctrine\ODM\MongoDB\PersistentCollection\AbstractPersistentCollectionFactory;
     use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
     final class YourPersistentCollectionFactory extends AbstractPersistentCollectionFactory
     {
-        private $eventDispatcher;
+        public function __construct(
+            private EventDispatcherInterface $eventDispatcher,
+        ) {}
 
-        public function __construct(EventDispatcherInterface $eventDispatcher)
+        protected function createCollectionClass(string $collectionClass): Collection
         {
-            $this->eventDispatcher = $eventDispatcher;
-        }
-
-        protected function createCollectionClass(string $collectionClass)
-        {
-            switch ($collectionClass) {
-                case SectionCollection::class:
-                    return new $collectionClass([], $this->eventDispatcher);
-                default:
-                    return new $collectionClass();
-            }
+            return match ($collectionClass) {
+                SectionCollection::class => new SectionCollection([], $this->eventDispatcher),
+                default                  => new $collectionClass(),
+            };
         }
     }
 
-The factory class must then be registered in the ``Configuration``:
+The factory class is then registered in the ``Configuration``:
 
 .. code-block:: php
 

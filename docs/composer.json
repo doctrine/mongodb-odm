@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "phpdocumentor/guides-cli": "^1.2"
+    }
+}

@@ -423,10 +423,9 @@ in the $addresses collection.
     class User
     {
         //...
-        /**
-         * @ReferenceMany(targetDocument=Address::class, cascade={"persist", "remove"})
-         */
-        private $addresses;
+        /** @var Collection<Address> */
+        #[ReferenceMany(targetDocument: Address::class, cascade: ['persist', 'remove'])]
+        private Collection $addresses;
         //...
     }
 
@@ -523,7 +522,7 @@ simple example:
     // All users with an age between 20 and 30 (inclusive).
     $qb = $dm->createQueryBuilder(User::class)
         ->field('age')->range(20, 30);
-    $q = $qb->getQuery()
+    $q = $qb->getQuery();
     $users = $q->execute();
 
 By Reference

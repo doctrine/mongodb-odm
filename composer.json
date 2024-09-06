@@ -40,6 +40,7 @@
         "ext-bcmath": "*",
         "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/coding-standard": "^12.0",
+        "doctrine/orm": "^3.2",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.0.0",
         "phpstan/phpstan": "~1.10.67",
@@ -63,8 +64,8 @@
         "psr-4": {
             "Doctrine\\ODM\\MongoDB\\Benchmark\\": "benchmark",
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Doctrine/ODM/MongoDB/Tests",
+            "Documentation\\": "tests/Documentation",
             "Documents\\": "tests/Documents",
-            "Documents81\\": "tests/Documents81",
             "Stubs\\": "tests/Stubs",
             "TestDocuments\\" :"tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures"
         }

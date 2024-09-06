@@ -33,11 +33,8 @@ use function is_array;
  */
 class Merge extends Stage
 {
-    /**
-     * @var string|array
-     * @psalm-var OutputCollection
-     */
-    private $into;
+    /** @psalm-var OutputCollection */
+    private string|array $into;
 
     /** @var list<string> */
     private array $on = [];
@@ -45,11 +42,8 @@ class Merge extends Stage
     /** @var array<string, mixed|Expr> */
     private array $let = [];
 
-    /**
-     * @var string|array|Builder|Stage
-     * @psalm-var WhenMatchedParamType
-     */
-    private $whenMatched;
+    /** @psalm-var WhenMatchedParamType */
+    private string|array|Builder|Stage|null $whenMatched = null;
 
     private ?string $whenNotMatched = null;
 

@@ -34,6 +34,7 @@ is allowed to:
 
     <?php
 
+    #[Document]
     class Order
     {
         public function assertCustomerAllowedBuying(): void
@@ -56,7 +57,7 @@ code, enforcing it at any time is important so that customers with
 a unknown reputation don't owe your business too much money.
 
 We can enforce this constraint in any of the metadata drivers.
-First Annotations:
+First Attributes:
 
 .. configuration-block::
 
@@ -64,10 +65,11 @@ First Annotations:
 
         <?php
 
-        /** @Document @HasLifecycleCallbacks */
+        #[Document]
+        #[HasLifecycleCallbacks]
         class Order
         {
-            /** @PrePersist @PreUpdate */
+            #[PreFlush]
             public function assertCustomerAllowedBuying(): void {}
         }
 
@@ -76,17 +78,21 @@ First Annotations:
         <doctrine-mapping>
             <document name="Order">
                 <lifecycle-callbacks>
-                    <lifecycle-callback type="prePersist" method="assertCustomerallowedBuying" />
-                    <lifecycle-callback type="preUpdate" method="assertCustomerallowedBuying" />
+                    <lifecycle-callback type="preFlush" method="assertCustomerAllowedBuying" />
                 </lifecycle-callbacks>
             </document>
         </doctrine-mapping>
 
-Now validation is performed whenever you call
-``DocumentManager#persist($order)`` or when you call
-``DocumentManager#flush()`` and an order is about to be updated. Any
-Exception that happens in the lifecycle callbacks will be cached by
-the DocumentManager.
+Now validation is performed when you call ``DocumentManager#flush()`` and an
+order is about to be inserted or updated. Any Exception that happens in the
+lifecycle callbacks will stop the flush operation and the exception will be
+propagated.
+
+You might want to use ``PrePersist`` instead of ``PreFlush`` to validate
+the document sooner, when you call ``DocumentManager#persist()``. This way you
+can catch validation errors earlier in your application flow. Be aware that
+if the document is modified after the ``PrePersist`` event, the validation
+might not be triggered again and an invalid document can be persisted.
 
 Of course you can do any type of primitive checks, not null,
 email-validation, string size, integer and date ranges in your
@@ -96,10 +102,11 @@ validation callbacks.
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Order
     {
-        /** @PrePersist @PreUpdate */
+        #[PreFlush]
         public function validate(): void
         {
             if (!($this->plannedShipDate instanceof DateTime)) {
@@ -124,11 +131,8 @@ can register multiple methods for validation in "PrePersist" or
 "PreUpdate" or mix and share them in any combinations between those
 two events.
 
-There is no limit to what you can and can't validate in
-"PrePersist" and "PreUpdate" as long as you don't create new document
-instances. This was already discussed in the previous blog post on
-the Versionable extension, which requires another type of event
-called "onFlush".
+There is no limit to what you can validate in ``PreFlush``, ``PrePersist`` and
+``PreUpdate`` as long as you don't create new document instances.
 
 Further readings: :doc:`Lifecycle Events <../reference/events>`
 
@@ -145,9 +149,9 @@ MongoDB ≥ 3.6 offers the capability to validate documents during
 insertions and updates through a schema associated to the collection
 (cf. `MongoDB documentation <https://docs.mongodb.com/manual/core/schema-validation/>`_).
 
-Doctrine MongoDB ODM now provides a way to take advantage of this functionality
-thanks to the new :doc:`@Validation <../reference/annotations-reference#validation>`
-annotation and its properties (also available with XML mapping):
+Doctrine MongoDB ODM provides a way to take advantage of this functionality
+thanks to the :doc:`#[Validation] <../reference/attributes-reference#validation>`
+attribute and its properties (also available with XML mapping):
 
 -
   ``validator`` - The schema that will be used to validate documents.
@@ -174,49 +178,47 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
         use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
         use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-        /**
-         * @ODM\Document
-         * @ODM\Validation(
-         *     validator=SchemaValidated::VALIDATOR,
-         *     action=ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
-         *     level=ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
-         * )
-         */
+        #[ODM\Document]
+        #[ODM\Validation(
+            validator: self::VALIDATOR,
+            action: ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR,
+            level: ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT,
+        )]
         class SchemaValidated
         {
-            public const VALIDATOR = <<<'EOT'
-        {
-            "$jsonSchema": {
-                "required": ["name"],
-                "properties": {
-                    "name": {
-                        "bsonType": "string",
-                        "description": "must be a string and is required"
-                    }
+            private const VALIDATOR = <<<'EOT'
+                {
+                    "$jsonSchema": {
+                        "required": ["name"],
+                        "properties": {
+                            "name": {
+                                "bsonType": "string",
+                                "description": "must be a string and is required"
+                            }
+                        }
+                    },
+                    "$or": [
+                        { "phone": { "$type": "string" } },
+                        { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
+                        { "status": { "$in": [ "Unknown", "Incomplete" ] } }
+                    ]
                 }
-            },
-            "$or": [
-                { "phone": { "$type": "string" } },
-                { "email": { "$regularExpression" : { "pattern": "@mongodb\\.com$", "options": "" } } },
-                { "status": { "$in": [ "Unknown", "Incomplete" ] } }
-            ]
-        }
-        EOT;
+                EOT;
 
-            /** @ODM\Id */
-            private $id;
+            #[ODM\Id]
+            public string $id;
 
-            /** @ODM\Field(type="string") */
-            private $name;
+            #[ODM\Field]
+            public string $name;
 
-            /** @ODM\Field(type="string") */
-            private $phone;
+            #[ODM\Field]
+            public string $phone;
 
-            /** @ODM\Field(type="string") */
-            private $email;
+            #[ODM\Field]
+            public string $email;
 
-            /** @ODM\Field(type="string") */
-            private $status;
+            #[ODM\Field]
+            public string $status;
         }
 
     .. code-block:: xml
@@ -249,5 +251,5 @@ the ``odm:schema:create`` or ``odm:schema:update`` command.
             </document>
         </doctrine-mongo-mapping>
 
-Please refer to the :doc:`@Validation <../reference/annotations-reference#document>` annotation reference
+Please refer to the :doc:`#[Validation] <../reference/attributes-reference#document>` attributes reference
 for more details on how to use this feature.

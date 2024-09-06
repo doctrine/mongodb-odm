@@ -25,11 +25,8 @@ use function count;
  */
 final class StaticProxyFactory implements ProxyFactory
 {
-    /** @var UnitOfWork The UnitOfWork this factory is bound to. */
     private UnitOfWork $uow;
-
     private LifecycleEventManager $lifecycleEventManager;
-
     private LazyLoadingGhostFactory $proxyFactory;
 
     public function __construct(DocumentManager $documentManager)

@@ -23,7 +23,7 @@ class Output extends Stage
     private string $currentField = '';
 
     /** @var array<string, array<string, mixed>> */
-    private $output = [];
+    private array $output = [];
 
     public function __construct(Builder $builder, private Fill $fill)
     {

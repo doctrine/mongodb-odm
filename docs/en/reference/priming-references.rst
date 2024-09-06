@@ -15,11 +15,12 @@ Consider the following abbreviated model:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class User
     {
-        /** @ReferenceMany(targetDocument=Account::class) */
-        private $accounts;
+        /** @var Collection<Account> */
+        #[ReferenceMany(targetDocument: Account::class)]
+        private Collection $accounts;
     }
 
 We would like to query for 100 users and then iterate over their referenced
@@ -108,11 +109,12 @@ specifying them in the mapping:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class User
     {
-        /** @ReferenceMany(targetDocument=Account::class, prime={"user"}) */
-        private $accounts;
+        /** @var Collection<Account> */
+        #[ReferenceMany(targetDocument: Account::class, prime: ['user'])]
+        private Collection $accounts;
     }
 
 When the collection is initialized, the configured primers are automatically

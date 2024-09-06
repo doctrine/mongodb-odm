@@ -16,21 +16,24 @@ setup a document like the following with a ``$keywords`` property that is mapped
 
     <?php
 
-    namespace Documents;
-
-    /** @Document */
+    #[Document]
     class Product
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        public string $id;
 
-        /** @Field(type="string") */
-        private $title;
+        #[Field(type: 'string')]
+        public string $title;
 
-        /** @Field(type="collection") @Index */
-        private $keywords = [];
+        /** @var Collection<string> */
+        #[Field(type: 'collection')]
+        #[Index]
+        public Collection $keywords;
 
-        // ...
+        public function __construct()
+        {
+            $this->keywords = new ArrayCollection();
+        }
     }
 
 Working with Keywords
@@ -43,12 +46,12 @@ Now, create a product and add some keywords:
     <?php
 
     $product = new Product();
-    $product->setTitle('Nike Air Jordan 2011');
-    $product->addKeyword('nike shoes');
-    $product->addKeyword('jordan shoes');
-    $product->addKeyword('air jordan');
-    $product->addKeyword('shoes');
-    $product->addKeyword('2011');
+    $product->title = 'Nike Air Jordan 2011';
+    $product->keywords->add('nike shoes');
+    $product->keywords->add('jordan shoes');
+    $product->keywords->add('air jordan');
+    $product->keywords->add('shoes');
+    $product->keywords->add('2011');
 
     $dm->persist($product);
     $dm->flush();
@@ -105,8 +108,9 @@ the results to your query. Here is an example:
 Embedded Documents
 ------------------
 
-If you want to use an embedded document instead of just an array then you can. It will allow you to store
-additional information with each keyword, like its weight.
+If you want to use an embedded document instead of just an array then you can.
+That will allow you to store additional information with each keyword, like its
+weight.
 
 Definition
 ~~~~~~~~~~
@@ -117,22 +121,17 @@ You can setup a ``Keyword`` document like the following:
 
     <?php
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Keyword
     {
-        /** @Field(type="string") @Index */
-        private $keyword;
+        public function __construct(
+            #[Field(type: 'string')]
+            #[Index]
+            public $keyword,
 
-        /** @Field(type="int") */
-        private $weight;
-
-        public function __construct(string $keyword, int $weight)
-        {
-            $this->keyword = $keyword;
-            $this->weight = $weight;
-        }
-
-        // ...
+            #[Field(type: 'int')]
+            public $weight,
+        ) {}
     }
 
 Now you can embed the ``Keyword`` document many times in the ``Product``:
@@ -143,13 +142,14 @@ Now you can embed the ``Keyword`` document many times in the ``Product``:
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class Product
     {
         // ...
 
-        /** @EmbedMany(targetDocument=Keyword::class) */
-        private $keywords;
+        /** @var Collection<Keyword> */
+        #[EmbedMany(targetDocument: Keyword::class)]
+        public Collection $keywords;
 
         // ...
     }
@@ -161,10 +161,12 @@ you would have to do the following:
 
     <?php
 
-    $product->addKeyword(new Keyword('nike shoes', 1));
+    $product->keywords->add(new Keyword('nike shoes', 1));
 
-This is a very basic search engine example and can work for many small and simple applications. If you
-need better searching functionality you can look at integrating something like `Solr`_ in your project.
+This is a very basic search engine example and can work for many small and
+simple applications. If you need better searching functionality you can look at
+`MongoDB Atlas Search`_, which can be integrated using
+:doc:`Search Indexes <../reference/search-indexes>`
 
 .. _AlchemyAPI: http://www.alchemyapi.com
-.. _Solr: http://lucene.apache.org/solr
+.. _MongoDB Atlas Search: https://www.mongodb.com/products/platform/atlas-search

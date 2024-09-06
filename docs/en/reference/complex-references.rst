@@ -30,32 +30,32 @@ querying by the BlogPost's ID.
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @ReferenceMany(targetDocument=Comment::class, mappedBy="blogPost") */
-        private $comments;
+        /** @var Collection<Comment> */
+        #[ReferenceMany(targetDocument: Comment::class, mappedBy: 'blogPost')]
+        private Collection $comments;
 
-        /**
-         * @ReferenceMany(
-         *      targetDocument=Comment::class,
-         *      mappedBy="blogPost",
-         *      sort={"date"="desc"},
-         *      limit=5
-         * )
-         */
-        private $last5Comments;
+        /** @var Collection<Comment> */
+        #[ReferenceMany(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             sort: ['date' => 'desc'],
+             limit: 5,
+        )]
+        private Collection $last5Comments;
     }
 
-    /** @Document */
+    #[Document]
     class Comment
     {
         // ...
 
-        /** @ReferenceOne(targetDocument=BlogPost::class, inversedBy="comments") */
-        private $blogPost;
+        #[ReferenceOne(targetDocument: BlogPost::class, inversedBy: 'comments')]
+        private BlogPost $blogPost;
     }
 
 You can also use ``mappedBy`` for referencing a single document, as in the
@@ -65,14 +65,15 @@ following example:
 
     <?php
 
-    /**
-     * @ReferenceOne(
-     *      targetDocument=Comment::class,
-     *      mappedBy="blogPost",
-     *      sort={"date"="desc"}
-     * )
-     */
-    private $lastComment;
+    class BlogPost
+    {
+        #[ReferenceOne(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             sort: ['date' => 'desc']
+        )]
+        private ?Comment $lastComment = null;
+    }
 
 ``criteria`` Example
 --------------------
@@ -85,14 +86,16 @@ administrators:
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *      targetDocument=Comment::class,
-     *      mappedBy="blogPost",
-     *      criteria={"isByAdmin" : true}
-     * )
-     */
-    private $commentsByAdmin;
+    class BlogPost
+    {
+        /** @var Collection<Comment> */
+        #[ReferenceMany(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             criteria: ['isByAdmin' => true]
+        )]
+        private Collection $commentsByAdmin;
+    }
 
 ``repositoryMethod`` Example
 ----------------------------
@@ -104,14 +107,16 @@ call on the Comment repository class to populate the reference.
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *      targetDocument=Comment::class,
-     *      mappedBy="blogPost",
-     *      repositoryMethod="findSomeComments"
-     * )
-     */
-    private $someComments;
+    class BlogPost
+    {
+        /** @var Collection<Comment> */
+        #[ReferenceMany(
+             targetDocument: Comment::class,
+             mappedBy: 'blogPost',
+             repositoryMethod: 'findSomeComments',
+        )]
+        private Collection $someComments;
+    }
 
 The ``Comment`` class will need to have a custom repository class configured:
 
@@ -119,7 +124,7 @@ The ``Comment`` class will need to have a custom repository class configured:
 
     <?php
 
-    /** @Document(repositoryClass="CommentRepository") */
+    #[Document(repositoryClass: 'CommentRepository')]
     class Comment
     {
         // ...
@@ -141,7 +146,7 @@ is called to populate the reference, Doctrine will provide the Blogpost instance
         public function findSomeComments(BlogPost $blogPost): Iterator
         {
             return $this->createQueryBuilder()
-                ->field('blogPost')->references($blogPost);
+                ->field('blogPost')->references($blogPost)
                 ->getQuery()->execute();
         }
     }

@@ -9,22 +9,23 @@ and changes are tracked and persisted separately. Here is an example:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @ReferenceOne(targetDocument=User::class) */
-        private $user;
+        #[ReferenceOne(targetDocument: User::class)]
+        private User $user;
     }
 
-    /** @Document */
+    #[Document]
     class User
     {
         // ...
 
-        /** @ReferenceMany(targetDocument=BlogPost::class) */
-        private $posts;
+        /** @var Collection<BlogPost> */
+        #[ReferenceMany(targetDocument: BlogPost::class)]
+        private Collection $posts;
     }
 
 When I persist some instances of the above classes the references would exist on both sides! The
@@ -51,22 +52,23 @@ One to Many
 
     <?php
 
-    /** @Document */
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @ReferenceOne(targetDocument=User::class, inversedBy="posts") */
-        private $user;
+        #[ReferenceOne(targetDocument: User::class, inversedBy: 'posts')]
+        private User $user;
     }
 
-    /** @Document */
+    #[Document]
     class User
     {
         // ...
 
-        /** @ReferenceMany(targetDocument=BlogPost::class, mappedBy="user") */
-        private $posts;
+        /** @var Collection<BlogPost> */
+        #[ReferenceMany(targetDocument: BlogPost::class, mappedBy: 'user')]
+        private Collection $posts;
     }
 
 So now when we persist a ``User`` and multiple ``BlogPost`` instances for that ``User``:
@@ -130,26 +132,22 @@ Here is an example where we have a one to one relationship between ``Cart`` and 
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Cart
     {
         // ...
 
-        /**
-         * @ReferenceOne(targetDocument=Customer::class, inversedBy="cart")
-         */
-        public $customer;
+        #[ReferenceOne(targetDocument: Customer::class, inversedBy: 'cart')]
+        public Customer $customer;
     }
 
-    /** @Document */
+    #[Document]
     class Customer
     {
         // ...
 
-        /**
-         * @ReferenceOne(targetDocument=Cart::class, mappedBy="customer")
-         */
-        public $cart;
+        #[ReferenceOne(targetDocument: Cart::class, mappedBy: 'customer')]
+        public Cart $cart;
     }
 
 The owning side is on ``Cart.customer`` and the ``Customer.cart`` referenced is loaded with a query
@@ -186,20 +184,18 @@ Self-Referencing Many to Many
 
     namespace Documents;
 
-    /** @Document */
+    #[Document]
     class User
     {
         // ...
 
-        /**
-         * @ReferenceMany(targetDocument=User::class, mappedBy="myFriends")
-         */
-        public $friendsWithMe;
+        /** @var Collection<User> */
+        #[ReferenceMany(targetDocument: User::class, mappedBy: 'myFriends')]
+        public Collection $friendsWithMe;
 
-        /**
-         * @ReferenceMany(targetDocument=User::class, inversedBy="friendsWithMe")
-         */
-        public $myFriends;
+        /** @var Collection<User> */
+        #[ReferenceMany(targetDocument: User::class, inversedBy: 'friendsWithMe')]
+        public Collection $myFriends;
 
         public function __construct($name)
         {

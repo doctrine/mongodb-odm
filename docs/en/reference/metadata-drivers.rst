@@ -12,9 +12,9 @@ Doctrine provides a few different ways for you to specify your
 metadata:
 
 -  **XML files** (XmlDriver)
--  **Class DocBlock Annotations** (AnnotationDriver)
 -  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
+-  ~**Class DocBlock Annotations**~ (AnnotationDriver is deprecated)
 
 Something important to note about the above drivers is they are all
 an intermediate step to the same end result. The mapping
@@ -38,9 +38,8 @@ a document.
         $em->getConfiguration()->setMetadataCacheImpl(new ApcCache());
 
 If you want to use one of the included core metadata drivers you need to
-configure it. If you pick the annotation driver, you will additionally
-need to install ``doctrine/annotations``. All the drivers are in the
-``Doctrine\ODM\MongoDB\Mapping\Driver`` namespace:
+configure it. All the drivers are in the ``Doctrine\ODM\MongoDB\Mapping\Driver``
+namespace:
 
 .. code-block:: php
 

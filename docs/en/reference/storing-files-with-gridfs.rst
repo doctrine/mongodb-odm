@@ -44,26 +44,26 @@ Mapping documents as GridFS files
     use Doctrine\ODM\MongoDB\Mapping\Annotations\File;
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 
-    /** @File(bucketName='image') */
+    #[File(bucketName: 'image')]
     class Image
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private ?string $id;
 
-        /** @File\Filename */
-        private $name;
+        #[File\Filename]
+        private ?string $name;
 
-        /** @File\UploadDate */
-        private $uploadDate;
+        #[File\UploadDate]
+        private \DateTimeInterface $uploadDate;
 
-        /** @File\Length */
-        private $length;
+        #[File\Length]
+        private ?int $length;
 
-        /** @File\ChunkSize */
-        private $chunkSize;
+        #[File\ChunkSize]
+        private ?int $chunkSize;
 
-        /** @File\Metadata(targetDocument=ImageMetadata::class) */
-        private $metadata;
+        #[File\Metadata(targetDocument: ImageMetadata::class)]
+        private ImageMetadata $metadata;
 
         public function getId(): ?string
         {
@@ -134,11 +134,11 @@ The ``ImageMetadata`` class must be an embedded document:
     use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class ImageMetadata
     {
-        /** @Field(type="string") */
-        private $contentType;
+        #[Field(type: 'string')]
+        private string $contentType;
 
         public function __construct(string $contentType)
         {
@@ -219,7 +219,7 @@ uploading:
     $stream = fopen('tmp/path/to/copy', 'w+');
     try {
         $repository->downloadToStream($file->getId(), $stream);
-    finally {
+    } finally {
         fclose($stream);
     }
 
@@ -246,7 +246,7 @@ a stream from where you can read file contents:
     $stream = $repository->openDownloadStream($file->getId());
     try {
         $contents = stream_get_contents($stream);
-    finally {
+    } finally {
         fclose($stream);
     }
 

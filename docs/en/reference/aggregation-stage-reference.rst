@@ -377,14 +377,18 @@ pipeline stages. Take the following relationship for example:
 
     <?php
 
-    /**
-     * @ReferenceMany(
-     *     targetDocument=Documents\Item::class,
-     *     cascade="all",
-     *     storeAs="id"
-     * )
-     */
-    private $items;
+    namespace Documents;
+
+    class Orders
+    {
+        /** @var Collection<Item> */
+        #[ReferenceMany(
+            targetDocument: Item::class,
+            cascade: 'all',
+            storeAs: 'id',
+        )]
+        private Collection $items;
+    }
 
 .. code-block:: php
 
@@ -405,14 +409,17 @@ to be considered when looking up one-to-one relationships:
 
     <?php
 
-    /**
-     * @ReferenceOne(
-     *     targetDocument=Documents\Item::class,
-     *     cascade="all",
-     *     storeAs="id"
-     * )
-     */
-    private $items;
+    namespace Documents;
+
+    class Orders
+    {
+        #[ReferenceOne(
+            targetDocument: Item::class,
+            cascade: 'all',
+            storeAs: 'id',
+        )]
+        private Item $items;
+    }
 
 .. code-block:: php
 
@@ -452,6 +459,9 @@ document:
             ->localField('_id')
             ->foreignField('userId')
             ->alias('items');
+
+To learn how to load references in embedded documents using the ``$lookup``
+stage, see the :doc:`Loading references with Lookup cookbook <../cookbook/lookup-reference>`.
 
 $match
 ------
@@ -629,7 +639,7 @@ field on all document levels and evaluates it to grant or deny access:
                 $builder->expr()->gte('$$level', 5),
                 '$$PRUNE',
                 '$$DESCEND'
-            )
+            );
 
 $replaceRoot
 ------------

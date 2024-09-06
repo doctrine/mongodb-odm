@@ -4,7 +4,7 @@ Indexes
 Working with indexes in the MongoDB ODM is pretty straight forward.
 You can have multiple indexes, they can consist of multiple fields,
 they can be unique and you can give them an order. In this chapter
-we'll show you examples of indexes using annotations.
+we'll show you examples of indexes using attributes.
 
 First here is an example where we put an index on a single
 property:
@@ -17,14 +17,15 @@ property:
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="string") @Index */
-            public $username;
+            #[Field(type: 'string')]
+            #[Index]
+            public string $username;
         }
 
     .. code-block:: xml
@@ -77,14 +78,15 @@ Unique Index
 
         namespace Documents;
 
-        /** @Document */
+        #[Document]
         class User
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="string") @Index(unique=true, order="asc") */
-            public $username;
+            #[Field(type: 'string')]
+            #[Index(unique: true, order: 'asc')]
+            public string $username;
         }
 
     .. code-block:: xml
@@ -92,7 +94,7 @@ Unique Index
         <field field-name="username" index="true" unique="true" order="asc" />
 
 For your convenience you can quickly specify a unique index with
-``@UniqueIndex``:
+``#[UniqueIndex]``:
 
 .. configuration-block::
 
@@ -101,15 +103,15 @@ For your convenience you can quickly specify a unique index with
         <?php
 
         namespace Documents;
-
-        /** @Document */
+        #[Document]
         class User
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="string") @UniqueIndex(order="asc") */
-            public $username;
+            #[Field(type: 'string')]
+            #[UniqueIndex(order: 'asc')]
+            public string $username;
         }
 
     .. code-block:: xml
@@ -127,20 +129,18 @@ you can specify them on the class doc block:
 
         namespace Documents;
 
-        /**
-         * @Document
-         * @UniqueIndex(keys={"accountId"="asc", "username"="asc"})
-         */
+        #[Document]
+        #[UniqueIndex(keys: ['accountId' => 'asc', 'username' => 'asc'])]
         class User
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="int") */
-            public $accountId;
+            #[Field(type: 'int')]
+            public int $accountId;
 
-            /** @Field(type="string") */
-            public $username;
+            #[Field(type: 'string')]
+            public string $username;
         }
 
     .. code-block:: xml
@@ -161,8 +161,8 @@ you can specify them on the class doc block:
             </document>
         </doctrine-mongo-mapping>
 
-To specify multiple indexes you must use the ``@Indexes``
-annotation:
+To specify multiple indexes you can repeat the ``#[Index]``
+attribute:
 
 .. configuration-block::
 
@@ -170,23 +170,19 @@ annotation:
 
         <?php
 
-        /**
-         * @Document
-         * @Indexes({
-         *   @Index(keys={"accountId"="asc"}),
-         *   @Index(keys={"username"="asc"})
-         * })
-         */
+        #[Document]
+        #[Index(keys: ['accountId' => 'asc'])]
+        #[Index(keys: ['username' => 'asc'])]
         class User
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="int") */
-            public $accountId;
+            #[ODM\Field(type: 'int')]
+            public int $accountId;
 
-            /** @Field(type="string") */
-            public $username;
+            #[Field(type: 'string')]
+            public string $username;
         }
 
     .. code-block:: xml
@@ -221,11 +217,12 @@ documents.
 
     namespace Documents;
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Comment
     {
-        /** @Field(type="date") @Index */
-        private $date;
+        #[Field(type: 'date')]
+        #[Index]
+        private \DateTime $date;
 
         // ...
     }
@@ -238,16 +235,20 @@ Now if we had a ``BlogPost`` document with the ``Comment`` document embedded man
 
     namespace Documents;
 
-    /** @Document */
+    use Doctrine\Common\Collections\Collection;
+
+    #[Document]
     class BlogPost
     {
         // ...
 
-        /** @Field(type="string") @Index */
-        private $slug;
+        #[Field(type: 'string')]
+        #[Index]
+        private string $slug;
 
-        /** @EmbedMany(targetDocument=Comment::class) */
-        private $comments;
+        /** @var Collection<Comment> */
+        #[EmbedMany(targetDocument: Comment::class)]
+        private Collection $comments;
     }
 
 If we were to create the indexes with the ``SchemaManager``:
@@ -301,27 +302,25 @@ options structures manually:
 
         <?php
 
-        /**
-         * @Document
-         * @Index(keys={"coordinates"="2d"})
-         */
+        #[Document]
+        #[Index(keys: ['coordinates' => '2d'])]
         class Place
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @EmbedOne(targetDocument=Coordinates::class) */
-            public $coordinates;
+            #[EmbedOne(targetDocument: Coordinates::class)]
+            public ?Coordinates $coordinates;
         }
 
-        /** @EmbeddedDocument */
+        #[EmbeddedDocument]
         class Coordinates
         {
-            /** @Field(type="float") */
-            public $latitude;
+            #[Field(type: 'float')]
+            public float $latitude;
 
-            /** @Field(type="float") */
-            public $longitude;
+            #[Field(type: 'float')]
+            public float $longitude;
         }
 
     .. code-block:: xml
@@ -344,20 +343,18 @@ index.
 
         <?php
 
-        /**
-         * @Document
-         * @Index(keys={"city"="asc"}, partialFilterExpression={"version"={"$gt"=1}})
-         */
+        #[Document]
+        #[Index(keys: ['city' => 'asc'], partialFilterExpression: ['version' => ['$gt' => 1]])]
         class Place
         {
-            /** @Id */
-            public $id;
+            #[Id]
+            public string $id;
 
-            /** @Field(type="string") */
-            public $city;
+            #[Field(type: 'string')]
+            public string $city;
 
-            /** @Field(type="int") */
-            public $version;
+            #[ODM\Field(type: 'int')]
+            public int $version;
         }
 
     .. code-block:: xml

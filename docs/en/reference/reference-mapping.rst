@@ -47,20 +47,18 @@ Reference one document:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class Product
         {
             // ...
 
-            /**
-             * @ReferenceOne(targetDocument=Shipping::class)
-             */
-            private $shipping;
+            #[ReferenceOne(targetDocument: Shipping::class)]
+            private ?Shipping $shipping = null;
 
             // ...
         }
 
-        /** @Document */
+        #[Document]
         class Shipping
         {
             // ...
@@ -91,20 +89,24 @@ Reference many documents:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ...
 
-            /**
-             * @ReferenceMany(targetDocument=Account::class)
-             */
-            private $accounts = [];
+            /** @var Collection<Account> */
+            #[ReferenceMany(targetDocument: Account::class)]
+            private Collection $accounts;
+
+            public function __construct()
+            {
+                $this->accounts = new ArrayCollection();
+            }
 
             // ...
         }
 
-        /** @Document */
+        #[Document]
         class Account
         {
             // ...
@@ -136,13 +138,13 @@ omit the ``targetDocument`` option:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /** @ReferenceMany */
-            private $favorites = [];
+            #[ReferenceMany]
+            private Collection $favorites;
 
             // ...
         }
@@ -172,15 +174,13 @@ The name of the field within the DBRef object can be customized via the
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /**
-             * @ReferenceMany(discriminatorField="type")
-             */
-            private $favorites = [];
+            #[ReferenceMany(discriminatorField: 'type')]
+            private Collection $favorites;
 
             // ...
         }
@@ -200,20 +200,19 @@ in each `DBRef`_ object:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /**
-             * @ReferenceMany(
-             *   discriminatorMap={
-             *     "album"=Album::class,
-             *     "song"=Song::class
-             *   }
-             * )
-             */
-            private $favorites = [];
+            /** @var Collection<Album|Song> */
+            #[ReferenceMany(
+                discriminatorMap: [
+                    'album' => Album::class,
+                    'song' => Song::class,
+                ]
+            )]
+            private Collection $favorites;
 
             // ...
         }
@@ -236,21 +235,20 @@ a certain class, you can optionally specify a default discriminator value:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /**
-             * @ReferenceMany(
-             *   discriminatorMap={
-             *     "album"=Album::class,
-             *     "song"=Song::class
-             *   },
-             *   defaultDiscriminatorValue="album"
-             * )
-             */
-            private $favorites = [];
+            /** @var Collection<Album|Song> */
+            #[ReferenceMany(
+                discriminatorMap: [
+                    'album' => Album::class,
+                    'song' => Song::class,
+                ],
+                defaultDiscriminatorValue: 'album',
+            )]
+            private Collection $favorites;
 
             // ...
         }
@@ -285,10 +283,11 @@ Example:
 
         <?php
 
-        /**
-         * @ReferenceOne(targetDocument=Profile::class, storeAs="id")
-         */
-        private $profile;
+        class User
+        {
+            #[ReferenceOne(targetDocument: Profile::class, storeAs: 'id')]
+            private Profile $profile;
+        }
 
     .. code-block:: xml
 
@@ -333,10 +332,11 @@ referenced documents. You must explicitly enable this functionality:
 
         <?php
 
-        /**
-         * @ReferenceOne(targetDocument=Profile::class, cascade={"persist"})
-         */
-        private $profile;
+        class User
+        {
+            #[ReferenceOne(targetDocument: Profile::class, cascade: ['persist'])]
+            private Profile $profile;
+        }
 
     .. code-block:: xml
 
@@ -382,20 +382,19 @@ and StandingData:
     namespace Addressbook;
 
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\Common\Collections\Collection;
 
-    /**
-     * @Document
-     */
+    #[Document]
     class Contact
     {
-        /** @Id */
-        private $id;
+        #[Id]
+        private string $id;
 
-        /** @ReferenceOne(targetDocument=StandingData::class, orphanRemoval=true) */
-        private $standingData;
+        #[ReferenceOne(targetDocument: StandingData::class, orphanRemoval: true)]
+        private ?StandingData $standingData;
 
-        /** @ReferenceMany(targetDocument=Address::class, mappedBy="contact", orphanRemoval=true) */
-        private $addresses;
+        #[ReferenceMany(targetDocument: Address::class, mappedBy: 'contact', orphanRemoval: true)]
+        private Collection $addresses;
 
         public function __construct()
         {
@@ -420,7 +419,7 @@ Now two examples of what happens when you remove the references:
     <?php
 
     $contact = $dm->find(Addressbook\Contact::class, $contactId);
-    $contact->newStandingData(new StandingData("Firstname", "Lastname", "Street"));
+    $contact->newStandingData(new StandingData('Firstname', 'Lastname', 'Street'));
     $contact->removeAddress(1);
 
     $dm->flush();
@@ -448,14 +447,16 @@ You can achieve this behavior by using the `storeEmptyArray` option.
 
     .. code-block:: php
         <?php
-        /** @Document */
+
+        #[Document]
         class User
         {
             // ...
-            /**
-             * @ReferenceMany(targetDocument=Account::class, storeEmptyArray=true)
-             */
-            private $accounts = [];
+
+            /** @var Collection<Account> */
+            #[ReferenceMany(targetDocument: Account::class, storeEmptyArray: true)]
+            private Collection $accounts;
+
             // ...
         }
     .. code-block:: xml

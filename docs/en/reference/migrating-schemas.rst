@@ -24,14 +24,14 @@ Let's say you have a simple document that starts off with the following fields:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Person
     {
-        /** @Id */
-        public $id;
+        #[Id]
+        public string $id;
 
-        /** @Field(type="string") */
-        public $name;
+        #[Field(type: 'string')]
+        public string $name;
     }
 
 Later on, you need rename ``name`` to ``fullName``; however, you'd like to
@@ -41,14 +41,15 @@ hydrate ``fullName`` from ``name`` if the new field doesn't exist.
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Person
     {
-        /** @Id */
-        public $id;
+        #[Id]
+        public string $id;
 
-        /** @Field(type="string") @AlsoLoad("name") */
-        public $fullName;
+        #[Field(type: 'string')]
+        #[AlsoLoad('name')]
+        public string $fullName;
     }
 
 When a Person is loaded, the ``fullName`` field will be populated with the value
@@ -67,26 +68,27 @@ Transforming Data
 
 You may have a situation where you want to migrate a Person's name to separate
 ``firstName`` and ``lastName`` fields. This is also possible by specifying the
-``@AlsoLoad`` annotation on a method, which will then be invoked immediately
+``#[AlsoLoad]`` attribute on a method, which will then be invoked immediately
 before normal hydration.
 
 .. code-block:: php
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Person
     {
-        /** @Id */
-        public $id;
+        #[Id]
+        public string $id;
 
-        /** @Field(type="string") */
-        public $firstName;
+        #[Field(type: 'string')]
+        public string $firstName;
 
-        /** @Field(type="string") */
-        public $lastName;
+        #[Field(type: 'string')]
+        public string $lastName;
 
-        /** @AlsoLoad({"name", "fullName"}) */
+        #[AlsoLoad(['name', 'fullName'])]
         public function populateFirstAndLastName(string $fullName): void
         {
             list($this->firstName, $this->lastName) = explode(' ', $fullName);
@@ -99,8 +101,8 @@ method will be invoked with its value as a single argument. Since the
 ``firstName`` and ``lastName`` fields are mapped, they would then be updated
 when the Person was persisted back to MongoDB.
 
-Unlike lifecycle callbacks, the ``@AlsoLoad`` method annotation does not require
-the  :ref:`haslifecyclecallbacks` class annotation to be present.
+Unlike lifecycle callbacks, the ``#[AlsoLoad]`` method attribute does not require
+the  :ref:`haslifecyclecallbacks` class attribute to be present.
 
 Moving Fields
 -------------
@@ -119,20 +121,20 @@ Imagine you have some address-related fields on a Person document:
 
     <?php
 
-    /** @Document */
+    #[Document]
     class Person
     {
-        /** @Id */
-        public $id;
+        #[Id]
+        public string $id;
 
-        /** @Field(type="string") */
-        public $name;
+        #[Field(type: 'string')]
+        public string $name;
 
-        /** @Field(type="string") */
-        public $street;
+        #[Field(type: 'string')]
+        public string $street;
 
-        /** @Field(type="string") */
-        public $city;
+        #[Field(type: 'string')]
+        public string $city;
     }
 
 Later on, you may want to migrate this data into an embedded Address document:
@@ -141,41 +143,39 @@ Later on, you may want to migrate this data into an embedded Address document:
 
     <?php
 
-    /** @EmbeddedDocument */
+    #[EmbeddedDocument]
     class Address
     {
-        /** @Field(type="string") */
-        public $street;
+        public function __construct(
+            #[Field(type: 'string')]
+            public string $street,
 
-        /** @Field(type="string") */
-        public $city;
-
-        public function __construct(string $street, string $city)
-        {
-            $this->street = $street;
-            $this->city = $city;
+            #[Field(type: 'string')]
+            public string $city,
+        ) {
         }
     }
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Person
     {
-        /** @Id */
-        public $id;
+        #[Id]
+        public string $id;
 
-        /** @Field(type="string") */
-        public $name;
+        #[Field(type: 'string')]
+        public string $name;
 
-        /** @Field(notSaved=true) */
-        public $street;
+        #[Field(notSaved: true)]
+        public string $street;
 
-        /** @Field(notSaved=true) */
-        public $city;
+        #[Field(notSaved: true)]
+        public string $city;
 
-        /** @EmbedOne(targetDocument=Address::class) */
-        public $address;
+        #[EmbedOne(targetDocument: Address::class)]
+        public Address $address;
 
-        /** @PostLoad */
+        #[PostLoad]
         public function postLoad(): void
         {
             if ($this->street !== null || $this->city !== null)
@@ -195,12 +195,13 @@ Alternatively, you could defer this migration until the Person is saved:
 
     <?php
 
-    /** @Document @HasLifecycleCallbacks */
+    #[Document]
+    #[HasLifecycleCallbacks]
     class Person
     {
         // ...
 
-        /** @PrePersist */
+        #[PrePersist]
         public function prePersist(): void
         {
             if ($this->street !== null || $this->city !== null)
@@ -210,7 +211,7 @@ Alternatively, you could defer this migration until the Person is saved:
         }
     }
 
-The :ref:`haslifecyclecallbacks` annotation must be present on the class in
+The :ref:`haslifecyclecallbacks` attribute must be present on the class in
 which the method is declared for the lifecycle callback to be registered.
 
 .. _`$rename`: https://docs.mongodb.com/manual/reference/operator/update/rename/

@@ -17,22 +17,22 @@ Embed a single document:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ...
 
-            /** @EmbedOne(targetDocument=Address::class) */
-            private $address;
+            #[EmbedOne(targetDocument: Address::class)]
+            private ?Address $address;
 
             // ...
         }
 
-        /** @EmbeddedDocument */
+        #[EmbeddedDocument]
         class Address
         {
-            /** @Field(type="string") */
-            private $street;
+            #[Field(type: 'string')]
+            private string $street;
 
             // ...
         }
@@ -68,13 +68,14 @@ Embed many documents:
 
         use Doctrine\Common\Collections\ArrayCollection;
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ...
 
-            /** @EmbedMany(targetDocument=Phonenumber::class) */
-            private $phoneNumbers;
+            /** @var Collection<PhoneNumber> */
+            #[EmbedMany(targetDocument: Phonenumber::class)]
+            private Collection $phoneNumbers;
 
             // ...
             public function __construct()
@@ -83,11 +84,11 @@ Embed many documents:
             }
         }
 
-        /** @EmbeddedDocument */
+        #[EmbeddedDocument]
         class PhoneNumber
         {
-            /** @Field(type="string") */
-            private $number;
+            #[Field(type: 'string')]
+            private string $number;
 
             // ...
         }
@@ -124,13 +125,13 @@ you can simply omit the ``targetDocument`` option:
 
         use Doctrine\Common\Collections\ArrayCollection;
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /** @EmbedMany */
-            private $tasks;
+            #[EmbedMany]
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -156,15 +157,13 @@ the embedded document. The field name can be customized with the
 
         use Doctrine\Common\Collections\ArrayCollection;
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /**
-             * @EmbedMany(discriminatorField="type")
-             */
-            private $tasks;
+            #[EmbedMany(discriminatorField: 'type')]
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -190,20 +189,18 @@ in each embedded document:
 
         use Doctrine\Common\Collections\ArrayCollection;
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /**
-             * @EmbedMany(
-             *   discriminatorMap={
-             *     "download"=DownloadTask::class,
-             *     "build"=BuildTask::class
-             *   }
-             * )
-             */
-            private $tasks;
+            #[EmbedMany(
+              discriminatorMap: [
+                  'download' => DownloadTask::class,
+                  'build' => BuildTask::class,
+              ]
+            )]
+            private Collection $tasks;
 
             // ...
             public function __construct()
@@ -231,21 +228,19 @@ discriminator:
 
         <?php
 
-        /** @Document */
+        #[Document]
         class User
         {
             // ..
 
-            /**
-             * @EmbedMany(
-             *   discriminatorMap={
-             *     "download"=DownloadTask::class,
-             *     "build"=BuildTask::class
-             *   },
-             *   defaultDiscriminatorValue="download"
-             * )
-             */
-            private $tasks = [];
+            #[EmbedMany(
+                discriminatorMap: [
+                  'download' => DownloadTask::class,
+                  'build' => BuildTask::class,
+                ],
+                defaultDiscriminatorValue: 'download',
+            )]
+            private Collection $tasks;
 
             // ...
         }
@@ -283,14 +278,14 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
 
     .. code-block:: php
         <?php
-        /** @Document */
+        #[Document]
         class User
         {
             // ...
-            /**
-             * @EmbedMany(targetDocument=PhoneNumber::class, storeEmptyArray=true)
-             */
-            private $phoneNumbers = [];
+
+            /** @var Collection<PhoneNumber> */
+            #[EmbedMany(targetDocument: PhoneNumber::class, storeEmptyArray: true)]
+            private Collection $phoneNumbers;
             // ...
         }
     .. code-block:: xml
@@ -306,5 +301,6 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
                 <field name="number" type="string" />
           </embedded-document>
         </doctrine-mongo-mapping>
+
 Now, when the `$phoneNumbers` collection is empty, an empty array will be stored in the database for the `User`
 document's embedded `phoneNumbers` collection, even if there are no actual embedded documents in the collection.
