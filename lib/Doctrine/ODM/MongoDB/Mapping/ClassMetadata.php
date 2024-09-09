@@ -2216,7 +2216,7 @@ use function trigger_deprecation;
     }
 
     /** @param string $assocName */
-    public function getAssociationMappedByTargetField($assocName)
+    public function getAssociationMappedByTargetField($assocName): string
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }

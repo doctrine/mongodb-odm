@@ -21,6 +21,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
 use MongoDB\Client;
@@ -218,12 +219,8 @@ class DocumentManager implements ObjectManager
         return $this->client;
     }
 
-    /**
-     * Gets the metadata factory used to gather the metadata of classes.
-     *
-     * @return ClassMetadataFactoryInterface
-     */
-    public function getMetadataFactory()
+    /** Gets the metadata factory used to gather the metadata of classes. */
+    public function getMetadataFactory(): ClassmetadataFactoryInterface
     {
         return $this->metadataFactory;
     }
@@ -235,7 +232,7 @@ class DocumentManager implements ObjectManager
      *
      * @param object $obj
      */
-    public function initializeObject($obj)
+    public function initializeObject($obj): void
     {
         $this->unitOfWork->initializeObject($obj);
     }
@@ -243,8 +240,12 @@ class DocumentManager implements ObjectManager
     /**
      * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
      */
-    public function isUninitializedObject(object $obj): bool
+    public function isUninitializedObject(mixed $obj): bool
     {
+        if (! is_object($obj)) {
+            return false;
+        }
+
         return $this->unitOfWork->isUninitializedObject($obj);
     }
 
@@ -440,7 +441,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function persist($object)
+    public function persist($object): void
     {
         if (! is_object($object)) {
             throw new InvalidArgumentException(gettype($object));
@@ -460,7 +461,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function remove($object)
+    public function remove($object): void
     {
         if (! is_object($object)) {
             throw new InvalidArgumentException(gettype($object));
@@ -478,7 +479,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function refresh($object)
+    public function refresh($object): void
     {
         if (! is_object($object)) {
             throw new InvalidArgumentException(gettype($object));
@@ -499,7 +500,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function detach($object)
+    public function detach($object): void
     {
         if (! is_object($object)) {
             throw new InvalidArgumentException(gettype($object));
@@ -561,7 +562,7 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function getRepository($className)
+    public function getRepository($className): ObjectRepository
     {
         return $this->repositoryFactory->getRepository($this, $className);
     }
@@ -576,7 +577,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws MongoDBException
      */
-    public function flush(array $options = [])
+    public function flush(array $options = []): void
     {
         $this->errorIfClosed();
         $this->unitOfWork->commit($options);
@@ -686,7 +687,7 @@ class DocumentManager implements ObjectManager
      *
      * @param string|null $objectName if given, only documents of this type will get detached
      */
-    public function clear($objectName = null)
+    public function clear($objectName = null): void
     {
         if ($objectName !== null) {
             trigger_deprecation(
@@ -722,7 +723,7 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function contains($object)
+    public function contains($object): bool
     {
         if (! is_object($object)) {
             throw new InvalidArgumentException(gettype($object));
