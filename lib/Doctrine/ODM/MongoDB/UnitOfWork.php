@@ -835,9 +835,16 @@ final class UnitOfWork implements PropertyChangedListener
                     $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
-                    if ($dbOrgValue == $dbActualValue) {
+                    $orgTimestamp    = $dbOrgValue instanceof UTCDateTime ? $dbOrgValue->toDateTime()->getTimestamp() : null;
+                    $actualTimestamp = $dbActualValue instanceof UTCDateTime ? $dbActualValue->toDateTime()->getTimestamp() : null;
+
+                    if ($orgTimestamp === $actualTimestamp) {
                         continue;
                     }
+
+                    // if ($dbOrgValue == $dbActualValue) {
+                    //     continue;
+                    // }
                 }
 
                 // regular field
