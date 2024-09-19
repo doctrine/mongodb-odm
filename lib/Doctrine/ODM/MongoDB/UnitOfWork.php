@@ -24,7 +24,6 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
-use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -835,6 +834,8 @@ final class UnitOfWork implements PropertyChangedListener
                     $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
+                    // We rely on loose comparison to compare every field (including microseconds)
+                    // pspcs:ignore Squiz.Operators.ComparisonOperatorUsage.NotAllowed
                     if ($dbOrgValue == $dbActualValue) {
                         continue;
                     }
