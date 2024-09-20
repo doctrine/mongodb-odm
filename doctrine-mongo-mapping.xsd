@@ -104,6 +104,7 @@
       <xs:element name="shard-key" type="odm:shard-key" minOccurs="0" />
       <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" />
       <xs:element name="schema-validation" type="odm:schema-validation" minOccurs="0" />
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:choice>
 
     <xs:attribute name="db" type="xs:NMTOKEN" />
