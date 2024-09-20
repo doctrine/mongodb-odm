@@ -835,7 +835,7 @@ final class UnitOfWork implements PropertyChangedListener
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
                     // We rely on loose comparison to compare every field (including microseconds)
-                    // phpcs:ignore Squiz.Operators.ComparisonOperatorUsage.NotAllowed
+                    // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
                     if ($dbOrgValue == $dbActualValue) {
                         continue;
                     }
