@@ -14,10 +14,12 @@ use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
+use ReflectionClass;
 use ReflectionProperty;
 use Throwable;
 
 use function array_filter;
+use function array_merge;
 use function count;
 
 /**
@@ -145,6 +147,19 @@ final class StaticProxyFactory implements ProxyFactory
      */
     private function skippedFieldsFqns(ClassMetadata $metadata): array
     {
+        $skippedIdFieldsFqns        = $this->getIdFieldsFqns($metadata);
+        $skippedNonMappedFieldsFqns = $this->getUnmappedPropertyFqns($metadata);
+
+        return array_merge($skippedIdFieldsFqns, $skippedNonMappedFieldsFqns);
+    }
+
+    /**
+     * @param ClassMetadata<object> $metadata
+     *
+     * @return array<int, string>
+     */
+    private function getIdFieldsFqns(ClassMetadata $metadata): array
+    {
         $idFieldFqcns = [];
 
         foreach ($metadata->getIdentifierFieldNames() as $idField) {
@@ -152,6 +167,30 @@ final class StaticProxyFactory implements ProxyFactory
         }
 
         return $idFieldFqcns;
+    }
+
+    /**
+     * @param ClassMetadata<object> $metadata
+     *
+     * @return array<int, string>
+     */
+    private function getUnmappedPropertyFqns(ClassMetadata $metadata): array
+    {
+        $nonMappedFieldFqcns = [];
+
+        $reflectionClass = new ReflectionClass($metadata->getName());
+
+        foreach ($reflectionClass->getProperties() as $property) {
+            $propertyName = $property->getName();
+
+            if ($metadata->hasField($propertyName)) {
+                continue;
+            }
+
+            $nonMappedFieldFqcns[] = $this->propertyFqcn($property);
+        }
+
+        return $nonMappedFieldFqcns;
     }
 
     private function propertyFqcn(ReflectionProperty $property): string
