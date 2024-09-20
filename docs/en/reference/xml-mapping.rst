@@ -7,7 +7,7 @@ form of XML documents.
 The XML driver is backed by an XML Schema document that describes
 the structure of a mapping document. The most recent version of the
 XML Schema document is available online at
-`http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd <http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd>`_.
+`http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd <https://www.doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd>`_.
 The most convenient way to work with XML mapping files is to use an
 IDE/editor that can provide code-completion based on such an XML
 Schema document. The following is an outline of a XML mapping
@@ -24,13 +24,6 @@ trunk.
         ...
 
     </doctrine-mongo-mapping>
-
-.. note::
-
-    If you do not want to use latest XML Schema document please use link like
-    `http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping-1.0.0-BETA12.xsd <http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping-1.0.0-BETA12.xsd>`_.
-    You can change ``1.0.0-BETA12`` part of the URL to
-    `any other ODM version <https://github.com/doctrine/mongodb-odm/releases>`_.
 
 The XML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.

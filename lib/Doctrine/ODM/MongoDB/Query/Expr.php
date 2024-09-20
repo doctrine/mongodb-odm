@@ -40,10 +40,8 @@ class Expr
 {
     /**
      * The query criteria array.
-     *
-     * @var array<string, mixed>|mixed
      */
-    private $query = [];
+    private mixed $query = [];
 
     /**
      * The "new object" array containing either a full document or a number of

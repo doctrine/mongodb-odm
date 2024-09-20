@@ -69,6 +69,21 @@ class DateTest extends BaseTestCase
         ];
     }
 
+    public function testDateInstanceChangeWhenValueDifferenceIsSubSecond(): void
+    {
+        $user = new User();
+        $user->setCreatedAt(new UTCDateTime(100000000000));
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository($user::class)->findOneBy([]);
+        $user->setCreatedAt(new UTCDateTime(100000000123));
+        $this->dm->getUnitOfWork()->computeChangeSets();
+        $changeset = $this->dm->getUnitOfWork()->getDocumentChangeSet($user);
+        self::assertNotEmpty($changeset);
+    }
+
     public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame(): void
     {
         $user = new User();

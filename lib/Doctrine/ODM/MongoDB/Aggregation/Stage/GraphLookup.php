@@ -26,7 +26,7 @@ class GraphLookup extends Stage
     private ?string $from;
 
     /** @var string|Expr|mixed[]|null */
-    private $startWith;
+    private string|Expr|array|null $startWith;
 
     private ?string $connectFromField = null;
 
