@@ -35,6 +35,7 @@ use Documents\UserRepository;
 use Documents\UserTyped;
 use Generator;
 use InvalidArgumentException;
+use MongoDB\BSON\Document;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
@@ -42,8 +43,6 @@ use ReflectionException;
 use stdClass;
 
 use function array_merge;
-use function MongoDB\BSON\fromJSON;
-use function MongoDB\BSON\toPHP;
 use function serialize;
 use function unserialize;
 
@@ -78,7 +77,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm->setVersioned(true);
         $cm->setVersionField('version');
         $validatorJson = '{ "$and": [ { "email": { "$regularExpression" : { "pattern": "@mongodb\\\\.com$", "options": "" } } } ] }';
-        $cm->setValidator(toPHP(fromJSON($validatorJson)));
+        $cm->setValidator(Document::fromJSON($validatorJson)->toPHP());
         $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
         $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
         self::assertIsArray($cm->getFieldMapping('phonenumbers'));
@@ -110,7 +109,7 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals('lock', $cm->lockField);
         self::assertEquals(true, $cm->isVersioned);
         self::assertEquals('version', $cm->versionField);
-        self::assertEquals(toPHP(fromJSON($validatorJson)), $cm->getValidator());
+        self::assertEquals(Document::fromJSON($validatorJson)->toPHP(), $cm->getValidator());
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
     }
