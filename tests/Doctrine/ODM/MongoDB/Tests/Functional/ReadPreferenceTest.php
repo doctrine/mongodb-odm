@@ -46,7 +46,7 @@ class ReadPreferenceTest extends BaseTestCase
 
     /** @psalm-param ReadPreferenceTagShape[] $tags */
     #[DataProvider('provideReadPreferenceHints')]
-    public function testHintIsSetOnQuery(int $readPreference, array $tags = []): void
+    public function testHintIsSetOnQuery(string $readPreference, array $tags = []): void
     {
         $this->skipTestIfSharded(User::class);
 
@@ -68,9 +68,9 @@ class ReadPreferenceTest extends BaseTestCase
     public static function provideReadPreferenceHints(): array
     {
         return [
-            [ReadPreference::RP_PRIMARY, []],
-            [ReadPreference::RP_SECONDARY_PREFERRED, []],
-            [ReadPreference::RP_SECONDARY, [['dc' => 'east'], []]],
+            [ReadPreference::PRIMARY, []],
+            [ReadPreference::SECONDARY_PREFERRED, []],
+            [ReadPreference::SECONDARY, [['dc' => 'east'], []]],
         ];
     }
 
@@ -78,7 +78,7 @@ class ReadPreferenceTest extends BaseTestCase
     {
         $coll = $this->dm->getDocumentCollection(DocumentWithReadPreference::class);
 
-        self::assertSame(ReadPreference::RP_NEAREST, $coll->getReadPreference()->getMode());
+        self::assertSame(ReadPreference::NEAREST, $coll->getReadPreference()->getModeString());
         self::assertSame([['dc' => 'east']], $coll->getReadPreference()->getTagSets());
     }
 
@@ -88,7 +88,7 @@ class ReadPreferenceTest extends BaseTestCase
             ->createQueryBuilder()
             ->getQuery();
 
-        $this->assertReadPreferenceHint(ReadPreference::RP_NEAREST, $query->getQuery()['readPreference'], [['dc' => 'east']]);
+        $this->assertReadPreferenceHint(ReadPreference::NEAREST, $query->getQuery()['readPreference'], [['dc' => 'east']]);
     }
 
     public function testDocumentLevelReadPreferenceCanBeOverriddenInQueryBuilder(): void
@@ -98,14 +98,14 @@ class ReadPreferenceTest extends BaseTestCase
             ->setReadPreference(new ReadPreference('secondary', []))
             ->getQuery();
 
-        $this->assertReadPreferenceHint(ReadPreference::RP_SECONDARY, $query->getQuery()['readPreference']);
+        $this->assertReadPreferenceHint(ReadPreference::SECONDARY, $query->getQuery()['readPreference']);
     }
 
     /** @psalm-param ReadPreferenceTagShape[] $tags */
-    private function assertReadPreferenceHint(int $mode, ReadPreference $readPreference, array $tags = []): void
+    private function assertReadPreferenceHint(string $mode, ReadPreference $readPreference, array $tags = []): void
     {
         self::assertInstanceOf(ReadPreference::class, $readPreference);
-        self::assertEquals($mode, $readPreference->getMode());
+        self::assertEquals($mode, $readPreference->getModeString());
         self::assertEquals($tags, $readPreference->getTagSets());
     }
 }
