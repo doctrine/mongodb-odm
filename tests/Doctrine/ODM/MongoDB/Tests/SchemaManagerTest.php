@@ -26,6 +26,7 @@ use Documents\TimeSeries\TimeSeriesDocument;
 use Documents\Tournament\Tournament;
 use Documents\UserName;
 use InvalidArgumentException;
+use Iterator;
 use MongoDB\BSON\Document;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -34,7 +35,10 @@ use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\CollectionInfo;
+use MongoDB\Model\CollectionInfoCommandIterator;
+use MongoDB\Model\CollectionInfoIterator;
 use MongoDB\Model\IndexInfo;
+use MongoDB\Model\IndexInfoIterator;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
@@ -47,6 +51,7 @@ use function array_count_values;
 use function array_map;
 use function assert;
 use function in_array;
+use function interface_exists;
 
 /**
  * @phpstan-import-type IndexMapping from ClassMetadata
@@ -199,7 +204,7 @@ class SchemaManagerTest extends BaseTestCase
 
             $filesCollection
                 ->method('listIndexes')
-                ->willReturn([]);
+                ->willReturn($this->createIndexIterator());
             $filesCollection
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
@@ -207,7 +212,7 @@ class SchemaManagerTest extends BaseTestCase
 
             $chunksCollection
                 ->method('listIndexes')
-                ->willReturn([]);
+                ->willReturn($this->createIndexIterator());
             $chunksCollection
                 ->expects($this->atLeastOnce())
                 ->method('createIndex')
@@ -255,7 +260,7 @@ class SchemaManagerTest extends BaseTestCase
             if ($class === $fileBucket) {
                 $filesCollection
                     ->method('listIndexes')
-                    ->willReturn([]);
+                    ->willReturn($this->createIndexIterator());
                 $filesCollection
                     ->expects($this->once())
                     ->method('createIndex')
@@ -263,7 +268,7 @@ class SchemaManagerTest extends BaseTestCase
 
                 $chunksCollection
                     ->method('listIndexes')
-                    ->willReturn([]);
+                    ->willReturn($this->createIndexIterator());
                 $chunksCollection
                     ->expects($this->once())
                     ->method('createIndex')
@@ -300,7 +305,7 @@ class SchemaManagerTest extends BaseTestCase
         $collection
             ->expects($this->once())
             ->method('listIndexes')
-            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator([])));
+            ->willReturn($this->createIndexIterator());
         $collection
             ->expects($this->once())
             ->method('createIndex')
@@ -330,7 +335,7 @@ class SchemaManagerTest extends BaseTestCase
         $collection
             ->expects($this->once())
             ->method('listIndexes')
-            ->willReturn(new IndexInfoIteratorIterator(new ArrayIterator($indexes)));
+            ->willReturn($this->createIndexIterator($indexes));
         $collection
             ->expects($this->once())
             ->method('createIndex')
@@ -1338,10 +1343,10 @@ EOT;
         $db->method('listCollections')->willReturnCallback(function () {
             $collections = [];
             foreach ($this->documentCollections as $collectionName => $collection) {
-                $collections[] = new CollectionInfo(['name' => $collectionName]);
+                $collections[] = ['name' => $collectionName];
             }
 
-            return $collections;
+            return $this->createCollectionIterator($collections);
         });
 
         return $db;
@@ -1373,5 +1378,29 @@ EOT;
     private function createSearchIndexCommandExceptionForOlderServers(): CommandException
     {
         return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40234);
+    }
+
+    private function createIndexIterator(array $indexes = []): Iterator
+    {
+        if (interface_exists(IndexInfoIterator::class)) {
+            return new IndexInfoIteratorIterator(new ArrayIterator($indexes));
+        }
+
+        return new ArrayIterator(array_map(
+            static fn (array $indexInfo) => new IndexInfo($indexInfo),
+            $indexes,
+        ));
+    }
+
+    private function createCollectionIterator(array $collections = []): Iterator
+    {
+        if (interface_exists(CollectionInfoIterator::class)) {
+            return new CollectionInfoCommandIterator(new ArrayIterator($collections));
+        }
+
+        return new ArrayIterator(array_map(
+            static fn (array $collectionInfo) => new CollectionInfo($collectionInfo),
+            $collections,
+        ));
     }
 }
