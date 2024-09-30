@@ -56,12 +56,13 @@ jobs:
             dependencies: "highest"
             symfony-version: "stable"
           # Test with a 5.0 sharded cluster
-          - topology: "sharded_cluster"
-            php-version: "8.2"
-            mongodb-version: "5.0"
-            driver-version: "stable"
-            dependencies: "highest"
-            symfony-version: "stable"
+          # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
+#          - topology: "sharded_cluster"
+#            php-version: "8.2"
+#            mongodb-version: "5.0"
+#            driver-version: "stable"
+#            dependencies: "highest"
+#            symfony-version: "stable"
 
     steps:
       - name: "Checkout"
