@@ -675,7 +675,7 @@ class BuilderTest extends BaseTestCase
 
         $readPreference = $qb->debug('readPreference');
         self::assertInstanceOf(ReadPreference::class, $readPreference);
-        self::assertEquals(ReadPreference::RP_SECONDARY, $readPreference->getMode());
+        self::assertEquals(ReadPreference::SECONDARY, $readPreference->getModeString());
         self::assertEquals([['dc' => 'east']], $readPreference->getTagSets());
     }
 

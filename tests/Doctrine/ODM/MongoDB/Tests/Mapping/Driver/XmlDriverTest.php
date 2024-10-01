@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use MongoDB\BSON\Document;
 use TestDocuments\AlsoLoadDocument;
 use TestDocuments\CustomIdGenerator;
 use TestDocuments\InvalidPartialFilterDocument;
@@ -15,9 +16,6 @@ use TestDocuments\SchemaValidatedDocument;
 use TestDocuments\UserCustomIdGenerator;
 use TestDocuments\UserNonStringOptions;
 use TestDocuments\WildcardIndexDocument;
-
-use function MongoDB\BSON\fromJSON;
-use function MongoDB\BSON\toPHP;
 
 class XmlDriverTest extends AbstractDriverTestCase
 {
@@ -137,8 +135,7 @@ class XmlDriverTest extends AbstractDriverTestCase
     ]
 }
 EOT;
-        $expectedValidatorBson = fromJSON($expectedValidatorJson);
-        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $expectedValidator     = Document::fromJSON($expectedValidatorJson)->toPHP();
         self::assertEquals($expectedValidator, $classMetadata->getValidator());
     }
 

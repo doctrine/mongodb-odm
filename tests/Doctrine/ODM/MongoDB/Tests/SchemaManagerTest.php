@@ -23,6 +23,7 @@ use Documents\SimpleReferenceUser;
 use Documents\Tournament\Tournament;
 use Documents\UserName;
 use InvalidArgumentException;
+use MongoDB\BSON\Document;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -43,8 +44,6 @@ use function array_count_values;
 use function array_map;
 use function assert;
 use function in_array;
-use function MongoDB\BSON\fromJSON;
-use function MongoDB\BSON\toPHP;
 
 /**
  * @psalm-import-type IndexMapping from ClassMetadata
@@ -601,8 +600,7 @@ class SchemaManagerTest extends BaseTestCase
     ]
 }
 EOT;
-        $expectedValidatorBson = fromJSON($expectedValidatorJson);
-        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $expectedValidator     = Document::fromJSON($expectedValidatorJson)->toPHP();
         $database
             ->expects($this->once())
             ->method('command')
@@ -707,8 +705,7 @@ EOT;
     ]
 }
 EOT;
-        $expectedValidatorBson = fromJSON($expectedValidatorJson);
-        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $expectedValidator     = Document::fromJSON($expectedValidatorJson)->toPHP();
         $options               = [
             'capped' => false,
             'size' => null,

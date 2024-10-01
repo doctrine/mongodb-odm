@@ -8,11 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\SchemaValidated;
-
-use function MongoDB\BSON\fromJSON;
-use function MongoDB\BSON\fromPHP;
-use function MongoDB\BSON\toCanonicalExtendedJSON;
-use function MongoDB\BSON\toPHP;
+use MongoDB\BSON\Document;
 
 class ValidationTest extends BaseTestCase
 {
@@ -41,15 +37,13 @@ class ValidationTest extends BaseTestCase
     ]
 }
 EOT;
-        $expectedValidatorBson = fromJSON($expectedValidatorJson);
-        $expectedValidator     = toPHP($expectedValidatorBson, []);
+        $expectedValidator     = Document::fromJSON($expectedValidatorJson)->toPHP();
         $expectedOptions       = [
             'validator' => $expectedValidator,
             'validationLevel' => ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE,
             'validationAction' => ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN,
         ];
-        $expectedOptionsBson   = fromPHP($expectedOptions);
-        $expectedOptionsJson   = toCanonicalExtendedJSON($expectedOptionsBson);
+        $expectedOptionsJson   = Document::fromPHP($expectedOptions)->toCanonicalExtendedJSON();
         $collections           = $this->dm->getDocumentDatabase($cm->name)->listCollections();
         $assertNb              = 0;
         foreach ($collections as $collection) {
@@ -58,8 +52,7 @@ EOT;
             }
 
             $assertNb++;
-            $collectionOptionsBson = fromPHP($collection->getOptions());
-            $collectionOptionsJson = toCanonicalExtendedJSON($collectionOptionsBson);
+            $collectionOptionsJson = Document::fromPHP($collection->getOptions())->toCanonicalExtendedJSON();
             self::assertJsonStringEqualsJsonString($expectedOptionsJson, $collectionOptionsJson);
         }
 
