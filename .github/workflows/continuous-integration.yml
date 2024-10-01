@@ -39,7 +39,7 @@ jobs:
           - dependencies: "lowest"
             php-version: "8.1"
             mongodb-version: "5.0"
-            driver-version: "1.17.0"
+            driver-version: "1.20.0"
             topology: "server"
             symfony-version: "stable"
           # Test with highest dependencies
