@@ -56,12 +56,13 @@ jobs:
             dependencies: "highest"
             symfony-version: "stable"
           # Test with a 5.0 sharded cluster
-          - topology: "sharded_cluster"
-            php-version: "8.2"
-            mongodb-version: "5.0"
-            driver-version: "stable"
-            dependencies: "highest"
-            symfony-version: "stable"
+          # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
+#          - topology: "sharded_cluster"
+#            php-version: "8.2"
+#            mongodb-version: "5.0"
+#            driver-version: "stable"
+#            dependencies: "highest"
+#            symfony-version: "stable"
 
     steps:
       - name: "Checkout"
@@ -116,13 +117,6 @@ jobs:
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
-
-      - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v4
-        with:
-          name: "composer-lock-phpunit-${{ matrix.php-version }}-${{ matrix.dependencies }}-${{ matrix.mongodb-version }}"
-          path: composer.lock
-          overwrite: true
 
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master
