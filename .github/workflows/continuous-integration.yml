@@ -16,6 +16,7 @@ jobs:
     runs-on: "ubuntu-20.04"
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "8.1"
@@ -55,6 +56,13 @@ jobs:
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
+          # Test with ext-2.0
+          - topology: "server"
+            php-version: "8.2"
+            mongodb-version: "7.0"
+            driver-version: "mongodb/mongo-php-driver@v2.x"
+            dependencies: "highest"
+            symfony-version: "7"
           # Test with a 5.0 sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
 #          - topology: "sharded_cluster"
