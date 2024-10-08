@@ -30,7 +30,7 @@ use function trigger_deprecation;
  *
  * @phpstan-import-type SortShape from Sort
  * @phpstan-import-type StageExpression from Stage
- * @phpstan-type PipelineExpression = list<StageExpression>
+ * @phpstan-type PipelineExpression list<StageExpression>
  */
 class Builder
 {

@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 use function substr;
 
-/** @phpstan-type SortByCountStageExpression = array{'$sortByCount': string} */
+/** @phpstan-type SortByCountStageExpression array{'$sortByCount': string} */
 class SortByCount extends Stage
 {
     private string $fieldName;

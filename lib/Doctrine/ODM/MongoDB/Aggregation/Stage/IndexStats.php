@@ -10,7 +10,7 @@ use stdClass;
 /**
  * Fluent interface for adding a $indexStats stage to an aggregation pipeline.
  *
- * @phpstan-type IndexStatsStageExpression = array{'$indexStats': object}
+ * @phpstan-type IndexStatsStageExpression array{'$indexStats': object}
  */
 class IndexStats extends Stage
 {

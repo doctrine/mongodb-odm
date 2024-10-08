@@ -15,7 +15,7 @@ use function is_array;
 
 /**
  * @phpstan-import-type OutputCollection from Merge
- * @phpstan-type OutStageExpression = array{'$out': OutputCollection}
+ * @phpstan-type OutStageExpression array{'$out': OutputCollection}
  */
 class Out extends Stage
 {

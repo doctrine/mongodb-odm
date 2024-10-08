@@ -17,8 +17,8 @@ use InvalidArgumentException;
  * Fluent interface for building aggregation pipelines.
  *
  * @phpstan-import-type PipelineExpression from Builder
- * @phpstan-type PipelineParamType = Builder|Stage|PipelineExpression
- * @phpstan-type LookupStageExpression = array{
+ * @phpstan-type PipelineParamType Builder|Stage|PipelineExpression
+ * @phpstan-type LookupStageExpression array{
  *     $lookup: array{
  *         from: string,
  *         'as'?: string,

@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $limit stage to an aggregation pipeline.
  *
- * @phpstan-type LimitStageExpression = array{'$limit': int}
+ * @phpstan-type LimitStageExpression array{'$limit': int}
  */
 class Limit extends Stage
 {

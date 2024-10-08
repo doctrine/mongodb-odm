@@ -65,7 +65,7 @@ use function trigger_deprecation;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @phpstan-type FieldMappingConfig = array{
+ * @phpstan-type FieldMappingConfig array{
  *      type?: string,
  *      fieldName?: string,
  *      name?: string,
@@ -106,7 +106,7 @@ use function trigger_deprecation;
  *      background?: bool,
  *      enumType?: class-string<BackedEnum>,
  * }
- * @phpstan-type FieldMapping = array{
+ * @phpstan-type FieldMapping array{
  *      type: string,
  *      fieldName: string,
  *      name: string,
@@ -152,7 +152,7 @@ use function trigger_deprecation;
  *      enumType?: class-string<BackedEnum>,
  *      storeEmptyArray?: bool,
  * }
- * @phpstan-type AssociationFieldMapping = array{
+ * @phpstan-type AssociationFieldMapping array{
  *      type?: string,
  *      fieldName: string,
  *      name: string,
@@ -197,8 +197,8 @@ use function trigger_deprecation;
  *      alsoLoadFields?: list<string>,
  *      storeEmptyArray?: bool,
  * }
- * @phpstan-type IndexKeys = array<string, mixed>
- * @phpstan-type IndexOptions = array{
+ * @phpstan-type IndexKeys array<string, mixed>
+ * @phpstan-type IndexOptions array{
  *      background?: bool,
  *      bits?: int,
  *      default_language?: string,
@@ -214,21 +214,21 @@ use function trigger_deprecation;
  *      unique?: bool,
  *      weights?: array{string, int},
  * }
- * @phpstan-type IndexMapping = array{
+ * @phpstan-type IndexMapping array{
  *      keys: IndexKeys,
  *      options: IndexOptions
  * }
- * @phpstan-type SearchIndexStoredSourceInclude = array{include: list<string>}
- * @phpstan-type SearchIndexStoredSourceExclude = array{exclude: list<string>}
- * @phpstan-type SearchIndexStoredSource = bool|SearchIndexStoredSourceInclude|SearchIndexStoredSourceExclude
- * @phpstan-type SearchIndexSynonym = array{
+ * @phpstan-type SearchIndexStoredSourceInclude array{include: list<string>}
+ * @phpstan-type SearchIndexStoredSourceExclude array{exclude: list<string>}
+ * @phpstan-type SearchIndexStoredSource bool|SearchIndexStoredSourceInclude|SearchIndexStoredSourceExclude
+ * @phpstan-type SearchIndexSynonym array{
  *      analyzer: string,
  *      name: string,
  *      source: array{
  *          collection: string,
  *      },
  * }
- * @phpstan-type SearchIndexDefinition = array{
+ * @phpstan-type SearchIndexDefinition array{
  *      mappings: array{
  *          dynamic?: bool,
  *          fields?: array,
@@ -239,13 +239,13 @@ use function trigger_deprecation;
  *      storedSource?: SearchIndexStoredSource,
  *      synonyms?: list<SearchIndexSynonym>,
  * }
- * @phpstan-type SearchIndexMapping = array{
+ * @phpstan-type SearchIndexMapping array{
  *      name: string,
  *      definition: SearchIndexDefinition
  * }
- * @phpstan-type ShardKeys = array<string, mixed>
- * @phpstan-type ShardOptions = array<string, mixed>
- * @phpstan-type ShardKey = array{
+ * @phpstan-type ShardKeys array<string, mixed>
+ * @phpstan-type ShardOptions array<string, mixed>
+ * @phpstan-type ShardKey array{
  *      keys?: ShardKeys,
  *      options?: ShardOptions
  * }

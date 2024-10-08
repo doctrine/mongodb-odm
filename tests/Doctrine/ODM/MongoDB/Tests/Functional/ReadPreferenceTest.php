@@ -14,7 +14,7 @@ use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/** @phpstan-type ReadPreferenceTagShape = array{dc?: string, usage?: string} */
+/** @phpstan-type ReadPreferenceTagShape array{dc?: string, usage?: string} */
 class ReadPreferenceTest extends BaseTestCase
 {
     public function setUp(): void

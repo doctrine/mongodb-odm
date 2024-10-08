@@ -13,9 +13,9 @@ use function array_values;
 /**
  * Fluent interface for adding a $densify stage to an aggregation pipeline.
  *
- * @phpstan-type BoundsType = 'full'|'partition'|array{0: int|float|UTCDateTime, 1: int|float|UTCDateTime}
- * @phpstan-type UnitType = 'year'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
- * @phpstan-type DensifyStageExpression = array{
+ * @phpstan-type BoundsType 'full'|'partition'|array{0: int|float|UTCDateTime, 1: int|float|UTCDateTime}
+ * @phpstan-type UnitType 'year'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
+ * @phpstan-type DensifyStageExpression array{
  *     '$densify': object{
  *         field: string,
  *         partitionByFields?: list<string>,

@@ -19,9 +19,9 @@ use function strtolower;
  *
  * @phpstan-import-type SortDirectionKeywords from Sort
  * @phpstan-import-type OperatorExpression from Expr
- * @phpstan-type SortDirection = int|SortDirectionKeywords
- * @phpstan-type SortShape = array<string, SortDirection>
- * @phpstan-type FillStageExpression = array{
+ * @phpstan-type SortDirection int|SortDirectionKeywords
+ * @phpstan-type SortShape array<string, SortDirection>
+ * @phpstan-type FillStageExpression array{
  *     '$fill': array{
  *         partitionBy?: string|OperatorExpression,
  *         partitionByFields?: list<string>,

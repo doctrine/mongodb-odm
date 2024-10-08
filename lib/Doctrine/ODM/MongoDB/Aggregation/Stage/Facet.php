@@ -15,7 +15,7 @@ use function array_map;
  * Fluent interface for adding a $facet stage to an aggregation pipeline.
  *
  * @phpstan-import-type PipelineExpression from Builder
- * @phpstan-type FacetStageExpression = array{'$facet': array<string, PipelineExpression>}
+ * @phpstan-type FacetStageExpression array{'$facet': array<string, PipelineExpression>}
  */
 class Facet extends Stage
 {

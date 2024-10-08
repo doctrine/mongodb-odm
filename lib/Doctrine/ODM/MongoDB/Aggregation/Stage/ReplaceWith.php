@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 
 /**
  * @phpstan-import-type OperatorExpression from Expr
- * @phpstan-type ReplaceWithStageExpression = array{'$replaceWith': OperatorExpression|string}
+ * @phpstan-type ReplaceWithStageExpression array{'$replaceWith': OperatorExpression|string}
  */
 class ReplaceWith extends AbstractReplace
 {

@@ -17,11 +17,11 @@ use function is_array;
 
 /**
  * @phpstan-import-type PipelineExpression from Builder
- * @phpstan-type OutputCollection = string|array{db: string, coll: string}
- * @phpstan-type WhenMatchedType = 'replace'|'keepExisting'|'merge'|'fail'|PipelineExpression
- * @phpstan-type WhenMatchedParamType = Builder|Stage|WhenMatchedType
- * @phpstan-type WhenNotMatchedType = 'insert'|'discard'|'fail'
- * @phpstan-type MergeStageExpression = array{
+ * @phpstan-type OutputCollection string|array{db: string, coll: string}
+ * @phpstan-type WhenMatchedType 'replace'|'keepExisting'|'merge'|'fail'|PipelineExpression
+ * @phpstan-type WhenMatchedParamType Builder|Stage|WhenMatchedType
+ * @phpstan-type WhenNotMatchedType 'insert'|'discard'|'fail'
+ * @phpstan-type MergeStageExpression array{
  *     '$merge': object{
  *         into: OutputCollection,
  *         on?: string|list<string>,

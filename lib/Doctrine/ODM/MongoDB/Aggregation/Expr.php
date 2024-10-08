@@ -45,7 +45,7 @@ use const ARRAY_FILTER_USE_BOTH;
 /**
  * Fluent interface for building aggregation pipelines.
  *
- * @phpstan-type OperatorExpression = array<string, mixed>|object
+ * @phpstan-type OperatorExpression array<string, mixed>|object
  */
 class Expr implements
     AccumulatorOperators,

@@ -14,8 +14,8 @@ use InvalidArgumentException;
  * Fluent interface for adding a $unionWith stage to an aggregation pipeline.
  *
  * @phpstan-import-type PipelineExpression from Builder
- * @phpstan-type PipelineParamType = array|Builder|Stage|PipelineExpression
- * @phpstan-type UnionWithStageExpression = array{
+ * @phpstan-type PipelineParamType array|Builder|Stage|PipelineExpression
+ * @phpstan-type UnionWithStageExpression array{
  *     '$unionWith': object{
  *         coll: string,
  *         pipeline?: PipelineExpression,

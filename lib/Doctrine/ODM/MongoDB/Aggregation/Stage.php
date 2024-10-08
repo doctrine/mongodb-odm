@@ -15,7 +15,7 @@ use function trigger_deprecation;
  * @internal
  *
  * @phpstan-import-type PipelineExpression from Builder
- * @phpstan-type StageExpression = array<non-empty-string, mixed>
+ * @phpstan-type StageExpression array<non-empty-string, mixed>
  */
 abstract class Stage
 {
@@ -189,8 +189,8 @@ abstract class Stage
     /**
      * Returns the assembled aggregation pipeline
      *
-     * @return array<array<string, mixed>>
-     * @phpstan-return PipelineExpression
+     * @return list<array<non-empty-string, mixed>>
+     * @psalm-return PipelineExpression
      */
     public function getPipeline(): array
     {

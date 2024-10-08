@@ -43,7 +43,7 @@ use function is_string;
  * ODM Query wraps the raw Doctrine MongoDB queries to add additional functionality
  * and to hydrate the raw arrays of data to Doctrine document objects.
  *
- * @phpstan-type QueryShape = array{
+ * @phpstan-type QueryShape array{
  *     distinct?: string,
  *     hint?: string|array<string, -1|1>,
  *     limit?: int,

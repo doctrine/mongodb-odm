@@ -22,10 +22,10 @@ use function sprintf;
  * Fluent builder for output param of $setWindowFields stage
  *
  * @phpstan-import-type SortShape from SetWindowFields
- * @phpstan-type WindowBound = 'current'|'unbounded'|int
- * @phpstan-type WindowBounds = array{0: WindowBound, 1: WindowBound}
- * @phpstan-type WindowUnit = 'year'|'quarter'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
- * @phpstan-type Window = object{
+ * @phpstan-type WindowBound 'current'|'unbounded'|int
+ * @phpstan-type WindowBounds array{0: WindowBound, 1: WindowBound}
+ * @phpstan-type WindowUnit 'year'|'quarter'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
+ * @phpstan-type Window object{
  *     document?: WindowBounds,
  *     range?: WindowBounds,
  *     unit?: WindowUnit,

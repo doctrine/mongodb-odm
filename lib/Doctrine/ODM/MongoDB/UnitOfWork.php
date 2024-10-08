@@ -58,11 +58,11 @@ use function trigger_deprecation;
  *
  * @phpstan-import-type FieldMapping from ClassMetadata
  * @phpstan-import-type AssociationFieldMapping from ClassMetadata
- * @phpstan-type ChangeSet = array{
+ * @phpstan-type ChangeSet array{
  *      0: mixed,
  *      1: mixed
  * }
- * @phpstan-type Hints = array<int, mixed>
+ * @phpstan-type Hints array<int, mixed>
  * @phpstan-type CommitOptions array{
  *      fsync?: bool,
  *      safe?: int,

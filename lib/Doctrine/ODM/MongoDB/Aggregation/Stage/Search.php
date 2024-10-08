@@ -17,11 +17,11 @@ use function strtolower;
 
 /**
  * @phpstan-import-type SortDirectionKeywords from Sort
- * @phpstan-type CountType = 'lowerBound'|'total'
- * @phpstan-type SortMetaKeywords = 'searchScore'
- * @phpstan-type SortMeta = array{'$meta': SortMetaKeywords}
- * @phpstan-type SortShape = array<string, int|SortMeta|SortDirectionKeywords>
- * @phpstan-type SearchStageExpression = array{
+ * @phpstan-type CountType 'lowerBound'|'total'
+ * @phpstan-type SortMetaKeywords 'searchScore'
+ * @phpstan-type SortMeta array{'$meta': SortMetaKeywords}
+ * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords>
+ * @phpstan-type SearchStageExpression array{
  *     '$search': object{
  *         index?: string,
  *         count?: object{
