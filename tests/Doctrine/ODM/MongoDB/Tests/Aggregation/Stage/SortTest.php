@@ -9,14 +9,14 @@ use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/** @psalm-import-type SortShape from Sort */
+/** @phpstan-import-type SortShape from Sort */
 class SortTest extends BaseTestCase
 {
     use AggregationTestTrait;
 
     /**
      * @param string|array<string, string> $field
-     * @psalm-param SortShape $expectedSort
+     * @phpstan-param SortShape $expectedSort
      */
     #[DataProvider('provideSortOptions')]
     public function testStage(array $expectedSort, $field, ?string $order = null): void
@@ -28,7 +28,7 @@ class SortTest extends BaseTestCase
 
     /**
      * @param string|array<string, string> $field
-     * @psalm-param SortShape $expectedSort
+     * @phpstan-param SortShape $expectedSort
      */
     #[DataProvider('provideSortOptions')]
     public function testFromBuilder(array $expectedSort, $field, ?string $order = null): void

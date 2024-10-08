@@ -8,15 +8,15 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 
 /**
- * @psalm-import-type FieldMapping from ClassMetadata
- * @psalm-import-type FieldMappingConfig from ClassMetadata
+ * @phpstan-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type FieldMappingConfig from ClassMetadata
  */
 class ClassMetadataTestUtil
 {
     /**
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      *
-     * @psalm-return FieldMapping
+     * @phpstan-return FieldMapping
      */
     public static function getFieldMapping(array $mapping): array
     {

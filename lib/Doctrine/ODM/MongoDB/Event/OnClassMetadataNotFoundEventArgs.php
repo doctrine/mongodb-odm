@@ -18,7 +18,7 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /** @var ClassMetadata<object>|null */
     private ?ClassMetadata $foundMetadata = null;
 
-    /** @psalm-param class-string $className */
+    /** @phpstan-param class-string $className */
     public function __construct(private string $className, DocumentManager $dm)
     {
         parent::__construct($dm);
@@ -39,7 +39,7 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /**
      * Retrieve class name for which a failed metadata fetch attempt was executed
      *
-     * @psalm-return class-string
+     * @phpstan-return class-string
      */
     public function getClassName(): string
     {

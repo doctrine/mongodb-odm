@@ -30,8 +30,8 @@ use function strtolower;
 /**
  * Query builder for ODM.
  *
- * @psalm-import-type QueryShape from Query
- * @psalm-import-type SortMetaKeywords from Sort
+ * @phpstan-import-type QueryShape from Query
+ * @phpstan-import-type SortMetaKeywords from Sort
  */
 class Builder
 {
@@ -85,7 +85,7 @@ class Builder
     /**
      * Array containing the query data.
      *
-     * @psalm-var QueryShape
+     * @phpstan-var QueryShape
      */
     private array $query = ['type' => Query::TYPE_FIND];
 
@@ -1488,7 +1488,7 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/projection/meta/#sort
      *
-     * @psalm-param SortMetaKeywords $metaDataKeyword
+     * @phpstan-param SortMetaKeywords $metaDataKeyword
      */
     public function sortMeta(string $fieldName, string $metaDataKeyword): self
     {
@@ -1596,7 +1596,7 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @psalm-param class-string[] $classNames
+     * @phpstan-param class-string[] $classNames
      *
      * @return array<string|null>
      *
@@ -1622,7 +1622,7 @@ class Builder
 
     /**
      * @param string[]|string|null $documentName an array of document names or just one.
-     * @psalm-param class-string[]|class-string|null $documentName
+     * @phpstan-param class-string[]|class-string|null $documentName
      */
     private function setDocumentName($documentName): void
     {

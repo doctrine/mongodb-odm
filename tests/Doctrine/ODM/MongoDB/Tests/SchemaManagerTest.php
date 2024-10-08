@@ -46,12 +46,12 @@ use function assert;
 use function in_array;
 
 /**
- * @psalm-import-type IndexMapping from ClassMetadata
- * @psalm-import-type IndexOptions from ClassMetadata
+ * @phpstan-import-type IndexMapping from ClassMetadata
+ * @phpstan-import-type IndexOptions from ClassMetadata
  */
 class SchemaManagerTest extends BaseTestCase
 {
-    /** @psalm-var list<class-string> */
+    /** @phpstan-var list<class-string> */
     private array $indexedClasses = [
         CmsAddress::class,
         CmsArticle::class,
@@ -63,13 +63,13 @@ class SchemaManagerTest extends BaseTestCase
         ShardedOneWithDifferentKey::class,
     ];
 
-    /** @psalm-var list<class-string> */
+    /** @phpstan-var list<class-string> */
     private array $searchIndexedClasses = [
         CmsAddress::class,
         CmsArticle::class,
     ];
 
-    /** @psalm-var list<class-string> */
+    /** @phpstan-var list<class-string> */
     private array $views = [
         UserName::class,
     ];
@@ -167,7 +167,7 @@ class SchemaManagerTest extends BaseTestCase
         ];
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
@@ -213,7 +213,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
@@ -232,7 +232,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureDocumentIndexesForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
@@ -273,7 +273,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureDocumentIndexes(File::class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getIndexCreationWriteOptions')]
     public function testEnsureDocumentIndexesWithTwoLevelInheritance(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
@@ -287,7 +287,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->ensureDocumentIndexes(CmsProduct::class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentIndexesShouldCreateMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -309,7 +309,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentIndexesShouldDeleteUnmappedIndexesBeforeCreatingMappedIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -339,7 +339,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -362,7 +362,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->deleteIndexes($maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDeleteDocumentIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -576,7 +576,7 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->updateValidators();
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -623,7 +623,7 @@ EOT;
         $this->schemaManager->updateDocumentValidator($class->name);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testUpdateDocumentValidatorReset(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -644,7 +644,7 @@ EOT;
         $this->schemaManager->updateDocumentValidator($class->name, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -670,7 +670,7 @@ EOT;
         $this->schemaManager->createDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollectionForFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -683,7 +683,7 @@ EOT;
         $this->schemaManager->createDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollectionWithValidator(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -724,7 +724,7 @@ EOT;
         $this->schemaManager->createDocumentCollection($cm->name, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testCreateView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -760,7 +760,7 @@ EOT;
         $this->schemaManager->createDocumentCollection(UserName::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -787,7 +787,7 @@ EOT;
         self::assertSame(1, array_count_values($createdCollections)['Tournament']);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDropCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -800,7 +800,7 @@ EOT;
         $this->schemaManager->dropCollections($maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDropDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -818,7 +818,7 @@ EOT;
         $this->schemaManager->dropDocumentCollection(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDropDocumentCollectionForGridFSFile(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -852,7 +852,7 @@ EOT;
         $this->schemaManager->dropDocumentCollection(File::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDropView(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -870,7 +870,7 @@ EOT;
         $this->schemaManager->dropDocumentCollection(UserName::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDropDocumentDatabase(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -889,7 +889,7 @@ EOT;
         $this->schemaManager->dropDocumentDatabase(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testDropDatabases(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
@@ -905,7 +905,7 @@ EOT;
 
     /**
      * @param array<string, mixed> $mongoIndex
-     * @psalm-param IndexMapping $documentIndex
+     * @phpstan-param IndexMapping $documentIndex
      */
     #[DataProvider('dataIsMongoIndexEquivalentToDocumentIndex')]
     public function testIsMongoIndexEquivalentToDocumentIndex(bool $expected, array $mongoIndex, array $documentIndex): void
@@ -1123,7 +1123,7 @@ EOT;
 
     /**
      * @param array<string, mixed> $mongoIndex
-     * @psalm-param IndexMapping $documentIndex
+     * @phpstan-param IndexMapping $documentIndex
      */
     #[DataProvider('dataIsMongoTextIndexEquivalentToDocumentIndex')]
     public function testIsMongoIndexEquivalentToDocumentIndexWithTextIndexes(bool $expected, array $mongoIndex, array $documentIndex): void
@@ -1316,7 +1316,7 @@ EOT;
         return $db;
     }
 
-    /** @psalm-param IndexOptions $expectedWriteOptions */
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
     private function writeOptions(array $expectedWriteOptions): Constraint
     {
         return new Callback(static function (array $value) use ($expectedWriteOptions) {

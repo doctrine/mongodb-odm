@@ -16,7 +16,7 @@ use function sprintf;
 /**
  * Fluent builder for output param of $fill stage
  *
- * @psalm-import-type SortShape from Fill
+ * @phpstan-import-type SortShape from Fill
  */
 class Output extends Stage
 {
@@ -44,7 +44,7 @@ class Output extends Stage
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
-     * @psalm-param SortShape|string           $fieldName
+     * @phpstan-param SortShape|string           $fieldName
      */
     public function sortBy($fieldName, $order = null): Fill
     {

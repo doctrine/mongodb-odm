@@ -56,14 +56,14 @@ use function trigger_deprecation;
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
- * @psalm-import-type FieldMapping from ClassMetadata
- * @psalm-import-type AssociationFieldMapping from ClassMetadata
- * @psalm-type ChangeSet = array{
+ * @phpstan-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type AssociationFieldMapping from ClassMetadata
+ * @phpstan-type ChangeSet = array{
  *      0: mixed,
  *      1: mixed
  * }
- * @psalm-type Hints = array<int, mixed>
- * @psalm-type CommitOptions array{
+ * @phpstan-type Hints = array<int, mixed>
+ * @phpstan-type CommitOptions array{
  *      fsync?: bool,
  *      safe?: int,
  *      w?: int,
@@ -118,7 +118,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @psalm-var array<class-string, array<string, object>>
+     * @phpstan-var array<class-string, array<string, object>>
      */
     private array $identityMap = [];
 
@@ -147,7 +147,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Map of document changes. Keys are object ids (spl_object_hash).
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
-     * @psalm-var array<string, array<string, ChangeSet>>
+     * @phpstan-var array<string, array<string, ChangeSet>>
      */
     private array $documentChangeSets = [];
 
@@ -155,7 +155,7 @@ final class UnitOfWork implements PropertyChangedListener
      * The (cached) states of any known documents.
      * Keys are object ids (spl_object_hash).
      *
-     * @psalm-var array<string, self::STATE_*>
+     * @phpstan-var array<string, self::STATE_*>
      */
     private array $documentStates = [];
 
@@ -166,7 +166,7 @@ final class UnitOfWork implements PropertyChangedListener
      * object hash. This is only used for documents with a change tracking
      * policy of DEFERRED_EXPLICIT.
      *
-     * @psalm-var array<class-string, array<string, object>>
+     * @phpstan-var array<class-string, array<string, object>>
      */
     private array $scheduledForSynchronization = [];
 
@@ -201,21 +201,21 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * All pending collection deletions.
      *
-     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
+     * @phpstan-var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private array $scheduledCollectionDeletions = [];
 
     /**
      * All pending collection updates.
      *
-     * @psalm-var array<string, PersistentCollectionInterface<array-key, object>>
+     * @phpstan-var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private array $scheduledCollectionUpdates = [];
 
     /**
      * A list of documents related to collections scheduled for update or deletion
      *
-     * @psalm-var array<string, array<string, PersistentCollectionInterface<array-key, object>>>
+     * @phpstan-var array<string, array<string, PersistentCollectionInterface<array-key, object>>>
      */
     private array $hasScheduledCollections = [];
 
@@ -224,7 +224,7 @@ final class UnitOfWork implements PropertyChangedListener
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
      *
-     * @psalm-var array<string, array<PersistentCollectionInterface<array-key, object>>>
+     * @phpstan-var array<string, array<PersistentCollectionInterface<array-key, object>>>
      */
     private array $visitedCollections = [];
 
@@ -253,7 +253,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * The document persister instances used to persist document instances.
      *
-     * @psalm-var array<class-string, Persisters\DocumentPersister>
+     * @phpstan-var array<class-string, Persisters\DocumentPersister>
      */
     private array $persisters = [];
 
@@ -270,7 +270,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Array of parent associations between embedded documents.
      *
-     * @psalm-var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
+     * @phpstan-var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
      */
     private array $parentAssociations = [];
 
@@ -321,7 +321,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param FieldMapping $mapping
+     * @phpstan-param FieldMapping $mapping
      */
     public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath): void
     {
@@ -337,7 +337,7 @@ final class UnitOfWork implements PropertyChangedListener
      *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
      *     </code>
      *
-     * @psalm-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null
+     * @phpstan-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null
      */
     public function getParentAssociation(object $document): ?array
     {
@@ -349,9 +349,9 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Get the document persister instance for the given document name
      *
-     * @psalm-param class-string<T> $documentName
+     * @phpstan-param class-string<T> $documentName
      *
-     * @psalm-return Persisters\DocumentPersister<T>
+     * @phpstan-return Persisters\DocumentPersister<T>
      *
      * @template T of object
      */
@@ -363,7 +363,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this, $this->hydratorFactory, $class);
         }
 
-        /** @psalm-var Persisters\DocumentPersister<T> */
+        /** @phpstan-var Persisters\DocumentPersister<T> */
         return $this->persisters[$documentName];
     }
 
@@ -385,8 +385,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param class-string<T> $documentName
-     * @psalm-param Persisters\DocumentPersister<T> $persister
+     * @phpstan-param class-string<T> $documentName
+     * @phpstan-param Persisters\DocumentPersister<T> $persister
      *
      * @template T of object
      */
@@ -407,7 +407,7 @@ final class UnitOfWork implements PropertyChangedListener
      * 3) All document deletions
      *
      * @param array $options Array of options to be used with batchInsert(), update() and remove()
-     * @psalm-param CommitOptions $options
+     * @phpstan-param CommitOptions $options
      */
     public function commit(array $options = []): void
     {
@@ -504,7 +504,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @param array<string, object> $documents
      *
-     * @psalm-return array<class-string, array{0: ClassMetadata<object>, 1: array<string, object>}>
+     * @phpstan-return array<class-string, array{0: ClassMetadata<object>, 1: array<string, object>}>
      */
     private function getClassesForCommitAction(array $documents, bool $includeEmbedded = false): array
     {
@@ -583,7 +583,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the changeset for a document.
      *
      * @return array array('property' => array(0 => mixed, 1 => mixed))
-     * @psalm-return array<string, ChangeSet>
+     * @phpstan-return array<string, ChangeSet>
      */
     public function getDocumentChangeSet(object $document): array
     {
@@ -597,7 +597,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param array<string, ChangeSet> $changeset
+     * @phpstan-param array<string, ChangeSet> $changeset
      */
     public function setDocumentChangeSet(object $document, array $changeset): void
     {
@@ -667,8 +667,8 @@ final class UnitOfWork implements PropertyChangedListener
      * and any changes to its properties are detected, then a reference to the document is stored
      * there to mark it for an update.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @template T of object
      */
@@ -689,8 +689,8 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Used to do the common work of computeChangeSet and recomputeSingleDocumentChangeSet
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @template T of object
      */
@@ -961,7 +961,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Computes the changes of an association.
      *
      * @param mixed $value The value of the association.
-     * @psalm-param AssociationFieldMapping $assoc
+     * @phpstan-param AssociationFieldMapping $assoc
      *
      * @throws InvalidArgumentException
      */
@@ -1083,8 +1083,8 @@ final class UnitOfWork implements PropertyChangedListener
      * because this method is invoked during a commit cycle then the change sets are added.
      * whereby changes detected in this method prevail.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @throws InvalidArgumentException If the passed document is not MANAGED.
      *
@@ -1111,8 +1111,8 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @throws InvalidArgumentException If there is something wrong with document's identifier.
      *
@@ -1165,9 +1165,9 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all document insertions for documents of the specified type.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T[] $documents
-     * @psalm-param CommitOptions $options
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1189,9 +1189,9 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all document upserts for documents of the specified type.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T[] $documents
-     * @psalm-param CommitOptions $options
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1213,9 +1213,9 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all document updates for documents of the specified type.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T[] $documents
-     * @psalm-param CommitOptions $options
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1242,9 +1242,9 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all document deletions for documents of the specified type.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T[] $documents
-     * @psalm-param CommitOptions $options
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
      *
      * @template T of object
      */
@@ -1288,8 +1288,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @throws InvalidArgumentException
      *
@@ -1326,8 +1326,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @throws InvalidArgumentException
      *
@@ -1614,15 +1614,15 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @param mixed $id Document identifier
-     * @psalm-param ClassMetadata<T> $class
+     * @phpstan-param ClassMetadata<T> $class
      *
-     * @psalm-return T
+     * @phpstan-return T
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
      *
-     * @psalm-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
+     * @phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function getById($id, ClassMetadata $class): object
     {
@@ -1642,16 +1642,16 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @param mixed $id Document identifier
-     * @psalm-param ClassMetadata<T> $class
+     * @phpstan-param ClassMetadata<T> $class
      *
      * @return mixed The found document or FALSE.
-     * @psalm-return T|false
+     * @phpstan-return T|false
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
      *
-     * @psalm-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
+     * @phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function tryGetById($id, ClassMetadata $class)
     {
@@ -1874,7 +1874,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Executes a merge operation on a document.
      *
      * @param array<string, object> $visited
-     * @psalm-param AssociationFieldMapping|null $assoc
+     * @phpstan-param AssociationFieldMapping|null $assoc
      *
      * @throws InvalidArgumentException If the entity instance is NEW.
      * @throws LockException If the document uses optimistic locking through a
@@ -2463,11 +2463,11 @@ final class UnitOfWork implements PropertyChangedListener
      *  3) NOP if state is OK
      * Returned collection should be used from now on (only important with 2nd point)
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
-     * @psalm-param T $document
-     * @psalm-param ClassMetadata<T> $class
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param T $document
+     * @phpstan-param ClassMetadata<T> $class
      *
-     * @psalm-return PersistentCollectionInterface<array-key, object>
+     * @phpstan-return PersistentCollectionInterface<array-key, object>
      *
      * @template T of object
      */
@@ -2497,7 +2497,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function scheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
@@ -2516,7 +2516,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function isCollectionScheduledForDeletion(PersistentCollectionInterface $coll): bool
     {
@@ -2528,7 +2528,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function unscheduleCollectionDeletion(PersistentCollectionInterface $coll): void
     {
@@ -2551,7 +2551,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function scheduleCollectionUpdate(PersistentCollectionInterface $coll): void
     {
@@ -2577,7 +2577,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function unscheduleCollectionUpdate(PersistentCollectionInterface $coll): void
     {
@@ -2600,7 +2600,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function isCollectionScheduledForUpdate(PersistentCollectionInterface $coll): bool
     {
@@ -2614,7 +2614,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @return PersistentCollectionInterface[]
-     * @psalm-return array<PersistentCollectionInterface<array-key, object>>
+     * @phpstan-return array<PersistentCollectionInterface<array-key, object>>
      */
     public function getVisitedCollections(object $document): array
     {
@@ -2629,7 +2629,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @internal
      *
      * @return PersistentCollectionInterface[]
-     * @psalm-return array<string, PersistentCollectionInterface<array-key, object>>
+     * @phpstan-return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollections(object $document): array
     {
@@ -2660,7 +2660,7 @@ final class UnitOfWork implements PropertyChangedListener
      * unscheduled and atomic one is scheduled for update instead. This makes
      * calculating update data way easier.
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     private function scheduleCollectionOwner(PersistentCollectionInterface $coll): void
     {
@@ -2728,12 +2728,12 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Creates a document. Used for reconstitution of documents during hydration.
      *
-     * @psalm-param class-string<T> $className
-     * @psalm-param array<string, mixed> $data
-     * @psalm-param T|null $document
-     * @psalm-param Hints $hints
+     * @phpstan-param class-string<T> $className
+     * @phpstan-param array<string, mixed> $data
+     * @phpstan-param T|null $document
+     * @phpstan-param Hints $hints
      *
-     * @psalm-return T
+     * @phpstan-return T
      *
      * @template T of object
      */
@@ -2750,7 +2750,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
-            /** @psalm-var class-string<T> $className */
+            /** @phpstan-var class-string<T> $className */
             $className =  $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
 
             $class = $this->dm->getClassMetadata($className);
@@ -2759,7 +2759,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if (! empty($hints[Query::HINT_READ_ONLY])) {
-            /** @psalm-var T $document */
+            /** @phpstan-var T $document */
             $document = $class->newInstance();
             $this->hydratorFactory->hydrate($document, $data, $hints);
 
@@ -2777,7 +2777,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $oid = null;
         if ($isManagedObject) {
-            /** @psalm-var T $document */
+            /** @phpstan-var T $document */
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_hash($document);
             if ($this->isUninitializedObject($document)) {
@@ -2796,7 +2796,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
         } else {
             if ($document === null) {
-                /** @psalm-var T $document */
+                /** @phpstan-var T $document */
                 $document = $class->newInstance();
             }
 
@@ -2822,7 +2822,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $collection
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $collection
      */
     public function loadCollection(PersistentCollectionInterface $collection): void
     {
@@ -2839,7 +2839,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-return array<class-string, array<string, object>>
+     * @phpstan-return array<class-string, array<string, object>>
      */
     public function getIdentityMap(): array
     {
@@ -2993,7 +2993,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
      *
-     * @psalm-return array<string, object>
+     * @phpstan-return array<string, object>
      */
     public function getScheduledDocumentInsertions(): array
     {
@@ -3003,7 +3003,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document upserts in this UnitOfWork.
      *
-     * @psalm-return array<string, object>
+     * @phpstan-return array<string, object>
      */
     public function getScheduledDocumentUpserts(): array
     {
@@ -3013,7 +3013,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document updates in this UnitOfWork.
      *
-     * @psalm-return array<string, object>
+     * @phpstan-return array<string, object>
      */
     public function getScheduledDocumentUpdates(): array
     {
@@ -3023,7 +3023,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document deletions in this UnitOfWork.
      *
-     * @psalm-return array<string, object>
+     * @phpstan-return array<string, object>
      */
     public function getScheduledDocumentDeletions(): array
     {
@@ -3035,7 +3035,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-return array<string, PersistentCollectionInterface<array-key, object>>
+     * @phpstan-return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollectionDeletions(): array
     {
@@ -3047,7 +3047,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @psalm-return array<string, PersistentCollectionInterface<array-key, object>>
+     * @phpstan-return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollectionUpdates(): array
     {
@@ -3096,7 +3096,7 @@ final class UnitOfWork implements PropertyChangedListener
         return method_exists($obj, '__toString') ? (string) $obj : $obj::class . '@' . spl_object_hash($obj);
     }
 
-    /** @psalm-param CommitOptions $options */
+    /** @phpstan-param CommitOptions $options */
     private function doCommit(array $options): void
     {
         foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
@@ -3120,7 +3120,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    /** @psalm-param CommitOptions $options */
+    /** @phpstan-param CommitOptions $options */
     private function useTransaction(array $options): bool
     {
         if (isset($options['withTransaction'])) {
@@ -3130,7 +3130,7 @@ final class UnitOfWork implements PropertyChangedListener
         return $this->dm->getConfiguration()->isTransactionalFlushEnabled();
     }
 
-    /** @psalm-param CommitOptions $options */
+    /** @phpstan-param CommitOptions $options */
     private function getTransactionOptions(array $options): array
     {
         return array_intersect_key(

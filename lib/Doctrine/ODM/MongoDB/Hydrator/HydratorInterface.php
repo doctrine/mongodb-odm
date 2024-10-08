@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 /**
  * The HydratorInterface defines methods all hydrator need to implement
  *
- * @psalm-import-type Hints from UnitOfWork
+ * @phpstan-import-type Hints from UnitOfWork
  */
 interface HydratorInterface
 {
@@ -17,7 +17,7 @@ interface HydratorInterface
      * Hydrate array of MongoDB document data into the given document object.
      *
      * @param array<string, mixed> $data
-     * @psalm-param Hints $hints
+     * @phpstan-param Hints $hints
      *
      * @return array<string, mixed>
      */

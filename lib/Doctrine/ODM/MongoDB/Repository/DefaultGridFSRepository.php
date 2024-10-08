@@ -86,7 +86,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     }
 
     /**
-     * @psalm-return array{
+     * @phpstan-return array{
      *     _id?: mixed,
      *     chunkSizeBytes?: int,
      *     metadata?: object

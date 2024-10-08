@@ -28,9 +28,9 @@ use function trigger_deprecation;
 /**
  * Fluent interface for building aggregation pipelines.
  *
- * @psalm-import-type SortShape from Sort
- * @psalm-import-type StageExpression from Stage
- * @psalm-type PipelineExpression = list<StageExpression>
+ * @phpstan-import-type SortShape from Sort
+ * @phpstan-import-type StageExpression from Stage
+ * @phpstan-type PipelineExpression = list<StageExpression>
  */
 class Builder
 {
@@ -44,7 +44,7 @@ class Builder
      */
     private ClassMetadata $class;
 
-    /** @psalm-var class-string */
+    /** @phpstan-var class-string */
     private ?string $hydrationClass = null;
 
     /**
@@ -60,7 +60,7 @@ class Builder
     /**
      * Create a new aggregation builder.
      *
-     * @psalm-param class-string $documentName
+     * @phpstan-param class-string $documentName
      */
     public function __construct(DocumentManager $dm, string $documentName)
     {
@@ -271,7 +271,7 @@ class Builder
      * given.
      *
      * @return array<array<string, mixed>>
-     * @psalm-return PipelineExpression
+     * @phpstan-return PipelineExpression
      */
     // phpcs:enable Squiz.Commenting.FunctionComment.ExtraParamComment
     public function getPipeline(/* bool $applyFilters = true */): array
@@ -609,7 +609,7 @@ class Builder
      *
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
      * @param int|string|null                                        $order     Field order (if one field is specified)
-     * @psalm-param SortShape|string $fieldName Field name or array of field/order pairs
+     * @phpstan-param SortShape|string $fieldName Field name or array of field/order pairs
      */
     public function sort($fieldName, $order = null): Stage\Sort
     {
