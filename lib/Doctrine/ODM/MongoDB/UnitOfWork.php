@@ -2748,7 +2748,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         if ($discriminatorValue !== null) {
-            /** @phpstan-var class-string<T> $className */
+            /** @var class-string<T> $className */
             $className =  $class->discriminatorMap[$discriminatorValue] ?? $discriminatorValue;
 
             $class = $this->dm->getClassMetadata($className);

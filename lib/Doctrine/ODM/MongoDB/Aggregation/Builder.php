@@ -44,7 +44,7 @@ class Builder
      */
     private ClassMetadata $class;
 
-    /** @phpstan-var class-string */
+    /** @var class-string */
     private ?string $hydrationClass = null;
 
     /**

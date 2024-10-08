@@ -557,7 +557,7 @@ use function trigger_deprecation;
      * READ-ONLY: The name of the document class.
      *
      * @var string
-     * @phpstan-var class-string<T>
+     * @var class-string<T>
      */
     public $name;
 
@@ -567,7 +567,7 @@ use function trigger_deprecation;
      * as {@link $documentName}.
      *
      * @var string
-     * @phpstan-var class-string
+     * @var class-string
      */
     public $rootDocumentName;
 
@@ -576,23 +576,21 @@ use function trigger_deprecation;
      * (Optional).
      *
      * @var string|null
-     * @phpstan-var class-string|null
+     * @var class-string|null
      */
     public $customRepositoryClassName;
 
     /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
-     * @var array
-     * @phpstan-var list<class-string>
+     * @var list<class-string>
      */
     public $parentClasses = [];
 
     /**
      * READ-ONLY: The names of all subclasses (descendants).
      *
-     * @var array
-     * @phpstan-var list<class-string>
+     * @var list<class-string>
      */
     public $subClasses = [];
 
@@ -681,7 +679,7 @@ use function trigger_deprecation;
      * @see discriminatorField
      *
      * @var string|null
-     * @phpstan-var class-string|null
+     * @var class-string|null
      */
     public $discriminatorValue;
 
@@ -2039,8 +2037,7 @@ use function trigger_deprecation;
      * Assumes that the class names in the passed array are in the order:
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
-     * @param string[] $classNames
-     * @phpstan-param list<class-string> $classNames
+     * @param list<class-string> $classNames
      */
     public function setParentClasses(array $classNames): void
     {

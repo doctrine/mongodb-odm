@@ -51,7 +51,7 @@ use function in_array;
  */
 class SchemaManagerTest extends BaseTestCase
 {
-    /** @phpstan-var list<class-string> */
+    /** @var list<class-string> */
     private array $indexedClasses = [
         CmsAddress::class,
         CmsArticle::class,
@@ -63,13 +63,13 @@ class SchemaManagerTest extends BaseTestCase
         ShardedOneWithDifferentKey::class,
     ];
 
-    /** @phpstan-var list<class-string> */
+    /** @var list<class-string> */
     private array $searchIndexedClasses = [
         CmsAddress::class,
         CmsArticle::class,
     ];
 
-    /** @phpstan-var list<class-string> */
+    /** @var list<class-string> */
     private array $views = [
         UserName::class,
     ];

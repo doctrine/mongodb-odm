@@ -54,10 +54,7 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
         return $this->search->sort($fieldName, $order);
     }
 
-    /**
-     * @return array<string, object>
-     * @phpstan-return non-empty-array<non-empty-string, object>
-     */
+    /** @return non-empty-array<non-empty-string, object> */
     final public function getExpression(): array
     {
         return [$this->getOperatorName() => $this->getOperatorParams()];

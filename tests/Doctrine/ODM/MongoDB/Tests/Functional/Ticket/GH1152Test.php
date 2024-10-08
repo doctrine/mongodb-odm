@@ -53,7 +53,7 @@ class GH1152Parent
 #[ODM\EmbeddedDocument]
 class GH1152Child
 {
-    /** @phpstan-var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
+    /** @var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
     public $parentAssociation;
 }
 

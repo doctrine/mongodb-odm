@@ -307,7 +307,7 @@ class DefaultGridFSRepositoryTest extends BaseTestCase
 
         assert($repository instanceof GridFSRepository);
 
-        /** @phpstan-var GridFSRepository<T> */
+        /** @var GridFSRepository<T> */
         return $repository;
     }
 
