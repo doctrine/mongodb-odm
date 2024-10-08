@@ -1596,11 +1596,11 @@ class Builder
     /**
      * Get Discriminator Values
      *
-     * @phpstan class-string[] $classNames
-     *
      * @return array<string|null>
      *
      * @throws InvalidArgumentException If the number of found collections > 1.
+     *
+     * @phpstan class-string[] $classNames
      */
     private function getDiscriminatorValues(array $classNames): array
     {
@@ -1622,6 +1622,7 @@ class Builder
 
     /**
      * @param string[]|string|null $documentName an array of document names or just one.
+     *
      * @phpstan class-string[]|class-string|null $documentName
      */
     private function setDocumentName($documentName): void

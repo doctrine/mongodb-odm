@@ -287,12 +287,11 @@ class DocumentManager implements ObjectManager
      * Returns the metadata for a class.
      *
      * @param string $className The class name.
-     * @phpstan class-string<T> $className
      *
      * @phpstan-return ClassMetadata<T>
      *
+     * @phpstan class-string<T> $className
      * @template T of object
-     *
      * @phpstan-suppress InvalidReturnType, InvalidReturnStatement see https://github.com/vimeo/psalm/issues/5788
      */
     public function getClassMetadata($className): ClassMetadata
@@ -303,7 +302,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the MongoDB instance for a class.
      *
-     * @phpstan class-string $className
+     * @param class-string $className
      */
     public function getDocumentDatabase(string $className): Database
     {
@@ -554,11 +553,11 @@ class DocumentManager implements ObjectManager
      * Gets the repository for a document class.
      *
      * @param string $className The name of the Document.
-     * @phpstan class-string<T> $className
      *
      * @return DocumentRepository|GridFSRepository|ViewRepository  The repository.
      * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
+     * @phpstan class-string<T> $className
      * @template T of object
      */
     public function getRepository($className)
@@ -592,10 +591,10 @@ class DocumentManager implements ObjectManager
      * loads itself on first access.
      *
      * @param mixed $identifier
-     * @phpstan class-string<T> $documentName
      *
      * @phpstan-return T|(T&GhostObjectInterface<T>)
      *
+     * @phpstan class-string<T> $documentName
      * @template T of object
      */
     public function getReference(string $documentName, $identifier): object
@@ -662,10 +661,10 @@ class DocumentManager implements ObjectManager
      * @param mixed  $id
      * @param int    $lockMode
      * @param int    $lockVersion
-     * @phpstan class-string<T> $className
      *
      * @phpstan-return T|null
      *
+     * @phpstan class-string<T> $className
      * @template T of object
      */
     public function find($className, $id, $lockMode = LockMode::NONE, $lockVersion = null): ?object

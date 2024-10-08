@@ -1331,9 +1331,7 @@ use function trigger_deprecation;
         return $this->validator;
     }
 
-    /**
-     * @param array<string, mixed>|object|null $validator
-     */
+    /** @param array<string, mixed>|object|null $validator */
     public function setValidator($validator): void
     {
         $this->validator = $validator;
@@ -2027,6 +2025,7 @@ use function trigger_deprecation;
      * Sets the mapped subclasses of this class.
      *
      * @param string[] $subclasses The names of all mapped subclasses.
+     *
      * @phpstan class-string[] $subclasses
      */
     public function setSubclasses(array $subclasses): void
@@ -2175,7 +2174,7 @@ use function trigger_deprecation;
         return $this->isView;
     }
 
-    /** @phpstan class-string $rootClass */
+    /** @param class-string $rootClass */
     public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;

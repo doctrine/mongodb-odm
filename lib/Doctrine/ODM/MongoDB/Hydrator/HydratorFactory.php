@@ -94,7 +94,7 @@ final class HydratorFactory
     /**
      * Gets the hydrator object for the given document class.
      *
-     * @phpstan class-string $className
+     * @param class-string $className
      */
     public function getHydratorFor(string $className): HydratorInterface
     {

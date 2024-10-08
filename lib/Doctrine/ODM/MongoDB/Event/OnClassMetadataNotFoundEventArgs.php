@@ -18,7 +18,7 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /** @var ClassMetadata<object>|null */
     private ?ClassMetadata $foundMetadata = null;
 
-    /** @phpstan class-string $className */
+    /** @param class-string $className */
     public function __construct(private string $className, DocumentManager $dm)
     {
         parent::__construct($dm);
