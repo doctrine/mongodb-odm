@@ -48,7 +48,6 @@ class Facet extends Stage
      */
     public function pipeline($builder): static
     {
-        /** @phpstan-suppress RedundantPropertyInitializationCheck because the property might not be set yet */
         if (! isset($this->field)) {
             throw new LogicException(__METHOD__ . ' requires setting a current field using field().');
         }

@@ -420,7 +420,6 @@ class QueryTest extends BaseTestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        /** @phpstan-suppress InvalidArgument */
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
     }
 

@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Proxy\Resolver;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use ProxyManager\Inflector\ClassNameInflectorInterface;
+use ProxyManager\Proxy\ProxyInterface;
 
 /** @internal */
 final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyClassNameResolver
@@ -21,9 +22,10 @@ final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyCla
     }
 
     /**
-     * @phpstan-return class-string<RealClassName>
+     * @param class-string<RealClassName>|class-string<ProxyInterface<RealClassName>> $className
      *
-     * @phpstan class-string<RealClassName>|class-string<ProxyInterface<RealClassName>> $className
+     * @return class-string<RealClassName>
+     *
      * @phpstan-template RealClassName of object
      */
     public function resolveClassName(string $className): string

@@ -817,7 +817,7 @@ use function trigger_deprecation;
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
-     * @phpstan class-string<T> $documentName
+     * @param class-string<T> $documentName
      */
     public function __construct(string $documentName)
     {
@@ -939,7 +939,7 @@ use function trigger_deprecation;
     /**
      * Registers a custom repository class for the document class.
      *
-     * @phpstan class-string|null $repositoryClassName
+     * @param class-string|null $repositoryClassName
      */
     public function setCustomRepositoryClass(?string $repositoryClassName): void
     {
@@ -2024,9 +2024,8 @@ use function trigger_deprecation;
     /**
      * Sets the mapped subclasses of this class.
      *
-     * @param string[] $subclasses The names of all mapped subclasses.
-     *
-     * @phpstan class-string[] $subclasses
+     * @param string[]       $subclasses The names of all mapped subclasses.
+     * @param class-string[] $subclasses
      */
     public function setSubclasses(array $subclasses): void
     {

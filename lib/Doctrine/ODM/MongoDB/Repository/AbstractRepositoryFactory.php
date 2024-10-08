@@ -26,9 +26,10 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     private array $repositoryList = [];
 
     /**
+     * @param class-string<T> $documentName
+     *
      * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
-     * @phpstan class-string<T> $documentName
      * @template T of object
      */
     public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
@@ -50,10 +51,11 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
+     * @param class-string<T> $documentName
+     *
      * @return DocumentRepository|GridFSRepository|ViewRepository
      * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
-     * @phpstan class-string<T> $documentName
      * @template T of object
      */
     protected function createRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
@@ -102,10 +104,10 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      * Instantiates requested repository.
      *
      * @param ClassMetadata<T> $metadata
+     * @param class-string<T>  $repositoryClassName
      *
      * @return ObjectRepository<T>
      *
-     * @phpstan class-string<T> $repositoryClassName
      * @template T of object
      */
     abstract protected function instantiateRepository(string $repositoryClassName, DocumentManager $documentManager, ClassMetadata $metadata): ObjectRepository;

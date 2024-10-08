@@ -286,13 +286,12 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the metadata for a class.
      *
-     * @param string $className The class name.
+     * @param string          $className The class name.
+     * @param class-string<T> $className
      *
      * @phpstan-return ClassMetadata<T>
      *
-     * @phpstan class-string<T> $className
      * @template T of object
-     * @phpstan-suppress InvalidReturnType, InvalidReturnStatement see https://github.com/vimeo/psalm/issues/5788
      */
     public function getClassMetadata($className): ClassMetadata
     {
@@ -552,12 +551,12 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the repository for a document class.
      *
-     * @param string $className The name of the Document.
+     * @param string          $className The name of the Document.
+     * @param class-string<T> $className
      *
      * @return DocumentRepository|GridFSRepository|ViewRepository  The repository.
      * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
-     * @phpstan class-string<T> $className
      * @template T of object
      */
     public function getRepository($className)
@@ -590,11 +589,11 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @param mixed $identifier
+     * @param mixed           $identifier
+     * @param class-string<T> $documentName
      *
      * @phpstan-return T|(T&GhostObjectInterface<T>)
      *
-     * @phpstan class-string<T> $documentName
      * @template T of object
      */
     public function getReference(string $documentName, $identifier): object
@@ -657,14 +656,14 @@ class DocumentManager implements ObjectManager
      *
      * This is just a convenient shortcut for getRepository($documentName)->find($id).
      *
-     * @param string $className
-     * @param mixed  $id
-     * @param int    $lockMode
-     * @param int    $lockVersion
+     * @param string          $className
+     * @param mixed           $id
+     * @param int             $lockMode
+     * @param int             $lockVersion
+     * @param class-string<T> $className
      *
      * @phpstan-return T|null
      *
-     * @phpstan class-string<T> $className
      * @template T of object
      */
     public function find($className, $id, $lockMode = LockMode::NONE, $lockVersion = null): ?object

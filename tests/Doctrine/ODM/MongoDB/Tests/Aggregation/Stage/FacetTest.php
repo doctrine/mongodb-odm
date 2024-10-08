@@ -66,7 +66,6 @@ class FacetTest extends BaseTestCase
         $facetStage->pipeline($this->getTestAggregationBuilder());
     }
 
-    /** @phpstan-suppress InvalidArgument on purpose to throw exception */
     public function testThrowsExceptionOnInvalidPipeline(): void
     {
         $facetStage = new Facet($this->getTestAggregationBuilder());

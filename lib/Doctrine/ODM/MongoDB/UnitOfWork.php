@@ -349,9 +349,10 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Get the document persister instance for the given document name
      *
+     * @param class-string<T> $documentName
+     *
      * @phpstan-return Persisters\DocumentPersister<T>
      *
-     * @phpstan class-string<T> $documentName
      * @template T of object
      */
     public function getDocumentPersister(string $documentName): Persisters\DocumentPersister
@@ -384,9 +385,9 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
+     * @param class-string<T> $documentName
      * @phpstan-param Persisters\DocumentPersister<T> $persister
      *
-     * @phpstan class-string<T> $documentName
      * @template T of object
      */
     public function setDocumentPersister(string $documentName, Persisters\DocumentPersister $persister): void
@@ -1620,8 +1621,6 @@ final class UnitOfWork implements PropertyChangedListener
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
-     *
-     * @phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function getById($id, ClassMetadata $class): object
     {
@@ -1650,7 +1649,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @template T of object
      *
-     * @phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
+     * @ phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function tryGetById($id, ClassMetadata $class)
     {
@@ -2728,12 +2727,12 @@ final class UnitOfWork implements PropertyChangedListener
      * Creates a document. Used for reconstitution of documents during hydration.
      *
      * @param array<string, mixed> $data
+     * @param class-string<T>      $className
      * @phpstan-param T|null $document
      * @phpstan-param Hints $hints
      *
      * @phpstan-return T
      *
-     * @phpstan class-string<T> $className
      * @template T of object
      */
     public function getOrCreateDocument(string $className, array $data, array &$hints = [], ?object $document = null): object
