@@ -60,7 +60,7 @@ class Builder
     /**
      * Create a new aggregation builder.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      */
     public function __construct(DocumentManager $dm, string $documentName)
     {

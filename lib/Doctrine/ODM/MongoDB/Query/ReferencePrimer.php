@@ -216,7 +216,7 @@ final class ReferencePrimer
      * infer the class of the referenced documents.
      *
      * @param PersistentCollectionInterface<array-key, object> $persistentCollection
-     * @phpstan-param array<class-string, array<string, mixed>> $groupedIds
+     * @param array<class-string, array<string, mixed>> $groupedIds
      */
     private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds): void
     {

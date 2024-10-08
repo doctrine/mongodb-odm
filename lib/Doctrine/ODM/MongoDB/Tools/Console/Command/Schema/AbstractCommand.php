@@ -103,7 +103,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @phpstan-param class-string $document
+     * @phpstan class-string $document
      *
      * @throws BadMethodCallException
      */

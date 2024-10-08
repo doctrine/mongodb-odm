@@ -414,7 +414,7 @@ class Configuration
     }
 
     /**
-     * @phpstan-param class-string<ClassMetadataFactoryInterface> $cmfName
+     * @phpstan class-string<ClassMetadataFactoryInterface> $cmfName
      *
      * @throws MongoDBException If is not a ClassMetadataFactoryInterface.
      */
@@ -470,7 +470,7 @@ class Configuration
      * Add a filter to the list of possible filters.
      *
      * @param array<string, mixed> $parameters
-     * @phpstan-param class-string $className
+     * @phpstan class-string $className
      */
     public function addFilter(string $name, string $className, array $parameters = []): void
     {
@@ -497,7 +497,7 @@ class Configuration
     }
 
     /**
-     * @phpstan-param class-string<ObjectRepository<object>> $className
+     * @phpstan class-string<ObjectRepository<object>> $className
      *
      * @throws MongoDBException If is not an ObjectRepository.
      */
@@ -519,7 +519,7 @@ class Configuration
     }
 
     /**
-     * @phpstan-param class-string<GridFSRepository<object>> $className
+     * @phpstan class-string<GridFSRepository<object>> $className
      *
      * @throws MongoDBException If the class does not implement the GridFSRepository interface.
      */

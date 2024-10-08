@@ -38,7 +38,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
     /**
      * Add a target-document class name to resolve to a new class name.
      *
-     * @phpstan-param array{targetDocument?: class-string} $mapping
+     * @param array{targetDocument?: class-string} $mapping
      */
     public function addResolveTargetDocument(string $originalDocument, string $newDocument, array $mapping): void
     {

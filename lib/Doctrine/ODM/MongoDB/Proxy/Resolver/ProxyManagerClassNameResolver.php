@@ -22,7 +22,7 @@ final class ProxyManagerClassNameResolver implements ClassNameResolver, ProxyCla
     }
 
     /**
-     * @phpstan-param class-string<RealClassName>|class-string<ProxyInterface<RealClassName>> $className
+     * @phpstan class-string<RealClassName>|class-string<ProxyInterface<RealClassName>> $className
      *
      * @phpstan-return class-string<RealClassName>
      *

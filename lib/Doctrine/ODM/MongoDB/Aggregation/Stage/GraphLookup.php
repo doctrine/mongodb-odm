@@ -130,7 +130,7 @@ class GraphLookup extends Stage
      * Target collection for the $graphLookup operation to search, recursively
      * matching the connectFromField to the connectToField.
      *
-     * @phpstan-param class-string|string $from
+     * @phpstan class-string|string $from
      */
     public function from(string $from): static
     {

@@ -103,7 +103,7 @@ final class SchemaManager
      * Indexes that exist in MongoDB but not the document metadata will be
      * deleted.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -150,7 +150,7 @@ final class SchemaManager
     }
 
     /**
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @phpstan-return IndexMapping[]
      */
@@ -162,8 +162,8 @@ final class SchemaManager
     }
 
     /**
-     * @phpstan-param class-string $documentName
-     * @phpstan-param array<class-string, bool> $visited
+     * @phpstan class-string $documentName
+     * @param array<class-string, bool> $visited
      *
      * @phpstan-return IndexMapping[]
      */
@@ -266,7 +266,7 @@ final class SchemaManager
     /**
      * Ensure the given document's indexes are created.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -310,7 +310,7 @@ final class SchemaManager
     /**
      * Delete the given document's indexes.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -341,7 +341,7 @@ final class SchemaManager
     /**
      * Create search indexes for the given document class.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -396,7 +396,7 @@ final class SchemaManager
      * Search indexes will be updated using the definitions in the document
      * metadata. Search indexes not defined in the metadata will be deleted.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -451,7 +451,7 @@ final class SchemaManager
     /**
      * Delete search indexes for the given document class.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -497,7 +497,7 @@ final class SchemaManager
     /**
      * Ensure collection validators are up to date for the mapped document class.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      */
     public function updateDocumentValidator(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
@@ -566,7 +566,7 @@ final class SchemaManager
     /**
      * Create the document collection for a mapped class.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -644,7 +644,7 @@ final class SchemaManager
     /**
      * Drop the document collection for a mapped class.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -683,7 +683,7 @@ final class SchemaManager
     /**
      * Drop the document database for a mapped class.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws InvalidArgumentException
      */
@@ -900,7 +900,7 @@ final class SchemaManager
     /**
      * Ensure sharding for collection by document name.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws MongoDBException
      */
@@ -927,7 +927,7 @@ final class SchemaManager
     /**
      * Enable sharding for database which contains documents with given name.
      *
-     * @phpstan-param class-string $documentName
+     * @phpstan class-string $documentName
      *
      * @throws MongoDBException
      */
@@ -948,7 +948,7 @@ final class SchemaManager
         }
     }
 
-    /** @phpstan-param class-string $documentName */
+    /** @phpstan class-string $documentName */
     private function runShardCollectionCommand(string $documentName, ?WriteConcern $writeConcern = null): void
     {
         $class    = $this->dm->getClassMetadata($documentName);
@@ -1019,7 +1019,7 @@ final class SchemaManager
         $filesCollection->createIndex(self::GRIDFS_CHUNKS_COLLECTION_INDEX, $this->getWriteOptions($maxTimeMs, $writeConcern, ['background' => $background]));
     }
 
-    /** @phpstan-param class-string $documentName */
+    /** @phpstan class-string $documentName */
     private function collectionIsSharded(string $documentName): bool
     {
         $class = $this->dm->getClassMetadata($documentName);

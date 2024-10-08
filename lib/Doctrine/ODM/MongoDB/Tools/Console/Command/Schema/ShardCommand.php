@@ -53,7 +53,7 @@ class ShardCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    /** @phpstan-param class-string $document */
+    /** @phpstan class-string $document */
     private function processDocumentSharding(SchemaManager $sm, string $document, ?WriteConcern $writeConcern = null): void
     {
         $sm->ensureDocumentSharding($document, $writeConcern);

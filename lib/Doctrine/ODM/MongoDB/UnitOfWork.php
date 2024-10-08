@@ -349,7 +349,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Get the document persister instance for the given document name
      *
-     * @phpstan-param class-string<T> $documentName
+     * @phpstan class-string<T> $documentName
      *
      * @phpstan-return Persisters\DocumentPersister<T>
      *
@@ -385,7 +385,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @phpstan-param class-string<T> $documentName
+     * @phpstan class-string<T> $documentName
      * @phpstan-param Persisters\DocumentPersister<T> $persister
      *
      * @template T of object
@@ -597,7 +597,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @phpstan-param array<string, ChangeSet> $changeset
+     * @param array<string, ChangeSet> $changeset
      */
     public function setDocumentChangeSet(object $document, array $changeset): void
     {
@@ -2728,8 +2728,8 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Creates a document. Used for reconstitution of documents during hydration.
      *
-     * @phpstan-param class-string<T> $className
-     * @phpstan-param array<string, mixed> $data
+     * @phpstan class-string<T> $className
+     * @param array<string, mixed> $data
      * @phpstan-param T|null $document
      * @phpstan-param Hints $hints
      *

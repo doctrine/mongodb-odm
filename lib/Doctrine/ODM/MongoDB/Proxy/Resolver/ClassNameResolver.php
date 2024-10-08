@@ -10,7 +10,7 @@ interface ClassNameResolver
     /**
      * Gets the real class name of a class name that could be a proxy.
      *
-     * @phpstan-param class-string $class
+     * @phpstan class-string $class
      */
     public function getRealClass(string $class): string;
 }

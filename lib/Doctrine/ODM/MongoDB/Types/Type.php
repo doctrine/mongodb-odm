@@ -203,7 +203,7 @@ abstract class Type
     /**
      * Adds a custom type to the type map.
      *
-     * @phpstan-param class-string $className
+     * @phpstan class-string $className
      *
      * @throws MappingException
      *
@@ -231,7 +231,7 @@ abstract class Type
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @phpstan-param class-string $className
+     * @phpstan class-string $className
      *
      * @throws MappingException
      *

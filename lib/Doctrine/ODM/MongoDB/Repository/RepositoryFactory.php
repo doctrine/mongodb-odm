@@ -15,7 +15,7 @@ interface RepositoryFactory
     /**
      * Gets the repository for a document class.
      *
-     * @phpstan-param class-string<T> $documentName
+     * @phpstan class-string<T> $documentName
      *
      * @phpstan-return ObjectRepository<T>
      *

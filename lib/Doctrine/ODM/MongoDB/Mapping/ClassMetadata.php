@@ -817,7 +817,7 @@ use function trigger_deprecation;
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
-     * @phpstan-param class-string<T> $documentName
+     * @phpstan class-string<T> $documentName
      */
     public function __construct(string $documentName)
     {
@@ -939,7 +939,7 @@ use function trigger_deprecation;
     /**
      * Registers a custom repository class for the document class.
      *
-     * @phpstan-param class-string|null $repositoryClassName
+     * @phpstan class-string|null $repositoryClassName
      */
     public function setCustomRepositoryClass(?string $repositoryClassName): void
     {
@@ -1058,8 +1058,7 @@ use function trigger_deprecation;
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param array<string, mixed>|string|null $discriminatorField
-     * @phpstan-param array{name?: string, fieldName?: string}|string|null $discriminatorField
+     * @param array{name?: string, fieldName?: string}|string|null $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
@@ -1333,8 +1332,7 @@ use function trigger_deprecation;
     }
 
     /**
-     * @param array|object|null $validator
-     * @phpstan-param array<string, mixed>|object|null $validator
+     * @param array<string, mixed>|object|null $validator
      */
     public function setValidator($validator): void
     {
@@ -1482,8 +1480,7 @@ use function trigger_deprecation;
     /**
      * Sets the collection this Document is mapped to.
      *
-     * @param array|string $name
-     * @phpstan-param array{name: string, capped?: bool, size?: int, max?: int}|string $name
+     * @param array{name: string, capped?: bool, size?: int, max?: int}|string $name
      *
      * @throws InvalidArgumentException
      */
@@ -2030,7 +2027,7 @@ use function trigger_deprecation;
      * Sets the mapped subclasses of this class.
      *
      * @param string[] $subclasses The names of all mapped subclasses.
-     * @phpstan-param class-string[] $subclasses
+     * @phpstan class-string[] $subclasses
      */
     public function setSubclasses(array $subclasses): void
     {
@@ -2178,7 +2175,7 @@ use function trigger_deprecation;
         return $this->isView;
     }
 
-    /** @phpstan-param class-string $rootClass */
+    /** @phpstan class-string $rootClass */
     public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;

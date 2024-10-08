@@ -287,7 +287,7 @@ class DocumentManager implements ObjectManager
      * Returns the metadata for a class.
      *
      * @param string $className The class name.
-     * @phpstan-param class-string<T> $className
+     * @phpstan class-string<T> $className
      *
      * @phpstan-return ClassMetadata<T>
      *
@@ -303,7 +303,7 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the MongoDB instance for a class.
      *
-     * @phpstan-param class-string $className
+     * @phpstan class-string $className
      */
     public function getDocumentDatabase(string $className): Database
     {
@@ -554,7 +554,7 @@ class DocumentManager implements ObjectManager
      * Gets the repository for a document class.
      *
      * @param string $className The name of the Document.
-     * @phpstan-param class-string<T> $className
+     * @phpstan class-string<T> $className
      *
      * @return DocumentRepository|GridFSRepository|ViewRepository  The repository.
      * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
@@ -592,7 +592,7 @@ class DocumentManager implements ObjectManager
      * loads itself on first access.
      *
      * @param mixed $identifier
-     * @phpstan-param class-string<T> $documentName
+     * @phpstan class-string<T> $documentName
      *
      * @phpstan-return T|(T&GhostObjectInterface<T>)
      *
@@ -662,7 +662,7 @@ class DocumentManager implements ObjectManager
      * @param mixed  $id
      * @param int    $lockMode
      * @param int    $lockVersion
-     * @phpstan-param class-string<T> $className
+     * @phpstan class-string<T> $className
      *
      * @phpstan-return T|null
      *

@@ -19,7 +19,7 @@ use function sprintf;
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @phpstan-param array<string, ChangeSet> $changeSet */
+    /** @param array<string, ChangeSet> $changeSet */
     public function __construct(
         object $document,
         DocumentManager $dm,
