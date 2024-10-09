@@ -30,7 +30,7 @@ use function trigger_deprecation;
  *
  * @phpstan-import-type SortShape from Sort
  * @phpstan-import-type StageExpression from Stage
- * @phpstan-type PipelineExpression list<StageExpression>
+ * @phpstan-type PipelineExpression list<array<string, mixed>>
  */
 class Builder
 {
@@ -270,7 +270,7 @@ class Builder
      * you should not apply filters as this may cause wrong results to be
      * given.
      *
-     * @return array<array<string, mixed>>
+     * @return list<array<string, mixed>>
      * @phpstan-return PipelineExpression
      */
     // phpcs:enable Squiz.Commenting.FunctionComment.ExtraParamComment
@@ -699,7 +699,7 @@ class Builder
      */
     private function applyFilters(array $query): array
     {
-        $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
+        $documentPersister = $this->getDocumentPersister();
 
         $query = $documentPersister->addDiscriminatorToPreparedQuery($query);
         $query = $documentPersister->addFilterToPreparedQuery($query);

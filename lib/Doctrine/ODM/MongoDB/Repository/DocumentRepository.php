@@ -40,7 +40,7 @@ class DocumentRepository implements ObjectRepository, Selectable
 {
     /**
      * @var string
-     * @var class-string<T>
+     * @phpstan-var class-string<T>
      */
     protected $documentName;
 

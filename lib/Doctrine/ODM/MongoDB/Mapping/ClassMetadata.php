@@ -557,7 +557,7 @@ use function trigger_deprecation;
      * READ-ONLY: The name of the document class.
      *
      * @var string
-     * @var class-string<T>
+     * @phpstan-var class-string<T>
      */
     public $name;
 
@@ -566,7 +566,6 @@ use function trigger_deprecation;
      * hierarchy. If the document is not part of a mapped inheritance hierarchy this is the same
      * as {@link $documentName}.
      *
-     * @var string
      * @var class-string
      */
     public $rootDocumentName;
@@ -575,7 +574,6 @@ use function trigger_deprecation;
      * The name of the custom repository class used for the document class.
      * (Optional).
      *
-     * @var string|null
      * @var class-string|null
      */
     public $customRepositoryClassName;
@@ -678,7 +676,6 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @var string|null
      * @var class-string|null
      */
     public $discriminatorValue;
