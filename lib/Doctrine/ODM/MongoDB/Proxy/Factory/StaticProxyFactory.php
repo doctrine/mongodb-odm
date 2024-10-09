@@ -32,7 +32,7 @@ final class StaticProxyFactory implements ProxyFactory
     public function __construct(DocumentManager $documentManager)
     {
         $this->uow                   = $documentManager->getUnitOfWork();
-        $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->uow, $documentManager->getEventManager());
+        $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->uow, $documentManager->getEventDispatcher());
         $this->proxyFactory          = $documentManager->getConfiguration()->buildGhostObjectFactory();
     }
 

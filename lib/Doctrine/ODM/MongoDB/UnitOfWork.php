@@ -29,6 +29,7 @@ use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 use UnexpectedValueException;
 
@@ -234,9 +235,9 @@ final class UnitOfWork implements PropertyChangedListener
     private DocumentManager $dm;
 
     /**
-     * The EventManager used for dispatching events.
+     * The Event Dispatcher used for dispatching events.
      */
-    private EventManager $evm;
+    private EventDispatcherInterface $evm;
 
     /**
      * Additional documents that are scheduled for removal.
@@ -292,10 +293,10 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      */
-    public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory)
+    public function __construct(DocumentManager $dm, EventManager|EventDispatcherInterface $evm, HydratorFactory $hydratorFactory)
     {
         $this->dm                    = $dm;
-        $this->evm                   = $evm;
+        $this->evm                   = $evm instanceof EventManager ? new Utility\EventDispatcher($evm) : $evm;
         $this->hydratorFactory       = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
         $this->reflectionService     = new RuntimeReflectionService();
@@ -425,7 +426,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         // Raise preFlush
-        $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
+        $this->evm->dispatch(new Event\PreFlushEventArgs($this->dm), Events::preFlush);
 
         // Compute changes done since last commit.
         $this->computeChangeSets();
@@ -454,7 +455,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $this->evm->dispatchEvent(Events::onFlush, new Event\OnFlushEventArgs($this->dm));
+            $this->evm->dispatch(new Event\OnFlushEventArgs($this->dm), Events::onFlush);
 
             if ($this->useTransaction($options)) {
                 $session = $this->dm->getClient()->startSession();
@@ -473,7 +474,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             // Raise postFlush
-            $this->evm->dispatchEvent(Events::postFlush, new Event\PostFlushEventArgs($this->dm));
+            $this->evm->dispatch(new Event\PostFlushEventArgs($this->dm), Events::postFlush);
 
             // Clear up
             foreach ($this->visitedCollections as $collections) {
@@ -2430,7 +2431,7 @@ final class UnitOfWork implements PropertyChangedListener
             $event = new Event\OnClearEventArgs($this->dm, $documentName);
         }
 
-        $this->evm->dispatchEvent(Events::onClear, $event);
+        $this->evm->dispatch($event, Events::onClear);
     }
 
     /**

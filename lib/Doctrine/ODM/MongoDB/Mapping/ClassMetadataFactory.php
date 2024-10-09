@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -21,6 +20,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 use function assert;
 use function get_class_methods;
@@ -52,8 +52,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     /** @var MappingDriver The used metadata driver. */
     private MappingDriver $driver;
 
-    /** @var EventManager The event manager instance */
-    private EventManager $evm;
+    /** @var EventDispatcherInterface The event dispatcher instance */
+    private EventDispatcherInterface $evm;
 
     public function setDocumentManager(DocumentManager $dm): void
     {
@@ -77,20 +77,16 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
 
         $this->driver      = $driver;
-        $this->evm         = $this->dm->getEventManager();
+        $this->evm         = $this->dm->getEventDispatcher();
         $this->initialized = true;
     }
 
     /** @param string $className */
     protected function onNotFoundMetadata($className)
     {
-        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
-            return null;
-        }
-
         $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->dm);
 
-        $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+        $this->evm->dispatch($eventArgs, Events::onClassMetadataNotFound);
 
         return $eventArgs->getFoundMetadata();
     }
@@ -195,10 +191,12 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
         $class->setParentClasses($nonSuperclassParents);
 
-        $this->evm->dispatchEvent(
-            Events::loadClassMetadata,
-            new LoadClassMetadataEventArgs($class, $this->dm),
-        );
+        $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::loadClassMetadata);
+        } else {
+            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        }
 
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
         if ($class->isChangeTrackingNotify()) {

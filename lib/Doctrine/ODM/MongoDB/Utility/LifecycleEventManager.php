@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Driver\Session;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 use function spl_object_hash;
 
@@ -30,8 +31,11 @@ final class LifecycleEventManager
     /** @var array<string, array<string, true>> */
     private array $transactionalEvents = [];
 
-    public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager $evm)
+    private EventDispatcherInterface $evm;
+
+    public function __construct(private DocumentManager $dm, private UnitOfWork $uow, EventManager|EventDispatcherInterface $evm)
     {
+        $this->evm = $evm instanceof EventManager ? new EventDispatcher($evm) : $evm;
     }
 
     public function clearTransactionalState(): void
@@ -55,7 +59,7 @@ final class LifecycleEventManager
     public function documentNotFound(object $proxy, $id): bool
     {
         $eventArgs = new DocumentNotFoundEventArgs($proxy, $this->dm, $id);
-        $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
+        $this->evm->dispatch($eventArgs, Events::documentNotFound);
 
         return $eventArgs->isExceptionDisabled();
     }
@@ -67,8 +71,7 @@ final class LifecycleEventManager
      */
     public function postCollectionLoad(PersistentCollectionInterface $coll): void
     {
-        $eventArgs = new PostCollectionLoadEventArgs($coll, $this->dm);
-        $this->evm->dispatchEvent(Events::postCollectionLoad, $eventArgs);
+        $this->evm->dispatch(new PostCollectionLoadEventArgs($coll, $this->dm), Events::postCollectionLoad);
     }
 
     /**
@@ -300,7 +303,7 @@ final class LifecycleEventManager
             return;
         }
 
-        $this->evm->dispatchEvent($eventName, $eventArgs);
+        $this->evm->dispatch($eventArgs, $eventName);
     }
 
     private function shouldDispatchEvent(object $document, string $eventName, ?Session $session): bool
