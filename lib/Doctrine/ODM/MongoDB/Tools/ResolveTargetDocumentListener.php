@@ -24,7 +24,7 @@ use function ltrim;
  */
 class ResolveTargetDocumentListener implements EventSubscriber
 {
-    /** @phpstan-var array<class-string, array{targetDocument: class-string}> */
+    /** @var array<class-string, array{targetDocument: class-string}> */
     private array $resolveTargetDocuments = [];
 
     public function getSubscribedEvents()

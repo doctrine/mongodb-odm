@@ -129,7 +129,7 @@ trait PersistentCollectionTrait
             return;
         }
 
-        /** @phpstan-var array<TKey, T> $newObjects */
+        /** @var array<TKey, T> $newObjects */
         $newObjects = [];
 
         if ($this->isDirty) {

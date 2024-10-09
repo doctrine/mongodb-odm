@@ -69,7 +69,7 @@ final class HydratorFactory
     /**
      * Array of instantiated document hydrators.
      *
-     * @phpstan-var array<class-string, HydratorInterface>
+     * @var array<class-string, HydratorInterface>
      */
     private array $hydrators = [];
 

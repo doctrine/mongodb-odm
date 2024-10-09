@@ -118,7 +118,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @phpstan-var array<class-string, array<string, object>>
+     * @var array<class-string, array<string, object>>
      */
     private array $identityMap = [];
 
@@ -147,7 +147,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Map of document changes. Keys are object ids (spl_object_hash).
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
-     * @phpstan-var array<string, array<string, ChangeSet>>
+     * @var array<string, array<string, ChangeSet>>
      */
     private array $documentChangeSets = [];
 
@@ -155,7 +155,7 @@ final class UnitOfWork implements PropertyChangedListener
      * The (cached) states of any known documents.
      * Keys are object ids (spl_object_hash).
      *
-     * @phpstan-var array<string, self::STATE_*>
+     * @var array<string, self::STATE_*>
      */
     private array $documentStates = [];
 
@@ -166,7 +166,7 @@ final class UnitOfWork implements PropertyChangedListener
      * object hash. This is only used for documents with a change tracking
      * policy of DEFERRED_EXPLICIT.
      *
-     * @phpstan-var array<class-string, array<string, object>>
+     * @var array<class-string, array<string, object>>
      */
     private array $scheduledForSynchronization = [];
 
@@ -201,21 +201,21 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * All pending collection deletions.
      *
-     * @phpstan-var array<string, PersistentCollectionInterface<array-key, object>>
+     * @var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private array $scheduledCollectionDeletions = [];
 
     /**
      * All pending collection updates.
      *
-     * @phpstan-var array<string, PersistentCollectionInterface<array-key, object>>
+     * @var array<string, PersistentCollectionInterface<array-key, object>>
      */
     private array $scheduledCollectionUpdates = [];
 
     /**
      * A list of documents related to collections scheduled for update or deletion
      *
-     * @phpstan-var array<string, array<string, PersistentCollectionInterface<array-key, object>>>
+     * @var array<string, array<string, PersistentCollectionInterface<array-key, object>>>
      */
     private array $hasScheduledCollections = [];
 
@@ -224,7 +224,7 @@ final class UnitOfWork implements PropertyChangedListener
      * At the end of the UnitOfWork all these collections will make new snapshots
      * of their data.
      *
-     * @phpstan-var array<string, array<PersistentCollectionInterface<array-key, object>>>
+     * @var array<string, array<PersistentCollectionInterface<array-key, object>>>
      */
     private array $visitedCollections = [];
 
@@ -253,7 +253,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * The document persister instances used to persist document instances.
      *
-     * @phpstan-var array<class-string, Persisters\DocumentPersister>
+     * @var array<class-string, Persisters\DocumentPersister>
      */
     private array $persisters = [];
 
@@ -270,7 +270,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Array of parent associations between embedded documents.
      *
-     * @phpstan-var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
+     * @var array<string, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
      */
     private array $parentAssociations = [];
 
@@ -363,7 +363,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this, $this->hydratorFactory, $class);
         }
 
-        /** @phpstan-var Persisters\DocumentPersister<T> */
+        /** @var Persisters\DocumentPersister<T> */
         return $this->persisters[$documentName];
     }
 

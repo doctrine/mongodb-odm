@@ -598,7 +598,7 @@ class DocumentManager implements ObjectManager
      */
     public function getReference(string $documentName, $identifier): object
     {
-        /** @phpstan-var ClassMetadata<T> $class */
+        /** @var ClassMetadata<T> $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
         /** @phpstan-var T|false $document */
@@ -609,7 +609,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        /** @phpstan-var T&GhostObjectInterface<T> $document */
+        /** @var T&GhostObjectInterface<T> $document */
         $document = $this->proxyFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, []);
 
@@ -670,7 +670,7 @@ class DocumentManager implements ObjectManager
     {
         $repository = $this->getRepository($className);
         if ($repository instanceof DocumentRepository) {
-            /** @phpstan-var DocumentRepository<T> $repository */
+            /** @var DocumentRepository<T> $repository */
             return $repository->find($id, $lockMode, $lockVersion);
         }
 

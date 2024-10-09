@@ -556,8 +556,7 @@ use function trigger_deprecation;
     /**
      * READ-ONLY: The name of the document class.
      *
-     * @var string
-     * @phpstan-var class-string<T>
+     * @var class-string<T>
      */
     public $name;
 
@@ -688,7 +687,7 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @phpstan-var array<string, class-string>
+     * @var array<string, class-string>
      */
     public $discriminatorMap = [];
 
@@ -789,8 +788,7 @@ use function trigger_deprecation;
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
-     * @phpstan-var ReflectionClass<T>
+     * @var ReflectionClass<T>
      */
     public $reflClass;
 

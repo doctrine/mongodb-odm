@@ -326,7 +326,7 @@ class Configuration
      * Gets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
      *
-     * @phpstan-return self::AUTOGENERATE_*
+     * @return self::AUTOGENERATE_*
      */
     public function getAutoGenerateHydratorClasses(): int
     {
@@ -337,7 +337,7 @@ class Configuration
      * Sets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
      *
-     * @phpstan-param self::AUTOGENERATE_* $mode
+     * @param self::AUTOGENERATE_* $mode
      */
     public function setAutoGenerateHydratorClasses(int $mode): void
     {
@@ -368,7 +368,7 @@ class Configuration
      * Gets a integer flag that indicates how and when persistent collection
      * classes should be generated.
      *
-     * @phpstan-return self::AUTOGENERATE_*
+     * @return self::AUTOGENERATE_*
      */
     public function getAutoGeneratePersistentCollectionClasses(): int
     {
@@ -379,7 +379,7 @@ class Configuration
      * Sets a integer flag that indicates how and when persistent collection
      * classes should be generated.
      *
-     * @phpstan-param self::AUTOGENERATE_* $mode
+     * @param self::AUTOGENERATE_* $mode
      */
     public function setAutoGeneratePersistentCollectionClasses(int $mode): void
     {

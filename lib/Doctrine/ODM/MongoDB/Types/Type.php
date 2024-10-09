@@ -57,10 +57,7 @@ abstract class Type
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static array $typeObjects = [];
 
-    /**
-     * @var string[] The map of supported doctrine mapping types.
-     * @phpstan-var array<string, class-string>
-     */
+    /** @var array<string, class-string> The map of supported doctrine mapping types. */
     private static array $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,

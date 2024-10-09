@@ -38,10 +38,7 @@ use function trigger_deprecation;
  */
 class DocumentRepository implements ObjectRepository, Selectable
 {
-    /**
-     * @var string
-     * @phpstan-var class-string<T>
-     */
+    /** @var class-string<T> */
     protected $documentName;
 
     /** @var DocumentManager */
@@ -50,10 +47,7 @@ class DocumentRepository implements ObjectRepository, Selectable
     /** @var UnitOfWork */
     protected $uow;
 
-    /**
-     * @var ClassMetadata
-     * @phpstan-var ClassMetadata<T>
-     */
+    /** @var ClassMetadata<T> */
     protected $class;
 
     /**
