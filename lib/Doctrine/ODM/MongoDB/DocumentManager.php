@@ -23,6 +23,7 @@ use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use Jean85\PrettyVersions;
+use LogicException;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -30,6 +31,7 @@ use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
 use RuntimeException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
 use function array_search;
@@ -79,7 +81,7 @@ class DocumentManager implements ObjectManager
     /**
      * The event manager that is the central point of the event system.
      */
-    private EventManager $eventManager;
+    private EventManager|EventDispatcherInterface $eventManager;
 
     /**
      * The Hydrator factory instance.
@@ -141,7 +143,7 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null)
+    protected function __construct(?Client $client = null, ?Configuration $config = null, EventManager|EventDispatcherInterface|null $eventManager = null)
     {
         $this->config       = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
@@ -197,16 +199,27 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null): DocumentManager
+    public static function create(?Client $client = null, ?Configuration $config = null, EventManager|EventDispatcherInterface|null $eventManager = null): DocumentManager
     {
         return new static($client, $config, $eventManager);
     }
 
+    public function getEventDispatcher(): EventManager|EventDispatcherInterface
+    {
+        return $this->eventManager;
+    }
+
     /**
      * Gets the EventManager used by the DocumentManager.
+     *
+     * @deprecated Use getEventDispatcher() instead
      */
     public function getEventManager(): EventManager
     {
+        if (! $this->eventManager instanceof EventManager) {
+            throw new LogicException('Use getEventDispatcher() instead of getEventManager()');
+        }
+
         return $this->eventManager;
     }
 

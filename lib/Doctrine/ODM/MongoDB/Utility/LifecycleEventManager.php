@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Driver\Session;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 use function spl_object_hash;
 
@@ -30,7 +31,7 @@ final class LifecycleEventManager
     /** @var array<string, array<string, true>> */
     private array $transactionalEvents = [];
 
-    public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager $evm)
+    public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager|EventDispatcherInterface $evm)
     {
     }
 
@@ -55,7 +56,11 @@ final class LifecycleEventManager
     public function documentNotFound(object $proxy, $id): bool
     {
         $eventArgs = new DocumentNotFoundEventArgs($proxy, $this->dm, $id);
-        $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch(Events::documentNotFound);
+        } else {
+            $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
+        }
 
         return $eventArgs->isExceptionDisabled();
     }
@@ -68,7 +73,11 @@ final class LifecycleEventManager
     public function postCollectionLoad(PersistentCollectionInterface $coll): void
     {
         $eventArgs = new PostCollectionLoadEventArgs($coll, $this->dm);
-        $this->evm->dispatchEvent(Events::postCollectionLoad, $eventArgs);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::postCollectionLoad);
+        } else {
+            $this->evm->dispatchEvent(Events::postCollectionLoad, $eventArgs);
+        }
     }
 
     /**
@@ -88,7 +97,7 @@ final class LifecycleEventManager
         $eventArgs = new LifecycleEventArgs($document, $this->dm, $session);
 
         $class->invokeLifecycleCallbacks(Events::postPersist, $document, [$eventArgs]);
-        $this->dispatchEvent($class, Events::postPersist, $eventArgs);
+        $this->dispatchEvent($class, $eventArgs);
         $this->cascadePostPersist($class, $document, $session);
     }
 
@@ -294,13 +303,17 @@ final class LifecycleEventManager
     }
 
     /** @param ClassMetadata<object> $class */
-    private function dispatchEvent(ClassMetadata $class, string $eventName, ?EventArgs $eventArgs = null): void
+    private function dispatchEvent(ClassMetadata $class, ?EventArgs $eventArgs = null): void
     {
         if ($class->isView()) {
             return;
         }
 
-        $this->evm->dispatchEvent($eventName, $eventArgs);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::postPersist);
+        } else {
+            $this->evm->dispatchEvent(Events::postPersist, $eventArgs);
+        }
     }
 
     private function shouldDispatchEvent(object $document, string $eventName, ?Session $session): bool

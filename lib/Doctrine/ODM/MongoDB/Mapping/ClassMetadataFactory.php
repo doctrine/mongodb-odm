@@ -21,6 +21,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 use function assert;
 use function get_class_methods;
@@ -52,8 +53,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     /** @var MappingDriver The used metadata driver. */
     private MappingDriver $driver;
 
-    /** @var EventManager The event manager instance */
-    private EventManager $evm;
+    /** @var EventManager|EventDispatcherInterface The event manager instance */
+    private EventManager|EventDispatcherInterface $evm;
 
     public function setDocumentManager(DocumentManager $dm): void
     {
@@ -90,7 +91,11 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
         $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->dm);
 
-        $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::onClassMetadataNotFound);
+        } else {
+            $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
+        }
 
         return $eventArgs->getFoundMetadata();
     }
@@ -195,10 +200,12 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
         $class->setParentClasses($nonSuperclassParents);
 
-        $this->evm->dispatchEvent(
-            Events::loadClassMetadata,
-            new LoadClassMetadataEventArgs($class, $this->dm),
-        );
+        $eventArgs = new LoadClassMetadataEventArgs($class, $this->dm);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::loadClassMetadata);
+        } else {
+            $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
+        }
 
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
         if ($class->isChangeTrackingNotify()) {

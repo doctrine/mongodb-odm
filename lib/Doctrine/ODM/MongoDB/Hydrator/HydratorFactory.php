@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 use function array_key_exists;
 use function chmod;
@@ -49,7 +50,7 @@ final class HydratorFactory
     /**
      * The EventManager associated with this Hydrator
      */
-    private EventManager $evm;
+    private EventManager|EventDispatcherInterface $evm;
 
     /**
      * Which algorithm to use to automatically (re)generate hydrator classes.
@@ -74,7 +75,7 @@ final class HydratorFactory
     private array $hydrators = [];
 
     /** @throws HydratorException */
-    public function __construct(DocumentManager $dm, EventManager $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
+    public function __construct(DocumentManager $dm, EventManager|EventDispatcherInterface $evm, ?string $hydratorDir, ?string $hydratorNs, int $autoGenerate)
     {
         if (! $hydratorDir) {
             throw HydratorException::hydratorDirectoryRequired();
@@ -433,7 +434,12 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::preLoad, $document, $args);
         }
 
-        $this->evm->dispatchEvent(Events::preLoad, new PreLoadEventArgs($document, $this->dm, $data));
+        $eventArgs = new PreLoadEventArgs($document, $this->dm, $data);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::preLoad);
+        } else {
+            $this->evm->dispatchEvent(Events::preLoad, $eventArgs);
+        }
 
         // alsoLoadMethods may transform the document before hydration
         if (! empty($metadata->alsoLoadMethods)) {
@@ -470,8 +476,11 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, [new LifecycleEventArgs($document, $this->dm)]);
         }
 
-        $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
-
-        return $data;
+        $eventArgs = new LifecycleEventArgs($document, $this->dm);
+        if ($this->evm instanceof EventDispatcherInterface) {
+            $this->evm->dispatch($eventArgs, Events::postLoad);
+        } else {
+            $this->evm->dispatchEvent(Events::postLoad, $eventArgs);
+        }
     }
 }

@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
