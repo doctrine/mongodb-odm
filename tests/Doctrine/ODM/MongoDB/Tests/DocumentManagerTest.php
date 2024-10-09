@@ -32,6 +32,7 @@ use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -281,10 +282,10 @@ class DocumentManagerTest extends BaseTestCase
         $client = new Client(self::getUri());
 
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $dm              = DocumentManager::create($client, $config,  $eventDispatcher);
+        $dm              = DocumentManager::create($client, $config, $eventDispatcher);
         self::assertSame($eventDispatcher, $dm->getEventDispatcher());
 
-        self::expectException(\LogicException::class);
+        self::expectException(LogicException::class);
         self::expectExceptionMessage('Use getEventDispatcher() instead of getEventManager()');
         $dm->getEventManager();
     }

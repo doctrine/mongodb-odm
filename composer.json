@@ -34,7 +34,6 @@
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/console": "^5.4 || ^6.0 || ^7.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",
-        "symfony/event-dispatcher": "^7.1",
         "symfony/var-dumper": "^5.4 || ^6.0 || ^7.0"
     },
     "require-dev": {
@@ -49,7 +48,7 @@
         "phpunit/phpunit": "^10.4",
         "squizlabs/php_codesniffer": "^3.5",
         "symfony/cache": "^5.4 || ^6.0 || ^7.0",
-        "symfony/event-dispatcher-contracts": "^3.5",
+        "symfony/event-dispatcher-contracts": "^2.0 || ^3.0",
         "vimeo/psalm": "~5.24.0"
     },
     "conflict": {
