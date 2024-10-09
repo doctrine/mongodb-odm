@@ -1620,10 +1620,7 @@ class Builder
         return $discriminatorValues;
     }
 
-    /**
-     * @param string[]|string|null             $documentName an array of document names or just one.
-     * @param class-string[]|class-string|null $documentName
-     */
+    /** @param class-string[]|class-string|null $documentName an array of document names or just one. */
     private function setDocumentName($documentName): void
     {
         if (is_array($documentName)) {

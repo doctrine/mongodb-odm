@@ -423,7 +423,7 @@ class QueryTest extends BaseTestCase
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
     }
 
-    /** @phpstan-param Query::TYPE_* $type */
+    /** @param Query::TYPE_* $type */
     #[DataProvider('provideQueryTypesThatDoNotReturnAnIterator')]
     public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator(int $type, string $method): void
     {

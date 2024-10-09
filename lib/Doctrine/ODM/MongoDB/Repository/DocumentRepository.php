@@ -184,8 +184,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param array<string, mixed>|null $sort
      * @param array<string, mixed>      $criteria
      *
-     * @return object|null The object.
-     * @return T|null
+     * @return T|null The object.
      */
     public function findOneBy(array $criteria, ?array $sort = null): ?object
     {

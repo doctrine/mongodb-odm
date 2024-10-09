@@ -351,7 +351,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @param class-string<T> $documentName
      *
-     * @phpstan-return Persisters\DocumentPersister<T>
+     * @return Persisters\DocumentPersister<T>
      *
      * @template T of object
      */
@@ -363,7 +363,6 @@ final class UnitOfWork implements PropertyChangedListener
             $this->persisters[$documentName] = new Persisters\DocumentPersister($pb, $this->dm, $this, $this->hydratorFactory, $class);
         }
 
-        /** @var Persisters\DocumentPersister<T> */
         return $this->persisters[$documentName];
     }
 

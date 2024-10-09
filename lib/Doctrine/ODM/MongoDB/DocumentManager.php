@@ -666,7 +666,6 @@ class DocumentManager implements ObjectManager
     {
         $repository = $this->getRepository($className);
         if ($repository instanceof DocumentRepository) {
-            /** @var DocumentRepository<T> $repository */
             return $repository->find($id, $lockMode, $lockVersion);
         }
 
