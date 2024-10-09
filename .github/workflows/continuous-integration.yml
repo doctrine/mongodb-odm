@@ -105,8 +105,6 @@ jobs:
         if: "${{ matrix.symfony-version == '7' }}"
         run: |
           composer config minimum-stability dev
-          # not yet ready for v7
-          composer remove --no-update --dev vimeo/psalm
           # update symfony deps
           composer require --no-update symfony/console:^7@dev
           composer require --no-update symfony/var-dumper:^7@dev
