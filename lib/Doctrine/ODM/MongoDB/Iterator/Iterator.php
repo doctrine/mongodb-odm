@@ -10,6 +10,6 @@ namespace Doctrine\ODM\MongoDB\Iterator;
  */
 interface Iterator extends \Iterator
 {
-    /** @phpstan-return array<mixed, TValue> */
+    /** @return array<mixed, TValue> */
     public function toArray(): array;
 }

@@ -105,7 +105,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      *
      * @param mixed $id Identifier.
      *
-     * @phpstan-return T|null
+     * @return T|null
      *
      * @throws MappingException
      * @throws LockException
@@ -185,14 +185,14 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param array<string, mixed>      $criteria
      *
      * @return object|null The object.
-     * @phpstan-return T|null
+     * @return T|null
      */
     public function findOneBy(array $criteria, ?array $sort = null): ?object
     {
         return $this->getDocumentPersister()->load($criteria, null, [], 0, $sort);
     }
 
-    /** @phpstan-return class-string<T> */
+    /** @return class-string<T> */
     public function getDocumentName(): string
     {
         return $this->documentName;
@@ -203,13 +203,13 @@ class DocumentRepository implements ObjectRepository, Selectable
         return $this->dm;
     }
 
-    /** @phpstan-return ClassMetadata<T> */
+    /** @return ClassMetadata<T> */
     public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
     }
 
-    /** @phpstan-return class-string<T> */
+    /** @return class-string<T> */
     public function getClassName(): string
     {
         return $this->getDocumentName();
@@ -251,7 +251,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         return new ArrayCollection($iterator->toArray());
     }
 
-    /** @phpstan-return DocumentPersister<T> */
+    /** @return DocumentPersister<T> */
     protected function getDocumentPersister(): DocumentPersister
     {
         return $this->uow->getDocumentPersister($this->documentName);

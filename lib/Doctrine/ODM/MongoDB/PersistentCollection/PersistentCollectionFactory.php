@@ -18,10 +18,10 @@ interface PersistentCollectionFactory
     /**
      * Creates specified persistent collection to work with given collection class.
      *
+     * @param BaseCollection<array-key, object>|null $coll
      * @phpstan-param FieldMapping $mapping
-     * @phpstan-param BaseCollection<array-key, object>|null $coll
      *
-     * @phpstan-return PersistentCollectionInterface<array-key, object>
+     * @return PersistentCollectionInterface<array-key, object>
      */
     public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface;
 }

@@ -17,7 +17,7 @@ interface RepositoryFactory
      *
      * @param class-string<T> $documentName
      *
-     * @phpstan-return ObjectRepository<T>
+     * @return ObjectRepository<T>
      *
      * @template T of object
      */

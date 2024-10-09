@@ -39,7 +39,7 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     /**
      * Retrieve class name for which a failed metadata fetch attempt was executed
      *
-     * @phpstan-return class-string
+     * @return class-string
      */
     public function getClassName(): string
     {

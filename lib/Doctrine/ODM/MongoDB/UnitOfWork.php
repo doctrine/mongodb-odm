@@ -2626,8 +2626,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @return PersistentCollectionInterface[]
-     * @phpstan-return array<string, PersistentCollectionInterface<array-key, object>>
+     * @return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollections(object $document): array
     {
@@ -2726,12 +2725,12 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Creates a document. Used for reconstitution of documents during hydration.
      *
-     * @param array<string, mixed> $data
      * @param class-string<T>      $className
-     * @phpstan-param T|null $document
-     * @phpstan-param Hints $hints
+     * @param array<string, mixed> $data
+     * @param T|null               $document
+     * @phpstan-param Hints                $hints
      *
-     * @phpstan-return T
+     * @return T
      *
      * @template T of object
      */
@@ -2837,7 +2836,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @phpstan-return array<class-string, array<string, object>>
+     * @return array<class-string, array<string, object>>
      */
     public function getIdentityMap(): array
     {
@@ -2991,7 +2990,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document insertions in this UnitOfWork.
      *
-     * @phpstan-return array<string, object>
+     * @return array<string, object>
      */
     public function getScheduledDocumentInsertions(): array
     {
@@ -3001,7 +3000,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document upserts in this UnitOfWork.
      *
-     * @phpstan-return array<string, object>
+     * @return array<string, object>
      */
     public function getScheduledDocumentUpserts(): array
     {
@@ -3011,7 +3010,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document updates in this UnitOfWork.
      *
-     * @phpstan-return array<string, object>
+     * @return array<string, object>
      */
     public function getScheduledDocumentUpdates(): array
     {
@@ -3021,7 +3020,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the currently scheduled document deletions in this UnitOfWork.
      *
-     * @phpstan-return array<string, object>
+     * @return array<string, object>
      */
     public function getScheduledDocumentDeletions(): array
     {
@@ -3033,7 +3032,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @phpstan-return array<string, PersistentCollectionInterface<array-key, object>>
+     * @return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollectionDeletions(): array
     {
@@ -3045,7 +3044,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @phpstan-return array<string, PersistentCollectionInterface<array-key, object>>
+     * @return array<string, PersistentCollectionInterface<array-key, object>>
      */
     public function getScheduledCollectionUpdates(): array
     {

@@ -286,10 +286,9 @@ class DocumentManager implements ObjectManager
     /**
      * Returns the metadata for a class.
      *
-     * @param string          $className The class name.
-     * @param class-string<T> $className
+     * @param class-string<T> $className The class name.
      *
-     * @phpstan-return ClassMetadata<T>
+     * @return ClassMetadata<T>
      *
      * @template T of object
      */
@@ -551,11 +550,9 @@ class DocumentManager implements ObjectManager
     /**
      * Gets the repository for a document class.
      *
-     * @param string          $className The name of the Document.
-     * @param class-string<T> $className
+     * @param class-string<T> $className The name of the Document.
      *
-     * @return DocumentRepository|GridFSRepository|ViewRepository  The repository.
-     * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     * @return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>  The repository.
      *
      * @template T of object
      */
@@ -592,7 +589,7 @@ class DocumentManager implements ObjectManager
      * @param mixed           $identifier
      * @param class-string<T> $documentName
      *
-     * @phpstan-return T|(T&GhostObjectInterface<T>)
+     * @return T|(T&GhostObjectInterface<T>)
      *
      * @template T of object
      */
@@ -662,7 +659,7 @@ class DocumentManager implements ObjectManager
      * @param int             $lockVersion
      * @param class-string<T> $className
      *
-     * @phpstan-return T|null
+     * @return T|null
      *
      * @template T of object
      */
@@ -803,8 +800,7 @@ class DocumentManager implements ObjectManager
      * @param ClassMetadata<object> $class            Metadata of reference document class.
      * @phpstan-param FieldMapping $referenceMapping
      *
-     * @return array with next structure [{discriminator field} => {discriminator value}]
-     * @phpstan-return array<string, class-string>
+     * @return array<string, class-string> with next structure [{discriminator field} => {discriminator value}]
      *
      * @throws MappingException When discriminator map is present and reference class in not registered in it.
      */
@@ -890,7 +886,7 @@ class DocumentManager implements ObjectManager
      * @param FieldMapping              $mapping
      * @param array<string, mixed>|null $data
      *
-     * @phpstan-return class-string
+     * @return class-string
      */
     public function getClassNameForAssociation(array $mapping, $data): string
     {

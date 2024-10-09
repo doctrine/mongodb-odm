@@ -46,7 +46,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
         $this->resolveTargetDocuments[$this->getRealClassName($originalDocument)] = $mapping;
     }
 
-    /** @phpstan-return class-string */
+    /** @return class-string */
     private function getRealClassName(string $className): string
     {
         return ltrim($className, '\\');

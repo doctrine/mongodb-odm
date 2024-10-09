@@ -1315,10 +1315,7 @@ use function trigger_deprecation;
         return $this->shardKey !== [];
     }
 
-    /**
-     * @return array|object|null
-     * @phpstan-return array<string, mixed>|object|null
-     */
+    /** @return array<string, mixed>|object|null */
     public function getValidator()
     {
         return $this->validator;
@@ -1438,7 +1435,7 @@ use function trigger_deprecation;
         return $this->reflFields[$name];
     }
 
-    /** @phpstan-return class-string<T> */
+    /** @return class-string<T> */
     public function getName(): string
     {
         return $this->name;
@@ -1928,7 +1925,7 @@ use function trigger_deprecation;
     /**
      * Gets mappings of fields holding embedded document(s).
      *
-     * @phpstan-return array<string, AssociationFieldMapping>
+     * @return array<string, AssociationFieldMapping>
      */
     public function getEmbeddedFieldsMappings(): array
     {
@@ -2192,7 +2189,7 @@ use function trigger_deprecation;
     /**
      * @param string $assocName
      *
-     * @phpstan-return class-string|null
+     * @return class-string|null
      */
     public function getAssociationTargetClass($assocName): ?string
     {
@@ -2206,7 +2203,7 @@ use function trigger_deprecation;
     /**
      * Retrieve the collectionClass associated with an association
      *
-     * @phpstan-return class-string
+     * @return class-string
      */
     public function getAssociationCollectionClass(string $assocName): string
     {

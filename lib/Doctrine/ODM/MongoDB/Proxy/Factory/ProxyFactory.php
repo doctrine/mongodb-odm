@@ -19,7 +19,7 @@ interface ProxyFactory
      * @param mixed $identifier
      * @phpstan-param ClassMetadata<T> $metadata
      *
-     * @phpstan-return T&GhostObjectInterface<T>
+     * @return T&GhostObjectInterface<T>
      *
      * @template T of object
      */

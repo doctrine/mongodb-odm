@@ -471,11 +471,11 @@ final class DocumentPersister
      *
      * @param array<string, mixed>|scalar|ObjectId|null            $criteria Query criteria
      * @param array<string, int|string|array<string, string>>|null $sort
+     * @param T|null                                               $document
      * @phpstan-param SortShape|null $sort
      * @phpstan-param Hints $hints
-     * @phpstan-param T|null $document
      *
-     * @phpstan-return T|null
+     * @return T|null
      *
      * @throws LockException
      *

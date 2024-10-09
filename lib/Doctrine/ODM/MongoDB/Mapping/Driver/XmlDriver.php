@@ -800,7 +800,7 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      *
-     * @phpstan-return array{string, array<int, array<string, string>>|null}
+     * @return array{string, array<int, array<string, string>>|null}
      */
     private function transformReadPreference(SimpleXMLElement $xmlReadPreference): array
     {

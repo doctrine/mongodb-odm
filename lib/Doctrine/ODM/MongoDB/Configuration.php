@@ -429,7 +429,7 @@ class Configuration
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /** @phpstan-return class-string<ClassMetadataFactoryInterface> */
+    /** @return class-string<ClassMetadataFactoryInterface> */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
@@ -480,7 +480,7 @@ class Configuration
         ];
     }
 
-    /** @phpstan-return class-string|null */
+    /** @return class-string|null */
     public function getFilterClassName(string $name): ?string
     {
         return isset($this->attributes['filters'][$name])
@@ -512,7 +512,7 @@ class Configuration
         $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
-    /** @phpstan-return class-string<ObjectRepository<object>> */
+    /** @return class-string<ObjectRepository<object>> */
     public function getDefaultDocumentRepositoryClassName(): string
     {
         return $this->attributes['defaultDocumentRepositoryClassName'] ?? DocumentRepository::class;
@@ -534,7 +534,7 @@ class Configuration
         $this->attributes['defaultGridFSRepositoryClassName'] = $className;
     }
 
-    /** @phpstan-return class-string<GridFSRepository<object>> */
+    /** @return class-string<GridFSRepository<object>> */
     public function getDefaultGridFSRepositoryClassName(): string
     {
         return $this->attributes['defaultGridFSRepositoryClassName'] ?? DefaultGridFSRepository::class;
