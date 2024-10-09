@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping;
 
-use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -53,8 +52,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     /** @var MappingDriver The used metadata driver. */
     private MappingDriver $driver;
 
-    /** @var EventManager|EventDispatcherInterface The event manager instance */
-    private EventManager|EventDispatcherInterface $evm;
+    /** @var EventDispatcherInterface The event dispatcher instance */
+    private EventDispatcherInterface $evm;
 
     public function setDocumentManager(DocumentManager $dm): void
     {
@@ -78,24 +77,16 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
 
         $this->driver      = $driver;
-        $this->evm         = $this->dm->getEventManager();
+        $this->evm         = $this->dm->getEventDispatcher();
         $this->initialized = true;
     }
 
     /** @param string $className */
     protected function onNotFoundMetadata($className)
     {
-        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
-            return null;
-        }
-
         $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->dm);
 
-        if ($this->evm instanceof EventDispatcherInterface) {
-            $this->evm->dispatch($eventArgs, Events::onClassMetadataNotFound);
-        } else {
-            $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
-        }
+        $this->evm->dispatch($eventArgs, Events::onClassMetadataNotFound);
 
         return $eventArgs->getFoundMetadata();
     }

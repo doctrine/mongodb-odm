@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\EventDispatcher;
 use ProxyManager\Proxy\GhostObjectInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -48,9 +49,9 @@ final class HydratorFactory
     private DocumentManager $dm;
 
     /**
-     * The EventManager associated with this Hydrator
+     * The Event Dispatcher associated with this Hydrator
      */
-    private EventManager|EventDispatcherInterface $evm;
+    private EventDispatcherInterface $evm;
 
     /**
      * Which algorithm to use to automatically (re)generate hydrator classes.
@@ -86,7 +87,7 @@ final class HydratorFactory
         }
 
         $this->dm                = $dm;
-        $this->evm               = $evm;
+        $this->evm               = $evm instanceof EventManager ? new EventDispatcher($evm) : $evm;
         $this->hydratorDir       = $hydratorDir;
         $this->hydratorNamespace = $hydratorNs;
         $this->autoGenerate      = $autoGenerate;
@@ -476,11 +477,8 @@ EOF
             $metadata->invokeLifecycleCallbacks(Events::postLoad, $document, [new LifecycleEventArgs($document, $this->dm)]);
         }
 
-        $eventArgs = new LifecycleEventArgs($document, $this->dm);
-        if ($this->evm instanceof EventDispatcherInterface) {
-            $this->evm->dispatch($eventArgs, Events::postLoad);
-        } else {
-            $this->evm->dispatchEvent(Events::postLoad, $eventArgs);
-        }
+        $this->evm->dispatch(new LifecycleEventArgs($document, $this->dm), Events::postLoad);
+
+        return $data;
     }
 }

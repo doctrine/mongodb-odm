@@ -235,9 +235,9 @@ final class UnitOfWork implements PropertyChangedListener
     private DocumentManager $dm;
 
     /**
-     * The EventManager used for dispatching events.
+     * The Event Dispatcher used for dispatching events.
      */
-    private EventManager|EventDispatcherInterface $evm;
+    private EventDispatcherInterface $evm;
 
     /**
      * Additional documents that are scheduled for removal.
@@ -296,7 +296,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function __construct(DocumentManager $dm, EventManager|EventDispatcherInterface $evm, HydratorFactory $hydratorFactory)
     {
         $this->dm                    = $dm;
-        $this->evm                   = $evm;
+        $this->evm                   = $evm instanceof EventManager ? new Utility\EventDispatcher($evm) : $evm;
         $this->hydratorFactory       = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
         $this->reflectionService     = new RuntimeReflectionService();
@@ -426,12 +426,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         // Raise preFlush
-        $eventArgs = new Event\PreFlushEventArgs($this->dm);
-        if ($this->evm instanceof EventDispatcherInterface) {
-            $this->evm->dispatch($eventArgs, Events::preFlush);
-        } else {
-            $this->evm->dispatchEvent(Events::preFlush, $eventArgs);
-        }
+        $this->evm->dispatch(new Event\PreFlushEventArgs($this->dm), Events::preFlush);
 
         // Compute changes done since last commit.
         $this->computeChangeSets();
@@ -460,12 +455,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $eventArgs = new Event\OnFlushEventArgs($this->dm);
-            if ($this->evm instanceof EventDispatcherInterface) {
-                $this->evm->dispatch($eventArgs, Events::onFlush);
-            } else {
-                $this->evm->dispatchEvent(Events::onFlush, $eventArgs);
-            }
+            $this->evm->dispatch(new Event\OnFlushEventArgs($this->dm), Events::onFlush);
 
             if ($this->useTransaction($options)) {
                 $session = $this->dm->getClient()->startSession();
@@ -484,12 +474,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             // Raise postFlush
-            $eventArgs = new Event\PostFlushEventArgs($this->dm);
-            if ($this->evm instanceof EventDispatcherInterface) {
-                $this->evm->dispatch($eventArgs, Events::postFlush);
-            } else {
-                $this->evm->dispatchEvent(Events::postFlush, $eventArgs);
-            }
+            $this->evm->dispatch(new Event\PostFlushEventArgs($this->dm), Events::postFlush);
 
             // Clear up
             foreach ($this->visitedCollections as $collections) {
@@ -2446,11 +2431,7 @@ final class UnitOfWork implements PropertyChangedListener
             $event = new Event\OnClearEventArgs($this->dm, $documentName);
         }
 
-        if ($this->evm instanceof EventDispatcherInterface) {
-            $this->evm->dispatch($event, Events::onClear);
-        } else {
-            $this->evm->dispatchEvent(Events::onClear, $event);
-        }
+        $this->evm->dispatch($event, Events::onClear);
     }
 
     /**

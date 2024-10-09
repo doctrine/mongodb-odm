@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\ODM\MongoDB\Utility\EventDispatcher;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
@@ -81,7 +82,12 @@ class DocumentManager implements ObjectManager
     /**
      * The event manager that is the central point of the event system.
      */
-    private EventManager|EventDispatcherInterface $eventManager;
+    private ?EventManager $eventManager;
+
+    /**
+     * The event dispatcher that is the central point of the event system.
+     */
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * The Hydrator factory instance.
@@ -143,11 +149,23 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    protected function __construct(?Client $client = null, ?Configuration $config = null, EventManager|EventDispatcherInterface|null $eventManager = null)
+    protected function __construct(?Client $client = null, ?Configuration $config = null, EventManager|EventDispatcherInterface|null $eventDispatcher = null)
     {
-        $this->config       = $config ?: new Configuration();
-        $this->eventManager = $eventManager ?: new EventManager();
-        $this->client       = $client ?: new Client(
+        $this->config = $config ?: new Configuration();
+
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            // This is a new feature, we can accept that the EventManager
+            // is not available when and EventDispatcher is injected.
+            $this->eventManager    = null;
+            $this->eventDispatcher = $eventDispatcher;
+        } else {
+            // Backward compatibility with Doctrine EventManager
+            // @todo deprecate and create a new Symfony EventDispatcher instance
+            $this->eventManager    = $eventDispatcher ?? new EventManager();
+            $this->eventDispatcher = new EventDispatcher($this->eventManager);
+        }
+
+        $this->client = $client ?: new Client(
             'mongodb://127.0.0.1',
             [],
             [
@@ -181,7 +199,7 @@ class DocumentManager implements ObjectManager
             $this->config->getAutoGenerateHydratorClasses(),
         );
 
-        $this->unitOfWork        = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
+        $this->unitOfWork        = new UnitOfWork($this, $this->eventDispatcher, $this->hydratorFactory);
         $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory      = new StaticProxyFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
@@ -204,19 +222,24 @@ class DocumentManager implements ObjectManager
         return new static($client, $config, $eventManager);
     }
 
-    public function getEventDispatcher(): EventManager|EventDispatcherInterface
+    /**
+     * @todo should we return a {@see Symfony\Component\EventDispatcher\EventDispatcherInterface} instead?
+     * So that it's explicitly possible to add/remove listeners. Or we just rely on
+     * the object that is injected and let the user validate the subtype.
+     */
+    public function getEventDispatcher(): EventDispatcherInterface
     {
-        return $this->eventManager;
+        return $this->eventDispatcher;
     }
 
     /**
      * Gets the EventManager used by the DocumentManager.
      *
-     * @deprecated Use getEventDispatcher() instead
+     * @deprecated Use getEventDispatcher() instead.
      */
     public function getEventManager(): EventManager
     {
-        if (! $this->eventManager instanceof EventManager) {
+        if (! $this->eventManager) {
             throw new LogicException('Use getEventDispatcher() instead of getEventManager()');
         }
 
