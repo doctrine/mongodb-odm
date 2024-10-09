@@ -193,7 +193,7 @@ class DocumentManager implements ObjectManager
         $hydratorNs            = $this->config->getHydratorNamespace();
         $this->hydratorFactory = new HydratorFactory(
             $this,
-            $this->eventManager,
+            $this->eventDispatcher,
             $hydratorDir,
             $hydratorNs,
             $this->config->getAutoGenerateHydratorClasses(),
@@ -217,9 +217,9 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, EventManager|EventDispatcherInterface|null $eventManager = null): DocumentManager
+    public static function create(?Client $client = null, ?Configuration $config = null, EventManager|EventDispatcherInterface|null $eventDispatcher = null): DocumentManager
     {
-        return new static($client, $config, $eventManager);
+        return new static($client, $config, $eventDispatcher);
     }
 
     /**

@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
@@ -36,6 +37,7 @@ use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use stdClass;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DocumentManagerTest extends BaseTestCase
 {
@@ -260,6 +262,31 @@ class DocumentManagerTest extends BaseTestCase
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         self::assertEquals(User::class, $this->dm->getClassNameForAssociation($mapping, null));
+    }
+
+    public function testCreateWithEventManager(): void
+    {
+        $config = static::getConfiguration();
+        $client = new Client(self::getUri());
+
+        $eventManager = new EventManager();
+        $dm           = DocumentManager::create($client, $config, $eventManager);
+        self::assertSame($eventManager, $dm->getEventManager());
+        self::assertInstanceOf(EventDispatcherInterface::class, $dm->getEventDispatcher());
+    }
+
+    public function testCreateWithEventDispatcher(): void
+    {
+        $config = static::getConfiguration();
+        $client = new Client(self::getUri());
+
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dm              = DocumentManager::create($client, $config,  $eventDispatcher);
+        self::assertSame($eventDispatcher, $dm->getEventDispatcher());
+
+        self::expectException(\LogicException::class);
+        self::expectExceptionMessage('Use getEventDispatcher() instead of getEventManager()');
+        $dm->getEventManager();
     }
 }
 
