@@ -653,11 +653,10 @@ class DocumentManager implements ObjectManager
      *
      * This is just a convenient shortcut for getRepository($documentName)->find($id).
      *
-     * @param string          $className
+     * @param class-string<T> $className
      * @param mixed           $id
      * @param int             $lockMode
      * @param int             $lockVersion
-     * @param class-string<T> $className
      *
      * @return T|null
      *

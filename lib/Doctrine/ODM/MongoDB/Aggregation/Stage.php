@@ -14,8 +14,8 @@ use function trigger_deprecation;
  *
  * @internal
  *
- * @phpstan-type PipelineExpression list<array<string, mixed>>
- * @phpstan-type StageExpression array<string, mixed>
+ * @phpstan-import-type PipelineExpression from Builder
+ * @phpstan-import-type StageExpression from Builder
  */
 abstract class Stage
 {

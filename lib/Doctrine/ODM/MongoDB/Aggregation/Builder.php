@@ -29,8 +29,8 @@ use function trigger_deprecation;
  * Fluent interface for building aggregation pipelines.
  *
  * @phpstan-import-type SortShape from Sort
- * @phpstan-import-type StageExpression from Stage
- * @phpstan-type PipelineExpression list<array<string, mixed>>
+ * @phpstan-type StageExpression array<string, mixed>
+ * @phpstan-type PipelineExpression list<StageExpression>
  */
 class Builder
 {

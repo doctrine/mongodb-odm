@@ -2014,8 +2014,7 @@ use function trigger_deprecation;
     /**
      * Sets the mapped subclasses of this class.
      *
-     * @param string[]       $subclasses The names of all mapped subclasses.
-     * @param class-string[] $subclasses
+     * @param class-string[] $subclasses The names of all mapped subclasses.
      */
     public function setSubclasses(array $subclasses): void
     {
