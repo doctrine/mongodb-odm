@@ -13,6 +13,7 @@ use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
@@ -798,6 +799,12 @@ use function trigger_deprecation;
      * @var bool
      */
     public $isReadOnly;
+
+    /** READ ONLY: indicates whether the collection is a time series collection */
+    public bool $isTimeSeries = false;
+
+    /** READ ONLY: stores metadata about the time series collection */
+    public ?TimeSeries $timeSeriesOptions = null;
 
     private InstantiatorInterface $instantiator;
 
@@ -2174,6 +2181,14 @@ use function trigger_deprecation;
         $this->rootClass = $rootClass;
     }
 
+    public function markAsTimeSeries(TimeSeries $options): void
+    {
+        $this->validateTimeSeriesOptions($options);
+
+        $this->isTimeSeries      = true;
+        $this->timeSeriesOptions = $options;
+    }
+
     public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
@@ -2527,6 +2542,8 @@ use function trigger_deprecation;
             'idGenerator',
             'indexes',
             'shardKey',
+            'isTimeSeries',
+            'timeSeriesOptions',
         ];
 
         // The rest of the metadata is only serialized if necessary.
@@ -2757,5 +2774,16 @@ use function trigger_deprecation;
         }
 
         return $mapping;
+    }
+
+    private function validateTimeSeriesOptions(TimeSeries $options): void
+    {
+        if (! $this->hasField($options->timeField)) {
+            throw MappingException::timeSeriesFieldNotFound($this->name, $options->timeField, 'time');
+        }
+
+        if ($options->metaField && ! $this->hasField($options->metaField)) {
+            throw MappingException::timeSeriesFieldNotFound($this->name, $options->metaField, 'metadata');
+        }
     }
 }

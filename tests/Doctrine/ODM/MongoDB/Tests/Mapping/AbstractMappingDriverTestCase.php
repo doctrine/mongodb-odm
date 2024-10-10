@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
@@ -677,6 +678,17 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         self::assertTrue($metadata->fieldMappings['nullableSuit']['nullable']);
         self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['nullableSuit']);
     }
+
+    public function testTimeSeriesDocument(): void
+    {
+        $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocument::class);
+
+        self::assertTrue($metadata->isTimeSeries);
+        self::assertEquals(
+            new ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400),
+            $metadata->timeSeriesOptions,
+        );
+    }
 }
 
 /**
@@ -1295,4 +1307,29 @@ class AbstractMappingDriverViewRepository extends DocumentRepository implements 
             ->project()
                 ->includeFields(['name']);
     }
+}
+
+/**
+ * @ODM\Document(collection="cms_users", writeConcern=1, readOnly=true)
+ * @ODM\TimeSeries(timeField="time", metaField="metadata", granularity=Granularity::Seconds, expireAfterSeconds=86400)
+ */
+#[ODM\Document]
+#[ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400)]
+class AbstractMappingDriverTimeSeriesDocument
+{
+    /** @ODM\Id */
+    #[ODM\Id]
+    public ?string $id = null;
+
+    /** @ODM\Field(type="date") */
+    #[ODM\Field(type: 'date')]
+    public DateTime $time;
+
+    /** @ODM\Field */
+    #[ODM\Field]
+    public string $metadata;
+
+    /** @ODM\Field(type="int") */
+    #[ODM\Field(type: 'int')]
+    public int $value;
 }

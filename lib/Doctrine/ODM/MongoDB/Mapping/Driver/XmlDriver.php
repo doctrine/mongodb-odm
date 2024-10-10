@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
@@ -335,13 +337,34 @@ class XmlDriver extends FileDriver
             }
         }
 
-        if (! isset($xmlRoot->{'also-load-methods'})) {
+        if (isset($xmlRoot->{'also-load-methods'})) {
+            foreach ($xmlRoot->{'also-load-methods'}->{'also-load-method'} as $alsoLoadMethod) {
+                $metadata->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
+            }
+        }
+
+        if (! isset($xmlRoot->{'time-series'})) {
             return;
         }
 
-        foreach ($xmlRoot->{'also-load-methods'}->{'also-load-method'} as $alsoLoadMethod) {
-            $metadata->registerAlsoLoadMethod((string) $alsoLoadMethod['method'], (string) $alsoLoadMethod['field']);
-        }
+        $attributes = $xmlRoot->{'time-series'}->attributes();
+
+        $metaField          = isset($attributes['meta-field'])
+            ? (string) $attributes['meta-field']
+            : null;
+        $granularity        = isset($attributes['granularity'])
+            ? Granularity::from((string) $attributes['granularity'])
+            : null;
+        $expireAfterSeconds = isset($attributes['expire-after-seconds'])
+            ? (int) $attributes['expire-after-seconds']
+            : null;
+
+        $metadata->markAsTimeSeries(new TimeSeries(
+            timeField: (string) $attributes['time-field'],
+            metaField: $metaField,
+            granularity: $granularity,
+            expireAfterSeconds: $expireAfterSeconds,
+        ));
     }
 
     /**

@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\SearchIndex;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
@@ -286,6 +287,12 @@ class AttributeDriver implements MappingDriver
         if (isset($classAttributes[ShardKey::class])) {
             assert($classAttributes[ShardKey::class] instanceof ShardKey);
             $this->setShardKey($metadata, $classAttributes[ShardKey::class]);
+        }
+
+        // Mark as time series only after mapping all fields
+        if (isset($classAttributes[TimeSeries::class])) {
+            assert($classAttributes[TimeSeries::class] instanceof TimeSeries);
+            $metadata->markAsTimeSeries($classAttributes[TimeSeries::class]);
         }
 
         foreach ($reflClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
