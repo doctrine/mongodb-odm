@@ -20,6 +20,7 @@ use Documents\SchemaValidated;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
 use Documents\SimpleReferenceUser;
+use Documents\TimeSeries\TimeSeriesDocument;
 use Documents\Tournament\Tournament;
 use Documents\UserName;
 use InvalidArgumentException;
@@ -761,6 +762,33 @@ EOT;
     }
 
     /** @phpstan-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
+    public function testCreateTimeSeriesCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesDocument::class);
+
+        $options = [
+            'timeseries' => [
+                'timeField' => 'time',
+                'metaField' => 'metadata',
+                'granularity' => 'seconds',
+            ],
+            'expireAfterSeconds' => 86400,
+        ];
+
+        $database = $this->documentDatabases[$this->getDatabaseName($metadata)];
+        $database
+            ->expects($this->once())
+            ->method('createCollection')
+            ->with(
+                'TimeSeriesDocument',
+                $this->writeOptions($options + $expectedWriteOptions),
+            );
+
+        $this->schemaManager->createDocumentCollection(TimeSeriesDocument::class, $maxTimeMs, $writeConcern);
+    }
+
+    /** @psalm-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
     public function testCreateCollections(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {

@@ -621,6 +621,20 @@ final class SchemaManager
             $options['validationLevel']  = $class->getValidationLevel();
         }
 
+        if ($class->isTimeSeries) {
+            $options['timeseries'] = array_filter(
+                [
+                    'timeField' => $class->timeSeriesOptions->timeField,
+                    'metaField' => $class->timeSeriesOptions->metaField,
+                    'granularity' => $class->timeSeriesOptions->granularity?->value,
+                ],
+            );
+
+            if ($class->timeSeriesOptions->expireAfterSeconds) {
+                $options['expireAfterSeconds'] = $class->timeSeriesOptions->expireAfterSeconds;
+            }
+        }
+
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
             $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
