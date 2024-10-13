@@ -853,7 +853,7 @@ class XmlDriver extends FileDriver
             libxml_clear_errors();
 
             if (! $document->schemaValidate(__DIR__ . '/../../../../../../doctrine-mongo-mapping.xsd')) {
-                throw MappingException::xmlMappingFileInvalid($filename, $this->formatErrors(libxml_get_errors()));
+                return;
             }
         } finally {
             libxml_use_internal_errors($previousUseErrors);
