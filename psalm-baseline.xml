@@ -184,6 +184,12 @@
       <code><![CDATA[array]]></code>
     </LessSpecificImplementedReturnType>
   </file>
+  <file src="lib/Doctrine/ODM/MongoDB/SchemaManager.php">
+    <InvalidArgument>
+      <code><![CDATA[['typeMap' => ['root' => 'array']]]]></code>
+      <code><![CDATA[['typeMap' => ['root' => 'array']]]]></code>
+    </InvalidArgument>
+  </file>
   <file src="lib/Doctrine/ODM/MongoDB/Tools/Console/Command/ClearCache/MetadataCommand.php">
     <UndefinedInterfaceMethod>
       <code><![CDATA[getDocumentManager]]></code>
