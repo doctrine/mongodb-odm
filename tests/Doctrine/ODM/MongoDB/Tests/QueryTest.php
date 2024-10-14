@@ -16,16 +16,22 @@ use Documents\Phonenumber;
 use Documents\Project;
 use Documents\SubProject;
 use Documents\User;
+use Exception;
 use InvalidArgumentException;
 use LogicException;
+use MongoDB\BSON\Int64;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
+use MongoDB\Driver\CursorId;
+use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\Server;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Traversable;
 
 use function array_keys;
+use function class_exists;
 use function iterator_to_array;
 
 use const DOCTRINE_MONGODB_DATABASE;
@@ -496,7 +502,7 @@ class QueryTest extends BaseTestCase
 
     public function testFindWithHint(): void
     {
-        $cursor = $this->createMock(Traversable::class);
+        $cursor = $this->createCursorMock();
 
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
@@ -523,7 +529,7 @@ class QueryTest extends BaseTestCase
         $nearest            = new ReadPreference('nearest');
         $secondaryPreferred = new ReadPreference('secondaryPreferred');
 
-        $cursor = $this->createMock(Traversable::class);
+        $cursor = $this->createCursorMock();
 
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
@@ -552,7 +558,41 @@ class QueryTest extends BaseTestCase
 
     public function testNonRewindable(): void
     {
-        $cursor = new ArrayIterator(['foo']);
+        $cursor = new class ([['foo']]) extends ArrayIterator implements CursorInterface {
+            public function getId(): Int64
+            {
+                return new Int64(0);
+            }
+
+            public function getServer(): Server
+            {
+                throw new Exception('Not implemented');
+            }
+
+            public function isDead(): bool
+            {
+                return false;
+            }
+
+            public function setTypeMap(array $typemap): void
+            {
+            }
+
+            public function toArray(): array
+            {
+                return iterator_to_array($this);
+            }
+
+            public function current(): array|null
+            {
+                return parent::current();
+            }
+
+            public function key(): int|null
+            {
+                return parent::key();
+            }
+        };
 
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
@@ -581,6 +621,16 @@ class QueryTest extends BaseTestCase
     private function getMockCollection()
     {
         return $this->createMock(Collection::class);
+    }
+
+    private function createCursorMock(): CursorInterface|Traversable
+    {
+        return $this->createMock(
+            // Use the cursorID class to differentiate between 1.x and 2.x
+            class_exists(CursorId::class)
+                ? Traversable::class
+                : CursorInterface::class,
+        );
     }
 }
 
