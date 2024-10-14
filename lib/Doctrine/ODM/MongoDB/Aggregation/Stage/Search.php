@@ -16,12 +16,12 @@ use function is_string;
 use function strtolower;
 
 /**
- * @psalm-import-type SortDirectionKeywords from Sort
- * @psalm-type CountType = 'lowerBound'|'total'
- * @psalm-type SortMetaKeywords = 'searchScore'
- * @psalm-type SortMeta = array{'$meta': SortMetaKeywords}
- * @psalm-type SortShape = array<string, int|SortMeta|SortDirectionKeywords>
- * @psalm-type SearchStageExpression = array{
+ * @phpstan-import-type SortDirectionKeywords from Sort
+ * @phpstan-type CountType 'lowerBound'|'total'
+ * @phpstan-type SortMetaKeywords 'searchScore'
+ * @phpstan-type SortMeta array{'$meta': SortMetaKeywords}
+ * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords>
+ * @phpstan-type SearchStageExpression array{
  *     '$search': object{
  *         index?: string,
  *         count?: object{
@@ -71,7 +71,7 @@ class Search extends Stage implements SupportsAllSearchOperators
         parent::__construct($builder);
     }
 
-    /** @psalm-return SearchStageExpression */
+    /** @phpstan-return SearchStageExpression */
     public function getExpression(): array
     {
         $params = (object) [];
@@ -111,7 +111,7 @@ class Search extends Stage implements SupportsAllSearchOperators
         return $this;
     }
 
-    /** @psalm-param CountType $type */
+    /** @phpstan-param CountType $type */
     public function countDocuments(string $type, ?int $threshold = null): static
     {
         $this->count = (object) ['type' => $type];
@@ -148,8 +148,8 @@ class Search extends Stage implements SupportsAllSearchOperators
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
-     * @psalm-param SortShape|string $fieldName
-     * @psalm-param int|SortMeta|SortDirectionKeywords|null $order
+     * @phpstan-param SortShape|string $fieldName
+     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
     public function sort($fieldName, $order = null): static
     {

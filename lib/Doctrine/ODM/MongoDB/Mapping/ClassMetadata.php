@@ -65,7 +65,7 @@ use function trigger_deprecation;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
- * @psalm-type FieldMappingConfig = array{
+ * @phpstan-type FieldMappingConfig array{
  *      type?: string,
  *      fieldName?: string,
  *      name?: string,
@@ -106,7 +106,7 @@ use function trigger_deprecation;
  *      background?: bool,
  *      enumType?: class-string<BackedEnum>,
  * }
- * @psalm-type FieldMapping = array{
+ * @phpstan-type FieldMapping array{
  *      type: string,
  *      fieldName: string,
  *      name: string,
@@ -152,7 +152,7 @@ use function trigger_deprecation;
  *      enumType?: class-string<BackedEnum>,
  *      storeEmptyArray?: bool,
  * }
- * @psalm-type AssociationFieldMapping = array{
+ * @phpstan-type AssociationFieldMapping array{
  *      type?: string,
  *      fieldName: string,
  *      name: string,
@@ -197,8 +197,8 @@ use function trigger_deprecation;
  *      alsoLoadFields?: list<string>,
  *      storeEmptyArray?: bool,
  * }
- * @psalm-type IndexKeys = array<string, mixed>
- * @psalm-type IndexOptions = array{
+ * @phpstan-type IndexKeys array<string, mixed>
+ * @phpstan-type IndexOptions array{
  *      background?: bool,
  *      bits?: int,
  *      default_language?: string,
@@ -214,21 +214,21 @@ use function trigger_deprecation;
  *      unique?: bool,
  *      weights?: array{string, int},
  * }
- * @psalm-type IndexMapping = array{
+ * @phpstan-type IndexMapping array{
  *      keys: IndexKeys,
  *      options: IndexOptions
  * }
- * @psalm-type SearchIndexStoredSourceInclude = array{include: list<string>}
- * @psalm-type SearchIndexStoredSourceExclude = array{exclude: list<string>}
- * @psalm-type SearchIndexStoredSource = bool|SearchIndexStoredSourceInclude|SearchIndexStoredSourceExclude
- * @psalm-type SearchIndexSynonym = array{
+ * @phpstan-type SearchIndexStoredSourceInclude array{include: list<string>}
+ * @phpstan-type SearchIndexStoredSourceExclude array{exclude: list<string>}
+ * @phpstan-type SearchIndexStoredSource bool|SearchIndexStoredSourceInclude|SearchIndexStoredSourceExclude
+ * @phpstan-type SearchIndexSynonym array{
  *      analyzer: string,
  *      name: string,
  *      source: array{
  *          collection: string,
  *      },
  * }
- * @psalm-type SearchIndexDefinition = array{
+ * @phpstan-type SearchIndexDefinition array{
  *      mappings: array{
  *          dynamic?: bool,
  *          fields?: array,
@@ -239,13 +239,13 @@ use function trigger_deprecation;
  *      storedSource?: SearchIndexStoredSource,
  *      synonyms?: list<SearchIndexSynonym>,
  * }
- * @psalm-type SearchIndexMapping = array{
+ * @phpstan-type SearchIndexMapping array{
  *      name: string,
  *      definition: SearchIndexDefinition
  * }
- * @psalm-type ShardKeys = array<string, mixed>
- * @psalm-type ShardOptions = array<string, mixed>
- * @psalm-type ShardKey = array{
+ * @phpstan-type ShardKeys array<string, mixed>
+ * @phpstan-type ShardOptions array<string, mixed>
+ * @phpstan-type ShardKey array{
  *      keys?: ShardKeys,
  *      options?: ShardOptions
  * }
@@ -517,7 +517,7 @@ use function trigger_deprecation;
      * READ-ONLY: The array of indexes for the document collection.
      *
      * @var array<array<string, mixed>>
-     * @psalm-var array<IndexMapping>
+     * @phpstan-var array<IndexMapping>
      */
     public $indexes = [];
 
@@ -532,14 +532,14 @@ use function trigger_deprecation;
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
      *
      * @var array<string, array>
-     * @psalm-var ShardKey
+     * @phpstan-var ShardKey
      */
     public $shardKey = [];
 
     /**
      * Allows users to specify a validation schema for the collection.
      *
-     * @psalm-var array<string, mixed>|object|null
+     * @phpstan-var array<string, mixed>|object|null
      */
     private array|object|null $validator = null;
 
@@ -556,8 +556,7 @@ use function trigger_deprecation;
     /**
      * READ-ONLY: The name of the document class.
      *
-     * @var string
-     * @psalm-var class-string<T>
+     * @var class-string<T>
      */
     public $name;
 
@@ -566,8 +565,7 @@ use function trigger_deprecation;
      * hierarchy. If the document is not part of a mapped inheritance hierarchy this is the same
      * as {@link $documentName}.
      *
-     * @var string
-     * @psalm-var class-string
+     * @var class-string
      */
     public $rootDocumentName;
 
@@ -575,24 +573,21 @@ use function trigger_deprecation;
      * The name of the custom repository class used for the document class.
      * (Optional).
      *
-     * @var string|null
-     * @psalm-var class-string|null
+     * @var class-string|null
      */
     public $customRepositoryClassName;
 
     /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
-     * @var array
-     * @psalm-var list<class-string>
+     * @var list<class-string>
      */
     public $parentClasses = [];
 
     /**
      * READ-ONLY: The names of all subclasses (descendants).
      *
-     * @var array
-     * @psalm-var list<class-string>
+     * @var list<class-string>
      */
     public $subClasses = [];
 
@@ -645,7 +640,7 @@ use function trigger_deprecation;
      * document can have the id attribute, forming a composite key.
      *
      * @var array<string, mixed>
-     * @psalm-var array<string, FieldMapping>
+     * @phpstan-var array<string, FieldMapping>
      */
     public $fieldMappings = [];
 
@@ -654,7 +649,7 @@ use function trigger_deprecation;
      * Keys are field names and values are mapping definitions.
      *
      * @var array<string, mixed>
-     * @psalm-var array<string, AssociationFieldMapping>
+     * @phpstan-var array<string, AssociationFieldMapping>
      */
     public $associationMappings = [];
 
@@ -680,8 +675,7 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @var string|null
-     * @psalm-var class-string|null
+     * @var class-string|null
      */
     public $discriminatorValue;
 
@@ -693,7 +687,7 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @psalm-var array<string, class-string>
+     * @var array<string, class-string>
      */
     public $discriminatorMap = [];
 
@@ -794,8 +788,7 @@ use function trigger_deprecation;
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
-     * @psalm-var ReflectionClass<T>
+     * @var ReflectionClass<T>
      */
     public $reflClass;
 
@@ -817,7 +810,7 @@ use function trigger_deprecation;
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
      *
-     * @psalm-param class-string<T> $documentName
+     * @param class-string<T> $documentName
      */
     public function __construct(string $documentName)
     {
@@ -939,7 +932,7 @@ use function trigger_deprecation;
     /**
      * Registers a custom repository class for the document class.
      *
-     * @psalm-param class-string|null $repositoryClassName
+     * @param class-string|null $repositoryClassName
      */
     public function setCustomRepositoryClass(?string $repositoryClassName): void
     {
@@ -1058,8 +1051,7 @@ use function trigger_deprecation;
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param array<string, mixed>|string|null $discriminatorField
-     * @psalm-param array{name?: string, fieldName?: string}|string|null $discriminatorField
+     * @param array{name?: string, fieldName?: string}|string|null $discriminatorField
      *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
@@ -1175,8 +1167,8 @@ use function trigger_deprecation;
      * Add a index for this Document.
      *
      * @param array<string, int|string> $keys
-     * @psalm-param IndexKeys $keys
-     * @psalm-param IndexOptions $options
+     * @phpstan-param IndexKeys $keys
+     * @phpstan-param IndexOptions $options
      */
     public function addIndex(array $keys, array $options = []): void
     {
@@ -1206,7 +1198,7 @@ use function trigger_deprecation;
     /**
      * Returns the array of indexes for this Document.
      *
-     * @psalm-return array<IndexMapping>
+     * @phpstan-return array<IndexMapping>
      */
     public function getIndexes(): array
     {
@@ -1224,7 +1216,7 @@ use function trigger_deprecation;
     /**
      * Add a search index for this Document.
      *
-     * @psalm-param SearchIndexDefinition $definition
+     * @phpstan-param SearchIndexDefinition $definition
      */
     public function addSearchIndex(array $definition, ?string $name = null): void
     {
@@ -1237,7 +1229,7 @@ use function trigger_deprecation;
     /**
      * Returns the array of search indexes for this Document.
      *
-     * @psalm-return list<SearchIndexMapping>
+     * @phpstan-return list<SearchIndexMapping>
      */
     public function getSearchIndexes(): array
     {
@@ -1257,8 +1249,8 @@ use function trigger_deprecation;
      *
      * @param array<string, string|int> $keys
      * @param array<string, mixed>      $options
-     * @psalm-param ShardKeys $keys
-     * @psalm-param ShardOptions      $options
+     * @phpstan-param ShardKeys $keys
+     * @phpstan-param ShardOptions      $options
      *
      * @throws MappingException
      */
@@ -1309,7 +1301,7 @@ use function trigger_deprecation;
         ];
     }
 
-    /** @psalm-return ShardKey */
+    /** @phpstan-return ShardKey */
     public function getShardKey(): array
     {
         return $this->shardKey;
@@ -1323,19 +1315,13 @@ use function trigger_deprecation;
         return $this->shardKey !== [];
     }
 
-    /**
-     * @return array|object|null
-     * @psalm-return array<string, mixed>|object|null
-     */
+    /** @return array<string, mixed>|object|null */
     public function getValidator()
     {
         return $this->validator;
     }
 
-    /**
-     * @param array|object|null $validator
-     * @psalm-param array<string, mixed>|object|null $validator
-     */
+    /** @param array<string, mixed>|object|null $validator */
     public function setValidator($validator): void
     {
         $this->validator = $validator;
@@ -1449,7 +1435,7 @@ use function trigger_deprecation;
         return $this->reflFields[$name];
     }
 
-    /** @psalm-return class-string<T> */
+    /** @return class-string<T> */
     public function getName(): string
     {
         return $this->name;
@@ -1482,8 +1468,7 @@ use function trigger_deprecation;
     /**
      * Sets the collection this Document is mapped to.
      *
-     * @param array|string $name
-     * @psalm-param array{name: string, capped?: bool, size?: int, max?: int}|string $name
+     * @param array{name: string, capped?: bool, size?: int, max?: int}|string $name
      *
      * @throws InvalidArgumentException
      */
@@ -1583,7 +1568,7 @@ use function trigger_deprecation;
     /**
      * Validates the storage strategy of a mapping for consistency
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      *
      * @throws MappingException
      */
@@ -1639,7 +1624,7 @@ use function trigger_deprecation;
     /**
      * Map a single embedded document.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      */
     public function mapOneEmbedded(array $mapping): void
     {
@@ -1652,7 +1637,7 @@ use function trigger_deprecation;
     /**
      * Map a collection of embedded documents.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      */
     public function mapManyEmbedded(array $mapping): void
     {
@@ -1665,7 +1650,7 @@ use function trigger_deprecation;
     /**
      * Map a single document reference.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      */
     public function mapOneReference(array $mapping): void
     {
@@ -1678,7 +1663,7 @@ use function trigger_deprecation;
     /**
      * Map a collection of document references.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      */
     public function mapManyReference(array $mapping): void
     {
@@ -1694,7 +1679,7 @@ use function trigger_deprecation;
      *
      * @internal
      *
-     * @psalm-param FieldMapping $fieldMapping
+     * @phpstan-param FieldMapping $fieldMapping
      */
     public function addInheritedFieldMapping(array $fieldMapping): void
     {
@@ -1713,7 +1698,7 @@ use function trigger_deprecation;
      *
      * @internal
      *
-     * @psalm-param AssociationFieldMapping $mapping
+     * @phpstan-param AssociationFieldMapping $mapping
      *
      * @throws MappingException
      */
@@ -1924,7 +1909,7 @@ use function trigger_deprecation;
     /**
      * Gets the mapping of a field.
      *
-     * @psalm-return FieldMapping
+     * @phpstan-return FieldMapping
      *
      * @throws MappingException If the $fieldName is not found in the fieldMappings array.
      */
@@ -1940,7 +1925,7 @@ use function trigger_deprecation;
     /**
      * Gets mappings of fields holding embedded document(s).
      *
-     * @psalm-return array<string, AssociationFieldMapping>
+     * @return array<string, AssociationFieldMapping>
      */
     public function getEmbeddedFieldsMappings(): array
     {
@@ -1954,7 +1939,7 @@ use function trigger_deprecation;
      * Gets the field mapping by its DB name.
      * E.g. it returns identifier's mapping when called with _id.
      *
-     * @psalm-return FieldMapping
+     * @phpstan-return FieldMapping
      *
      * @throws MappingException
      */
@@ -2029,8 +2014,7 @@ use function trigger_deprecation;
     /**
      * Sets the mapped subclasses of this class.
      *
-     * @param string[] $subclasses The names of all mapped subclasses.
-     * @psalm-param class-string[] $subclasses
+     * @param class-string[] $subclasses The names of all mapped subclasses.
      */
     public function setSubclasses(array $subclasses): void
     {
@@ -2044,8 +2028,7 @@ use function trigger_deprecation;
      * Assumes that the class names in the passed array are in the order:
      * directParent -> directParentParent -> directParentParentParent ... -> root.
      *
-     * @param string[] $classNames
-     * @psalm-param list<class-string> $classNames
+     * @param list<class-string> $classNames
      */
     public function setParentClasses(array $classNames): void
     {
@@ -2094,7 +2077,7 @@ use function trigger_deprecation;
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @psalm-param FieldMapping $mapping
+     * @phpstan-param FieldMapping $mapping
      *
      * @throws LockException
      */
@@ -2129,7 +2112,7 @@ use function trigger_deprecation;
      * Sets the version field mapping used for versioning. Sets the default
      * value to use depending on the column type.
      *
-     * @psalm-param FieldMapping $mapping
+     * @phpstan-param FieldMapping $mapping
      *
      * @throws LockException
      */
@@ -2178,7 +2161,7 @@ use function trigger_deprecation;
         return $this->isView;
     }
 
-    /** @psalm-param class-string $rootClass */
+    /** @param class-string $rootClass */
     public function markViewOf(string $rootClass): void
     {
         $this->isView    = true;
@@ -2205,7 +2188,7 @@ use function trigger_deprecation;
     /**
      * @param string $assocName
      *
-     * @psalm-return class-string|null
+     * @return class-string|null
      */
     public function getAssociationTargetClass($assocName): ?string
     {
@@ -2219,7 +2202,7 @@ use function trigger_deprecation;
     /**
      * Retrieve the collectionClass associated with an association
      *
-     * @psalm-return class-string
+     * @return class-string
      */
     public function getAssociationCollectionClass(string $assocName): string
     {
@@ -2249,9 +2232,9 @@ use function trigger_deprecation;
     /**
      * Map a field.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      *
-     * @psalm-return FieldMapping
+     * @phpstan-return FieldMapping
      *
      * @throws MappingException
      */
@@ -2640,11 +2623,11 @@ use function trigger_deprecation;
     /**
      * Creates a new instance of the mapped class, without invoking the constructor.
      *
-     * @psalm-return T
+     * @phpstan-return T
      */
     public function newInstance(): object
     {
-        /** @psalm-var T */
+        /** @phpstan-var T */
         return $this->instantiator->instantiate($this->name);
     }
 
@@ -2653,7 +2636,7 @@ use function trigger_deprecation;
         return in_array($name, self::ALLOWED_GRIDFS_FIELDS, true);
     }
 
-    /** @psalm-param FieldMapping $mapping */
+    /** @phpstan-param FieldMapping $mapping */
     private function typeRequirementsAreMet(array $mapping): void
     {
         if ($mapping['type'] === Type::DECIMAL128 && ! extension_loaded('bcmath')) {
@@ -2661,7 +2644,7 @@ use function trigger_deprecation;
         }
     }
 
-    /** @psalm-param FieldMapping $mapping */
+    /** @phpstan-param FieldMapping $mapping */
     private function checkDuplicateMapping(array $mapping): void
     {
         if ($mapping['notSaved'] ?? false) {
@@ -2697,7 +2680,7 @@ use function trigger_deprecation;
     /**
      * Validates & completes the given field mapping based on typed property.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      *
      * @return FieldMappingConfig
      */
@@ -2751,7 +2734,7 @@ use function trigger_deprecation;
     /**
      * Validates & completes the basic mapping information based on typed property.
      *
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      *
      * @return FieldMappingConfig
      */

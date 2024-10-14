@@ -74,7 +74,7 @@ use function trigger_deprecation;
  *
  * @template T of object
  *
- * @psalm-type CommitOptions array{
+ * @phpstan-type CommitOptions array{
  *      fsync?: bool,
  *      safe?: int,
  *      session?: ?Session,
@@ -82,10 +82,10 @@ use function trigger_deprecation;
  *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
- * @psalm-import-type Hints from UnitOfWork
- * @psalm-import-type FieldMapping from ClassMetadata
- * @psalm-import-type SortMeta from Sort
- * @psalm-import-type SortShape from Sort
+ * @phpstan-import-type Hints from UnitOfWork
+ * @phpstan-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type SortMeta from Sort
+ * @phpstan-import-type SortShape from Sort
  */
 final class DocumentPersister
 {
@@ -111,7 +111,7 @@ final class DocumentPersister
 
     private CollectionPersister $cp;
 
-    /** @psalm-param ClassMetadata<T> $class */
+    /** @phpstan-param ClassMetadata<T> $class */
     public function __construct(
         private PersistenceBuilder $pb,
         private DocumentManager $dm,
@@ -193,7 +193,7 @@ final class DocumentPersister
      *
      * If no inserts are queued, invoking this method is a NOOP.
      *
-     * @psalm-param CommitOptions $options
+     * @phpstan-param CommitOptions $options
      *
      * @throws DriverException
      */
@@ -252,7 +252,7 @@ final class DocumentPersister
      *
      * If no upserts are queued, invoking this method is a NOOP.
      *
-     * @psalm-param CommitOptions $options
+     * @phpstan-param CommitOptions $options
      */
     public function executeUpserts(array $options = []): void
     {
@@ -351,7 +351,7 @@ final class DocumentPersister
     /**
      * Updates the already persisted document if it has any new changesets.
      *
-     * @psalm-param CommitOptions $options
+     * @phpstan-param CommitOptions $options
      *
      * @throws LockException
      */
@@ -416,7 +416,7 @@ final class DocumentPersister
     /**
      * Removes document from mongo
      *
-     * @psalm-param CommitOptions $options
+     * @phpstan-param CommitOptions $options
      *
      * @throws LockException
      */
@@ -471,11 +471,11 @@ final class DocumentPersister
      *
      * @param array<string, mixed>|scalar|ObjectId|null            $criteria Query criteria
      * @param array<string, int|string|array<string, string>>|null $sort
-     * @psalm-param SortShape|null $sort
-     * @psalm-param Hints $hints
-     * @psalm-param T|null $document
+     * @param T|null                                               $document
+     * @phpstan-param SortShape|null $sort
+     * @phpstan-param Hints $hints
      *
-     * @psalm-return T|null
+     * @return T|null
      *
      * @throws LockException
      *
@@ -638,11 +638,11 @@ final class DocumentPersister
      * @param array<string, mixed> $result   The query result.
      * @param object|null          $document The document object to fill, if any.
      * @param array                $hints    Hints for document creation.
-     * @psalm-param Hints $hints
-     * @psalm-param T|null $document
+     * @phpstan-param Hints $hints
+     * @phpstan-param T|null $document
      *
      * @return object The filled and managed document object.
-     * @psalm-return T
+     * @phpstan-return T
      */
     private function createDocument(array $result, ?object $document = null, array $hints = []): object
     {
@@ -947,9 +947,9 @@ final class DocumentPersister
      * names and changing direction strings to int.
      *
      * @param array<string, int|string|array<string, string>> $fields
-     * @psalm-param SortShape $fields
+     * @phpstan-param SortShape $fields
      *
-     * @psalm-return array<string, -1|1|SortMeta>
+     * @phpstan-return array<string, -1|1|SortMeta>
      */
     public function prepareSort(array $fields): array
     {
@@ -1458,7 +1458,7 @@ final class DocumentPersister
     /**
      * Returns the list of discriminator values for the given ClassMetadata
      *
-     * @psalm-return list<class-string|null>
+     * @return list<class-string|null>
      */
     private function getClassDiscriminatorValues(ClassMetadata $metadata): array
     {
@@ -1561,9 +1561,9 @@ final class DocumentPersister
     }
 
     /**
-     * @psalm-param CommitOptions $options
+     * @phpstan-param CommitOptions $options
      *
-     * @psalm-return CommitOptions
+     * @phpstan-return CommitOptions
      */
     private function getWriteOptions(array $options = []): array
     {
@@ -1605,9 +1605,9 @@ final class DocumentPersister
     }
 
     /**
-     * @psalm-param FieldMapping $mapping
+     * @phpstan-param FieldMapping $mapping
      *
-     * @psalm-return array<array{
+     * @phpstan-return array<array{
      *     string,
      *     string|ObjectId|array<string, mixed>
      * }>

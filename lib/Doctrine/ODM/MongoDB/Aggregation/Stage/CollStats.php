@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $collStats stage to an aggregation pipeline.
  *
- * @psalm-type CollStatsStageExpression = array{
+ * @phpstan-type CollStatsStageExpression array{
  *     '$collStats': array{
  *         latencyStats?: array{histograms?: bool},
  *         storageStats?: array{},
@@ -52,7 +52,7 @@ class CollStats extends Stage
         return $this;
     }
 
-    /** @psalm-return CollStatsStageExpression */
+    /** @phpstan-return CollStatsStageExpression */
     public function getExpression(): array
     {
         $collStats = [];

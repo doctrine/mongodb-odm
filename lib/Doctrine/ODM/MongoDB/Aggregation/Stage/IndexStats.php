@@ -10,11 +10,11 @@ use stdClass;
 /**
  * Fluent interface for adding a $indexStats stage to an aggregation pipeline.
  *
- * @psalm-type IndexStatsStageExpression = array{'$indexStats': object}
+ * @phpstan-type IndexStatsStageExpression array{'$indexStats': object}
  */
 class IndexStats extends Stage
 {
-    /** @psalm-return IndexStatsStageExpression */
+    /** @phpstan-return IndexStatsStageExpression */
     public function getExpression(): array
     {
         return [

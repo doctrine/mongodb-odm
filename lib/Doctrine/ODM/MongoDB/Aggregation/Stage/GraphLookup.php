@@ -20,7 +20,7 @@ use function is_array;
 use function is_string;
 use function substr;
 
-/** @psalm-import-type FieldMapping from ClassMetadata */
+/** @phpstan-import-type FieldMapping from ClassMetadata */
 class GraphLookup extends Stage
 {
     private ?string $from;
@@ -130,7 +130,7 @@ class GraphLookup extends Stage
      * Target collection for the $graphLookup operation to search, recursively
      * matching the connectFromField to the connectToField.
      *
-     * @psalm-param class-string|string $from
+     * @param class-string|string $from
      */
     public function from(string $from): static
     {
@@ -281,7 +281,7 @@ class GraphLookup extends Stage
         return $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
     }
 
-    /** @psalm-param FieldMapping $mapping */
+    /** @phpstan-param FieldMapping $mapping */
     private function getReferencedFieldName(string $fieldName, array $mapping): string
     {
         if (! $this->targetClass) {

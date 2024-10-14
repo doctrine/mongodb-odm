@@ -37,8 +37,8 @@ use function sprintf;
  *
  * @internal
  *
- * @psalm-import-type FieldMapping from ClassMetadata
- * @psalm-import-type Hints from UnitOfWork
+ * @phpstan-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type Hints from UnitOfWork
  */
 final class ReferencePrimer
 {
@@ -70,7 +70,7 @@ final class ReferencePrimer
      * @param string                            $fieldName Field name containing references to prime
      * @param array                             $hints     UnitOfWork hints for priming queries
      * @param callable|null                     $primer    Optional primer callable
-     * @psalm-param Hints $hints
+     * @phpstan-param Hints $hints
      *
      * @throws InvalidArgumentException If the mapped field is not the owning
      *                                   side of a reference relationship.
@@ -121,7 +121,7 @@ final class ReferencePrimer
             }
         }
 
-        /** @psalm-var class-string $className */
+        /** @var class-string $className */
         foreach ($groupedIds as $className => $ids) {
             $refClass = $this->dm->getClassMetadata($className);
             call_user_func($primer, $this->dm, $refClass, array_values($ids), $hints);
@@ -216,7 +216,7 @@ final class ReferencePrimer
      * infer the class of the referenced documents.
      *
      * @param PersistentCollectionInterface<array-key, object> $persistentCollection
-     * @psalm-param array<class-string, array<string, mixed>> $groupedIds
+     * @param array<class-string, array<string, mixed>>        $groupedIds
      */
     private function addManyReferences(PersistentCollectionInterface $persistentCollection, array &$groupedIds): void
     {

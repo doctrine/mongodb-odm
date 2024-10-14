@@ -16,10 +16,10 @@ use InvalidArgumentException;
 /**
  * Fluent interface for building aggregation pipelines.
  *
- * @psalm-import-type PipelineExpression from Builder
- * @psalm-type PipelineParamType = Builder|Stage|PipelineExpression
- * @psalm-type LookupStageExpression = array{
- *     $lookup: array{
+ * @phpstan-import-type PipelineExpression from Builder
+ * @phpstan-type PipelineParamType Builder|Stage|PipelineExpression
+ * @phpstan-type LookupStageExpression array{
+ *     '$lookup': array{
  *         from: string,
  *         'as'?: string,
  *         localField?: string,
@@ -46,7 +46,7 @@ class Lookup extends Stage
 
     /**
      * @var Builder|array<array<string, mixed>>|null
-     * @psalm-var Builder|PipelineExpression|null
+     * @phpstan-var Builder|PipelineExpression|null
      */
     private Builder|array|null $pipeline = null;
 
@@ -101,7 +101,7 @@ class Lookup extends Stage
         return $this;
     }
 
-    /** @psalm-return LookupStageExpression */
+    /** @phpstan-return LookupStageExpression */
     public function getExpression(): array
     {
         $lookup = [
@@ -193,7 +193,7 @@ class Lookup extends Stage
      * and then reference the variables in the pipeline stages.
      *
      * @param Builder|Stage|array<array<string, mixed>> $pipeline
-     * @psalm-param PipelineParamType $pipeline
+     * @phpstan-param PipelineParamType $pipeline
      */
     public function pipeline($pipeline): static
     {

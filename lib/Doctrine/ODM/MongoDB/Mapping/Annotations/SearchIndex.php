@@ -13,8 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * @Annotation
  * @NamedArgumentConstructor
- * @psalm-import-type SearchIndexStoredSource from ClassMetadata
- * @psalm-import-type SearchIndexSynonym from ClassMetadata
+ * @phpstan-import-type SearchIndexStoredSource from ClassMetadata
+ * @phpstan-import-type SearchIndexSynonym from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class SearchIndex implements Annotation

@@ -26,7 +26,7 @@ use function assert;
  *
  * @internal
  *
- * @psalm-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type FieldMapping from ClassMetadata
  */
 final class PersistenceBuilder
 {
@@ -322,7 +322,7 @@ final class PersistenceBuilder
      * simple reference, null may be returned.
      *
      * @param object $document
-     * @psalm-param FieldMapping $referenceMapping
+     * @phpstan-param FieldMapping $referenceMapping
      *
      * @return array<string, mixed>|null
      */
@@ -347,7 +347,7 @@ final class PersistenceBuilder
      *
      * @param object $embeddedDocument
      * @param bool   $includeNestedCollections
-     * @psalm-param FieldMapping  $embeddedMapping
+     * @phpstan-param FieldMapping  $embeddedMapping
      *
      * @return array<string, mixed>|object
      *
@@ -462,7 +462,7 @@ final class PersistenceBuilder
      *
      * @param object $document
      * @param bool   $includeNestedCollections
-     * @psalm-param FieldMapping  $mapping
+     * @phpstan-param FieldMapping  $mapping
      *
      * @return mixed[]|object|null
      *

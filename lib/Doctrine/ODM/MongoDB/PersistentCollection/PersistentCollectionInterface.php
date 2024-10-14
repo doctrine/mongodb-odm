@@ -15,8 +15,8 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  *
  * @internal
  *
- * @psalm-import-type FieldMapping from \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
- * @psalm-import-type Hints from UnitOfWork
+ * @phpstan-import-type FieldMapping from \Doctrine\ODM\MongoDB\Mapping\ClassMetadata
+ * @phpstan-import-type Hints from UnitOfWork
  *
  * @template TKey of array-key
  * @template T of object
@@ -92,7 +92,7 @@ interface PersistentCollectionInterface extends Collection
      * Sets the collection's owning document together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      *
-     * @psalm-param FieldMapping $mapping
+     * @phpstan-param FieldMapping $mapping
      *
      * @return void
      */
@@ -150,13 +150,13 @@ interface PersistentCollectionInterface extends Collection
 
     /**
      * @return array
-     * @psalm-return FieldMapping
+     * @phpstan-return FieldMapping
      */
     public function getMapping();
 
     /**
      * @return ClassMetadata
-     * @psalm-return ClassMetadata<T>
+     * @phpstan-return ClassMetadata<T>
      *
      * @throws MongoDBException
      */

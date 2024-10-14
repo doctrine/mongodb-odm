@@ -13,7 +13,7 @@ use function is_callable;
 use function iterator_to_array;
 
 /**
- * @psalm-import-type Hints from UnitOfWork
+ * @phpstan-import-type Hints from UnitOfWork
  * @template TValue
  * @template TDocument of object
  * @template-implements Iterator<TValue>
@@ -26,7 +26,7 @@ final class PrimingIterator implements Iterator
      * @param \Iterator<mixed, TValue>          $iterator
      * @param ClassMetadata<TDocument>          $class
      * @param array<string, callable|true|null> $primers
-     * @psalm-param Hints $unitOfWorkHints
+     * @phpstan-param Hints $unitOfWorkHints
      */
     public function __construct(private \Iterator $iterator, private ClassMetadata $class, private ReferencePrimer $referencePrimer, private array $primers, private array $unitOfWorkHints = [])
     {

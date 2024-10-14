@@ -13,9 +13,9 @@ use InvalidArgumentException;
 /**
  * Fluent interface for adding a $unionWith stage to an aggregation pipeline.
  *
- * @psalm-import-type PipelineExpression from Builder
- * @psalm-type PipelineParamType = array|Builder|Stage|PipelineExpression
- * @psalm-type UnionWithStageExpression = array{
+ * @phpstan-import-type PipelineExpression from Builder
+ * @phpstan-type PipelineParamType array|Builder|Stage|PipelineExpression
+ * @phpstan-type UnionWithStageExpression array{
  *     '$unionWith': object{
  *         coll: string,
  *         pipeline?: PipelineExpression,
@@ -24,7 +24,7 @@ use InvalidArgumentException;
  */
 class UnionWith extends Stage
 {
-    /** @psalm-var ?PipelineParamType */
+    /** @phpstan-var ?PipelineParamType */
     private array|Builder|Stage|null $pipeline = null;
 
     public function __construct(Builder $builder, private DocumentManager $dm, private string $collection)
@@ -40,7 +40,7 @@ class UnionWith extends Stage
 
     /**
      * @param array|Builder|Stage $pipeline
-     * @psalm-param PipelineParamType $pipeline
+     * @phpstan-param PipelineParamType $pipeline
      */
     public function pipeline($pipeline): static
     {
@@ -57,7 +57,7 @@ class UnionWith extends Stage
         return $this;
     }
 
-    /** @psalm-return UnionWithStageExpression */
+    /** @phpstan-return UnionWithStageExpression */
     public function getExpression(): array
     {
         $params = (object) ['coll' => $this->collection];

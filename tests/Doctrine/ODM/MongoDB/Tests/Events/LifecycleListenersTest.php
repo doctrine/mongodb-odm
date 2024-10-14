@@ -220,7 +220,7 @@ class LifecycleListenersTest extends BaseTestCase
 
 class MyEventListener
 {
-    /** @psalm-var array<string, list<class-string>> */
+    /** @var array<string, list<class-string>> */
     public array $called = [];
 
     /** @param array{LifecycleEventArgs} $args */

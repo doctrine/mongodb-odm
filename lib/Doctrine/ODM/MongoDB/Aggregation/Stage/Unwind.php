@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
  *
- * @psalm-type UnwindStageExpression = array{
+ * @phpstan-type UnwindStageExpression array{
  *     '$unwind': string|array{
  *         path: string,
  *         includeArrayIndex?: string,
@@ -29,7 +29,7 @@ class Unwind extends Stage
         parent::__construct($builder);
     }
 
-    /** @psalm-return UnwindStageExpression */
+    /** @phpstan-return UnwindStageExpression */
     public function getExpression(): array
     {
         // Fallback behavior for MongoDB < 3.2

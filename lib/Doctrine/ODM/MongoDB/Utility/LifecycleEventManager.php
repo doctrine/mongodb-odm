@@ -63,7 +63,7 @@ final class LifecycleEventManager
     /**
      * Dispatches postCollectionLoad event.
      *
-     * @psalm-param PersistentCollectionInterface<array-key, object> $coll
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $coll
      */
     public function postCollectionLoad(PersistentCollectionInterface $coll): void
     {
@@ -74,8 +74,8 @@ final class LifecycleEventManager
     /**
      * Invokes postPersist callbacks and events for given document cascading them to embedded documents as well.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @template T of object
      */
@@ -95,8 +95,8 @@ final class LifecycleEventManager
     /**
      * Invokes postRemove callbacks and events for given document.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @template T of object
      */
@@ -116,8 +116,8 @@ final class LifecycleEventManager
      * Invokes postUpdate callbacks and events for given document. The same will be done for embedded documents owned
      * by given document unless they were new in which case postPersist callbacks and events will be dispatched.
      *
-     * @psalm-param ClassMetadata<T> $class
-     * @psalm-param T $document
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
      *
      * @template T of object
      */

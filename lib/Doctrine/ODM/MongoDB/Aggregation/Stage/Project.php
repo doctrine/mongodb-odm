@@ -9,12 +9,12 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 /**
  * Fluent interface for adding a $project stage to an aggregation pipeline.
  *
- * @psalm-import-type OperatorExpression from Expr
- * @psalm-type ProjectStageExpression = array{'$project': array<string, OperatorExpression|mixed>}
+ * @phpstan-import-type OperatorExpression from Expr
+ * @phpstan-type ProjectStageExpression array{'$project': array<string, OperatorExpression|mixed>}
  */
 class Project extends Operator
 {
-    /** @psalm-return ProjectStageExpression */
+    /** @phpstan-return ProjectStageExpression */
     public function getExpression(): array
     {
         return [

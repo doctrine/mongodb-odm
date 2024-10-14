@@ -14,11 +14,11 @@ use function is_string;
 use function strtolower;
 
 /**
- * @psalm-import-type SortDirectionKeywords from Sort
- * @psalm-import-type OperatorExpression from Expr
- * @psalm-type SortDirection = int|SortDirectionKeywords
- * @psalm-type SortShape = array<string, SortDirection>
- * @psalm-type SetWindowFieldsStageExpression = array{
+ * @phpstan-import-type SortDirectionKeywords from Sort
+ * @phpstan-import-type OperatorExpression from Expr
+ * @phpstan-type SortDirection int|SortDirectionKeywords
+ * @phpstan-type SortShape array<string, SortDirection>
+ * @phpstan-type SetWindowFieldsStageExpression array{
  *     '$setWindowFields': object{
  *         partitionBy?: string|OperatorExpression,
  *         sortBy?: SortShape,
@@ -53,8 +53,8 @@ class SetWindowFields extends Stage
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
-     * @psalm-param SortShape|string           $fieldName
-     * @psalm-param SortDirection|null         $order
+     * @phpstan-param SortShape|string           $fieldName
+     * @phpstan-param SortDirection|null         $order
      */
     public function sortBy($fieldName, $order = null): static
     {
@@ -76,7 +76,7 @@ class SetWindowFields extends Stage
         return $this->output;
     }
 
-    /** @psalm-return SetWindowFieldsStageExpression */
+    /** @phpstan-return SetWindowFieldsStageExpression */
     public function getExpression(): array
     {
         $params = (object) [

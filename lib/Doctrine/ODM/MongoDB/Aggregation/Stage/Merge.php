@@ -16,12 +16,12 @@ use function count;
 use function is_array;
 
 /**
- * @psalm-import-type PipelineExpression from Builder
- * @psalm-type OutputCollection = string|array{db: string, coll: string}
- * @psalm-type WhenMatchedType = 'replace'|'keepExisting'|'merge'|'fail'|PipelineExpression
- * @psalm-type WhenMatchedParamType = Builder|Stage|WhenMatchedType
- * @psalm-type WhenNotMatchedType = 'insert'|'discard'|'fail'
- * @psalm-type MergeStageExpression = array{
+ * @phpstan-import-type PipelineExpression from Builder
+ * @phpstan-type OutputCollection string|array{db: string, coll: string}
+ * @phpstan-type WhenMatchedType 'replace'|'keepExisting'|'merge'|'fail'|PipelineExpression
+ * @phpstan-type WhenMatchedParamType Builder|Stage|WhenMatchedType
+ * @phpstan-type WhenNotMatchedType 'insert'|'discard'|'fail'
+ * @phpstan-type MergeStageExpression array{
  *     '$merge': object{
  *         into: OutputCollection,
  *         on?: string|list<string>,
@@ -33,7 +33,7 @@ use function is_array;
  */
 class Merge extends Stage
 {
-    /** @psalm-var OutputCollection */
+    /** @phpstan-var OutputCollection */
     private string|array $into;
 
     /** @var list<string> */
@@ -42,7 +42,7 @@ class Merge extends Stage
     /** @var array<string, mixed|Expr> */
     private array $let = [];
 
-    /** @psalm-var WhenMatchedParamType */
+    /** @phpstan-var WhenMatchedParamType */
     private string|array|Builder|Stage|null $whenMatched = null;
 
     private ?string $whenNotMatched = null;
@@ -52,7 +52,7 @@ class Merge extends Stage
         parent::__construct($builder);
     }
 
-    /** @psalm-return MergeStageExpression */
+    /** @phpstan-return MergeStageExpression */
     public function getExpression(): array
     {
         $params = (object) [
@@ -82,7 +82,7 @@ class Merge extends Stage
 
     /**
      * @param string|array $collection
-     * @psalm-param OutputCollection $collection
+     * @phpstan-param OutputCollection $collection
      */
     public function into($collection): static
     {
@@ -126,7 +126,7 @@ class Merge extends Stage
 
     /**
      * @param string|array|Builder|Stage $whenMatched
-     * @psalm-param WhenMatchedParamType $whenMatched
+     * @phpstan-param WhenMatchedParamType $whenMatched
      */
     public function whenMatched($whenMatched): static
     {

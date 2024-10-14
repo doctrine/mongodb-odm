@@ -57,10 +57,7 @@ abstract class Type
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static array $typeObjects = [];
 
-    /**
-     * @var string[] The map of supported doctrine mapping types.
-     * @psalm-var array<string, class-string>
-     */
+    /** @var array<string, class-string> The map of supported doctrine mapping types. */
     private static array $typesMap = [
         self::ID => Types\IdType::class,
         self::INTID => Types\IntIdType::class,
@@ -203,7 +200,7 @@ abstract class Type
     /**
      * Adds a custom type to the type map.
      *
-     * @psalm-param class-string $className
+     * @param class-string $className
      *
      * @throws MappingException
      *
@@ -231,7 +228,7 @@ abstract class Type
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @psalm-param class-string $className
+     * @param class-string $className
      *
      * @throws MappingException
      *
@@ -250,7 +247,7 @@ abstract class Type
      * Get the types array map which holds all registered types and the corresponding
      * type class
      *
-     * @psalm-return array<string, class-string>
+     * @phpstan-return array<string, class-string>
      */
     public static function getTypesMap(): array
     {

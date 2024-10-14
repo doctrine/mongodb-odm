@@ -14,7 +14,7 @@ use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-/** @psalm-type ReadPreferenceTagShape = array{dc?: string, usage?: string} */
+/** @phpstan-type ReadPreferenceTagShape array{dc?: string, usage?: string} */
 class ReadPreferenceTest extends BaseTestCase
 {
     public function setUp(): void
@@ -44,7 +44,7 @@ class ReadPreferenceTest extends BaseTestCase
         self::assertArrayNotHasKey(Query::HINT_READ_PREFERENCE, $groups->getHints());
     }
 
-    /** @psalm-param ReadPreferenceTagShape[] $tags */
+    /** @phpstan-param ReadPreferenceTagShape[] $tags */
     #[DataProvider('provideReadPreferenceHints')]
     public function testHintIsSetOnQuery(string $readPreference, array $tags = []): void
     {
@@ -101,7 +101,7 @@ class ReadPreferenceTest extends BaseTestCase
         $this->assertReadPreferenceHint(ReadPreference::SECONDARY, $query->getQuery()['readPreference']);
     }
 
-    /** @psalm-param ReadPreferenceTagShape[] $tags */
+    /** @phpstan-param ReadPreferenceTagShape[] $tags */
     private function assertReadPreferenceHint(string $mode, ReadPreference $readPreference, array $tags = []): void
     {
         self::assertInstanceOf(ReadPreference::class, $readPreference);

@@ -18,13 +18,13 @@ use MongoDB\Driver\CursorInterface;
 use function array_merge;
 use function assert;
 
-/** @psalm-import-type PipelineExpression from Builder */
+/** @phpstan-import-type PipelineExpression from Builder */
 final class Aggregation implements IteratorAggregate
 {
     /**
      * @param array<string, mixed> $pipeline
      * @param array<string, mixed> $options
-     * @psalm-param PipelineExpression $pipeline
+     * @phpstan-param PipelineExpression $pipeline
      */
     public function __construct(private DocumentManager $dm, private ?ClassMetadata $classMetadata, private Collection $collection, private array $pipeline, private array $options = [], private bool $rewindable = true)
     {

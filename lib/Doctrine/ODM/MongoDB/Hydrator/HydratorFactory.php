@@ -37,7 +37,7 @@ use const DIRECTORY_SEPARATOR;
  * The HydratorFactory class is responsible for instantiating a correct hydrator
  * type based on document's ClassMetadata
  *
- * @psalm-import-type Hints from UnitOfWork
+ * @phpstan-import-type Hints from UnitOfWork
  */
 final class HydratorFactory
 {
@@ -69,7 +69,7 @@ final class HydratorFactory
     /**
      * Array of instantiated document hydrators.
      *
-     * @psalm-var array<class-string, HydratorInterface>
+     * @var array<class-string, HydratorInterface>
      */
     private array $hydrators = [];
 
@@ -94,7 +94,7 @@ final class HydratorFactory
     /**
      * Gets the hydrator object for the given document class.
      *
-     * @psalm-param class-string $className
+     * @param class-string $className
      */
     public function getHydratorFor(string $className): HydratorInterface
     {
@@ -420,7 +420,7 @@ EOF
      * Hydrate array of MongoDB document data into the given document object.
      *
      * @param array<string, mixed> $data
-     * @psalm-param Hints $hints Any hints to account for during reconstitution/lookup of the document.
+     * @phpstan-param Hints $hints Any hints to account for during reconstitution/lookup of the document.
      *
      * @return array<string, mixed>
      */

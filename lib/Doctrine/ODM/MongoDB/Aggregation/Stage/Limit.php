@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $limit stage to an aggregation pipeline.
  *
- * @psalm-type LimitStageExpression = array{'$limit': int}
+ * @phpstan-type LimitStageExpression array{'$limit': int}
  */
 class Limit extends Stage
 {
@@ -19,7 +19,7 @@ class Limit extends Stage
         parent::__construct($builder);
     }
 
-    /** @psalm-return LimitStageExpression */
+    /** @phpstan-return LimitStageExpression */
     public function getExpression(): array
     {
         return [

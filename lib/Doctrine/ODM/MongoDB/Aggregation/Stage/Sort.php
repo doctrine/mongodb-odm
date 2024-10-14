@@ -15,11 +15,11 @@ use function strtolower;
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
  *
- * @psalm-type SortMetaKeywords = 'textScore'|'indexKey'
- * @psalm-type SortDirectionKeywords = 'asc'|'desc'
- * @psalm-type SortMeta = array{'$meta': SortMetaKeywords}
- * @psalm-type SortShape = array<string, int|SortMeta|SortDirectionKeywords>
- * @psalm-type SortStageExpression = array{
+ * @phpstan-type SortMetaKeywords 'textScore'|'indexKey'
+ * @phpstan-type SortDirectionKeywords 'asc'|'desc'
+ * @phpstan-type SortMeta array{'$meta': SortMetaKeywords}
+ * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords>
+ * @phpstan-type SortStageExpression array{
  *     '$sort': array<string, int|SortMeta>
  * }
  */
@@ -31,8 +31,8 @@ class Sort extends Stage
     /**
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
      * @param int|string                                             $order     Field order (if one field is specified)
-     * @psalm-param SortShape|string                        $fieldName
-     * @psalm-param int|SortMeta|SortDirectionKeywords|null $order
+     * @phpstan-param SortShape|string                        $fieldName
+     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
     public function __construct(Builder $builder, $fieldName, $order = null)
     {
@@ -55,7 +55,7 @@ class Sort extends Stage
         }
     }
 
-    /** @psalm-return SortStageExpression */
+    /** @phpstan-return SortStageExpression */
     public function getExpression(): array
     {
         return [

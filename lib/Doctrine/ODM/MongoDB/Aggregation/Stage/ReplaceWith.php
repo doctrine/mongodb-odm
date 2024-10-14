@@ -7,8 +7,8 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 
 /**
- * @psalm-import-type OperatorExpression from Expr
- * @psalm-type ReplaceWithStageExpression = array{'$replaceWith': OperatorExpression|string}
+ * @phpstan-import-type OperatorExpression from Expr
+ * @phpstan-type ReplaceWithStageExpression array{'$replaceWith': OperatorExpression|string}
  */
 class ReplaceWith extends AbstractReplace
 {

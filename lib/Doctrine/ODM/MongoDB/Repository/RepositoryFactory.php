@@ -15,9 +15,9 @@ interface RepositoryFactory
     /**
      * Gets the repository for a document class.
      *
-     * @psalm-param class-string<T> $documentName
+     * @param class-string<T> $documentName
      *
-     * @psalm-return ObjectRepository<T>
+     * @return ObjectRepository<T>
      *
      * @template T of object
      */

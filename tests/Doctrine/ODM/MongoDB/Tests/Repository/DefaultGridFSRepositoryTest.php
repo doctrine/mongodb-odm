@@ -307,7 +307,6 @@ class DefaultGridFSRepositoryTest extends BaseTestCase
 
         assert($repository instanceof GridFSRepository);
 
-        /** @psalm-var GridFSRepository<T> */
         return $repository;
     }
 

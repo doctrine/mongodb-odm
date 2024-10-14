@@ -21,11 +21,11 @@ use function sprintf;
 /**
  * Fluent builder for output param of $setWindowFields stage
  *
- * @psalm-import-type SortShape from SetWindowFields
- * @psalm-type WindowBound = 'current'|'unbounded'|int
- * @psalm-type WindowBounds = array{0: WindowBound, 1: WindowBound}
- * @psalm-type WindowUnit = 'year'|'quarter'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
- * @psalm-type Window = object{
+ * @phpstan-import-type SortShape from SetWindowFields
+ * @phpstan-type WindowBound 'current'|'unbounded'|int
+ * @phpstan-type WindowBounds array{0: WindowBound, 1: WindowBound}
+ * @phpstan-type WindowUnit 'year'|'quarter'|'month'|'week'|'day'|'hour'|'minute'|'second'|'millisecond'
+ * @phpstan-type Window object{
  *     document?: WindowBounds,
  *     range?: WindowBounds,
  *     unit?: WindowUnit,
@@ -37,7 +37,7 @@ class Output extends Operator implements WindowOperators
 
     private string $currentField = '';
 
-    /** @psalm-var array<string, Window> */
+    /** @phpstan-var array<string, Window> */
     private array $windows = [];
 
     public function __construct(Builder $builder, private SetWindowFields $setWindowFields)
@@ -54,7 +54,7 @@ class Output extends Operator implements WindowOperators
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
      * @param int|string                       $order     Field order (if one field is specified)
-     * @psalm-param SortShape|string           $fieldName
+     * @phpstan-param SortShape|string           $fieldName
      */
     public function sortBy($fieldName, $order = null): SetWindowFields
     {
@@ -75,9 +75,9 @@ class Output extends Operator implements WindowOperators
     /**
      * Specifies the window boundaries and parameters.
      *
-     * @psalm-param WindowBounds|null $documents
-     * @psalm-param WindowBounds|null $range
-     * @psalm-param WindowUnit|null $unit
+     * @phpstan-param WindowBounds|null $documents
+     * @phpstan-param WindowBounds|null $range
+     * @phpstan-param WindowUnit|null $unit
      */
     public function window(?array $documents = null, ?array $range = null, ?string $unit = null): static
     {

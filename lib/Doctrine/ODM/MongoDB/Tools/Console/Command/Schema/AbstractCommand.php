@@ -103,7 +103,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @psalm-param class-string $document
+     * @param class-string $document
      *
      * @throws BadMethodCallException
      */

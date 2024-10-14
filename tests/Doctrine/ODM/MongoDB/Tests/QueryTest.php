@@ -420,11 +420,10 @@ class QueryTest extends BaseTestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        /** @psalm-suppress InvalidArgument */
         new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
     }
 
-    /** @psalm-param Query::TYPE_* $type */
+    /** @param Query::TYPE_* $type */
     #[DataProvider('provideQueryTypesThatDoNotReturnAnIterator')]
     public function testGetIteratorShouldThrowExceptionWithoutExecutingForTypesThatDoNotReturnAnIterator(int $type, string $method): void
     {

@@ -511,8 +511,7 @@ class UnitOfWorkTest extends BaseTestCase
         try {
             $this->dm->flush();
         } catch (Throwable) {
-            $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => /** @psalm-suppress InaccessibleProperty */
-$unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
+            $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
             self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
 

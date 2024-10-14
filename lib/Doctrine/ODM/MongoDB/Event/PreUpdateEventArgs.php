@@ -15,11 +15,11 @@ use function sprintf;
 /**
  * Class that holds event arguments for a preUpdate event.
  *
- * @psalm-import-type ChangeSet from UnitOfWork
+ * @phpstan-import-type ChangeSet from UnitOfWork
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @psalm-param array<string, ChangeSet> $changeSet */
+    /** @param array<string, ChangeSet> $changeSet */
     public function __construct(
         object $document,
         DocumentManager $dm,

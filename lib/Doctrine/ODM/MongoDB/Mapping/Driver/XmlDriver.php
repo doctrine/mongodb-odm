@@ -42,7 +42,7 @@ use function trim;
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
- * @psalm-import-type FieldMappingConfig from ClassMetadata
+ * @phpstan-import-type FieldMappingConfig from ClassMetadata
  * @template-extends FileDriver<SimpleXMLElement>
  */
 class XmlDriver extends FileDriver
@@ -346,7 +346,7 @@ class XmlDriver extends FileDriver
 
     /**
      * @param ClassMetadata<object> $class
-     * @psalm-param FieldMappingConfig $mapping
+     * @phpstan-param FieldMappingConfig $mapping
      */
     private function addFieldMapping(ClassMetadata $class, array $mapping): void
     {
@@ -800,7 +800,7 @@ class XmlDriver extends FileDriver
      *
      * list($readPreference, $tags) = $this->transformReadPreference($xml->{read-preference});
      *
-     * @psalm-return array{string, array<int, array<string, string>>|null}
+     * @return array{string, array<int, array<string, string>>|null}
      */
     private function transformReadPreference(SimpleXMLElement $xmlReadPreference): array
     {

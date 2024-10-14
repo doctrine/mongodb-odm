@@ -47,7 +47,7 @@ use function trim;
  *     $config = new Configuration();
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
- * @psalm-import-type CommitOptions from UnitOfWork
+ * @phpstan-import-type CommitOptions from UnitOfWork
  */
 class Configuration
 {
@@ -85,7 +85,7 @@ class Configuration
     /**
      * Array of attributes for this configuration instance.
      *
-     * @psalm-var array{
+     * @phpstan-var array{
      *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
      *      classMetadataFactoryName?: class-string<ClassMetadataFactoryInterface>,
@@ -326,7 +326,7 @@ class Configuration
      * Gets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
      *
-     * @psalm-return self::AUTOGENERATE_*
+     * @return self::AUTOGENERATE_*
      */
     public function getAutoGenerateHydratorClasses(): int
     {
@@ -337,7 +337,7 @@ class Configuration
      * Sets an int flag that indicates whether hydrator classes should always be regenerated
      * during each script execution.
      *
-     * @psalm-param self::AUTOGENERATE_* $mode
+     * @param self::AUTOGENERATE_* $mode
      */
     public function setAutoGenerateHydratorClasses(int $mode): void
     {
@@ -368,7 +368,7 @@ class Configuration
      * Gets a integer flag that indicates how and when persistent collection
      * classes should be generated.
      *
-     * @psalm-return self::AUTOGENERATE_*
+     * @return self::AUTOGENERATE_*
      */
     public function getAutoGeneratePersistentCollectionClasses(): int
     {
@@ -379,7 +379,7 @@ class Configuration
      * Sets a integer flag that indicates how and when persistent collection
      * classes should be generated.
      *
-     * @psalm-param self::AUTOGENERATE_* $mode
+     * @param self::AUTOGENERATE_* $mode
      */
     public function setAutoGeneratePersistentCollectionClasses(int $mode): void
     {
@@ -414,7 +414,7 @@ class Configuration
     }
 
     /**
-     * @psalm-param class-string<ClassMetadataFactoryInterface> $cmfName
+     * @param class-string<ClassMetadataFactoryInterface> $cmfName
      *
      * @throws MongoDBException If is not a ClassMetadataFactoryInterface.
      */
@@ -429,7 +429,7 @@ class Configuration
         $this->attributes['classMetadataFactoryName'] = $cmfName;
     }
 
-    /** @psalm-return class-string<ClassMetadataFactoryInterface> */
+    /** @return class-string<ClassMetadataFactoryInterface> */
     public function getClassMetadataFactoryName(): string
     {
         if (! isset($this->attributes['classMetadataFactoryName'])) {
@@ -439,7 +439,7 @@ class Configuration
         return $this->attributes['classMetadataFactoryName'];
     }
 
-    /** @psalm-return CommitOptions */
+    /** @phpstan-return CommitOptions */
     public function getDefaultCommitOptions(): array
     {
         if (! isset($this->attributes['defaultCommitOptions'])) {
@@ -449,7 +449,7 @@ class Configuration
         return $this->attributes['defaultCommitOptions'];
     }
 
-    /** @psalm-param CommitOptions $defaultCommitOptions */
+    /** @phpstan-param CommitOptions $defaultCommitOptions */
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
         foreach (UnitOfWork::DEPRECATED_WRITE_OPTIONS as $deprecatedOption) {
@@ -470,7 +470,7 @@ class Configuration
      * Add a filter to the list of possible filters.
      *
      * @param array<string, mixed> $parameters
-     * @psalm-param class-string $className
+     * @param class-string         $className
      */
     public function addFilter(string $name, string $className, array $parameters = []): void
     {
@@ -480,7 +480,7 @@ class Configuration
         ];
     }
 
-    /** @psalm-return class-string|null */
+    /** @return class-string|null */
     public function getFilterClassName(string $name): ?string
     {
         return isset($this->attributes['filters'][$name])
@@ -497,7 +497,7 @@ class Configuration
     }
 
     /**
-     * @psalm-param class-string<ObjectRepository<object>> $className
+     * @param class-string<ObjectRepository<object>> $className
      *
      * @throws MongoDBException If is not an ObjectRepository.
      */
@@ -512,14 +512,14 @@ class Configuration
         $this->attributes['defaultDocumentRepositoryClassName'] = $className;
     }
 
-    /** @psalm-return class-string<ObjectRepository<object>> */
+    /** @return class-string<ObjectRepository<object>> */
     public function getDefaultDocumentRepositoryClassName(): string
     {
         return $this->attributes['defaultDocumentRepositoryClassName'] ?? DocumentRepository::class;
     }
 
     /**
-     * @psalm-param class-string<GridFSRepository<object>> $className
+     * @param class-string<GridFSRepository<object>> $className
      *
      * @throws MongoDBException If the class does not implement the GridFSRepository interface.
      */
@@ -534,7 +534,7 @@ class Configuration
         $this->attributes['defaultGridFSRepositoryClassName'] = $className;
     }
 
-    /** @psalm-return class-string<GridFSRepository<object>> */
+    /** @return class-string<GridFSRepository<object>> */
     public function getDefaultGridFSRepositoryClassName(): string
     {
         return $this->attributes['defaultGridFSRepositoryClassName'] ?? DefaultGridFSRepository::class;

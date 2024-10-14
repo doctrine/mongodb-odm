@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Operator\ProvidesGroupAccumulatorOperators;
 /**
  * Fluent interface for adding a $group stage to an aggregation pipeline.
  *
- * @psalm-type GroupStageExpression = array{'$group': array<string, mixed>}
+ * @phpstan-type GroupStageExpression array{'$group': array<string, mixed>}
  */
 class Group extends Operator implements GroupAccumulatorOperators
 {
@@ -28,7 +28,7 @@ class Group extends Operator implements GroupAccumulatorOperators
         $this->expr = $builder->expr();
     }
 
-    /** @psalm-return GroupStageExpression */
+    /** @phpstan-return GroupStageExpression */
     public function getExpression(): array
     {
         return [

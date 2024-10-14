@@ -49,11 +49,11 @@ class GH1152Parent
     public $child;
 }
 
-/** @psalm-import-type AssociationFieldMapping from ClassMetadata */
+/** @phpstan-import-type AssociationFieldMapping from ClassMetadata */
 #[ODM\EmbeddedDocument]
 class GH1152Child
 {
-    /** @psalm-var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
+    /** @var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
     public $parentAssociation;
 }
 

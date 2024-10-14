@@ -11,4 +11,3 @@ vendor/
 .phpunit.cache
 .phpunit.result.cache
 phpcs.xml
-psalm.xml

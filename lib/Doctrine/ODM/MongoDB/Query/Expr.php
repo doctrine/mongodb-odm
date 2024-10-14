@@ -34,7 +34,7 @@ use function strtolower;
 /**
  * Query expression builder for ODM.
  *
- * @psalm-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type FieldMapping from ClassMetadata
  */
 class Expr
 {

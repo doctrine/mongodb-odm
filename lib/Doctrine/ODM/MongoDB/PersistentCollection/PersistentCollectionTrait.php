@@ -28,8 +28,8 @@ use function method_exists;
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
  *
- * @psalm-import-type Hints from UnitOfWork
- * @psalm-import-type FieldMapping from ClassMetadata
+ * @phpstan-import-type Hints from UnitOfWork
+ * @phpstan-import-type FieldMapping from ClassMetadata
  * @template TKey of array-key
  * @template T of object
  */
@@ -50,7 +50,7 @@ trait PersistentCollectionTrait
 
     /**
      * @var array<string, mixed>|null
-     * @psalm-var FieldMapping|null
+     * @phpstan-var FieldMapping|null
      */
     private ?array $mapping = null;
 
@@ -93,7 +93,7 @@ trait PersistentCollectionTrait
      * Any hints to account for during reconstitution/lookup of the documents.
      *
      * @var array<int, mixed>
-     * @psalm-var Hints
+     * @phpstan-var Hints
      */
     private array $hints = [];
 
@@ -129,7 +129,7 @@ trait PersistentCollectionTrait
             return;
         }
 
-        /** @psalm-var array<TKey, T> $newObjects */
+        /** @var array<TKey, T> $newObjects */
         $newObjects = [];
 
         if ($this->isDirty) {
@@ -363,7 +363,7 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @psalm-return (TMaybeContained is T ? TKey|false : false)
+     * @phpstan-return (TMaybeContained is T ? TKey|false : false)
      *
      * @template TMaybeContained
      */
@@ -422,7 +422,7 @@ trait PersistentCollectionTrait
 
     /**
      * @return Traversable
-     * @psalm-return Traversable<TKey, T>
+     * @phpstan-return Traversable<TKey, T>
      */
     #[ReturnTypeWillChange]
     public function getIterator()
@@ -535,7 +535,7 @@ trait PersistentCollectionTrait
      * @param mixed $offset
      *
      * @return mixed
-     * @psalm-return T|null
+     * @phpstan-return T|null
      */
     #[ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -656,7 +656,7 @@ trait PersistentCollectionTrait
      * @param mixed $offset
      *
      * @return bool|T|null
-     * @psalm-return (
+     * @phpstan-return (
      *      $arrayAccess is false
      *      ? T|null
      *      : T|true|null
@@ -728,9 +728,9 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @psalm-param Closure(TKey, T):bool $p
+     * @phpstan-param Closure(TKey, T):bool $p
      *
-     * @psalm-return T|null
+     * @phpstan-return T|null
      */
     public function findFirst(Closure $p)
     {
@@ -742,13 +742,13 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @psalm-param Closure(TReturn|TInitial|null, T):(TInitial|TReturn) $func
-     * @psalm-param TInitial|null $initial
+     * @phpstan-param Closure(TReturn|TInitial|null, T):(TInitial|TReturn) $func
+     * @phpstan-param TInitial|null $initial
      *
-     * @psalm-return TReturn|TInitial|null
+     * @phpstan-return TReturn|TInitial|null
      *
-     * @psalm-template TReturn
-     * @psalm-template TInitial
+     * @phpstan-template TReturn
+     * @phpstan-template TInitial
      */
     public function reduce(Closure $func, $initial = null)
     {

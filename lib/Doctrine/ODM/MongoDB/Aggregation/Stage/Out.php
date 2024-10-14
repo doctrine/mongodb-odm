@@ -14,12 +14,12 @@ use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 use function is_array;
 
 /**
- * @psalm-import-type OutputCollection from Merge
- * @psalm-type OutStageExpression = array{'$out': OutputCollection}
+ * @phpstan-import-type OutputCollection from Merge
+ * @phpstan-type OutStageExpression array{'$out': OutputCollection}
  */
 class Out extends Stage
 {
-    /** @psalm-var OutputCollection */
+    /** @phpstan-var OutputCollection */
     private array|string $out;
 
     public function __construct(Builder $builder, string $collection, private DocumentManager $dm)
@@ -38,7 +38,7 @@ class Out extends Stage
 
     /**
      * @param string|array $collection
-     * @psalm-param OutputCollection $collection
+     * @phpstan-param OutputCollection $collection
      */
     public function out($collection): Stage\Out
     {

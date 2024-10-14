@@ -14,7 +14,7 @@ use function array_values;
 /**
  * Fluent interface for adding an $unset stage to an aggregation pipeline.
  *
- * @psalm-type UnsetStageExpression = array{'$unset': list<string>}
+ * @phpstan-type UnsetStageExpression array{'$unset': list<string>}
  */
 class UnsetStage extends Stage
 {

@@ -624,7 +624,7 @@ class DocumentPersisterTest extends BaseTestCase
         ];
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteInsertsRespectsWriteConcern(string $class, string|int $writeConcern): void
     {
@@ -646,7 +646,7 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteInsertsOmitsWriteConcernInTransaction(string $class, string|int $writeConcern): void
     {
@@ -668,7 +668,7 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteUpsertsRespectsWriteConcern(string $class, string|int $writeConcern): void
     {
@@ -691,7 +691,7 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testExecuteUpsertsDoesNotUseWriteConcernInTransaction(string $class, string|int $writeConcern): void
     {
@@ -714,7 +714,7 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testRemoveRespectsWriteConcern(string $class, string|int $writeConcern): void
     {
@@ -739,7 +739,7 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    /** @psalm-param class-string $class */
+    /** @param class-string $class */
     #[DataProvider('dataProviderTestWriteConcern')]
     public function testRemoveDoesNotUseWriteConcernInTransaction(string $class, string|int $writeConcern): void
     {

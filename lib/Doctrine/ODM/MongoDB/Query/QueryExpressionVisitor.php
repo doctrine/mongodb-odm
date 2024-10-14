@@ -38,7 +38,7 @@ final class QueryExpressionVisitor extends ExpressionVisitor
     /**
      * Map Criteria API composite types to query builder methods
      *
-     * @psalm-var array<CompositeExpression::TYPE_*, string>
+     * @var array<CompositeExpression::TYPE_*, string>
      */
     private static array $compositeMethods = [
         CompositeExpression::TYPE_AND => 'addAnd',

@@ -7,8 +7,8 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 
 /**
- * @psalm-import-type OperatorExpression from Expr
- * @psalm-type ReplaceRootStageExpression = array{
+ * @phpstan-import-type OperatorExpression from Expr
+ * @phpstan-type ReplaceRootStageExpression array{
  *     '$replaceRoot': array{
  *         newRoot: OperatorExpression|string,
  *     }

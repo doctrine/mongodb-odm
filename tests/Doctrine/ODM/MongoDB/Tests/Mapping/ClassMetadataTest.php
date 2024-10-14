@@ -238,6 +238,7 @@ class ClassMetadataTest extends BaseTestCase
         $this->expectExceptionMessage(
             'Attempting to map a non-enum type Documents\Card as an enum: ',
         );
+        // @phpstan-ignore-next-line
         $cm->mapField([
             'fieldName' => 'enum',
             'enumType' => Card::class,
@@ -257,6 +258,7 @@ class ClassMetadataTest extends BaseTestCase
         $this->expectExceptionMessage(
             'Attempting to map a non-backed enum Documents\SuitNonBacked: ',
         );
+        // @phpstan-ignore-next-line
         $cm->mapField([
             'fieldName' => 'enum',
             'enumType' => SuitNonBacked::class,
@@ -539,6 +541,7 @@ class ClassMetadataTest extends BaseTestCase
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
         self::assertInstanceOf(GhostObjectInterface::class, $proxy);
+        self::assertInstanceOf(Album::class, $proxy);
 
         self::assertEquals('nevermind', $proxy->getName());
     }

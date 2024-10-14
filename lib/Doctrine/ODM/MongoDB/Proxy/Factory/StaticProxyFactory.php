@@ -38,9 +38,9 @@ final class StaticProxyFactory implements ProxyFactory
 
     /**
      * @param mixed $identifier
-     * @psalm-param ClassMetadata<T> $metadata
+     * @phpstan-param ClassMetadata<T> $metadata
      *
-     * @psalm-return T&GhostObjectInterface<T>
+     * @return T&GhostObjectInterface<T>
      *
      * @template T of object
      */
@@ -86,7 +86,7 @@ final class StaticProxyFactory implements ProxyFactory
      * @param ClassMetadata<TDocument>     $metadata
      * @param DocumentPersister<TDocument> $documentPersister
      *
-     * @psalm-return Closure(
+     * @phpstan-return Closure(
      *   TDocument&GhostObjectInterface<TDocument>=,
      *   string=,
      *   array<string, mixed>=,

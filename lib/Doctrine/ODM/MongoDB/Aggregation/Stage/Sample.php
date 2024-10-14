@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $sample stage to an aggregation pipeline.
  *
- * @psalm-type SampleStageExpression = array{'$sample': array{size: int}}
+ * @phpstan-type SampleStageExpression array{'$sample': array{size: int}}
  */
 class Sample extends Stage
 {
@@ -19,7 +19,7 @@ class Sample extends Stage
         parent::__construct($builder);
     }
 
-    /** @psalm-return SampleStageExpression */
+    /** @phpstan-return SampleStageExpression */
     public function getExpression(): array
     {
         return [

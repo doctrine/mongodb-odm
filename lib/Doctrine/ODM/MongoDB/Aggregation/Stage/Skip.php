@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 /**
  * Fluent interface for adding a $skip stage to an aggregation pipeline.
  *
- * @psalm-type SkipStageExpression = array{'$skip': int}
+ * @phpstan-type SkipStageExpression array{'$skip': int}
  */
 class Skip extends Stage
 {

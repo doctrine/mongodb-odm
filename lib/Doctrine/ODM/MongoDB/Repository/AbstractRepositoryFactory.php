@@ -26,9 +26,9 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     private array $repositoryList = [];
 
     /**
-     * @psalm-param class-string<T> $documentName
+     * @param class-string<T> $documentName
      *
-     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
      * @template T of object
      */
@@ -51,10 +51,10 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for a document class.
      *
-     * @psalm-param class-string<T> $documentName
+     * @param class-string<T> $documentName
      *
      * @return DocumentRepository|GridFSRepository|ViewRepository
-     * @psalm-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
+     * @phpstan-return DocumentRepository<T>|GridFSRepository<T>|ViewRepository<T>
      *
      * @template T of object
      */
@@ -104,7 +104,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
      * Instantiates requested repository.
      *
      * @param ClassMetadata<T> $metadata
-     * @psalm-param class-string<T> $repositoryClassName
+     * @param class-string<T>  $repositoryClassName
      *
      * @return ObjectRepository<T>
      *
