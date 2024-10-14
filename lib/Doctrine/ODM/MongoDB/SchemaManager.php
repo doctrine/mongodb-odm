@@ -413,7 +413,9 @@ final class SchemaManager
 
         $definedNames = array_column($searchIndexes, 'name');
         try {
-            $existingNames = array_column(iterator_to_array($collection->listSearchIndexes()), 'name');
+            /* The typeMap option can be removed when bug is fixed in the minimum required version.
+             * https://jira.mongodb.org/browse/PHPLIB-1548 */
+            $existingNames = array_column(iterator_to_array($collection->listSearchIndexes(['typeMap' => ['root' => 'array']])), 'name');
         } catch (CommandException $e) {
             /* If $listSearchIndexes doesn't exist, only throw if search indexes have been defined.
              * If no search indexes are defined and the server doesn't support search indexes, there's
@@ -465,7 +467,9 @@ final class SchemaManager
         $collection = $this->dm->getDocumentCollection($class->name);
 
         try {
-            $searchIndexes = $collection->listSearchIndexes();
+            /* The typeMap option can be removed when bug is fixed in the minimum required version.
+             * https://jira.mongodb.org/browse/PHPLIB-1548 */
+            $searchIndexes = $collection->listSearchIndexes(['typeMap' => ['root' => 'array']]);
         } catch (CommandException $e) {
             // If the server does not support search indexes, there are no indexes to remove in any case
             if ($this->isSearchIndexCommandException($e)) {
