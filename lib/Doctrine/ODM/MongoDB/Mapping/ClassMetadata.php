@@ -800,9 +800,6 @@ use function trigger_deprecation;
      */
     public $isReadOnly;
 
-    /** READ ONLY: indicates whether the collection is a time series collection */
-    public bool $isTimeSeries = false;
-
     /** READ ONLY: stores metadata about the time series collection */
     public ?TimeSeries $timeSeriesOptions = null;
 
@@ -2185,7 +2182,6 @@ use function trigger_deprecation;
     {
         $this->validateTimeSeriesOptions($options);
 
-        $this->isTimeSeries      = true;
         $this->timeSeriesOptions = $options;
     }
 
@@ -2542,7 +2538,6 @@ use function trigger_deprecation;
             'idGenerator',
             'indexes',
             'shardKey',
-            'isTimeSeries',
             'timeSeriesOptions',
         ];
 

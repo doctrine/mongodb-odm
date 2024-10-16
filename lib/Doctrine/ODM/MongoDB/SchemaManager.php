@@ -621,7 +621,7 @@ final class SchemaManager
             $options['validationLevel']  = $class->getValidationLevel();
         }
 
-        if ($class->isTimeSeries) {
+        if ($class->timeSeriesOptions !== null) {
             $options['timeseries'] = array_filter(
                 [
                     'timeField' => $class->timeSeriesOptions->timeField,

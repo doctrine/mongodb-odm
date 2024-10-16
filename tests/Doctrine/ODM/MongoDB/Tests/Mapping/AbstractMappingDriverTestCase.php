@@ -683,7 +683,6 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     {
         $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocument::class);
 
-        self::assertTrue($metadata->isTimeSeries);
         self::assertEquals(
             new ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400),
             $metadata->timeSeriesOptions,

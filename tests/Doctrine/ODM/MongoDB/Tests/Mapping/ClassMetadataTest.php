@@ -987,7 +987,7 @@ class ClassMetadataTest extends BaseTestCase
     {
         $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
 
-        self::assertFalse($metadata->isTimeSeries);
+        self::assertNull($metadata->timeSeriesOptions);
     }
 
     public function testTimeSeriesMappingOnlyWithTimeField(): void
@@ -995,7 +995,7 @@ class ClassMetadataTest extends BaseTestCase
         $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
         $metadata->markAsTimeSeries(new ODM\TimeSeries('time'));
 
-        self::assertTrue($metadata->isTimeSeries);
+        self::assertNotNull($metadata->timeSeriesOptions);
         self::assertSame('time', $metadata->timeSeriesOptions->timeField);
     }
 
@@ -1012,7 +1012,7 @@ class ClassMetadataTest extends BaseTestCase
         $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
         $metadata->markAsTimeSeries(new ODM\TimeSeries('time', 'metadata'));
 
-        self::assertTrue($metadata->isTimeSeries);
+        self::assertNotNull($metadata->timeSeriesOptions);
         self::assertSame('metadata', $metadata->timeSeriesOptions->metaField);
     }
 
