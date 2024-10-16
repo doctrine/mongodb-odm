@@ -80,6 +80,7 @@ class XmlDriver extends FileDriver
         parent::__construct($locator, $fileExtension);
     }
 
+    // phpcs:disable SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
     public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata)
     {
         assert($metadata instanceof ClassMetadata);
@@ -343,29 +344,29 @@ class XmlDriver extends FileDriver
             }
         }
 
-        if (! isset($xmlRoot->{'time-series'})) {
-            return;
+        if (isset($xmlRoot->{'time-series'})) {
+            $attributes = $xmlRoot->{'time-series'}->attributes();
+
+            $metaField          = isset($attributes['meta-field'])
+                ? (string) $attributes['meta-field']
+                : null;
+            $granularity        = isset($attributes['granularity'])
+                ? Granularity::from((string) $attributes['granularity'])
+                : null;
+            $expireAfterSeconds = isset($attributes['expire-after-seconds'])
+                ? (int) $attributes['expire-after-seconds']
+                : null;
+
+            $metadata->markAsTimeSeries(new TimeSeries(
+                timeField: (string) $attributes['time-field'],
+                metaField: $metaField,
+                granularity: $granularity,
+                expireAfterSeconds: $expireAfterSeconds,
+            ));
         }
-
-        $attributes = $xmlRoot->{'time-series'}->attributes();
-
-        $metaField          = isset($attributes['meta-field'])
-            ? (string) $attributes['meta-field']
-            : null;
-        $granularity        = isset($attributes['granularity'])
-            ? Granularity::from((string) $attributes['granularity'])
-            : null;
-        $expireAfterSeconds = isset($attributes['expire-after-seconds'])
-            ? (int) $attributes['expire-after-seconds']
-            : null;
-
-        $metadata->markAsTimeSeries(new TimeSeries(
-            timeField: (string) $attributes['time-field'],
-            metaField: $metaField,
-            granularity: $granularity,
-            expireAfterSeconds: $expireAfterSeconds,
-        ));
     }
+
+    // phpcs:enable SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
 
     /**
      * @param ClassMetadata<object> $class
