@@ -1039,6 +1039,35 @@ class ClassMetadataTest extends BaseTestCase
 
         self::assertSame(10, $metadata->timeSeriesOptions->expireAfterSeconds);
     }
+
+    public function testTimeSeriesMappingWithBucketMaxSpanSeconds(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', bucketMaxSpanSeconds: 10));
+
+        // We don't throw for invalid settings here, e.g. bucketMaxSpanSeconds not being equal to bucketRoundingSeconds
+        self::assertSame(10, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
+    }
+
+    public function testTimeSeriesMappingWithBucketRoundingSeconds(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', bucketRoundingSeconds: 10));
+
+        // We don't throw for invalid settings here, e.g. bucketMaxSpanSeconds not being equal to bucketRoundingSeconds
+        self::assertSame(10, $metadata->timeSeriesOptions->bucketRoundingSeconds);
+    }
+
+    public function testTimeSeriesMappingWithGranularityAndBucketMaxSpanSeconds(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', granularity: Granularity::Hours, bucketMaxSpanSeconds: 15, bucketRoundingSeconds: 20));
+
+        // We don't throw for invalid settings here, e.g. bucketMaxSpanSeconds not being equal to bucketRoundingSeconds
+        self::assertSame(Granularity::Hours, $metadata->timeSeriesOptions->granularity);
+        self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
+        self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
+    }
 }
 
 /** @template-extends DocumentRepository<self> */

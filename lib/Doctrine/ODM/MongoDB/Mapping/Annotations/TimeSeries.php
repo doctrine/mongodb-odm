@@ -22,6 +22,8 @@ final class TimeSeries implements Annotation
         public readonly ?string $metaField = null,
         public readonly ?Granularity $granularity = null,
         public readonly ?int $expireAfterSeconds = null,
+        public readonly ?int $bucketMaxSpanSeconds = null,
+        public readonly ?int $bucketRoundingSeconds = null,
     ) {
     }
 }

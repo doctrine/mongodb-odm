@@ -628,6 +628,8 @@ final class SchemaManager
                     'metaField' => $class->timeSeriesOptions->metaField,
                     // ext-mongodb will automatically encode backed enums, so we can use the value directly here
                     'granularity' => $class->timeSeriesOptions->granularity,
+                    'bucketMaxSpanSeconds' => $class->timeSeriesOptions->bucketMaxSpanSeconds,
+                    'bucketRoundingSeconds' => $class->timeSeriesOptions->bucketRoundingSeconds,
                 ],
                 static fn (mixed $value): bool => $value !== null,
             );
