@@ -1314,7 +1314,7 @@ class AbstractMappingDriverViewRepository extends DocumentRepository implements 
  * @ODM\TimeSeries(timeField="time", metaField="metadata", granularity=Granularity::Seconds, expireAfterSeconds=86400)
  */
 #[ODM\Document]
-#[ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400)]
+#[ODM\TimeSeries(timeField: 'time', metaField: 'metadata', granularity: Granularity::Seconds, expireAfterSeconds: 86400)]
 class AbstractMappingDriverTimeSeriesDocument
 {
     /** @ODM\Id */

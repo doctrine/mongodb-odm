@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 
 #[ODM\Document]
-#[ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400)]
+#[ODM\TimeSeries(timeField: 'time', metaField: 'metadata', granularity: Granularity::Seconds, expireAfterSeconds: 86400)]
 class TimeSeriesDocument
 {
     #[ODM\Id]
