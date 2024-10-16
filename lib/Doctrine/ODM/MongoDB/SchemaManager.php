@@ -626,7 +626,8 @@ final class SchemaManager
                 [
                     'timeField' => $class->timeSeriesOptions->timeField,
                     'metaField' => $class->timeSeriesOptions->metaField,
-                    'granularity' => $class->timeSeriesOptions->granularity?->value,
+                    // ext-mongodb will automatically encode backed enums, so we can use the value directly here
+                    'granularity' => $class->timeSeriesOptions->granularity,
                 ],
             );
 

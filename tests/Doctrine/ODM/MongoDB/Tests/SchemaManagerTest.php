@@ -8,6 +8,7 @@ use ArrayIterator;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Documents\BaseDocument;
 use Documents\CmsAddress;
@@ -771,7 +772,7 @@ EOT;
             'timeseries' => [
                 'timeField' => 'time',
                 'metaField' => 'metadata',
-                'granularity' => 'seconds',
+                'granularity' => Granularity::Seconds,
             ],
             'expireAfterSeconds' => 86400,
         ];
