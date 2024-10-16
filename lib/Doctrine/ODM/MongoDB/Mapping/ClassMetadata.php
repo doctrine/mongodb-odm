@@ -2782,7 +2782,7 @@ use function trigger_deprecation;
             throw MappingException::timeSeriesFieldNotFound($this->name, $options->timeField, 'time');
         }
 
-        if ($options->metaField && ! $this->hasField($options->metaField)) {
+        if ($options->metaField !== null && ! $this->hasField($options->metaField)) {
             throw MappingException::timeSeriesFieldNotFound($this->name, $options->metaField, 'metadata');
         }
     }
