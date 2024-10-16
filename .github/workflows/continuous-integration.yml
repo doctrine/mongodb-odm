@@ -21,6 +21,7 @@ jobs:
           - "8.1"
           - "8.2"
           - "8.3"
+          - "8.4"
         mongodb-version:
           - "7.0"
           - "6.0"
@@ -109,6 +110,13 @@ jobs:
           composer require --no-update symfony/console:^7@dev
           composer require --no-update symfony/var-dumper:^7@dev
           composer require --no-update --dev symfony/cache:^7@dev
+
+      - name: "Configure PHP 8.4"
+        if: "${{ matrix.php-version == '8.4' }}"
+        run: |
+          # psalm is not compatible with PHP 8.4
+          # https://github.com/vimeo/psalm/pull/10928
+          composer remove --no-update --dev vimeo/psalm
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
