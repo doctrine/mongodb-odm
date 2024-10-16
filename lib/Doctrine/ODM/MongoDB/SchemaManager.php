@@ -629,6 +629,7 @@ final class SchemaManager
                     // ext-mongodb will automatically encode backed enums, so we can use the value directly here
                     'granularity' => $class->timeSeriesOptions->granularity,
                 ],
+                static fn (mixed $value): bool => $value !== null,
             );
 
             if ($class->timeSeriesOptions->expireAfterSeconds) {
