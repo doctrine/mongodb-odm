@@ -1,0 +1,123 @@
+Storing Time Series Data
+========================
+
+.. note::
+
+    Support for mapping time series data was added in ODM 2.10.
+
+Time series data is a sequence of data points in which insights are gained by
+analyzing changes over time.
+
+Time series data is generally composed of these components:
+
+-
+    Time when the data point was recorded
+
+-
+    Metadata, which is a label, tag, or other data that identifies a data series
+    and rarely changes
+
+-
+    Measurements, which are the data points tracked at increments in time.
+
+.. note::
+
+    Support for time series collections was added in MongoDB 5.0. Attempting to
+    use this functionality on older server versions will result in an error on
+    schema creation.
+
+Creating The Model
+------------------
+
+For this example, we'll be storing data from multiple temperature sensors. Other
+examples for time series include stock data, price information, website visitors,
+and vehicle telemetry (speed, position, etc.).
+
+First, we define the model for our data:
+
+.. code-block:: php
+
+    <?php
+
+    use DateTimeImmutable;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+    use MongoDB\BSON\ObjectId;
+
+    #[ODM\Document]
+    readonly class Measurement
+    {
+        #[ODM\Id]
+        public string $id;
+
+        public function __construct(
+            #[ODM\Field(type: 'date_immutable')]
+            public DateTimeImmutable $time,
+            #[ODM\Field(type: 'int')]
+            public int $sensorId,
+            #[ODM\Field(type: 'float')]
+            public float $temperature,
+        ) {
+            $this->id = (string) new ObjectId();
+        }
+    }
+
+Note that we defined the entire model as readonly. While we could theoretically
+change values in the document, in this example we'll assume that the data will
+not change.
+
+Now we can mark the document as a time series document. This is done using the
+``TimeSeries`` attribute. Since we'll be storing data from multiple sensors, we
+store the ID of each sensor as metadata. We only use the temperature as a
+measurement, but we could also add additional sensors. With that in mind, we can
+add the ``TimeSeries`` attribute:
+
+.. code-block:: php
+
+    <?php
+
+    // ...
+
+    #[ODM\Document]
+    #[ODM\TimeSeries(timeField: 'time', metaField: 'sensorId')]
+    readonly class Measurement
+    {
+        // ...
+    }
+
+Once we created the schema, we can store our measurements in this time series
+collection and let MongoDB optimise the storage for faster queries:
+
+.. code-block:: php
+
+    <?php
+
+    $measurement = new Measurement(
+        time: new DateTimeImmutable(),
+        sensorId: $sensorId,
+        temperature: $temperature,
+    );
+
+    $documentManager->persist($measurement);
+    $documentManager->flush();
+
+Note that other functionality, such as querying, aggregating data using
+aggregation pipeline, or removing data works the same as with other collections.
+
+Considerations
+--------------
+
+With the mapping above, data is stored with a granularity of seconds. Depending
+on how often measurements come in, we can reduce the granularity to minutes or
+hours. This changes how the data is stored internally by changing the bucket
+size. This affects storage requirements and query performance.
+
+For example, with the default ``seconds`` granularity, each bucket groups
+documents for one hour. If each sensor only reports data every few minutes, we'd
+do well to only store them with a ``minute`` granularity. This reduces the
+number of buckets created, reducing storage and making queries more efficient.
+However, if we were to choose ``hours`` for granularity, readings for a whole
+month would be grouped into one bucket, resulting in slower queries as more
+entries have to be traversed when reading data.
+
+More details on granularity and other consideration scan be found in the
+`MongoDB documentation <https://www.mongodb.com/docs/manual/core/timeseries/timeseries-considerations/>`__.
