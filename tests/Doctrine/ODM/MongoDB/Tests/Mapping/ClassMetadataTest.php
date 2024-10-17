@@ -971,6 +971,15 @@ class ClassMetadataTest extends BaseTestCase
         $cm = new ClassMetadata('stdClass');
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT, $cm->getValidationLevel());
     }
+
+    public function testEmptySearchIndexDefinition(): void
+    {
+        $cm = new ClassMetadata('stdClass');
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('stdClass search index "default" must be dynamic or specify a field mapping');
+        $cm->addSearchIndex(['mappings' => []]);
+    }
 }
 
 /** @template-extends DocumentRepository<self> */

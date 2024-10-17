@@ -291,4 +291,9 @@ final class MappingException extends BaseMappingException
             $fieldName,
         ));
     }
+
+    public static function emptySearchIndexDefinition(string $className, string $indexName): self
+    {
+        return new self(sprintf('%s search index "%s" must be dynamic or specify a field mapping', $className, $indexName));
+    }
 }

@@ -1220,9 +1220,15 @@ use function trigger_deprecation;
      */
     public function addSearchIndex(array $definition, ?string $name = null): void
     {
+        $name ??= self::DEFAULT_SEARCH_INDEX_NAME;
+
+        if (empty($definition['mappings']['dynamic']) && empty($definition['mappings']['fields'])) {
+            throw MappingException::emptySearchIndexDefinition($this->name, $name);
+        }
+
         $this->searchIndexes[] = [
             'definition' => $definition,
-            'name' => $name ?? self::DEFAULT_SEARCH_INDEX_NAME,
+            'name' => $name,
         ];
     }
 
