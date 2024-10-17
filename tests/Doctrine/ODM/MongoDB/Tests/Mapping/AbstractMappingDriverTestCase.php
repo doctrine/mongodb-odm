@@ -679,12 +679,22 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['nullableSuit']);
     }
 
-    public function testTimeSeriesDocument(): void
+    public function testTimeSeriesDocumentWithGranularity(): void
     {
-        $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocument::class);
+        $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocumentWithGranularity::class);
 
         self::assertEquals(
             new ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400),
+            $metadata->timeSeriesOptions,
+        );
+    }
+
+    public function testTimeSeriesDocumentWithBucket(): void
+    {
+        $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocumentWithBucket::class);
+
+        self::assertEquals(
+            new ODM\TimeSeries('time', 'metadata', expireAfterSeconds: 86400, bucketMaxSpanSeconds: 10, bucketRoundingSeconds: 15),
             $metadata->timeSeriesOptions,
         );
     }
@@ -1314,7 +1324,32 @@ class AbstractMappingDriverViewRepository extends DocumentRepository implements 
  */
 #[ODM\Document]
 #[ODM\TimeSeries(timeField: 'time', metaField: 'metadata', granularity: Granularity::Seconds, expireAfterSeconds: 86400)]
-class AbstractMappingDriverTimeSeriesDocument
+class AbstractMappingDriverTimeSeriesDocumentWithGranularity
+{
+    /** @ODM\Id */
+    #[ODM\Id]
+    public ?string $id = null;
+
+    /** @ODM\Field(type="date") */
+    #[ODM\Field(type: 'date')]
+    public DateTime $time;
+
+    /** @ODM\Field */
+    #[ODM\Field]
+    public string $metadata;
+
+    /** @ODM\Field(type="int") */
+    #[ODM\Field(type: 'int')]
+    public int $value;
+}
+
+/**
+ * @ODM\Document(collection="cms_users", writeConcern=1, readOnly=true)
+ * @ODM\TimeSeries(timeField="time", metaField="metadata", expireAfterSeconds=86400, bucketMaxSpanSeconds=10, bucketRoundingSeconds=15)
+ */
+#[ODM\Document]
+#[ODM\TimeSeries(timeField: 'time', metaField: 'metadata', expireAfterSeconds: 86400, bucketMaxSpanSeconds: 10, bucketRoundingSeconds: 15)]
+class AbstractMappingDriverTimeSeriesDocumentWithBucket
 {
     /** @ODM\Id */
     #[ODM\Id]

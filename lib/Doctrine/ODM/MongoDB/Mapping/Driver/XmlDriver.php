@@ -347,21 +347,19 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'time-series'})) {
             $attributes = $xmlRoot->{'time-series'}->attributes();
 
-            $metaField          = isset($attributes['meta-field'])
-                ? (string) $attributes['meta-field']
-                : null;
-            $granularity        = isset($attributes['granularity'])
-                ? Granularity::from((string) $attributes['granularity'])
-                : null;
-            $expireAfterSeconds = isset($attributes['expire-after-seconds'])
-                ? (int) $attributes['expire-after-seconds']
-                : null;
+            $metaField             = isset($attributes['meta-field']) ? (string) $attributes['meta-field'] : null;
+            $granularity           = isset($attributes['granularity']) ? Granularity::from((string) $attributes['granularity']) : null;
+            $expireAfterSeconds    = isset($attributes['expire-after-seconds']) ? (int) $attributes['expire-after-seconds'] : null;
+            $bucketMaxSpanSeconds  = isset($attributes['bucket-max-span-seconds']) ? (int) $attributes['bucket-max-span-seconds'] : null;
+            $bucketRoundingSeconds = isset($attributes['bucket-rounding-seconds']) ? (int) $attributes['bucket-rounding-seconds'] : null;
 
             $metadata->markAsTimeSeries(new TimeSeries(
                 timeField: (string) $attributes['time-field'],
                 metaField: $metaField,
                 granularity: $granularity,
                 expireAfterSeconds: $expireAfterSeconds,
+                bucketMaxSpanSeconds: $bucketMaxSpanSeconds,
+                bucketRoundingSeconds: $bucketRoundingSeconds,
             ));
         }
     }

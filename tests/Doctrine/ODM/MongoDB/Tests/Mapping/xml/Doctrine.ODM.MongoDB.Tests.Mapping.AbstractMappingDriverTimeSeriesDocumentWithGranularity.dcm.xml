@@ -5,7 +5,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverTimeSeriesDocument">
+    <document name="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverTimeSeriesDocumentWithGranularity">
         <time-series time-field="time" meta-field="metadata" granularity="seconds" expire-after-seconds="86400" />
 
         <id />
