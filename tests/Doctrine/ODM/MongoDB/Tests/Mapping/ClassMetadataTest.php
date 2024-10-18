@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
@@ -980,6 +982,63 @@ class ClassMetadataTest extends BaseTestCase
         $this->expectExceptionMessage('stdClass search index "default" must be dynamic or specify a field mapping');
         $cm->addSearchIndex(['mappings' => []]);
     }
+
+    public function testTimeSeriesMappingOnlyWithTimeField(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time'));
+
+        self::assertNotNull($metadata->timeSeriesOptions);
+        self::assertSame('time', $metadata->timeSeriesOptions->timeField);
+    }
+
+    public function testTimeSeriesMappingWithMissingTimeField(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+
+        self::expectExceptionObject(MappingException::timeSeriesFieldNotFound(TimeSeriesTestDocument::class, 'foo', 'time'));
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('foo'));
+    }
+
+    public function testTimeSeriesMappingWithMetadataField(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', 'metadata'));
+
+        self::assertNotNull($metadata->timeSeriesOptions);
+        self::assertSame('metadata', $metadata->timeSeriesOptions->metaField);
+    }
+
+    public function testTimeSeriesMappingWithMissingMetadataField(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+
+        self::expectExceptionObject(MappingException::timeSeriesFieldNotFound(TimeSeriesTestDocument::class, 'foo', 'metadata'));
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', 'foo'));
+    }
+
+    public function testTimeSeriesMappingWithExpireAfterSeconds(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', expireAfterSeconds: 10));
+
+        self::assertSame(10, $metadata->timeSeriesOptions->expireAfterSeconds);
+    }
+
+    public function testTimeSeriesMappingWithGranularityAndBucketMaxSpanSeconds(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+        $metadata->markAsTimeSeries(new ODM\TimeSeries('time', granularity: Granularity::Hours, bucketMaxSpanSeconds: 15, bucketRoundingSeconds: 20));
+
+        /*
+         * We don't throw for invalid settings here, including:
+         * - bucketMaxSpanSeconds not being equal to bucketRoundingSeconds
+         * - granularity and bucket settings applied together
+         */
+        self::assertSame(Granularity::Hours, $metadata->timeSeriesOptions->granularity);
+        self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
+        self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
+    }
 }
 
 /** @template-extends DocumentRepository<self> */
@@ -1007,4 +1066,17 @@ class EmbeddedAssociationsCascadeTest
     /** @var Address|null */
     #[ODM\EmbedOne(targetDocument: Address::class)]
     public $addresses;
+}
+
+#[ODM\Document]
+class TimeSeriesTestDocument
+{
+    #[ODM\Id]
+    public ?string $id = null;
+
+    #[ODM\Field]
+    public DateTime $time;
+
+    #[ODM\Field]
+    public string $metadata;
 }

@@ -104,6 +104,7 @@
       <xs:element name="shard-key" type="odm:shard-key" minOccurs="0" />
       <xs:element name="read-preference" type="odm:read-preference" minOccurs="0" />
       <xs:element name="schema-validation" type="odm:schema-validation" minOccurs="0" />
+      <xs:element name="time-series" type="odm:time-series" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="db" type="xs:NMTOKEN" />
@@ -631,6 +632,30 @@
       <xs:enumeration value="off" />
       <xs:enumeration value="strict" />
       <xs:enumeration value="moderate" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="time-series">
+    <xs:attribute name="time-field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="meta-field" type="xs:NMTOKEN" />
+    <xs:attribute name="granularity" type="odm:time-series-granularity" />
+    <xs:attribute name="expire-after-seconds" type="xs:integer" />
+    <xs:attribute name="bucket-max-span-seconds" type="odm:time-series-group-seconds" />
+    <xs:attribute name="bucket-rounding-seconds" type="odm:time-series-group-seconds" />
+  </xs:complexType>
+
+  <xs:simpleType name="time-series-granularity">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="seconds" />
+      <xs:enumeration value="minutes" />
+      <xs:enumeration value="hours" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="time-series-group-seconds">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1" />
+      <xs:maxInclusive value="31536000" />
     </xs:restriction>
   </xs:simpleType>
 

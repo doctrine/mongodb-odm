@@ -621,6 +621,24 @@ final class SchemaManager
             $options['validationLevel']  = $class->getValidationLevel();
         }
 
+        if ($class->timeSeriesOptions !== null) {
+            $options['timeseries'] = array_filter(
+                [
+                    'timeField' => $class->timeSeriesOptions->timeField,
+                    'metaField' => $class->timeSeriesOptions->metaField,
+                    // ext-mongodb will automatically encode backed enums, so we can use the value directly here
+                    'granularity' => $class->timeSeriesOptions->granularity,
+                    'bucketMaxSpanSeconds' => $class->timeSeriesOptions->bucketMaxSpanSeconds,
+                    'bucketRoundingSeconds' => $class->timeSeriesOptions->bucketRoundingSeconds,
+                ],
+                static fn (mixed $value): bool => $value !== null,
+            );
+
+            if ($class->timeSeriesOptions->expireAfterSeconds) {
+                $options['expireAfterSeconds'] = $class->timeSeriesOptions->expireAfterSeconds;
+            }
+        }
+
         $this->dm->getDocumentDatabase($documentName)->createCollection(
             $class->getCollection(),
             $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
