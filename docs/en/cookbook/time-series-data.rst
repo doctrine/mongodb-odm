@@ -21,6 +21,11 @@ Time series data is generally composed of these components:
 -
     Measurements, which are the data points tracked at increments in time.
 
+A time series document always contains a time value, and one or more measurement
+fields. Metadata is optional, but cannot be added to a time series collection
+after creating it. When using an embedded document for metadata, fields can be
+added to this document after creating the collection.
+
 .. note::
 
     Support for time series collections was added in MongoDB 5.0. Attempting to
@@ -30,9 +35,10 @@ Time series data is generally composed of these components:
 Creating The Model
 ------------------
 
-For this example, we'll be storing data from multiple temperature sensors. Other
-examples for time series include stock data, price information, website visitors,
-and vehicle telemetry (speed, position, etc.).
+For this example, we'll be storing data from multiple sensors measuring
+temperature and humidity. Other examples for time series include stock data,
+price information, website visitors, or vehicle telemetry (speed, position,
+etc.).
 
 First, we define the model for our data:
 
@@ -57,6 +63,8 @@ First, we define the model for our data:
             public int $sensorId,
             #[ODM\Field(type: 'float')]
             public float $temperature,
+            #[ODM\Field(type: 'float')]
+            public float $humidity,
         ) {
             $this->id = (string) new ObjectId();
         }
@@ -66,11 +74,10 @@ Note that we defined the entire model as readonly. While we could theoretically
 change values in the document, in this example we'll assume that the data will
 not change.
 
-Now we can mark the document as a time series document. This is done using the
-``TimeSeries`` attribute. Since we'll be storing data from multiple sensors, we
-store the ID of each sensor as metadata. We only use the temperature as a
-measurement, but we could also add additional sensors. With that in mind, we can
-add the ``TimeSeries`` attribute:
+Now we can mark the document as a time series document. To do so, we use the
+``TimeSeries`` attribute, configuring appropriate values for the time and
+metadata field, which in our case stores the ID of the sensor reporting the
+measurement:
 
 .. code-block:: php
 
@@ -96,6 +103,7 @@ collection and let MongoDB optimise the storage for faster queries:
         time: new DateTimeImmutable(),
         sensorId: $sensorId,
         temperature: $temperature,
+        humidity: $humidity,
     );
 
     $documentManager->persist($measurement);
