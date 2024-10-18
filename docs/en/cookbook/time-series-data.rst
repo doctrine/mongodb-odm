@@ -5,8 +5,9 @@ Storing Time Series Data
 
     Support for mapping time series data was added in ODM 2.10.
 
-Time series data is a sequence of data points in which insights are gained by
-analyzing changes over time.
+`time-series data <https://www.mongodb.com/docs/manual/core/timeseries-collections/>`__
+is a sequence of data points in which insights are gained by analyzing changes
+over time.
 
 Time series data is generally composed of these components:
 

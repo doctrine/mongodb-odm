@@ -1148,7 +1148,7 @@ for sharding the document collection.
 -------------
 
 This attribute may be used at the class level to mark a collection as containing
-`time-series data <https://www.mongodb.com/docs/manual/core/timeseries-collections/>`__.
+:doc:`time-series data <../cookbook/time-series-data>`.
 
 .. code-block:: php
 
