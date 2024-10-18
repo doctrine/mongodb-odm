@@ -92,8 +92,8 @@ measurement:
         // ...
     }
 
-Once we created the schema, we can store our measurements in this time series
-collection and let MongoDB optimise the storage for faster queries:
+Once we create the schema, we can store our measurements in this time series
+collection and let MongoDB optimize the storage for faster queries:
 
 .. code-block:: php
 
@@ -109,8 +109,8 @@ collection and let MongoDB optimise the storage for faster queries:
     $documentManager->persist($measurement);
     $documentManager->flush();
 
-Note that other functionality, such as querying, aggregating data using
-aggregation pipeline, or removing data works the same as with other collections.
+Note that other functionality such as querying, using aggregation pipelines, or
+removing data works the same as with other collections.
 
 Considerations
 --------------
@@ -122,7 +122,7 @@ size. This affects storage requirements and query performance.
 
 For example, with the default ``seconds`` granularity, each bucket groups
 documents for one hour. If each sensor only reports data every few minutes, we'd
-do well to only store them with a ``minute`` granularity. This reduces the
+do well to configure ``minute`` granularity. This reduces the
 number of buckets created, reducing storage and making queries more efficient.
 However, if we were to choose ``hours`` for granularity, readings for a whole
 month would be grouped into one bucket, resulting in slower queries as more
