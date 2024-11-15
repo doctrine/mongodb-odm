@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Cart;
+use Documents\DocumentWithUnmappedProperties;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -22,15 +23,10 @@ class StaticProxyFactoryTest extends BaseTestCase
     /** @var Client|MockObject */
     private Client $client;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->dm = $this->createMockedDocumentManager();
-    }
-
     public function testProxyInitializeWithException(): void
     {
+        $this->dm = $this->createMockedDocumentManager();
+
         $collection = $this->createMock(Collection::class);
         $database   = $this->createMock(Database::class);
 
@@ -80,6 +76,17 @@ class StaticProxyFactoryTest extends BaseTestCase
         $this->client = $this->createMock(Client::class);
 
         return DocumentManager::create($this->client, $config);
+    }
+
+    public function testCreateProxyForDocumentWithUnmappedProperties(): void
+    {
+        $proxy = $this->dm->getReference(DocumentWithUnmappedProperties::class, '123');
+        self::assertInstanceOf(GhostObjectInterface::class, $proxy);
+
+        // Disable initialiser so we can access properties without initialising the object
+        $proxy->setProxyInitializer(null);
+
+        self::assertSame('bar', $proxy->foo);
     }
 }
 
