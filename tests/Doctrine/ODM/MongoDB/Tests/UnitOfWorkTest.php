@@ -29,7 +29,6 @@ use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
-use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use Throwable;
 

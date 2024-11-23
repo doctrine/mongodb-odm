@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 use function iterator_to_array;
 
@@ -68,7 +67,7 @@ class GH593Test extends BaseTestCase
         self::assertEquals($user3->getId(), $user1following[1]->getId());
 
         $this->expectException(DocumentNotFoundException::class);
-        $user1following[1]->initializeProxy();
+        $this->uow->initializeObject($user1following[1]);
     }
 
     public function testReferenceManyInverseSidePreparesFilterCriteria(): void

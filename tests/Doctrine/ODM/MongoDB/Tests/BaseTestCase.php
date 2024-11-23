@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -15,6 +16,7 @@ use MongoDB\Driver\Manager;
 use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
+use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function array_key_exists;
 use function array_map;
@@ -112,6 +114,14 @@ abstract class BaseTestCase extends TestCase
 
             self::$check($value, $array[$key], $message);
         }
+    }
+
+    public static function assertIsLazyObject(object $document): void
+    {
+        self::logicalOr(
+            self::isInstanceOf(InternalProxy::class),
+            self::isInstanceOf(LazyLoadingInterface::class),
+        )->evaluate($document);
     }
 
     protected static function createMetadataDriverImpl(): MappingDriver

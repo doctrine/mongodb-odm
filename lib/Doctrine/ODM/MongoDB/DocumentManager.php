@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\Proxy\Factory\LazyGhostProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\CachingClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
+use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
@@ -156,7 +156,7 @@ class DocumentManager implements ObjectManager
             ],
         );
 
-        $this->classNameResolver = new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
+        $this->classNameResolver = new CachingClassNameResolver(new LazyGhostProxyClassNameResolver());
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();

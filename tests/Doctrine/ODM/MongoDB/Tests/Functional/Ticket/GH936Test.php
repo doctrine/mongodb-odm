@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH936Test extends BaseTestCase
 {

@@ -23,8 +23,6 @@ use Documents\ProfileNotify;
 use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
-use ProxyManager\Proxy\GhostObjectInterface;
-use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
 
@@ -397,13 +395,13 @@ class ReferencesTest extends BaseTestCase
         );
 
         $test = $this->dm->find($test::class, $test->id);
-        self::assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
+        self::assertIsLazyObject($test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
             '{"identifier":2} could not be found.',
         );
-        $test->referenceOne->initializeProxy();
+        $this->uow->initializeObject($test->referenceOne);
     }
 
     public function testDocumentNotFoundExceptionWithObjectId(): void
@@ -430,12 +428,12 @@ class ReferencesTest extends BaseTestCase
 
         $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfile();
-        self::assertInstanceOf(LazyLoadingInterface::class, $profile);
+        self::assertIsLazyObject($profile);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.',
         );
-        $profile->initializeProxy();
+        $this->uow->initializeObject($profile);
     }
 
     public function testDocumentNotFoundExceptionWithMongoBinDataId(): void
@@ -461,13 +459,13 @@ class ReferencesTest extends BaseTestCase
         );
 
         $test = $this->dm->find($test::class, $test->id);
-        self::assertInstanceOf(LazyLoadingInterface::class, $test->referenceOne);
+        self::assertIsLazyObject($test->referenceOne);
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
             '"testbindata" could not be found.',
         );
-        $test->referenceOne->initializeProxy();
+        $this->uow->initializeObject($test->referenceOne);
     }
 
     public function testDocumentNotFoundEvent(): void
@@ -503,8 +501,8 @@ class ReferencesTest extends BaseTestCase
 
         $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
 
-        self::assertInstanceOf(LazyLoadingInterface::class, $profile);
-        $profile->initializeProxy();
+        self::assertIsLazyObject($profile);
+        $this->uow->initializeObject($profile);
     }
 }
 

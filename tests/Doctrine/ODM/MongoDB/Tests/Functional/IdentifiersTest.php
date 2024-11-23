@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Event;
 use Documents\User;
-use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function assert;
 use function get_class;

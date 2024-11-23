@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 class GH852Test extends BaseTestCase
 {

@@ -2782,7 +2782,14 @@ final class UnitOfWork implements PropertyChangedListener
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_hash($document);
             if ($this->isUninitializedObject($document)) {
-                $document->setProxyInitializer(null);
+                if ($document instanceof InternalProxy) {
+                    $document->__setInitialized(true);
+                } elseif ($document instanceof GhostObjectInterface) {
+                    $document->setProxyInitializer(null);
+                } else {
+                    throw new \RuntimeException(sprintf('Expected uninitialized proxy or ghost object from class "%s"', $document::name));
+                }
+
                 $overrideLocalValues = true;
                 if ($document instanceof NotifyPropertyChanged) {
                     $document->addPropertyChangedListener($this);
@@ -3062,7 +3069,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof InternalProxy && ! $obj->__isInitialized()) {
+        if ($obj instanceof InternalProxy && $obj->__isInitialized() === false) {
             $obj->__load();
         } elseif ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
             $obj->initializeProxy();

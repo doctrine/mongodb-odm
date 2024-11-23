@@ -40,7 +40,6 @@ use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\Document;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionException;
 use stdClass;

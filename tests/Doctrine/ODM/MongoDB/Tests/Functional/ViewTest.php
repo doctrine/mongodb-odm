@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\CmsUser;
 use Documents\UserName;
 use Documents\ViewReference;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 use function assert;
 

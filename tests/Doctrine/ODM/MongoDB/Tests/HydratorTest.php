@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 class HydratorTest extends BaseTestCase
 {
