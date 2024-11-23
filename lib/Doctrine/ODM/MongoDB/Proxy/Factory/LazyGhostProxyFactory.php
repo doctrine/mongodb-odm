@@ -12,6 +12,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
+use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\Proxy;
 use InvalidArgumentException;
 use ReflectionProperty;
@@ -87,6 +89,8 @@ EOPHP;
     /** @var array<class-string, Closure> */
     private array $proxyFactories = [];
 
+    private LifecycleEventManager $lifecycleEventManager;
+
     /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
@@ -114,8 +118,9 @@ EOPHP;
             throw new InvalidArgumentException(sprintf('Invalid auto generate mode "%s" given.', is_scalar($autoGenerate) ? (string) $autoGenerate : get_debug_type($autoGenerate)));
         }
 
-        $this->uow          = $dm->getUnitOfWork();
-        $this->autoGenerate = (int) $autoGenerate;
+        $this->uow                   = $dm->getUnitOfWork();
+        $this->autoGenerate          = (int) $autoGenerate;
+        $this->lifecycleEventManager = new LifecycleEventManager($dm, $this->uow, $dm->getEventManager());
     }
 
     /** @param array<mixed> $identifier */
@@ -178,28 +183,18 @@ EOPHP;
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, DocumentPersister $persister): Closure
     {
-        return static function (InternalProxy $proxy, mixed $identifier) use ($persister, $classMetadata): void {
-            $original = $persister->load([$classMetadata->identifier => $identifier]);
+        $factory = $this;
 
-            if ($original === null) {
-                throw DocumentNotFoundException::documentNotFound(
-                    $classMetadata->getName(),
-                    $identifier,
-                );
+        return static function (InternalProxy $proxy, mixed $identifier) use ($persister, $classMetadata, $factory): void {
+            $original = $persister->load([$classMetadata->identifier => $identifier], $proxy);
+
+            if (! $original && ! $factory->lifecycleEventManager->documentNotFound($proxy, $identifier)) {
+                throw DocumentNotFoundException::documentNotFound($classMetadata->getName(), $identifier);
             }
 
-            if ($proxy === $original) {
-                return;
-            }
-
-            $class = $persister->getClassMetadata();
-
-            foreach ($class->getReflectionProperties() as $property) {
-                if (! $property || isset($identifier[$property->getName()]) || ! $class->hasField($property->getName()) && ! $class->hasAssociation($property->getName())) {
-                    continue;
-                }
-
-                $property->setValue($proxy, $property->getValue($original));
+            // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
+            if ($proxy instanceof NotifyPropertyChanged) {
+                $proxy->addPropertyChangedListener($factory->uow);
             }
         };
     }
