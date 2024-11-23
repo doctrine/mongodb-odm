@@ -84,7 +84,7 @@ EOPHP;
     private readonly UnitOfWork $uow;
 
     /** @var Configuration::AUTOGENERATE_* */
-    private $autoGenerate;
+    private int $autoGenerate;
 
     /** @var array<class-string, Closure> */
     private array $proxyFactories = [];

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Event;
 use Documents\User;
@@ -30,7 +29,7 @@ class IdentifiersTest extends BaseTestCase
 
         $userTest = $test->getUser();
         self::assertEquals($user->getId(), $userTest->getId());
-        self::assertInstanceOf(InternalProxy::class, $userTest);
+        self::assertIsLazyObject($userTest);
         self::assertTrue($this->uow->isUninitializedObject($userTest));
 
         $this->dm->clear();
@@ -42,7 +41,7 @@ class IdentifiersTest extends BaseTestCase
         $foundUser = $test->getUser();
         self::assertEquals($user->getId(), $class->getIdentifierValue($user));
         self::assertEquals($user->getId(), $class->getFieldValue($foundUser, 'id'));
-        self::assertInstanceOf(InternalProxy::class, $foundUser);
+        self::assertIsLazyObject($foundUser);
         self::assertTrue($this->uow->isUninitializedObject($foundUser));
 
         self::assertEquals('jwage', $foundUser->getUsername());

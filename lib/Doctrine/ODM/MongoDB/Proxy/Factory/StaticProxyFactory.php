@@ -23,7 +23,7 @@ use function count;
 /**
  * This factory is used to create proxy objects for documents at runtime.
  *
- * @deprecated
+ * @deprecated since 2.10, use LazyGhostProxyFactory instead
  */
 final class StaticProxyFactory implements ProxyFactory
 {

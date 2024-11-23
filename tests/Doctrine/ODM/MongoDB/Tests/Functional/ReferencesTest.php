@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\Address;
@@ -81,7 +80,7 @@ class ReferencesTest extends BaseTestCase
         assert($profile instanceof Profile);
 
         self::assertInstanceOf(Profile::class, $profile);
-        self::assertInstanceOf(InternalProxy::class, $profile);
+        self::assertIsLazyObject($profile);
 
         $profile->getFirstName();
 
@@ -103,7 +102,7 @@ class ReferencesTest extends BaseTestCase
 
         $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfileNotify();
-        self::assertInstanceOf(InternalProxy::class, $profile);
+        self::assertIsLazyObject($profile);
         self::assertTrue($this->uow->isUninitializedObject($profile));
 
         $user->getProfileNotify()->setLastName('Malarz');

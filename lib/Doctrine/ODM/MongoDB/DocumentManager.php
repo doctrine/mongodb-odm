@@ -11,9 +11,11 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Factory\LazyGhostProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\CachingClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
+use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
@@ -156,7 +158,9 @@ class DocumentManager implements ObjectManager
             ],
         );
 
-        $this->classNameResolver = new CachingClassNameResolver(new LazyGhostProxyClassNameResolver());
+        $this->classNameResolver = $config->isLazyGhostObjectEnabled()
+            ? new CachingClassNameResolver(new LazyGhostProxyClassNameResolver())
+            : new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
 
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();
@@ -181,7 +185,9 @@ class DocumentManager implements ObjectManager
 
         $this->unitOfWork        = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
         $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
-        $this->proxyFactory      = new LazyGhostProxyFactory($this, $config->getProxyDir(), $config->getProxyNamespace(), $config->getAutoGenerateProxyClasses());
+        $this->proxyFactory      = $config->isLazyGhostObjectEnabled()
+            ? new LazyGhostProxyFactory($this, $config->getProxyDir(), $config->getProxyNamespace(), $config->getAutoGenerateProxyClasses())
+            : new StaticProxyFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
     }
 

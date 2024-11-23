@@ -17,7 +17,7 @@ use MongoDB\Collection;
 use MongoDB\Database;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class StaticProxyFactoryTest extends BaseTestCase
+class ProxyFactoryTest extends BaseTestCase
 {
     /** @var Client|MockObject */
     private Client $client;

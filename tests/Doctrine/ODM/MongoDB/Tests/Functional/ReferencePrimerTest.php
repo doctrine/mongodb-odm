@@ -95,7 +95,7 @@ class ReferencePrimerTest extends BaseTestCase
             ->field('groups')->prime(true);
 
         foreach ($qb->getQuery() as $user) {
-            self::assertInstanceOf(InternalProxy::class, $user->getAccount());
+            self::assertIsLazyObject($user->getAccount());
             self::assertFalse($this->uow->isUninitializedObject($user->getAccount()));
 
             self::assertCount(2, $user->getGroups());
@@ -133,7 +133,7 @@ class ReferencePrimerTest extends BaseTestCase
             ->field('users')->prime(true);
 
         foreach ($qb->getQuery() as $simpleUser) {
-            self::assertInstanceOf(InternalProxy::class, $simpleUser->getUser());
+            self::assertIsLazyObject($simpleUser->getUser());
             self::assertFalse($this->uow->isUninitializedObject($simpleUser->getUser()));
 
             self::assertCount(2, $simpleUser->getUsers());
@@ -196,7 +196,7 @@ class ReferencePrimerTest extends BaseTestCase
                 self::assertNotInstanceOf(InternalProxy::class, $embeddedDoc);
                 self::assertInstanceOf(EmbeddedWhichReferences::class, $embeddedDoc);
 
-                self::assertInstanceOf(InternalProxy::class, $embeddedDoc->referencedDoc);
+                self::assertIsLazyObject($embeddedDoc->referencedDoc);
                 self::assertFalse($this->uow->isUninitializedObject($embeddedDoc->referencedDoc));
 
                 self::assertCount(2, $embeddedDoc->referencedDocs);
@@ -252,7 +252,7 @@ class ReferencePrimerTest extends BaseTestCase
             assert($referenceUser instanceof ReferenceUser);
             $user = $referenceUser->getUser();
             self::assertInstanceOf(User::class, $user);
-            self::assertInstanceOf(InternalProxy::class, $user);
+            self::assertIsLazyObject($user);
             self::assertFalse($this->uow->isUninitializedObject($user));
 
             self::assertCount(1, $referenceUser->getUsers());
@@ -263,7 +263,7 @@ class ReferencePrimerTest extends BaseTestCase
             }
 
             $parentUser = $referenceUser->getParentUser();
-            self::assertInstanceOf(InternalProxy::class, $parentUser);
+            self::assertIsLazyObject($parentUser);
             self::assertInstanceOf(User::class, $parentUser);
             self::assertFalse($this->uow->isUninitializedObject($parentUser));
 
@@ -276,7 +276,7 @@ class ReferencePrimerTest extends BaseTestCase
 
             $otherUser = $referenceUser->getOtherUser();
             self::assertInstanceOf(User::class, $otherUser);
-            self::assertInstanceOf(InternalProxy::class, $otherUser);
+            self::assertIsLazyObject($otherUser);
             self::assertFalse($this->uow->isUninitializedObject($otherUser));
 
             self::assertCount(1, $referenceUser->getOtherUsers());
@@ -331,7 +331,7 @@ class ReferencePrimerTest extends BaseTestCase
             ->field('server')->prime(true);
 
         foreach ($qb->getQuery() as $agent) {
-            self::assertInstanceOf(InternalProxy::class, $agent->server);
+            self::assertIsLazyObject($agent->server);
             self::assertFalse($this->uow->isUninitializedObject($agent->server));
         }
     }
@@ -523,7 +523,7 @@ class ReferencePrimerTest extends BaseTestCase
 
         $currency = $money->getCurrency();
 
-        self::assertInstanceOf(InternalProxy::class, $currency);
+        self::assertIsLazyObject($currency);
         self::assertInstanceOf(Currency::class, $currency);
         self::assertFalse($this->uow->isUninitializedObject($currency));
     }
@@ -551,7 +551,7 @@ class ReferencePrimerTest extends BaseTestCase
         self::assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->comments->first();
-        self::assertInstanceOf(InternalProxy::class, $comment->author);
+        self::assertIsLazyObject($comment->author);
         self::assertFalse($this->uow->isUninitializedObject($comment->author));
     }
 
@@ -578,7 +578,7 @@ class ReferencePrimerTest extends BaseTestCase
         self::assertInstanceOf(BlogPost::class, $post);
 
         $comment = $post->repoCommentsWithPrimer->first();
-        self::assertInstanceOf(InternalProxy::class, $comment->author);
+        self::assertIsLazyObject($comment->author);
         self::assertFalse($this->uow->isUninitializedObject($comment->author));
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Composer\InstalledVersions;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
@@ -89,6 +90,7 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
+        $config->setUseLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
 
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
@@ -118,10 +120,14 @@ abstract class BaseTestCase extends TestCase
 
     public static function assertIsLazyObject(object $document): void
     {
-        self::logicalOr(
-            self::isInstanceOf(InternalProxy::class),
-            self::isInstanceOf(LazyLoadingInterface::class),
-        )->evaluate($document);
+        if (InstalledVersions::isInstalled('friendsofphp/proxy-manager')) {
+            self::logicalOr(
+                self::isInstanceOf(InternalProxy::class),
+                self::isInstanceOf(LazyLoadingInterface::class),
+            )->evaluate($document);
+        } else {
+            self::assertInstanceOf(InternalProxy::class, $document);
+        }
     }
 
     protected static function createMetadataDriverImpl(): MappingDriver

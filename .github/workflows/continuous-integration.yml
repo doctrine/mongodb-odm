@@ -34,6 +34,8 @@ jobs:
           - "highest"
         symfony-version:
           - "stable"
+        proxy:
+          - "lazy-ghost"
         include:
           # Test against lowest dependencies
           - dependencies: "lowest"
@@ -42,6 +44,7 @@ jobs:
             driver-version: "1.17.0"
             topology: "server"
             symfony-version: "stable"
+            proxy: "lazy-ghost"
           # Test with highest dependencies
           - topology: "server"
             php-version: "8.2"
@@ -49,6 +52,7 @@ jobs:
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "7"
+            proxy: "lazy-ghost"
           # Test with a 5.0 replica set
           - topology: "replica_set"
             php-version: "8.2"
@@ -56,6 +60,14 @@ jobs:
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
+            proxy: "lazy-ghost"
+          # Test with ProxyManager
+          - php-version: "8.2"
+            mongodb-version: "5.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: "stable"
+            proxy: "proxy-manager"
           # Test with a 5.0 sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
 #          - topology: "sharded_cluster"
@@ -64,6 +76,7 @@ jobs:
 #            driver-version: "stable"
 #            dependencies: "highest"
 #            symfony-version: "stable"
+#            proxy: "lazy-ghost"
 
     steps:
       - name: "Checkout"
@@ -111,6 +124,13 @@ jobs:
           composer require --no-update symfony/var-dumper:^7@dev
           composer require --no-update --dev symfony/cache:^7@dev
 
+      - name: "Remove proxy-manager-lts"
+        if: "${{ matrix.proxy != 'proxy-manager' }}"
+        run: |
+          # proxy-manager-lts is not installed by default and must not be used
+          # unless explicitly requested
+          composer remove --no-update --dev friendsofphp/proxy-manager-lts
+
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
@@ -132,3 +152,4 @@ jobs:
         run: "vendor/bin/phpunit"
         env:
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
+          USE_LAZY_GHOST_OBJECTS: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}"

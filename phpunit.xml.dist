@@ -29,5 +29,6 @@
         <ini name="error_reporting" value="-1"/>
         <const name="DOCTRINE_MONGODB_SERVER" value="mongodb://localhost:27017" />
         <const name="DOCTRINE_MONGODB_DATABASE" value="doctrine_odm_tests" />
+        <env name="USE_LAZY_GHOST_OBJECTS" value="1"/>
     </php>
 </phpunit>

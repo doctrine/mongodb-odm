@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
@@ -33,6 +34,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 
 use function array_key_exists;
+use function class_exists;
 use function interface_exists;
 use function trigger_deprecation;
 use function trim;
@@ -127,6 +129,8 @@ class Configuration
     private ?CacheItemPoolInterface $metadataCache = null;
 
     private bool $useTransactionalFlush = false;
+
+    private bool $useLazyGhostObject = true;
 
     /**
      * Adds a namespace under a certain alias.
@@ -612,6 +616,32 @@ class Configuration
     public function isTransactionalFlushEnabled(): bool
     {
         return $this->useTransactionalFlush;
+    }
+
+    /**
+     * Generate proxy classes using Symfony VarExporter's LazyGhostTrait if true.
+     * Otherwise, use ProxyManager's LazyLoadingGhostFactory (deprecated)
+     */
+    public function setUseLazyGhostObject(bool $flag): void
+    {
+        if ($flag === false) {
+            if (! class_exists(ProxyManagerConfiguration::class)) {
+                throw new LogicException('Package "friendsofphp/proxy-manager-lts" is required to disable LazyGhostObject.');
+            }
+
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.6',
+                'Using "friendsofphp/proxy-manager-lts" is deprecated. Use "symfony/var-exporter" LazyGhostObjects instead.',
+            );
+        }
+
+        $this->useLazyGhostObject = $flag;
+    }
+
+    public function isLazyGhostObjectEnabled(): bool
+    {
+        return $this->useLazyGhostObject ?? true;
     }
 }
 

@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 
 class HydratorTest extends BaseTestCase
@@ -41,10 +40,10 @@ class HydratorTest extends BaseTestCase
         self::assertEquals('jon', $user->name);
         self::assertInstanceOf(DateTime::class, $user->birthdate);
         self::assertInstanceOf(HydrationClosureReferenceOne::class, $user->referenceOne);
-        self::assertInstanceOf(InternalProxy::class, $user->referenceOne);
+        self::assertIsLazyObject($user->referenceOne);
         self::assertInstanceOf(PersistentCollection::class, $user->referenceMany);
-        self::assertInstanceOf(InternalProxy::class, $user->referenceMany[0]);
-        self::assertInstanceOf(InternalProxy::class, $user->referenceMany[1]);
+        self::assertIsLazyObject($user->referenceMany[0]);
+        self::assertIsLazyObject($user->referenceMany[1]);
         self::assertInstanceOf(HydrationClosureEmbedOne::class, $user->embedOne);
         self::assertInstanceOf(PersistentCollection::class, $user->embedMany);
         self::assertEquals('jon', $user->embedOne->name);
@@ -54,7 +53,7 @@ class HydratorTest extends BaseTestCase
     public function testHydrateProxyWithMissingAssociations(): void
     {
         $user = $this->dm->getReference(HydrationClosureUser::class, 1);
-        self::assertInstanceOf(InternalProxy::class, $user);
+        self::assertIsLazyObject($user);
 
         $this->dm->getHydratorFactory()->hydrate($user, [
             '_id' => 1,
