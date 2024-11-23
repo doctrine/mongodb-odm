@@ -85,7 +85,7 @@ class SimpleReferencesTest extends BaseTestCase
         $user = $test->getUser();
         self::assertNotNull($user);
         self::assertInstanceOf(User::class, $user);
-        self::assertIsLazyObject($user);
+        self::assertTrue(self::isLazyObject($user));
         self::assertTrue($this->uow->isUninitializedObject($user));
         self::assertEquals('jwage', $user->getUsername());
         self::assertFalse($this->uow->isUninitializedObject($user));

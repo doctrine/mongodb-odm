@@ -44,7 +44,7 @@ class ProxyFactoryTest extends BaseTestCase
         $uow = $this->dm->getUnitOfWork();
 
         $proxy = $this->dm->getReference(Cart::class, '123');
-        self::assertIsLazyObject($proxy);
+        self::assertTrue(self::isLazyObject($proxy));
 
         $closure = static function (DocumentNotFoundEventArgs $eventArgs) {
             self::fail('DocumentNotFoundListener should not be called');

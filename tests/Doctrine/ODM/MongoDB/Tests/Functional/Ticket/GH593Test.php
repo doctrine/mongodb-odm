@@ -57,11 +57,11 @@ class GH593Test extends BaseTestCase
          */
         self::assertCount(2, $user1following);
 
-        self::assertIsLazyObject($user1following[0]);
+        self::assertTrue(self::isLazyObject($user1following[0]));
         self::assertFalse($this->uow->isUninitializedObject($user1following[0]));
         self::assertEquals($user2->getId(), $user1following[0]->getId());
 
-        self::assertIsLazyObject($user1following[1]);
+        self::assertTrue(self::isLazyObject($user1following[1]));
         self::assertTrue($this->uow->isUninitializedObject($user1following[1]));
         self::assertEquals($user3->getId(), $user1following[1]->getId());
 

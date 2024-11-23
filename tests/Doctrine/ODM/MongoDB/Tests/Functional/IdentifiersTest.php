@@ -29,7 +29,7 @@ class IdentifiersTest extends BaseTestCase
 
         $userTest = $test->getUser();
         self::assertEquals($user->getId(), $userTest->getId());
-        self::assertIsLazyObject($userTest);
+        self::assertTrue(self::isLazyObject($userTest));
         self::assertTrue($this->uow->isUninitializedObject($userTest));
 
         $this->dm->clear();
@@ -41,7 +41,7 @@ class IdentifiersTest extends BaseTestCase
         $foundUser = $test->getUser();
         self::assertEquals($user->getId(), $class->getIdentifierValue($user));
         self::assertEquals($user->getId(), $class->getFieldValue($foundUser, 'id'));
-        self::assertIsLazyObject($foundUser);
+        self::assertTrue(self::isLazyObject($foundUser));
         self::assertTrue($this->uow->isUninitializedObject($foundUser));
 
         self::assertEquals('jwage', $foundUser->getUsername());

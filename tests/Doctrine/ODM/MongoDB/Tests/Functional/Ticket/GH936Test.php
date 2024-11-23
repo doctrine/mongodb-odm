@@ -26,7 +26,7 @@ class GH936Test extends BaseTestCase
 
         $foo = $this->dm->find(GH936Document::class, $foo->id);
 
-        self::assertIsLazyObject($foo->ref);
+        self::assertTrue(self::isLazyObject($foo->ref));
 
         $this->dm->remove($foo);
         $this->dm->flush();

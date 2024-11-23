@@ -48,7 +48,7 @@ class GH852Test extends BaseTestCase
         self::assertEquals($idGenerator('parent'), $parent->id);
         self::assertEquals('parent', $parent->name);
 
-        self::assertIsLazyObject($parent->refOne);
+        self::assertTrue(self::isLazyObject($parent->refOne));
         self::assertInstanceOf(GH852Document::class, $parent->refOne);
         self::assertTrue($this->uow->isUninitializedObject($parent->refOne));
         self::assertEquals($idGenerator('childA'), $parent->refOne->id);
@@ -60,13 +60,13 @@ class GH852Test extends BaseTestCase
         /* These proxies will be initialized when we first access the collection
          * by DocumentPersister::loadReferenceManyCollectionOwningSide().
          */
-        self::assertIsLazyObject($parent->refMany[0]);
+        self::assertTrue(self::isLazyObject($parent->refMany[0]));
         self::assertInstanceOf(GH852Document::class, $parent->refMany[0]);
         self::assertFalse($this->uow->isUninitializedObject($parent->refMany[0]));
         self::assertEquals($idGenerator('childB'), $parent->refMany[0]->id);
         self::assertEquals('childB', $parent->refMany[0]->name);
 
-        self::assertIsLazyObject($parent->refMany[1]);
+        self::assertTrue(self::isLazyObject($parent->refMany[1]));
         self::assertInstanceOf(GH852Document::class, $parent->refMany[1]);
         self::assertFalse($this->uow->isUninitializedObject($parent->refMany[1]));
         self::assertEquals($idGenerator('childC'), $parent->refMany[1]->id);

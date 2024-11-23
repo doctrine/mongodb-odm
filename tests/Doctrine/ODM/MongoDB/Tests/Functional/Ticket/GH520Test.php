@@ -28,7 +28,7 @@ class GH520Test extends BaseTestCase
         $document = $query->getSingleResult();
 
         self::assertInstanceOf(GH520Document::class, $document);
-        self::assertIsLazyObject($document->ref);
+        self::assertTrue(self::isLazyObject($document->ref));
         self::assertFalse($this->uow->isUninitializedObject($document->ref));
     }
 

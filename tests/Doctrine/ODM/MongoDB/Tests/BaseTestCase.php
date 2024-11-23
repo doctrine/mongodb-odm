@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Composer\InstalledVersions;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
@@ -118,16 +117,9 @@ abstract class BaseTestCase extends TestCase
         }
     }
 
-    public static function assertIsLazyObject(object $document): void
+    public static function isLazyObject(object $document): bool
     {
-        if (InstalledVersions::isInstalled('friendsofphp/proxy-manager')) {
-            self::logicalOr(
-                self::isInstanceOf(InternalProxy::class),
-                self::isInstanceOf(LazyLoadingInterface::class),
-            )->evaluate($document);
-        } else {
-            self::assertInstanceOf(InternalProxy::class, $document);
-        }
+        return $document instanceof InternalProxy || $document instanceof LazyLoadingInterface;
     }
 
     protected static function createMetadataDriverImpl(): MappingDriver

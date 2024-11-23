@@ -488,7 +488,7 @@ class UnitOfWorkTest extends BaseTestCase
         $user = $this->dm->find(ForumUser::class, $id);
         self::assertInstanceOf(ForumUser::class, $user);
 
-        self::assertIsLazyObject($user->getAvatar());
+        self::assertTrue(self::isLazyObject($user->getAvatar()));
 
         $classMetadata = $this->dm->getClassMetadata(ForumAvatar::class);
 

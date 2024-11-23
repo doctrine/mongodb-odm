@@ -80,7 +80,7 @@ class ReferencesTest extends BaseTestCase
         assert($profile instanceof Profile);
 
         self::assertInstanceOf(Profile::class, $profile);
-        self::assertIsLazyObject($profile);
+        self::assertTrue(self::isLazyObject($profile));
 
         $profile->getFirstName();
 
@@ -102,7 +102,7 @@ class ReferencesTest extends BaseTestCase
 
         $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfileNotify();
-        self::assertIsLazyObject($profile);
+        self::assertTrue(self::isLazyObject($profile));
         self::assertTrue($this->uow->isUninitializedObject($profile));
 
         $user->getProfileNotify()->setLastName('Malarz');
@@ -394,7 +394,7 @@ class ReferencesTest extends BaseTestCase
         );
 
         $test = $this->dm->find($test::class, $test->id);
-        self::assertIsLazyObject($test->referenceOne);
+        self::assertTrue(self::isLazyObject($test->referenceOne));
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithArrayId" document with identifier ' .
@@ -427,7 +427,7 @@ class ReferencesTest extends BaseTestCase
 
         $user    = $this->dm->find($user::class, $user->getId());
         $profile = $user->getProfile();
-        self::assertIsLazyObject($profile);
+        self::assertTrue(self::isLazyObject($profile));
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Documents\Profile" document with identifier "abcdefabcdefabcdefabcdef" could not be found.',
@@ -458,7 +458,7 @@ class ReferencesTest extends BaseTestCase
         );
 
         $test = $this->dm->find($test::class, $test->id);
-        self::assertIsLazyObject($test->referenceOne);
+        self::assertTrue(self::isLazyObject($test->referenceOne));
         $this->expectException(DocumentNotFoundException::class);
         $this->expectExceptionMessage(
             'The "Doctrine\ODM\MongoDB\Tests\Functional\DocumentWithMongoBinDataId" document with identifier ' .
@@ -500,7 +500,7 @@ class ReferencesTest extends BaseTestCase
 
         $this->dm->getEventManager()->addEventListener(Events::documentNotFound, new DocumentNotFoundListener($closure));
 
-        self::assertIsLazyObject($profile);
+        self::assertTrue(self::isLazyObject($profile));
         $this->uow->initializeObject($profile);
     }
 }

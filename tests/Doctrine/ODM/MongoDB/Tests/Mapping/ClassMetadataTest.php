@@ -495,7 +495,7 @@ class ClassMetadataTest extends BaseTestCase
         $metadata = $this->dm->getClassMetadata(Album::class);
 
         self::assertEquals($document->getName(), $metadata->getFieldValue($proxy, 'name'));
-        self::assertIsLazyObject($proxy);
+        self::assertTrue(self::isLazyObject($proxy));
         self::assertFalse($this->uow->isUninitializedObject($proxy));
     }
 
@@ -510,7 +510,7 @@ class ClassMetadataTest extends BaseTestCase
         $metadata = $this->dm->getClassMetadata(Album::class);
 
         self::assertEquals($document->getId(), $metadata->getFieldValue($proxy, 'id'));
-        self::assertIsLazyObject($proxy);
+        self::assertTrue(self::isLazyObject($proxy));
         self::assertTrue($this->uow->isUninitializedObject($proxy));
     }
 
@@ -532,7 +532,7 @@ class ClassMetadataTest extends BaseTestCase
         $this->dm->clear();
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
-        self::assertIsLazyObject($proxy);
+        self::assertTrue(self::isLazyObject($proxy));
 
         $metadata = $this->dm->getClassMetadata(Album::class);
         $metadata->setFieldValue($proxy, 'name', 'nevermind');
@@ -541,7 +541,7 @@ class ClassMetadataTest extends BaseTestCase
         $this->dm->clear();
 
         $proxy = $this->dm->getReference(Album::class, $document->getId());
-        self::assertIsLazyObject($proxy);
+        self::assertTrue(self::isLazyObject($proxy));
         self::assertInstanceOf(Album::class, $proxy);
 
         self::assertEquals('nevermind', $proxy->getName());

@@ -111,7 +111,7 @@ class ViewTest extends BaseTestCase
         $viewReference = $this->dm->find(ViewReference::class, $alcaeus->getId());
         self::assertInstanceOf(ViewReference::class, $viewReference);
 
-        self::assertIsLazyObject($viewReference->getReferenceOneView());
+        self::assertTrue(self::isLazyObject($viewReference->getReferenceOneView()));
         self::assertSame($malarzm->getId(), $viewReference->getReferenceOneView()->getId());
 
         // No proxies for inverse referenceOne
@@ -119,7 +119,7 @@ class ViewTest extends BaseTestCase
         self::assertSame($alcaeus->getId(), $viewReference->getReferenceOneViewMappedBy()->getId());
 
         self::assertCount(1, $viewReference->getReferenceManyView());
-        self::assertIsLazyObject($viewReference->getReferenceManyView()[0]);
+        self::assertTrue(self::isLazyObject($viewReference->getReferenceManyView()[0]));
         self::assertSame($malarzm->getId(), $viewReference->getReferenceManyView()[0]->getId());
 
         // No proxies for inverse referenceMany
