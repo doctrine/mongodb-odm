@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -49,11 +50,11 @@ class GH602Test extends BaseTestCase
          */
         self::assertCount(2, $user1likes);
 
-        self::assertInstanceOf(GhostObjectInterface::class, $user1likes[0]);
+        self::assertInstanceOf(InternalProxy::class, $user1likes[0]);
         self::assertFalse($this->uow->isUninitializedObject($user1likes[0]));
         self::assertEquals($thing1->getId(), $user1likes[0]->getId());
 
-        self::assertInstanceOf(GhostObjectInterface::class, $user1likes[1]);
+        self::assertInstanceOf(InternalProxy::class, $user1likes[1]);
         self::assertTrue($this->uow->isUninitializedObject($user1likes[1]));
         self::assertEquals($thing2->getId(), $user1likes[1]->getId());
 

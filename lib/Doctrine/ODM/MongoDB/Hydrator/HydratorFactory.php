@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -448,6 +449,12 @@ EOF
             }
         }
 
+        if ($document instanceof InternalProxy) {
+            // Skip initialization to not load any object data
+            $document->__setInitialized(true);
+        }
+
+        // Support for legacy proxy-manager-lts
         if ($document instanceof GhostObjectInterface && $document->getProxyInitializer() !== null) {
             // Inject an empty initialiser to not load any object data
             $document->setProxyInitializer(static function (

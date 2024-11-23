@@ -83,11 +83,22 @@ class Configuration
     public const AUTOGENERATE_EVAL = 3;
 
     /**
+     * Autogenerate the proxy class when the proxy file does not exist or
+     * when the proxied file changed.
+     *
+     * This strategy causes a file_exists() call whenever any proxy is used the
+     * first time in a request. When the proxied file is changed, the proxy will
+     * be updated.
+     */
+    public const AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED = 4;
+
+    /**
      * Array of attributes for this configuration instance.
      *
      * @phpstan-var array{
      *      autoGenerateHydratorClasses?: self::AUTOGENERATE_*,
      *      autoGeneratePersistentCollectionClasses?: self::AUTOGENERATE_*,
+     *      autoGenerateProxyClasses?: self::AUTOGENERATE_*,
      *      classMetadataFactoryName?: class-string<ClassMetadataFactoryInterface>,
      *      defaultCommitOptions?: CommitOptions,
      *      defaultDocumentRepositoryClassName?: class-string<ObjectRepository<object>>,
@@ -106,6 +117,8 @@ class Configuration
      *      persistentCollectionGenerator?: PersistentCollectionGenerator,
      *      persistentCollectionDir?: string,
      *      persistentCollectionNamespace?: string,
+     *      proxyDir?: string,
+     *      proxyNamespace?: string,
      *      repositoryFactory?: RepositoryFactory
      * }
      */
@@ -113,17 +126,7 @@ class Configuration
 
     private ?CacheItemPoolInterface $metadataCache = null;
 
-    private ProxyManagerConfiguration $proxyManagerConfiguration;
-
-    private int $autoGenerateProxyClasses = self::AUTOGENERATE_EVAL;
-
     private bool $useTransactionalFlush = false;
-
-    public function __construct()
-    {
-        $this->proxyManagerConfiguration = new ProxyManagerConfiguration();
-        $this->setAutoGenerateProxyClasses(self::AUTOGENERATE_FILE_NOT_EXISTS);
-    }
 
     /**
      * Adds a namespace under a certain alias.
@@ -248,14 +251,7 @@ class Configuration
      */
     public function setProxyDir(string $dir): void
     {
-        $this->getProxyManagerConfiguration()->setProxiesTargetDir($dir);
-
-        // Recreate proxy generator to ensure its path was updated
-        if ($this->autoGenerateProxyClasses !== self::AUTOGENERATE_FILE_NOT_EXISTS) {
-            return;
-        }
-
-        $this->setAutoGenerateProxyClasses($this->autoGenerateProxyClasses);
+        $this->attributes['proxyDir'] = $dir;
     }
 
     /**
@@ -263,53 +259,41 @@ class Configuration
      */
     public function getProxyDir(): ?string
     {
-        return $this->getProxyManagerConfiguration()->getProxiesTargetDir();
+        return $this->attributes['proxyDir'] ?? null;
     }
 
     /**
      * Gets an int flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
+     *
+     * @return self::AUTOGENERATE_*
      */
     public function getAutoGenerateProxyClasses(): int
     {
-        return $this->autoGenerateProxyClasses;
+        return $this->attributes['autoGenerateProxyClasses'] ?? self::AUTOGENERATE_FILE_NOT_EXISTS;
     }
 
     /**
      * Sets an int flag that indicates whether proxy classes should always be regenerated
      * during each script execution.
      *
+     * @param self::AUTOGENERATE_* $mode
+     *
      * @throws InvalidArgumentException If an invalid mode was given.
      */
     public function setAutoGenerateProxyClasses(int $mode): void
     {
-        $this->autoGenerateProxyClasses = $mode;
-        $proxyManagerConfig             = $this->getProxyManagerConfiguration();
-
-        switch ($mode) {
-            case self::AUTOGENERATE_FILE_NOT_EXISTS:
-                $proxyManagerConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
-                    new FileLocator($proxyManagerConfig->getProxiesTargetDir()),
-                ));
-
-                break;
-            case self::AUTOGENERATE_EVAL:
-                $proxyManagerConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
-
-                break;
-            default:
-                throw new InvalidArgumentException('Invalid proxy generation strategy given - only AUTOGENERATE_FILE_NOT_EXISTS and AUTOGENERATE_EVAL are supported.');
-        }
+        $this->attributes['autoGenerateProxyClasses'] = $mode;
     }
 
     public function getProxyNamespace(): ?string
     {
-        return $this->getProxyManagerConfiguration()->getProxiesNamespace();
+        return $this->attributes['proxyNamespace'] ?? null;
     }
 
     public function setProxyNamespace(string $ns): void
     {
-        $this->getProxyManagerConfiguration()->setProxiesNamespace($ns);
+        $this->attributes['proxyNamespace'] = $ns;
     }
 
     public function setHydratorDir(string $dir): void
@@ -589,14 +573,35 @@ class Configuration
         return $this->attributes['persistentCollectionGenerator'];
     }
 
+    /** @deprecated */
     public function buildGhostObjectFactory(): LazyLoadingGhostFactory
     {
-        return new LazyLoadingGhostFactory(clone $this->getProxyManagerConfiguration());
+        return new LazyLoadingGhostFactory($this->getProxyManagerConfiguration());
     }
 
+    /** @deprecated */
     public function getProxyManagerConfiguration(): ProxyManagerConfiguration
     {
-        return $this->proxyManagerConfiguration;
+        $proxyManagerConfiguration = new ProxyManagerConfiguration();
+        $proxyManagerConfiguration->setProxiesTargetDir($this->getProxyDir());
+        $proxyManagerConfiguration->setProxiesNamespace($this->getProxyNamespace());
+
+        switch ($this->getAutoGenerateProxyClasses()) {
+            case self::AUTOGENERATE_FILE_NOT_EXISTS:
+                $proxyManagerConfiguration->setGeneratorStrategy(new FileWriterGeneratorStrategy(
+                    new FileLocator($proxyManagerConfiguration->getProxiesTargetDir()),
+                ));
+
+                break;
+            case self::AUTOGENERATE_EVAL:
+                $proxyManagerConfiguration->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
+
+                break;
+            default:
+                throw new InvalidArgumentException('Invalid proxy generation strategy given - only AUTOGENERATE_FILE_NOT_EXISTS and AUTOGENERATE_EVAL are supported.');
+        }
+
+        return $proxyManagerConfiguration;
     }
 
     public function setUseTransactionalFlush(bool $useTransactionalFlush): void

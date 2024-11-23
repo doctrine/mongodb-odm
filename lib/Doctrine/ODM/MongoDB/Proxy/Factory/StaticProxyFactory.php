@@ -22,6 +22,8 @@ use function count;
 
 /**
  * This factory is used to create proxy objects for documents at runtime.
+ *
+ * @deprecated
  */
 final class StaticProxyFactory implements ProxyFactory
 {

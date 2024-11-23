@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -112,7 +113,7 @@ class ViewTest extends BaseTestCase
         $viewReference = $this->dm->find(ViewReference::class, $alcaeus->getId());
         self::assertInstanceOf(ViewReference::class, $viewReference);
 
-        self::assertInstanceOf(GhostObjectInterface::class, $viewReference->getReferenceOneView());
+        self::assertInstanceOf(InternalProxy::class, $viewReference->getReferenceOneView());
         self::assertSame($malarzm->getId(), $viewReference->getReferenceOneView()->getId());
 
         // No proxies for inverse referenceOne
@@ -120,7 +121,7 @@ class ViewTest extends BaseTestCase
         self::assertSame($alcaeus->getId(), $viewReference->getReferenceOneViewMappedBy()->getId());
 
         self::assertCount(1, $viewReference->getReferenceManyView());
-        self::assertInstanceOf(GhostObjectInterface::class, $viewReference->getReferenceManyView()[0]);
+        self::assertInstanceOf(InternalProxy::class, $viewReference->getReferenceManyView()[0]);
         self::assertSame($malarzm->getId(), $viewReference->getReferenceManyView()[0]->getId());
 
         // No proxies for inverse referenceMany

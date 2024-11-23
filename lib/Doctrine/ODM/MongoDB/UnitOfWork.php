@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -969,6 +970,10 @@ final class UnitOfWork implements PropertyChangedListener
         $isNewParentDocument   = isset($this->scheduledDocumentInsertions[spl_object_hash($parentDocument)]);
         $class                 = $this->dm->getClassMetadata($parentDocument::class);
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
+
+        if ($value instanceof InternalProxy && ! $value->__isInitialized()) {
+            return;
+        }
 
         if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
             return;
@@ -3057,7 +3062,9 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
+        if ($obj instanceof InternalProxy && ! $obj->__isInitialized()) {
+            $obj->__load();
+        } elseif ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
             $obj->initializeProxy();
         } elseif ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
@@ -3072,6 +3079,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function isUninitializedObject(object $obj): bool
     {
         return match (true) {
+            $obj instanceof InternalProxy => $obj->__isInitialized() === false,
             $obj instanceof GhostObjectInterface => $obj->isProxyInitialized() === false,
             $obj instanceof PersistentCollectionInterface => $obj->isInitialized() === false,
             default => false

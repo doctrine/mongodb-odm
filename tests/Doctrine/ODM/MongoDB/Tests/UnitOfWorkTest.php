@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -489,7 +490,7 @@ class UnitOfWorkTest extends BaseTestCase
         $user = $this->dm->find(ForumUser::class, $id);
         self::assertInstanceOf(ForumUser::class, $user);
 
-        self::assertInstanceOf(GhostObjectInterface::class, $user->getAvatar());
+        self::assertInstanceOf(InternalProxy::class, $user->getAvatar());
 
         $classMetadata = $this->dm->getClassMetadata(ForumAvatar::class);
 
