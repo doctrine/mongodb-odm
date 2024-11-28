@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\IterableResult;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
@@ -246,8 +247,10 @@ class Builder
      * Returns an aggregation object for the current pipeline
      *
      * @param array<string, mixed> $options
+     *
+     * @return Aggregation
      */
-    public function getAggregation(array $options = []): Aggregation
+    public function getAggregation(array $options = []): IterableResult
     {
         $class = $this->hydrationClass ? $this->dm->getClassMetadata($this->hydrationClass) : null;
 
