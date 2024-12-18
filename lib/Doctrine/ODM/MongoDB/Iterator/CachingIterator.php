@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Countable;
-use Generator;
+use Iterator;
+use IteratorIterator;
 use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
@@ -33,12 +34,10 @@ final class CachingIterator implements Countable, Iterator
     /** @var array<mixed, TValue> */
     private array $items = [];
 
-    /** @var Generator<mixed, TValue>|null */
-    private ?Generator $iterator;
+    /** @var Iterator<mixed, TValue>|null */
+    private ?Iterator $iterator;
 
     private bool $iteratorAdvanced = false;
-
-    private bool $iteratorExhausted = false;
 
     /**
      * Initialize the iterator and stores the first item in the cache. This
@@ -51,7 +50,8 @@ final class CachingIterator implements Countable, Iterator
      */
     public function __construct(Traversable $iterator)
     {
-        $this->iterator = $this->wrapTraversable($iterator);
+        $this->iterator = new IteratorIterator($iterator);
+        $this->iterator->rewind();
         $this->storeCurrentItem();
     }
 
@@ -94,9 +94,14 @@ final class CachingIterator implements Countable, Iterator
     /** @see http://php.net/iterator.next */
     public function next(): void
     {
-        if (! $this->iteratorExhausted) {
-            $this->getIterator()->next();
+        if ($this->iterator !== null) {
+            $this->iterator->next();
             $this->storeCurrentItem();
+            $this->iteratorAdvanced = true;
+
+            if (! $this->iterator->valid()) {
+                $this->iterator = null;
+            }
         }
 
         next($this->items);
@@ -126,15 +131,13 @@ final class CachingIterator implements Countable, Iterator
      */
     private function exhaustIterator(): void
     {
-        while (! $this->iteratorExhausted) {
+        while ($this->iterator !== null) {
             $this->next();
         }
-
-        $this->iterator = null;
     }
 
-    /** @return Generator<mixed, TValue> */
-    private function getIterator(): Generator
+    /** @return Iterator<mixed, TValue> */
+    private function getIterator(): Iterator
     {
         if ($this->iterator === null) {
             throw new RuntimeException('Iterator has already been destroyed');
@@ -155,21 +158,5 @@ final class CachingIterator implements Countable, Iterator
         }
 
         $this->items[$key] = $this->getIterator()->current();
-    }
-
-    /**
-     * @param Traversable<mixed, TValue> $traversable
-     *
-     * @return Generator<mixed, TValue>
-     */
-    private function wrapTraversable(Traversable $traversable): Generator
-    {
-        foreach ($traversable as $key => $value) {
-            yield $key => $value;
-
-            $this->iteratorAdvanced = true;
-        }
-
-        $this->iteratorExhausted = true;
     }
 }

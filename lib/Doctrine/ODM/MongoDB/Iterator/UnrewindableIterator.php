@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
 
-use Generator;
+use Iterator;
+use IteratorIterator;
 use LogicException;
 use ReturnTypeWillChange;
 use RuntimeException;
@@ -23,39 +24,34 @@ use function sprintf;
  */
 final class UnrewindableIterator implements Iterator
 {
-    /** @var Generator<mixed, TValue>|null */
-    private ?Generator $iterator;
+    /** @var Iterator<mixed, TValue>|null */
+    private ?Iterator $iterator;
 
     private bool $iteratorAdvanced = false;
 
     /**
-     * Initialize the iterator. This effectively rewinds the Traversable and
-     * the wrapping Generator, which will execute up to its first yield statement.
-     * Additionally, this mimics behavior of the SPL iterators and allows users
-     * to omit an explicit call to rewind() before using the other methods.
+     * Initialize the iterator. This effectively rewinds the Traversable.
+     * This mimics behavior of the SPL iterators and allows users to omit an
+     * explicit call to rewind() before using the other methods.
      *
      * @param Traversable<mixed, TValue> $iterator
      */
     public function __construct(Traversable $iterator)
     {
-        $this->iterator = $this->wrapTraversable($iterator);
-        $this->iterator->key();
+        $this->iterator = new IteratorIterator($iterator);
+        $this->iterator->rewind();
     }
 
     public function toArray(): array
     {
         $this->preventRewinding(__METHOD__);
 
-        $toArray = function () {
-            if (! $this->valid()) {
-                return;
-            }
-
-            yield $this->key() => $this->current();
-            yield from $this->getIterator();
-        };
-
-        return iterator_to_array($toArray());
+        try {
+            return iterator_to_array($this->getIterator());
+        } finally {
+            $this->iteratorAdvanced = true;
+            $this->iterator         = null;
+        }
     }
 
     /** @return TValue|null */
@@ -84,6 +80,13 @@ final class UnrewindableIterator implements Iterator
         }
 
         $this->iterator->next();
+        $this->iteratorAdvanced = true;
+
+        if ($this->iterator->valid()) {
+            return;
+        }
+
+        $this->iterator = null;
     }
 
     /** @see http://php.net/iterator.rewind */
@@ -108,29 +111,13 @@ final class UnrewindableIterator implements Iterator
         }
     }
 
-    /** @return Generator<mixed, TValue> */
-    private function getIterator(): Generator
+    /** @return Iterator<mixed, TValue> */
+    private function getIterator(): Iterator
     {
         if ($this->iterator === null) {
             throw new RuntimeException('Iterator has already been destroyed');
         }
 
         return $this->iterator;
-    }
-
-    /**
-     * @param Traversable<mixed, TValue> $traversable
-     *
-     * @return Generator<mixed, TValue>
-     */
-    private function wrapTraversable(Traversable $traversable): Generator
-    {
-        foreach ($traversable as $key => $value) {
-            yield $key => $value;
-
-            $this->iteratorAdvanced = true;
-        }
-
-        $this->iterator = null;
     }
 }

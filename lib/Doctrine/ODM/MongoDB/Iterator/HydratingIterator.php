@@ -6,8 +6,8 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use Generator;
 use Iterator;
+use IteratorIterator;
 use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
@@ -24,8 +24,8 @@ use Traversable;
  */
 final class HydratingIterator implements Iterator
 {
-    /** @var Generator<mixed, array<string, mixed>>|null */
-    private ?Generator $iterator;
+    /** @var Iterator<mixed, array<string, mixed>>|null */
+    private ?Iterator $iterator;
 
     /**
      * @param Traversable<mixed, array<string, mixed>> $traversable
@@ -34,7 +34,7 @@ final class HydratingIterator implements Iterator
      */
     public function __construct(Traversable $traversable, private UnitOfWork $unitOfWork, private ClassMetadata $class, private array $unitOfWorkHints = [])
     {
-        $this->iterator = $this->wrapTraversable($traversable);
+        $this->iterator = new IteratorIterator($traversable);
     }
 
     public function __destruct()
@@ -74,8 +74,8 @@ final class HydratingIterator implements Iterator
         return $this->key() !== null;
     }
 
-    /** @return Generator<mixed, array<string, mixed>> */
-    private function getIterator(): Generator
+    /** @return Iterator<mixed, array<string, mixed>> */
+    private function getIterator(): Iterator
     {
         if ($this->iterator === null) {
             throw new RuntimeException('Iterator has already been destroyed');
@@ -92,17 +92,5 @@ final class HydratingIterator implements Iterator
     private function hydrate(?array $document): ?object
     {
         return $document !== null ? $this->unitOfWork->getOrCreateDocument($this->class->name, $document, $this->unitOfWorkHints) : null;
-    }
-
-    /**
-     * @param Traversable<mixed, array<string, mixed>> $traversable
-     *
-     * @return Generator<mixed, array<string, mixed>>
-     */
-    private function wrapTraversable(Traversable $traversable): Generator
-    {
-        foreach ($traversable as $key => $value) {
-            yield $key => $value;
-        }
     }
 }

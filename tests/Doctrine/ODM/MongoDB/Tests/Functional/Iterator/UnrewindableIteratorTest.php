@@ -100,6 +100,15 @@ class UnrewindableIteratorTest extends TestCase
         iterator_to_array($iterator);
     }
 
+    public function testRewingAfterToArray(): void
+    {
+        $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
+
+        $iterator->toArray();
+        $this->expectException(LogicException::class);
+        $iterator->rewind();
+    }
+
     public function testToArray(): void
     {
         $iterator = new UnrewindableIterator($this->getTraversable([1, 2, 3]));
