@@ -52,11 +52,7 @@ final class CachingIterator implements Countable, Iterator
     {
         $this->iterator = new IteratorIterator($iterator);
         $this->iterator->rewind();
-        if ($this->iterator->valid()) {
-            $this->storeCurrentItem();
-        } else {
-            $this->iterator = null;
-        }
+        $this->storeCurrentItem();
     }
 
     /** @see https://php.net/countable.count */
@@ -102,10 +98,6 @@ final class CachingIterator implements Countable, Iterator
             $this->iterator->next();
             $this->storeCurrentItem();
             $this->iteratorAdvanced = true;
-
-            if (! $this->iterator->valid()) {
-                $this->iterator = null;
-            }
         }
 
         next($this->items);
@@ -155,12 +147,12 @@ final class CachingIterator implements Countable, Iterator
      */
     private function storeCurrentItem(): void
     {
-        $key = $this->getIterator()->key();
+        $key = $this->iterator->key();
 
         if ($key === null) {
-            return;
+            $this->iterator = null;
+        } else {
+            $this->items[$key] = $this->getIterator()->current();
         }
-
-        $this->items[$key] = $this->getIterator()->current();
     }
 }
