@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Iterator;
 
-use Iterator;
+use Iterator as SPLIterator;
 use IteratorIterator;
 use LogicException;
 use ReturnTypeWillChange;
@@ -24,8 +24,8 @@ use function sprintf;
  */
 final class UnrewindableIterator implements Iterator
 {
-    /** @var Iterator<mixed, TValue>|null */
-    private ?Iterator $iterator;
+    /** @var SPLIterator<mixed, TValue>|null */
+    private ?SPLIterator $iterator;
 
     private bool $iteratorAdvanced = false;
 
@@ -111,8 +111,8 @@ final class UnrewindableIterator implements Iterator
         }
     }
 
-    /** @return Iterator<mixed, TValue> */
-    private function getIterator(): Iterator
+    /** @return SPLIterator<mixed, TValue> */
+    private function getIterator(): SPLIterator
     {
         if ($this->iterator === null) {
             throw new RuntimeException('Iterator has already been destroyed');

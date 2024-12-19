@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Iterator;
 
 use Countable;
-use Iterator;
+use Iterator as SPLIterator;
 use IteratorIterator;
 use ReturnTypeWillChange;
 use RuntimeException;
@@ -34,8 +34,8 @@ final class CachingIterator implements Countable, Iterator
     /** @var array<mixed, TValue> */
     private array $items = [];
 
-    /** @var Iterator<mixed, TValue>|null */
-    private ?Iterator $iterator;
+    /** @var SPLIterator<mixed, TValue>|null */
+    private ?SPLIterator $iterator;
 
     private bool $iteratorAdvanced = false;
 
@@ -136,8 +136,8 @@ final class CachingIterator implements Countable, Iterator
         }
     }
 
-    /** @return Iterator<mixed, TValue> */
-    private function getIterator(): Iterator
+    /** @return SPLIterator<mixed, TValue> */
+    private function getIterator(): SPLIterator
     {
         if ($this->iterator === null) {
             throw new RuntimeException('Iterator has already been destroyed');
