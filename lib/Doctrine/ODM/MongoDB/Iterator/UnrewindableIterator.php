@@ -72,7 +72,6 @@ final class UnrewindableIterator implements Iterator
         return null;
     }
 
-    /** @see https://www.php.net/iterator.next */
     public function next(): void
     {
         if (! $this->iterator) {
@@ -89,13 +88,11 @@ final class UnrewindableIterator implements Iterator
         $this->iterator = null;
     }
 
-    /** @see https://www.php.net/iterator.rewind */
     public function rewind(): void
     {
         $this->preventRewinding(__METHOD__);
     }
 
-    /** @see https://www.php.net/iterator.valid */
     public function valid(): bool
     {
         return $this->key() !== null;

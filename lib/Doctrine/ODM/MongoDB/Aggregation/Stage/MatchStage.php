@@ -26,7 +26,6 @@ class MatchStage extends Stage
         $this->query = $this->expr();
     }
 
-    /** @see https://www.php.net/language.oop5.cloning */
     public function __clone()
     {
         $this->query = clone $this->query;
