@@ -59,6 +59,19 @@ class CachingIteratorTest extends TestCase
         self::assertFalse($iterator->valid());
     }
 
+    public function testIterationWithInvalidIterator(): void
+    {
+        $mock = $this->createMock(Iterator::class);
+        // The method next() should not be called on a dead cursor.
+        $mock->expects(self::never())->method('next');
+        // The method valid() return false on a dead cursor.
+        $mock->expects(self::once())->method('valid')->willReturn(false);
+
+        $iterator = new CachingIterator($mock);
+
+        $this->assertEquals([], $iterator->toArray());
+    }
+
     public function testPartialIterationDoesNotExhaust(): void
     {
         $traversable = $this->getTraversableThatThrows([1, 2, new Exception()]);
