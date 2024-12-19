@@ -27,7 +27,7 @@ document mapping metadata:
 Introduction to Attributes
 --------------------------
 
-`PHP attributes <https://www.php.net/manual/en/language.attributes.overview.php>`_
+`PHP attributes <https://www.php.net/language.attributes.overview>`_
 are a PHP 8+ feature that provides a native way to add metadata to classes,
 methods, properties, and other language constructs. They replace doctrine
 annotations by offering a standardized approach to metadata, eliminating
@@ -151,7 +151,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``string``
 -  ``timestamp``
 
-You can read more about the available MongoDB types on `php.net <https://www.php.net/manual/en/mongodb.bson.php>`_.
+You can read more about the available MongoDB types on `php.net <https://www.php.net/mongodb.bson>`_.
 
 .. note::
 

@@ -1235,7 +1235,7 @@ for the related collection.
    `Extended JSON specification <https://github.com/mongodb/specifications/blob/master/source/extended-json.rst>`_.
    The recommended way to fill up this property is to create a class constant
    (eg. ``::VALIDATOR``) using the
-   `HEREDOC/NOWDOC syntax <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.nowdoc>`_
+   `HEREDOC/NOWDOC syntax <https://www.php.net/language.types.string#language.types.string.syntax.nowdoc>`_
    for clarity and to reference it as the attribute value.
 -
    ``action`` - Determines how MongoDB handles documents that violate
@@ -1398,6 +1398,6 @@ root class specified in the view mapping.
 .. _BSON specification: http://bsonspec.org/spec.html
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
-.. _MongoDB\BSON\ObjectId: https://www.php.net/manual/en/class.mongodb-bson-objectid.php
+.. _MongoDB\BSON\ObjectId: https://www.php.net/class.mongodb-bson-objectid
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>

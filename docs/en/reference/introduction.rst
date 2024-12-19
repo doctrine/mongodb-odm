@@ -436,4 +436,4 @@ please create separate clients for your application and ODM.
 .. _MongoDB: https://www.mongodb.com/
 .. _Composer: http://getcomposer.org/
 .. _tuning for production: https://ocramius.github.io/ProxyManager/docs/tuning-for-production.html
-.. _official PHP manual: https://www.php.net/manual/en/mongodb.installation.php
+.. _official PHP manual: https://www.php.net/mongodb.installation

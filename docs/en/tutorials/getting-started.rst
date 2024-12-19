@@ -298,4 +298,4 @@ access to the properties and methods that you have defined yourself. You can
 continue reading :doc:`Introduction to MongoDB Object Document Mapper <../reference/introduction>`.
 
 .. _MongoDB Compass: https://www.mongodb.com/products/tools/compass
-.. _ObjectId: https://www.php.net/manual/en/class.mongodb-bson-objectid.php
+.. _ObjectId: https://www.php.net/class.mongodb-bson-objectid

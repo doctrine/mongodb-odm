@@ -254,7 +254,7 @@ final class Query implements IteratorAggregate
      * Otherwise, the query will be executed and UnexpectedValueException will
      * be thrown if {@link Query::execute()} does not return an Iterator.
      *
-     * @see http://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @see https://www.php.net/iteratoraggregate.getiterator
      *
      * @throws BadMethodCallException If the query type would not return an Iterator.
      * @throws UnexpectedValueException If the query did not return an Iterator.

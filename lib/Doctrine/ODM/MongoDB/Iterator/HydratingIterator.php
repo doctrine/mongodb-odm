@@ -57,19 +57,19 @@ final class HydratingIterator implements Iterator
         return $this->getIterator()->key();
     }
 
-    /** @see http://php.net/iterator.next */
+    /** @see https://www.php.net/iterator.next */
     public function next(): void
     {
         $this->getIterator()->next();
     }
 
-    /** @see http://php.net/iterator.rewind */
+    /** @see https://www.php.net/iterator.rewind */
     public function rewind(): void
     {
         $this->getIterator()->rewind();
     }
 
-    /** @see http://php.net/iterator.valid */
+    /** @see https://www.php.net/iterator.valid */
     public function valid(): bool
     {
         return $this->key() !== null;
