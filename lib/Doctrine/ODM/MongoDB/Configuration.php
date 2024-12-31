@@ -631,7 +631,7 @@ class Configuration
 
             trigger_deprecation(
                 'doctrine/mongodb-odm',
-                '2.6',
+                '2.10',
                 'Using "friendsofphp/proxy-manager-lts" is deprecated. Use "symfony/var-exporter" LazyGhostObjects instead.',
             );
         }
