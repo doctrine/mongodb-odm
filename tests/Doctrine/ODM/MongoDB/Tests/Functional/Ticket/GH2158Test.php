@@ -11,7 +11,7 @@ class GH2158Test extends BaseTestCase
 {
     public function testDiscriminatorMapCreationType(): void
     {
-        $obj = new GH2158FirstType;
+        $obj = new GH2158FirstType();
         $this->dm->persist($obj);
         $this->dm->flush();
 
