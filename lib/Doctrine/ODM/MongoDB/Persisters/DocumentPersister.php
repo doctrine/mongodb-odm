@@ -1470,7 +1470,7 @@ final class DocumentPersister
 
         foreach ($metadata->subClasses as $className) {
             $key = array_search($className, $metadata->discriminatorMap);
-            if (! $key) {
+            if ($key === false) {
                 continue;
             }
 
