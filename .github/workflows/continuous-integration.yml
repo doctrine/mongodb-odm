@@ -118,6 +118,11 @@ jobs:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
 
+      - name: "Install latest Python version"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - id: setup-mongodb
         uses: mongodb-labs/drivers-evergreen-tools@master
         with:
