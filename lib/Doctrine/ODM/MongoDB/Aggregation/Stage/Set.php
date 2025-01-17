@@ -11,8 +11,9 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
  *
  * @psalm-import-type OperatorExpression from Expr
  * @psalm-type SetStageExpression = array{'$set': array<string, OperatorExpression|mixed>}
+ * @final
  */
-final class Set extends Operator
+class Set extends Operator
 {
     /** @psalm-return SetStageExpression */
     public function getExpression(): array
