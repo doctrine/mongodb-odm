@@ -128,9 +128,13 @@ class Configuration
 
     private ?CacheItemPoolInterface $metadataCache = null;
 
+    /** @deprecated */
+    private ProxyManagerConfiguration $proxyManagerConfiguration;
+
     private bool $useTransactionalFlush = false;
 
     private bool $useLazyGhostObject = true;
+
 
     /**
      * Adds a namespace under a certain alias.
@@ -256,6 +260,7 @@ class Configuration
     public function setProxyDir(string $dir): void
     {
         $this->attributes['proxyDir'] = $dir;
+        unset($this->proxyManagerConfiguration);
     }
 
     /**
@@ -288,6 +293,7 @@ class Configuration
     public function setAutoGenerateProxyClasses(int $mode): void
     {
         $this->attributes['autoGenerateProxyClasses'] = $mode;
+        unset($this->proxyManagerConfiguration);
     }
 
     public function getProxyNamespace(): ?string
@@ -298,6 +304,7 @@ class Configuration
     public function setProxyNamespace(string $ns): void
     {
         $this->attributes['proxyNamespace'] = $ns;
+        unset($this->proxyManagerConfiguration);
     }
 
     public function setHydratorDir(string $dir): void
@@ -586,6 +593,10 @@ class Configuration
     /** @deprecated */
     public function getProxyManagerConfiguration(): ProxyManagerConfiguration
     {
+        if (isset($this->proxyManagerConfiguration)) {
+            return $this->proxyManagerConfiguration;
+        }
+
         $proxyManagerConfiguration = new ProxyManagerConfiguration();
         $proxyManagerConfiguration->setProxiesTargetDir($this->getProxyDir());
         $proxyManagerConfiguration->setProxiesNamespace($this->getProxyNamespace());
@@ -605,7 +616,7 @@ class Configuration
                 throw new InvalidArgumentException('Invalid proxy generation strategy given - only AUTOGENERATE_FILE_NOT_EXISTS and AUTOGENERATE_EVAL are supported.');
         }
 
-        return $proxyManagerConfiguration;
+        return $this->proxyManagerConfiguration = $proxyManagerConfiguration;
     }
 
     public function setUseTransactionalFlush(bool $useTransactionalFlush): void
