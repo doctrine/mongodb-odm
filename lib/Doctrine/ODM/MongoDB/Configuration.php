@@ -135,7 +135,6 @@ class Configuration
 
     private bool $useLazyGhostObject = true;
 
-
     /**
      * Adds a namespace under a certain alias.
      */
@@ -652,7 +651,7 @@ class Configuration
 
     public function isLazyGhostObjectEnabled(): bool
     {
-        return $this->useLazyGhostObject ?? true;
+        return $this->useLazyGhostObject;
     }
 }
 
