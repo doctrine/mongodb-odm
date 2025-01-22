@@ -40,9 +40,6 @@ use function ucfirst;
  */
 final class ClassMetadataFactory extends AbstractClassMetadataFactory implements ClassMetadataFactoryInterface
 {
-    /** @var string */
-    protected $cacheSalt = '$MONGODBODMCLASSMETADATA';
-
     /** @var DocumentManager The DocumentManager instance */
     private DocumentManager $dm;
 
@@ -54,6 +51,11 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     /** @var EventManager The event manager instance */
     private EventManager $evm;
+
+    public function __construct()
+    {
+        $this->cacheSalt = '$MONGODBODMCLASSMETADATA';
+    }
 
     public function setDocumentManager(DocumentManager $dm): void
     {
@@ -82,7 +84,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     }
 
     /** @param string $className */
-    protected function onNotFoundMetadata($className)
+    protected function onNotFoundMetadata($className): ?ClassMetadata
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return null;

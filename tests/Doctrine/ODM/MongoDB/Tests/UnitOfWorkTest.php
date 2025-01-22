@@ -652,7 +652,7 @@ class NotifyChangedDocument implements NotifyPropertyChanged
         $this->transient = $value;
     }
 
-    public function addPropertyChangedListener(PropertyChangedListener $listener)
+    public function addPropertyChangedListener(PropertyChangedListener $listener): void
     {
         $this->_listeners[] = $listener;
     }

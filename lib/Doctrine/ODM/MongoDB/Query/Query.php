@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
+use Doctrine\ODM\MongoDB\Iterator\IterableResult;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
@@ -16,7 +17,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
-use IteratorAggregate;
 use MongoDB\Collection;
 use MongoDB\DeleteResult;
 use MongoDB\Driver\ReadPreference;
@@ -63,7 +63,7 @@ use function is_string;
  * @phpstan-import-type Hints from UnitOfWork
  * @phpstan-import-type SortMeta from Sort
  */
-final class Query implements IteratorAggregate
+final class Query implements IterableResult
 {
     public const TYPE_FIND            = 1;
     public const TYPE_FIND_AND_UPDATE = 2;
@@ -200,7 +200,7 @@ final class Query implements IteratorAggregate
      *
      * @throws MongoDBException
      */
-    public function execute()
+    public function execute(): mixed
     {
         $results = $this->runQuery();
 
@@ -296,7 +296,7 @@ final class Query implements IteratorAggregate
      *
      * @return array<string, mixed>|object|null
      */
-    public function getSingleResult()
+    public function getSingleResult(): mixed
     {
         $clonedQuery                 = clone $this;
         $clonedQuery->query['limit'] = 1;
@@ -353,7 +353,7 @@ final class Query implements IteratorAggregate
     /**
      * Execute the query and return its results as an array.
      *
-     * @see IteratorAggregate::toArray()
+     * @see Iterator::toArray()
      *
      * @return mixed[]
      */

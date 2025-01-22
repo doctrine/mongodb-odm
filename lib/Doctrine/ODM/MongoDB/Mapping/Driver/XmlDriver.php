@@ -81,7 +81,7 @@ class XmlDriver extends FileDriver
     }
 
     // phpcs:disable SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
     {
         assert($metadata instanceof ClassMetadata);
         $xmlRoot = $this->getElement($className);

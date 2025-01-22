@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Query;
 use BadMethodCallException;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Iterator\IterableResult;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
@@ -659,8 +660,10 @@ class Builder
      * Gets the Query executable.
      *
      * @param array<string, mixed> $options
+     *
+     * @return Query
      */
-    public function getQuery(array $options = []): Query
+    public function getQuery(array $options = []): IterableResult
     {
         $documentPersister = $this->dm->getUnitOfWork()->getDocumentPersister($this->class->name);
 
