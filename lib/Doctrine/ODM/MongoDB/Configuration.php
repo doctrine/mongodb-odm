@@ -133,7 +133,7 @@ class Configuration
 
     private bool $useTransactionalFlush = false;
 
-    private bool $useLazyGhostObject = true;
+    private bool $useLazyGhostObject = false;
 
     /**
      * Adds a namespace under a certain alias.

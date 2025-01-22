@@ -124,13 +124,6 @@ jobs:
           composer require --no-update symfony/var-dumper:^7@dev
           composer require --no-update --dev symfony/cache:^7@dev
 
-      - name: "Remove proxy-manager-lts"
-        if: "${{ matrix.proxy != 'proxy-manager' }}"
-        run: |
-          # proxy-manager-lts is not installed by default and must not be used
-          # unless explicitly requested
-          composer remove --no-update --dev friendsofphp/proxy-manager-lts
-
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
