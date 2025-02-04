@@ -1505,11 +1505,11 @@ final class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
-        if (isset($this->identityMap[$class->name][$id])) {
+        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
             return false;
         }
 
-        $this->identityMap[$class->name][$id] = $document;
+        $this->identityMap[$class->rootDocumentName][$id] = $document;
 
         if ($document instanceof NotifyPropertyChanged && ! $this->isUninitializedObject($document)) {
             $document->addPropertyChangedListener($this);
@@ -1597,8 +1597,8 @@ final class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
-        if (isset($this->identityMap[$class->name][$id])) {
-            unset($this->identityMap[$class->name][$id]);
+        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
+            unset($this->identityMap[$class->rootDocumentName][$id]);
             $this->documentStates[$oid] = self::STATE_DETACHED;
 
             return true;
@@ -1629,7 +1629,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $serializedId = serialize($class->getDatabaseIdentifierValue($id));
 
-        return $this->identityMap[$class->name][$serializedId];
+        return $this->identityMap[$class->rootDocumentName][$serializedId];
     }
 
     /**
@@ -1658,7 +1658,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $serializedId = serialize($class->getDatabaseIdentifierValue($id));
 
-        return $this->identityMap[$class->name][$serializedId] ?? false;
+        return $this->identityMap[$class->rootDocumentName][$serializedId] ?? false;
     }
 
     /**
@@ -1688,7 +1688,7 @@ final class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
-        return isset($this->identityMap[$class->name][$id]);
+        return isset($this->identityMap[$class->rootDocumentName][$id]);
     }
 
     private function getIdForIdentityMap(object $document): string
@@ -2768,13 +2768,13 @@ final class UnitOfWork implements PropertyChangedListener
         if (! $class->isQueryResultDocument) {
             $id              = $class->getDatabaseIdentifierValue($data['_id']);
             $serializedId    = serialize($id);
-            $isManagedObject = isset($this->identityMap[$class->name][$serializedId]);
+            $isManagedObject = isset($this->identityMap[$class->rootDocumentName][$serializedId]);
         }
 
         $oid = null;
         if ($isManagedObject) {
             /** @phpstan-var T $document */
-            $document = $this->identityMap[$class->name][$serializedId];
+            $document = $this->identityMap[$class->rootDocumentName][$serializedId];
             $oid      = spl_object_hash($document);
             if ($this->isUninitializedObject($document)) {
                 $document->setProxyInitializer(null);
@@ -2798,9 +2798,9 @@ final class UnitOfWork implements PropertyChangedListener
 
             if (! $class->isQueryResultDocument) {
                 $this->registerManaged($document, $id, $data);
-                $oid                                            = spl_object_hash($document);
-                $this->documentStates[$oid]                     = self::STATE_MANAGED;
-                $this->identityMap[$class->name][$serializedId] = $document;
+                $oid                                                        = spl_object_hash($document);
+                $this->documentStates[$oid]                                 = self::STATE_MANAGED;
+                $this->identityMap[$class->rootDocumentName][$serializedId] = $document;
             }
 
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
