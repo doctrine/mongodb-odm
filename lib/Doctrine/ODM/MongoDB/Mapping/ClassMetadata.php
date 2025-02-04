@@ -2044,11 +2044,9 @@ use function trigger_deprecation;
     {
         $this->parentClasses = $classNames;
 
-        if (count($classNames) <= 0) {
+        if ($this->isEmbeddedDocument || count($classNames) <= 0) {
             return;
         }
-
-        if ($this->isEmbeddedDocument) return;
 
         $this->rootDocumentName = (string) array_pop($classNames);
     }
