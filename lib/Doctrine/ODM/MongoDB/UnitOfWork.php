@@ -1505,7 +1505,7 @@ final class UnitOfWork implements PropertyChangedListener
         $class = $this->dm->getClassMetadata($document::class);
         $id    = $this->getIdForIdentityMap($document);
 
-        if ($class->isEmbeddedDocument || isset($this->identityMap[$class->rootDocumentName][$id])) {
+        if (isset($this->identityMap[$class->rootDocumentName][$id])) {
             return false;
         }
 

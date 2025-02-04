@@ -2048,6 +2048,8 @@ use function trigger_deprecation;
             return;
         }
 
+        if ($this->isEmbeddedDocument) return;
+
         $this->rootDocumentName = (string) array_pop($classNames);
     }
 
