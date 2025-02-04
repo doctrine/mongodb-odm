@@ -2798,8 +2798,8 @@ final class UnitOfWork implements PropertyChangedListener
 
             if (! $class->isQueryResultDocument) {
                 $this->registerManaged($document, $id, $data);
-                $oid                                            = spl_object_hash($document);
-                $this->documentStates[$oid]                     = self::STATE_MANAGED;
+                $oid                                                        = spl_object_hash($document);
+                $this->documentStates[$oid]                                 = self::STATE_MANAGED;
                 $this->identityMap[$class->rootDocumentName][$serializedId] = $document;
             }
 
