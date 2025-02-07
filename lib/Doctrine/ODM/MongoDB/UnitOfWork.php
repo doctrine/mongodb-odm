@@ -1129,7 +1129,7 @@ final class UnitOfWork implements PropertyChangedListener
         $upsert = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
-            $upsert  = ! $class->isEmbeddedDocument && $idValue !== null;
+            $upsert  = ! $class->isEmbeddedDocument && ! $class->timeSeriesOptions && $idValue !== null;
 
             if ($class->generatorType === ClassMetadata::GENERATOR_TYPE_NONE && $idValue === null) {
                 throw new InvalidArgumentException(sprintf(
