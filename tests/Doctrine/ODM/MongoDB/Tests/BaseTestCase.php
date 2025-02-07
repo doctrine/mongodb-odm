@@ -211,6 +211,11 @@ abstract class BaseTestCase extends TestCase
         $this->requireVersion($this->getServerVersion(), '4.2.0', '<', $message);
     }
 
+    protected function requireMongoDB63(string $message): void
+    {
+        $this->requireVersion($this->getServerVersion(), '6.3.0', '<', $message);
+    }
+
     protected static function getUri(bool $useMultipleMongoses = true): string
     {
         $uri = getenv('DOCTRINE_MONGODB_SERVER') ?: DOCTRINE_MONGODB_SERVER;

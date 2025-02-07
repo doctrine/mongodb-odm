@@ -13,6 +13,13 @@ use function iterator_to_array;
 
 class TimeSeriesTest extends BaseTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->requireMongoDB63('Time series tests require MonogDB 6.3 or newer');
+    }
+
     public function testCreateTimeSeriesCollection(): void
     {
         $this->createTimeSeriesCollection(TimeSeriesDocument::class);
