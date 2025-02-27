@@ -294,7 +294,7 @@ EOF
                 $code .= sprintf(
                     <<<'EOF'
 
-        // ReferenceMany & EmbedMany
+        // %4$s
         $mongoData = $data['%1$s'] ?? null;
 
         if ($mongoData !== null && ! is_array($mongoData)) {
@@ -316,6 +316,7 @@ EOF
                     $mapping['name'],
                     $mapping['fieldName'],
                     $class->getName(),
+                    $mapping['association'] === ClassMetadata::REFERENCE_MANY ? 'ReferenceMany' : 'EmbedMany',
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $code .= sprintf(
@@ -385,7 +386,8 @@ class $hydratorClassName implements HydratorInterface
     public function hydrate(object \$document, array \$data, array \$hints = []): array
     {
         \$hydratedData = [];
-%s        return \$hydratedData;
+%s
+        return \$hydratedData;
     }
 }
 EOF
