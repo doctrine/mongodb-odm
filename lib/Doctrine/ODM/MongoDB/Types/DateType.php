@@ -90,7 +90,7 @@ class DateType extends Type implements Versionable
 
         $datetime = static::getDateTime($value);
 
-        return new UTCDateTime((int) $datetime->format('Uv'));
+        return new UTCDateTime($datetime);
     }
 
     public function convertToPHPValue($value)
@@ -104,7 +104,7 @@ class DateType extends Type implements Versionable
 
     public function closureToMongo(): string
     {
-        return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\' . static::class . '::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime((int) $datetime->format(\'Uv\')); }';
+        return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\' . static::class . '::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime($datetime); }';
     }
 
     public function closureToPHP(): string
