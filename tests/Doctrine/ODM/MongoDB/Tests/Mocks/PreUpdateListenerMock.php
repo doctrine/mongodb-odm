@@ -8,7 +8,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 
-use function spl_object_hash;
+use function spl_object_id;
 
 class PreUpdateListenerMock implements EventSubscriber
 {
@@ -24,7 +24,7 @@ class PreUpdateListenerMock implements EventSubscriber
     {
         $uow = $args->getDocumentManager()->getUnitOfWork();
         foreach ($uow->getScheduledDocumentUpdates() as $document) {
-            $uow->clearDocumentChangeSet(spl_object_hash($document));
+            $uow->clearDocumentChangeSet(spl_object_id($document));
         }
     }
 

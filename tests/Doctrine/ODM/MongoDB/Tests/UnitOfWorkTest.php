@@ -32,7 +32,7 @@ use ReflectionProperty;
 use Throwable;
 
 use function end;
-use function spl_object_hash;
+use function spl_object_id;
 use function sprintf;
 
 class UnitOfWorkTest extends BaseTestCase
@@ -74,7 +74,7 @@ class UnitOfWorkTest extends BaseTestCase
         $user->id = new ObjectId();
         self::assertEmpty($this->uow->getScheduledDocumentUpserts());
         $this->uow->scheduleForUpsert($class, $user);
-        self::assertEquals([spl_object_hash($user) => $user], $this->uow->getScheduledDocumentUpserts());
+        self::assertEquals([spl_object_id($user) => $user], $this->uow->getScheduledDocumentUpserts());
     }
 
     public function testScheduleForEmbeddedUpsert(): void
@@ -216,7 +216,7 @@ class UnitOfWorkTest extends BaseTestCase
             'uploadDate' => new DateTime(),
         ];
 
-        $this->uow->registerManaged($file, spl_object_hash($file), $data);
+        $this->uow->registerManaged($file, spl_object_id($file), $data);
 
         $this->uow->computeChangeSets();
         $changeset = $this->uow->getDocumentChangeSet($file);
@@ -242,7 +242,7 @@ class UnitOfWorkTest extends BaseTestCase
             'filename' => 'file.txt',
         ];
 
-        $this->uow->registerManaged($file, spl_object_hash($file), $data);
+        $this->uow->registerManaged($file, spl_object_id($file), $data);
 
         $this->uow->computeChangeSets();
         $changeset = $this->uow->getDocumentChangeSet($file);
@@ -326,7 +326,7 @@ class UnitOfWorkTest extends BaseTestCase
     public function testRegisterManagedEmbeddedDocumentWithMappedIdAndNullValue(): void
     {
         $document = new EmbeddedDocumentWithId();
-        $oid      = spl_object_hash($document);
+        $oid      = spl_object_id($document);
 
         $this->uow->registerManaged($document, null, []);
 
@@ -336,7 +336,7 @@ class UnitOfWorkTest extends BaseTestCase
     public function testRegisterManagedEmbeddedDocumentWithoutMappedId(): void
     {
         $document = new EmbeddedDocumentWithoutId();
-        $oid      = spl_object_hash($document);
+        $oid      = spl_object_id($document);
 
         $this->uow->registerManaged($document, null, []);
 
@@ -346,7 +346,7 @@ class UnitOfWorkTest extends BaseTestCase
     public function testRegisterManagedEmbeddedDocumentWithMappedIdStrategyNoneAndNullValue(): void
     {
         $document = new EmbeddedDocumentWithIdStrategyNone();
-        $oid      = spl_object_hash($document);
+        $oid      = spl_object_id($document);
 
         $this->uow->registerManaged($document, null, []);
 
@@ -441,7 +441,7 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->getAddress()));
         self::assertTrue($this->uow->isInIdentityMap($address));
         self::assertTrue($this->uow->isScheduledForInsert($address));
-        self::assertEquals(spl_object_hash($address), $this->uow->getDocumentIdentifier($address));
+        self::assertEquals(spl_object_id($address), $this->uow->getDocumentIdentifier($address));
 
         $this->uow->commit();
 

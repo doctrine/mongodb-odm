@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\Persistence\ObjectRepository;
 
 use function is_a;
-use function spl_object_hash;
+use function spl_object_id;
 
 /**
  * Abstract factory for creating document repositories.
@@ -35,7 +35,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
     public function getRepository(DocumentManager $documentManager, string $documentName): ObjectRepository
     {
         $metadata = $documentManager->getClassMetadata($documentName);
-        $hashKey  = $metadata->getName() . spl_object_hash($documentManager);
+        $hashKey  = $metadata->getName() . '_' . spl_object_id($documentManager);
 
         if (isset($this->repositoryList[$hashKey])) {
             return $this->repositoryList[$hashKey];

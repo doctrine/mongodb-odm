@@ -18,7 +18,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\Driver\Session;
 
-use function spl_object_hash;
+use function spl_object_id;
 
 /** @internal */
 final class LifecycleEventManager
@@ -27,7 +27,7 @@ final class LifecycleEventManager
 
     private ?Session $session = null;
 
-    /** @var array<string, array<string, true>> */
+    /** @var array<int, array<string, true>> */
     private array $transactionalEvents = [];
 
     public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager $evm)
@@ -314,10 +314,10 @@ final class LifecycleEventManager
         }
 
         // Check whether the event has already been dispatched.
-        $hasDispatched = isset($this->transactionalEvents[spl_object_hash($document)][$eventName]);
+        $hasDispatched = isset($this->transactionalEvents[spl_object_id($document)][$eventName]);
 
         // Mark the event as dispatched - no problem doing this if it already was dispatched
-        $this->transactionalEvents[spl_object_hash($document)][$eventName] = true;
+        $this->transactionalEvents[spl_object_id($document)][$eventName] = true;
 
         return ! $hasDispatched;
     }
