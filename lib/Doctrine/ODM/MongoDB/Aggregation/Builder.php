@@ -264,6 +264,11 @@ class Builder
      * @param bool $applyFilters Whether to apply filters on the aggregation
      * pipeline stage
      *
+     * For pipelines where the first stage is a $match stage, it will merge
+     * the document filters with the existing stage in a logical $and. This is
+     * required as $text operator can be used anywhere in the first $match stage
+     * or in the document filters.
+     *
      * For pipelines where the first stage is a $geoNear stage, it will apply
      * the document filters and discriminator queries to the query portion of
      * the geoNear operation. For all other pipelines, it prepends a $match stage
@@ -314,7 +319,17 @@ class Builder
 
         $matchExpression = $this->applyFilters([]);
         if ($matchExpression !== []) {
-            array_unshift($pipeline, ['$match' => $matchExpression]);
+            if (isset($pipeline[0]['$match'])) {
+                // Merge filters into the first $match stage with a logical $and
+                $pipeline[0]['$match'] = [
+                    '$and' => [
+                        $matchExpression,
+                        $pipeline[0]['$match'],
+                    ],
+                ];
+            } else {
+                array_unshift($pipeline, ['$match' => $matchExpression]);
+            }
         }
 
         return $pipeline;

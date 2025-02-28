@@ -334,4 +334,22 @@ class FilterTest extends BaseTestCase
          */
         self::assertEmpty($this->getUsernamesWithFindAll());
     }
+
+    public function testFilterOnMatchStageUsingTextOperator(): void
+    {
+        $this->dm->getDocumentCollection(User::class)->createIndex(['username' => 'text']);
+
+        $this->fc->enable('testFilter');
+        $testFilter = $this->fc->getFilter('testFilter');
+        $testFilter->setParameter('class', User::class);
+        $testFilter->setParameter('field', 'hits');
+        $testFilter->setParameter('value', 10);
+
+        $builder = $this->dm->createAggregationBuilder(User::class)
+            ->match()
+            ->field('username')
+            ->text('John');
+
+        self::assertCount(1, $builder->getAggregation()->execute());
+    }
 }
