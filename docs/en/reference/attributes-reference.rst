@@ -108,7 +108,7 @@ during hydration to select the instantiation class.
 .. note::
 
     For backwards compatibility, the discriminator field may also be specified
-    via either the ``name`` or ``fieldName`` attribute.
+    via either the ``name`` or ``fieldName`` argument.
 
 #[DiscriminatorMap]
 -------------------
@@ -141,7 +141,7 @@ and it does not contain the class name of the persisted document, a
 Required attribute to mark a PHP class as a document, whose persistence will be
 managed by ODM.
 
-Optional attributes:
+Optional arguments:
 
 -
    ``db`` - By default, the document manager will use the MongoDB database
@@ -185,7 +185,7 @@ Optional attributes:
 This attribute is similar to `#[EmbedOne]`_, but instead of embedding one
 document, it embeds a collection of documents.
 
-Optional attributes:
+Optional arguments:
 
 -
     ``targetDocument`` - A |FQCN| of the target document.
@@ -251,7 +251,7 @@ following excerpt from the MongoDB documentation:
     are eliminated. So in general, the question to ask is, "why would I not want
     to embed this object?"
 
-Optional attributes:
+Optional arguments:
 
 -
     ``targetDocument`` - A |FQCN| of the target document. When typed properties
@@ -343,7 +343,7 @@ Marks an annotated instance variable for persistence. Values for this field will
 be saved to and loaded from the document store as part of the document class'
 lifecycle.
 
-Optional attributes:
+Optional arguments:
 
 -
    ``type`` - Name of the ODM type, which will determine the value's
@@ -392,7 +392,7 @@ Examples:
 This marks the document as a GridFS file. GridFS allow storing larger amounts of
 data than regular documents.
 
-Optional attributes:
+Optional arguments:
 
 -
    ``db`` - By default, the document manager will use the MongoDB database
@@ -445,7 +445,7 @@ This maps the ``metadata`` property of a GridFS file to a property. Metadata can
 be used to store additional properties in a file. The metadata document must be
 an embedded document mapped using `#[EmbeddedDocument]`_.
 
-Optional attributes:
+Optional arguments:
 
 -
     ``targetDocument`` - A |FQCN| of the target document.
@@ -520,7 +520,7 @@ collection (or embedding document's collection in the case of
 `#[EmbeddedDocument]`_). It may also be used at the property-level to define
 single-field indexes.
 
-Optional attributes:
+Optional arguments:
 
 -
     ``keys`` - Mapping of indexed fields to their ordering or index type. ODM
@@ -925,7 +925,7 @@ that will be applied when querying for the annotated document.
 Defines that the annotated instance variable holds a collection of referenced
 documents.
 
-Optional attributes:
+Optional arguments:
 
 -
     ``targetDocument`` - A |FQCN| of the target document. A ``targetDocument``
@@ -1010,7 +1010,7 @@ Optional attributes:
 
 Defines an instance variable holds a related document instance.
 
-Optional attributes:
+Optional arguments:
 
 -
     ``targetDocument`` - A |FQCN| of the target document. A ``targetDocument``
@@ -1079,12 +1079,12 @@ Optional attributes:
 This attribute is used to specify :ref:`search indexes <search_indexes>` for
 `MongoDB Atlas Search <https://www.mongodb.com/docs/atlas/atlas-search/>`__.
 
-The attributes correspond to arguments for
+The arguments correspond to arguments for
 `MongoDB\Collection::createSearchIndex() <https://www.mongodb.com/docs/php-library/current/reference/method/MongoDBCollection-createSearchIndex/>`__.
-Excluding ``name``, attributes are used to create the
+Excluding ``name``, arguments are used to create the
 `search index definition <https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/#search-index-definition-syntax>`__.
 
-Optional attributes:
+Optional arguments:
 
 -
     ``name`` - Name of the search index to create, which must be unique to the
@@ -1353,7 +1353,7 @@ Required attributes:
    ``repositoryClass`` - a repository class is required. This repository must
    implement the ``MongoDB\ODM\MongoDB\Repository\ViewRepository`` interface.
 
-Optional attributes:
+Optional arguments:
 
 -
    ``db`` - By default, the document manager will use the MongoDB database

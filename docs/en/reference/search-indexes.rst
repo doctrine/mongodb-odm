@@ -30,7 +30,7 @@ ODM supports the following search index options:
     ``dynamic`` - Enables or disables dynamic field mapping for this index.
     If ``true``, the index will include all fields with
     `supported data types <https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/#std-label-bson-data-chart>`__.
-    If ``false``, the ``fields`` attribute must be specified. Defaults to ``false``.
+    If ``false``, the ``fields`` argument must be specified. Defaults to ``false``.
 -
     ``fields`` - Associative array of `field mappings <https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/>`__
     that specify the fields to index (keys). Required only if dynamic mapping is disabled.
@@ -41,7 +41,7 @@ ODM supports the following search index options:
 -
     ``searchAnalyzer`` - Specifies the `analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/>`__
     to apply to query text before the text is searched. Defaults to the
-    ``analyzer`` attribute, or the `standard analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/standard/>`__.
+    ``analyzer`` argument, or the `standard analyzer <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/standard/>`__.
     if both are unspecified.
 -
     ``analyzers`` - Array of `custom analyzers <https://www.mongodb.com/docs/atlas/atlas-search/analyzers/custom/>`__

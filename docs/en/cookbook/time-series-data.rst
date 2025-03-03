@@ -75,7 +75,7 @@ change values in the document, in this example we'll assume that the data will
 not change.
 
 Now we can mark the document as a time series document. To do so, we use the
-``TimeSeries`` attribute, configuring appropriate values for the time and
+``#[TimeSeries]`` attribute, configuring appropriate values for the time and
 metadata field, which in our case stores the ID of the sensor reporting the
 measurement:
 

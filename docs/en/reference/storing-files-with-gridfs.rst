@@ -120,7 +120,7 @@ look like this:
     </doctrine-mongo-mapping>
 
 With XML mappings, the fields are automatically mapped to camel-cased properties.
-To change property names, simply override the ``fieldName`` attribute for each
+To change property names, simply override the ``fieldName`` argument for each
 field. You cannot override any other options for GridFS fields.
 
 The ``ImageMetadata`` class must be an embedded document:

@@ -34,8 +34,8 @@ annotations by offering a standardized approach to metadata, eliminating
 the need for the separate parsing library required by annotations.
 
 In this documentation we follow the `PER Coding Style <https://www.php-fig.org/per/coding-style/#12-attributes>`_
-for attributes. We use named arguments for attributes as they argument names
-or attribute classes constructors are covered by Doctrine Backward-Compatibility promise.
+for attributes. We use named arguments for attributes as the names of their
+constructor arguments are covered by Doctrine Backward-Compatibility promise.
 
 .. note::
 
@@ -109,8 +109,8 @@ option as follows:
 Now instances of ``Documents\User`` will be persisted into a
 collection named ``users`` in the database ``my_db``.
 
-If you want to omit the db attribute you can configure the default db
-to use with the ``setDefaultDB`` method:
+If you want to omit the ``db`` argument you can configure the default database
+to use with the ``setDefaultDB()`` method:
 
 .. code-block:: php
 
@@ -195,7 +195,7 @@ _________________
     Doctrine will skip type autoconfiguration if settings are provided explicitly.
 
 Since version 2.4 Doctrine can determine usable defaults from property types
-on document classes. Doctrine will map PHP types to ``type`` attribute as
+on document classes. Doctrine will map PHP types to ``type`` arguments as
 follows:
 
 - ``DateTime``: ``date``
@@ -392,12 +392,9 @@ Then specify the ``class`` option for the ``CUSTOM`` strategy:
 Fields
 ~~~~~~
 
-To mark a property for document persistence the ``#[Field]`` docblock
-attribute can be used. This attribute usually requires at least 1
-attribute to be set, the ``type``. The ``type`` attribute specifies
-the Doctrine Mapping Type to use for the field. If the type is not
-specified, 'string' is used as the default mapping type since it is
-the most flexible.
+To mark a property to be persisted in the document, add the ``#[Field]``
+attribute. The name and the type of the field are inferred from the property
+name and type.
 
 Example:
 
@@ -417,7 +414,7 @@ Example:
         {
             // ...
 
-            #[Field(type: 'string')]
+            #[Field]
             public string $username;
         }
 
@@ -436,11 +433,9 @@ Example:
 
 In that example we mapped the property ``id`` to the field ``id``
 using the mapping type ``id`` and the property ``name`` is mapped
-to the field ``name`` with the default mapping type ``string``. As
-you can see, by default the mongo field names are assumed to be the
-same as the property names. To specify a different name for the
-field, you can use the ``name`` attribute of the Field attribute
-as follows:
+to the field ``name`` with the default mapping type ``string``.
+To specify a different name for the field, you can use the ``name`` argument
+of the Field attribute as follows:
 
 .. configuration-block::
 
@@ -457,6 +452,46 @@ as follows:
     .. code-block:: xml
 
         <field field-name="name" name="db_name" />
+
+Date Fields
+~~~~~~~~~~~
+
+MongoDB has a specific database type to store date and time values. You should never
+use a string to store a date. To define a date field, use the property types
+``DateTime`` or ``DateTimeImmutable`` so that Doctrine maps it to a BSON date.
+The ``date`` and ``date_immutable`` mapping types can be used explicitly;
+they are required only if the property type is ``DateTimeInterface`` or not set.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        class User
+        {
+            #[Field]
+            public \DateTimeImmutable $immutableDateTime;
+
+            #[Field]
+            public \DateTime $mutableDateTime;
+
+            #[Field(type: 'date_immutable')]
+            public \DateTimeInterface $datetime;
+        }
+
+    .. code-block:: xml
+
+        <field field-name="immutableDateTime" type="date_immutable" />
+        <field field-name="mutableDateTime" name="date" />
+        <field field-name="datetime" name="date_immutable" />
+
+
+.. note::
+
+    Prefer using ``DateTimeImmutable`` over ``DateTime`` to avoid issues with
+    mutable objects. If you need to modify a date, create a new instance
+    and assign it to the property.
 
 Multiple Document Types in a Collection
 ---------------------------------------
