@@ -386,15 +386,12 @@ class BuilderTest extends BaseTestCase
                 '$match' => [
                     '$and' => [
                         [
-                            '$and' => [
-                                ['stype' => 'server_guest'],
-                                ['filtered' => true],
-                            ],
+                            'stype' => 'server_guest',
+                            '$text' => ['$search' => 'Paul'],
                         ],
-                        ['$text' => ['$search' => 'Paul']],
+                        ['filtered' => true],
                     ],
                 ],
-
             ],
         ];
 

@@ -1029,9 +1029,6 @@ final class DocumentPersister
     {
         /* If filter criteria exists for this class, prepare it and merge
          * over the existing query.
-         *
-         * @todo Consider recursive merging in case the filter criteria and
-         * prepared query both contain top-level $and/$or operators.
          */
         $filterCriteria = $this->dm->getFilterCollection()->getFilterCriteria($this->class);
         if ($filterCriteria) {

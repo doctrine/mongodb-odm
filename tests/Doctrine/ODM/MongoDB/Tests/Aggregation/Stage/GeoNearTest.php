@@ -72,7 +72,7 @@ class GeoNearTest extends BaseTestCase
             ->geoNear(0, 0)
             ->limit(1);
 
-        $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => null, 'query' => [], 'num' => 1];
-        self::assertSame([['$geoNear' => $stage]], $builder->getPipeline());
+        $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => null, 'query' => (object) [], 'num' => 1];
+        self::assertEquals([['$geoNear' => $stage]], $builder->getPipeline());
     }
 }
