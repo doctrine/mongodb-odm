@@ -33,7 +33,7 @@ abstract class Stage
      * @return array<string, mixed>
      * @phpstan-return StageExpression
      */
-    abstract public function getExpression(): array;
+    abstract public function getExpression(): ?array;
 
     /**
      * Executes the aggregation pipeline

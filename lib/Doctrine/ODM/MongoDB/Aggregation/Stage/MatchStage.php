@@ -279,11 +279,15 @@ class MatchStage extends Stage
         return $this;
     }
 
-    public function getExpression(): array
+    public function getExpression(): ?array
     {
-        return [
-            '$match' => $this->query->getQuery() ?: (object) [],
-        ];
+        $query = $this->query->getQuery();
+
+        if (! $query) {
+            return null;
+        }
+
+        return ['$match' => $query];
     }
 
     /**

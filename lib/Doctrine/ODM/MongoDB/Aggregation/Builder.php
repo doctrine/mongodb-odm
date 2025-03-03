@@ -17,7 +17,6 @@ use OutOfRangeException;
 use stdClass;
 use TypeError;
 
-use function array_map;
 use function array_unshift;
 use function func_get_arg;
 use function func_num_args;
@@ -295,10 +294,15 @@ class Builder
             ));
         }
 
-        $pipeline = array_map(
-            static fn (Stage $stage) => $stage->getExpression(),
-            $this->stages,
-        );
+        $pipeline = [];
+        foreach ($this->stages as $stage) {
+            $stage = $stage->getExpression();
+            if (! $stage) {
+                continue;
+            }
+
+            $pipeline[] = $stage;
+        }
 
         if ($this->getStage(0) instanceof Stage\IndexStats) {
             // Don't apply any filters when using an IndexStats stage: since it
