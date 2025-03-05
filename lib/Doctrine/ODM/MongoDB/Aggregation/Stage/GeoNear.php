@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use GeoJson\Geometry\Point;
+use stdClass;
 
 use function is_array;
 
@@ -50,7 +51,7 @@ class GeoNear extends MatchStage
             'near' => $this->near,
             'spherical' => $this->spherical,
             'distanceField' => $this->distanceField,
-            'query' => $this->query->getQuery(),
+            'query' => $this->query->getQuery() ?: new stdClass(),
             'distanceMultiplier' => $this->distanceMultiplier,
             'includeLocs' => $this->includeLocs,
             'maxDistance' => $this->maxDistance,

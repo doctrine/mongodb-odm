@@ -17,6 +17,7 @@ use Documents\CmsComment;
 use Documents\CmsProduct;
 use Documents\Comment;
 use Documents\File;
+use Documents\Place;
 use Documents\SchemaValidated;
 use Documents\Sharded\ShardedOne;
 use Documents\Sharded\ShardedOneWithDifferentKey;
@@ -60,6 +61,7 @@ class SchemaManagerTest extends BaseTestCase
         CmsComment::class,
         CmsProduct::class,
         Comment::class,
+        Place::class,
         SimpleReferenceUser::class,
         ShardedOne::class,
         ShardedOneWithDifferentKey::class,

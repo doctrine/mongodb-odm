@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\GeoNear;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use stdClass;
 
 class GeoNearTest extends BaseTestCase
 {
@@ -72,7 +73,11 @@ class GeoNearTest extends BaseTestCase
             ->geoNear(0, 0)
             ->limit(1);
 
-        $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => null, 'query' => (object) [], 'num' => 1];
-        self::assertEquals([['$geoNear' => $stage]], $builder->getPipeline());
+        $stage = $builder->getPipeline()[0];
+        self::assertSame([0, 0], $stage['$geoNear']['near']);
+        self::assertFalse($stage['$geoNear']['spherical']);
+        self::assertNull($stage['$geoNear']['distanceField']);
+        self::assertEquals(new stdClass(), $stage['$geoNear']['query']);
+        self::assertSame(1, $stage['$geoNear']['num']);
     }
 }

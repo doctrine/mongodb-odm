@@ -723,6 +723,7 @@ class Builder
         $query = $documentPersister->addDiscriminatorToPreparedQuery($query);
         $query = $documentPersister->addFilterToPreparedQuery($query);
 
+        // An empty array is encoded as a BSON array. We need a BSON document.
         return $query === [] ? (object) $query : $query;
     }
 
