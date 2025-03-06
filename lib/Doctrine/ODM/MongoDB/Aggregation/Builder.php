@@ -297,7 +297,7 @@ class Builder
         $pipeline = [];
         foreach ($this->stages as $stage) {
             $stage = $stage->getExpression();
-            if (! $stage) {
+            if ($stage === null) {
                 continue;
             }
 

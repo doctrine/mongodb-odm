@@ -450,7 +450,7 @@ class BuilderTest extends BaseTestCase
         self::assertSame('$indexStats', array_keys($builder->getPipeline()[0])[0]);
     }
 
-    public function testEmptyMatchStage(): void
+    public function testEmptyMatchStageIsSkipped(): void
     {
         $builder = $this->dm
             ->createAggregationBuilder(BlogPost::class)
