@@ -377,19 +377,19 @@ You can use pessimistic locks in two different scenarios:
 
 .. warning::
 
-    | A few things could go wrong:
-    |
-    | If a request fails to complete (e.g. unhandled exception), you may end up with stale locks.
-      Said locks would need to be manually released or you would need to devise a strategy to automatically do so.
-      One way to mitigate stale locks after an application error would be to gracefully catch the exception
-      and ensure that relevant documents are unlocked before the request ends.
-    |
-    | `Deadlock <https://en.wikipedia.org/wiki/Deadlock>`_ situations are also possible.
-      Suppose process P1 needs resource R1 and has locked resource R2
-      and that another process P2 has locked resource R1 but also needs resource R2.
-      If both processes continue waiting for the respective resources, the application will be stuck.
-      When loading a document, Doctrine can immediately throw an exception if it is already locked.
-      A deadlock could be created by endlessly retrying attempts to acquire the lock.
-      One can avoid a possible deadlock by designating a maximum number of retry attempts
-      and automatically releasing any active locks with the request ends,
-      thereby allowing a process to end gracefully while another completes its task.
+    A few things could go wrong:
+
+    If a request fails to complete (e.g. unhandled exception), you may end up with stale locks.
+    Said locks would need to be manually released or you would need to devise a strategy to automatically do so.
+    One way to mitigate stale locks after an application error would be to gracefully catch the exception
+    and ensure that relevant documents are unlocked before the request ends.
+
+    `Deadlock <https://en.wikipedia.org/wiki/Deadlock>`_ situations are also possible.
+    Suppose process P1 needs resource R1 and has locked resource R2
+    and that another process P2 has locked resource R1 but also needs resource R2.
+    If both processes continue waiting for the respective resources, the application will be stuck.
+    When loading a document, Doctrine can immediately throw an exception if it is already locked.
+    A deadlock could be created by endlessly retrying attempts to acquire the lock.
+    One can avoid a possible deadlock by designating a maximum number of retry attempts
+    and automatically releasing any active locks with the request ends,
+    thereby allowing a process to end gracefully while another completes its task.
