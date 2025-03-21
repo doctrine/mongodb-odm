@@ -17,7 +17,7 @@ class IncrementGeneratorTest extends BaseTestCase
         $generator = new IncrementGenerator();
         $generator->setStartingId(10);
 
-        $collection = $this->dm->getClient()->selectCollection(DOCTRINE_MONGODB_DATABASE, 'doctrine_increment_ids');
+        $collection = $this->dm->getClient()->getCollection(DOCTRINE_MONGODB_DATABASE, 'doctrine_increment_ids');
 
         self::assertSame(10, $generator->generate($this->dm, new User()));
         $result = $collection->findOne(['_id' => 'users']);
@@ -34,7 +34,7 @@ class IncrementGeneratorTest extends BaseTestCase
 
         self::assertSame(1, $generator->generate($this->dm, new User()));
 
-        $collection = $this->dm->getClient()->selectCollection(DOCTRINE_MONGODB_DATABASE, 'doctrine_increment_ids');
+        $collection = $this->dm->getClient()->getCollection(DOCTRINE_MONGODB_DATABASE, 'doctrine_increment_ids');
         $result     = $collection->findOne(['_id' => 'users']);
         self::assertSame(1, $result['current_id']);
     }

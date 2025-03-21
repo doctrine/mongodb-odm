@@ -120,7 +120,7 @@ class SchemaManagerTest extends BaseTestCase
             $this->documentDatabases[$db] = $this->getMockDatabase();
         }
 
-        $client->method('selectDatabase')->willReturnCallback(fn (string $db) => $this->documentDatabases[$db]);
+        $client->method('getDatabase')->willReturnCallback(fn (string $db) => $this->documentDatabases[$db]);
 
         $this->schemaManager = $this->dm->getSchemaManager();
     }
@@ -1338,7 +1338,7 @@ EOT;
     private function getMockDatabase()
     {
         $db = $this->createMock(Database::class);
-        $db->method('selectCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
+        $db->method('getCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
         $db->method('selectGridFSBucket')->willReturnCallback(fn (array $options) => $this->documentBuckets[$options['bucketName']]);
         $db->method('listCollections')->willReturnCallback(function () {
             $collections = [];

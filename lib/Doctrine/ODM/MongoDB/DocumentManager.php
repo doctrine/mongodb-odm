@@ -322,7 +322,7 @@ class DocumentManager implements ObjectManager
         $db                                  = $metadata->getDatabase();
         $db                                  = $db ?: $this->config->getDefaultDB();
         $db                                  = $db ?: 'doctrine';
-        $this->documentDatabases[$className] = $this->client->selectDatabase($db);
+        $this->documentDatabases[$className] = $this->client->getDatabase($db);
 
         return $this->documentDatabases[$className];
     }
@@ -364,7 +364,7 @@ class DocumentManager implements ObjectManager
                 $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
             }
 
-            $this->documentCollections[$className] = $db->selectCollection($collectionName, $options);
+            $this->documentCollections[$className] = $db->getCollection($collectionName, $options);
         }
 
         return $this->documentCollections[$className];

@@ -56,7 +56,7 @@ class IncrementGenerator extends AbstractIdGenerator
 
         $key            = $this->key ?: $dm->getDocumentCollection($className)->getCollectionName();
         $collectionName = $this->collection ?: 'doctrine_increment_ids';
-        $collection     = $db->selectCollection($collectionName);
+        $collection     = $db->getCollection($collectionName);
 
         /*
          * Unable to use '$inc' and '$setOnInsert' together due to known bug.

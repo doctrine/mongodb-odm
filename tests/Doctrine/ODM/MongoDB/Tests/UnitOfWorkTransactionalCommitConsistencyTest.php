@@ -27,7 +27,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->dm->getClient()->selectDatabase('admin')->command([
+        $this->dm->getClient()->getDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
             'mode' => 'off',
         ]);
@@ -611,7 +611,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
     private function createTransientFailPoint(string $failCommand, int $times = 1): void
     {
-        $this->dm->getClient()->selectDatabase('admin')->command([
+        $this->dm->getClient()->getDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => $times],
             'data' => [
@@ -624,7 +624,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
     private function createFatalFailPoint(string $failCommand): void
     {
-        $this->dm->getClient()->selectDatabase('admin')->command([
+        $this->dm->getClient()->getDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [

@@ -956,7 +956,7 @@ final class SchemaManager
     public function enableShardingForDbByDocumentName(string $documentName): void
     {
         $dbName  = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
-        $adminDb = $this->dm->getClient()->selectDatabase('admin');
+        $adminDb = $this->dm->getClient()->getDatabase('admin');
 
         try {
             $adminDb->command(['enableSharding' => $dbName]);
@@ -976,7 +976,7 @@ final class SchemaManager
         $class    = $this->dm->getClassMetadata($documentName);
         $dbName   = $this->dm->getDocumentDatabase($documentName)->getDatabaseName();
         $shardKey = $class->getShardKey();
-        $adminDb  = $this->dm->getClient()->selectDatabase('admin');
+        $adminDb  = $this->dm->getClient()->getDatabase('admin');
 
         $shardKeyPart = [];
         foreach ($shardKey['keys'] as $key => $order) {

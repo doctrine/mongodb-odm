@@ -65,7 +65,7 @@ abstract class BaseTestCase extends TestCase
             return;
         }
 
-        $collections = $client->selectDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
+        $collections = $client->getDatabase(DOCTRINE_MONGODB_DATABASE)->listCollections();
 
         foreach ($collections as $collection) {
             // See https://jira.mongodb.org/browse/SERVER-16541
@@ -73,7 +73,7 @@ abstract class BaseTestCase extends TestCase
                 continue;
             }
 
-            $client->selectCollection(DOCTRINE_MONGODB_DATABASE, $collection->getName())->drop();
+            $client->getCollection(DOCTRINE_MONGODB_DATABASE, $collection->getName())->drop();
         }
     }
 
@@ -137,7 +137,7 @@ abstract class BaseTestCase extends TestCase
 
     protected function getServerVersion(): string
     {
-        $result = $this->dm->getClient()->selectDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
+        $result = $this->dm->getClient()->getDatabase(DOCTRINE_MONGODB_DATABASE)->command(['buildInfo' => 1], ['typeMap' => DocumentManager::CLIENT_TYPEMAP])->toArray()[0];
 
         return $result['version'];
     }

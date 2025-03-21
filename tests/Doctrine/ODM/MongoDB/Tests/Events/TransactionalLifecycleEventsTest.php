@@ -25,7 +25,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->dm->getClient()->selectDatabase('admin')->command([
+        $this->dm->getClient()->getDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
             'mode' => 'off',
         ]);
@@ -188,7 +188,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
 
     private function createFailPoint(string $failCommand): void
     {
-        $this->dm->getClient()->selectDatabase('admin')->command([
+        $this->dm->getClient()->getDatabase('admin')->command([
             'configureFailPoint' => 'failCommand',
             'mode' => ['times' => 1],
             'data' => [

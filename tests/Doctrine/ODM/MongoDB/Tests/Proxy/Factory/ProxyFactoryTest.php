@@ -32,11 +32,11 @@ class ProxyFactoryTest extends BaseTestCase
         $database   = $this->createMock(Database::class);
 
         $this->client->expects($this->once())
-            ->method('selectDatabase')
+            ->method('getDatabase')
             ->willReturn($database);
 
         $database->expects($this->once())
-            ->method('selectCollection')
+            ->method('getCollection')
             ->willReturn($collection);
 
         $collection->expects($this->once())

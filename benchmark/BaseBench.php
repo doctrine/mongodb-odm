@@ -68,7 +68,7 @@ abstract class BaseBench
             return;
         }
 
-        $collections = $client->selectDatabase(self::DATABASE_NAME)->listCollections();
+        $collections = $client->getDatabase(self::DATABASE_NAME)->listCollections();
 
         foreach ($collections as $collection) {
             // See https://jira.mongodb.org/browse/SERVER-16541
@@ -76,7 +76,7 @@ abstract class BaseBench
                 continue;
             }
 
-            $client->selectCollection(self::DATABASE_NAME, $collection->getName())->drop();
+            $client->getCollection(self::DATABASE_NAME, $collection->getName())->drop();
         }
     }
 
