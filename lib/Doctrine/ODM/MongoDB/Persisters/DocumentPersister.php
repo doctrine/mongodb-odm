@@ -544,6 +544,8 @@ final class DocumentPersister
         assert($this->collection instanceof Collection);
         $baseCursor = $this->collection->find($criteria, $options);
 
+        assert($baseCursor instanceof CursorInterface && $baseCursor instanceof SplIterator);
+
         return $this->wrapCursor($baseCursor);
     }
 

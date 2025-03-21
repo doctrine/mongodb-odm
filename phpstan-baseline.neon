@@ -51,29 +51,9 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
 
 		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Lookup\\:\\:getExpression\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
-			message: "#^PHPDoc tag @return with type mixed is not subtype of native type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
-			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:whenMatched\\(\\) has parameter \\$whenMatched with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
-
-		-
-			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Aggregation\\\\Stage\\\\Merge\\:\\:\\$whenMatched type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
 
 		-
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
@@ -531,11 +511,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
 
 		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
-
-		-
 			message: "#^Unable to resolve the template type T in call to method Doctrine\\\\ODM\\\\MongoDB\\\\DocumentManager\\:\\:getClassMetadata\\(\\)$#"
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/PersistentCollection.php
@@ -961,16 +936,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:232\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents\\\\\\\\Card'\\} given\\.$#"
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$mapping of method Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata\\<class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest\\.php\\:251\\>\\:\\:mapField\\(\\) expects array\\{type\\?\\: string, fieldName\\?\\: string, name\\?\\: string, strategy\\?\\: string, association\\?\\: int, id\\?\\: bool, isOwningSide\\?\\: bool, collectionClass\\?\\: class\\-string, \\.\\.\\.\\}, array\\{fieldName\\: 'enum', enumType\\: 'Documents\\\\\\\\SuitNonBacked'\\} given\\.$#"
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
-
-		-
 			message: "#^Property DoctrineGlobal_User\\:\\:\\$email is unused\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
@@ -1031,7 +996,32 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\QueryTest\\:\\:createCursorMock\\(\\) return type has no value type specified in iterable type Traversable\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/QueryTest\\.php\\:561\\:\\:current\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/QueryTest\\.php\\:561\\:\\:setTypeMap\\(\\) has parameter \\$typemap with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Method class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/QueryTest\\.php\\:561\\:\\:toArray\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
 			message: "#^Parameter \\#4 \\$query of class Doctrine\\\\ODM\\\\MongoDB\\\\Query\\\\Query constructor expects array\\{distinct\\?\\: string, hint\\?\\: array\\<string, \\-1\\|1\\>\\|string, limit\\?\\: int, maxTimeMS\\?\\: int, multiple\\?\\: bool, new\\?\\: bool, newObj\\?\\: array\\<string, mixed\\>, query\\?\\: array\\<string, mixed\\>, \\.\\.\\.\\}, array\\{type\\: \\-1\\} given\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Return type \\(MongoDB\\\\BSON\\\\Int64\\) of method class@anonymous/tests/Doctrine/ODM/MongoDB/Tests/QueryTest\\.php\\:561\\:\\:getId\\(\\) should be compatible with return type \\(MongoDB\\\\Driver\\\\CursorId\\) of method MongoDB\\\\Driver\\\\CursorInterface\\:\\:getId\\(\\)$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
@@ -1039,6 +1029,36 @@ parameters:
 			message: "#^Used constant DOCTRINE_MONGODB_DATABASE not found\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: "#^Instantiated class MongoDB\\\\Model\\\\CollectionInfoCommandIterator not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+		-
+			message: "#^Instantiated class MongoDB\\\\Model\\\\IndexInfoIteratorIterator not found\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:createCollectionIterator\\(\\) has parameter \\$collections with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:createCollectionIterator\\(\\) should return Iterator but returns MongoDB\\\\Model\\\\CollectionInfoCommandIterator\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:createIndexIterator\\(\\) has parameter \\$indexes with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\SchemaManagerTest\\:\\:createIndexIterator\\(\\) should return Iterator but returns MongoDB\\\\Model\\\\IndexInfoIteratorIterator\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/SchemaManagerTest.php
 
 		-
 			message: "#^Property Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Tools\\\\GH297\\\\User\\:\\:\\$id is never written, only read\\.$#"
