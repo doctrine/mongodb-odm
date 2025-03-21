@@ -42,7 +42,7 @@ jobs:
           - dependencies: "lowest"
             php-version: "8.1"
             mongodb-version: "5.0"
-            driver-version: "1.20.0"
+            driver-version: "1.21.0"
             topology: "server"
             symfony-version: "stable"
             proxy: "lazy-ghost"
