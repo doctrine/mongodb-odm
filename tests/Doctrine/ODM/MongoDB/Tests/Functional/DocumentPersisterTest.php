@@ -638,7 +638,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument = new $class();
@@ -660,7 +659,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument = new $class();
@@ -682,7 +680,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument     = new $class();
@@ -705,7 +702,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument     = new $class();
@@ -728,7 +724,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument = new $class();
@@ -753,7 +748,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $testDocument = new $class();
@@ -777,7 +771,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $this->dm->getConfiguration()->setDefaultCommitOptions(['writeConcern' => new WriteConcern(0)]);
@@ -800,7 +793,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $this->dm->getConfiguration()->setDefaultCommitOptions(['writeConcern' => new WriteConcern(1)]);
@@ -823,7 +815,6 @@ class DocumentPersisterTest extends BaseTestCase
             ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $this->dm->getConfiguration()->setDefaultCommitOptions(['w' => 0]);

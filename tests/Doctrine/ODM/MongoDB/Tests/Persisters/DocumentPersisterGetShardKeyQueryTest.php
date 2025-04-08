@@ -26,7 +26,6 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $persister = $this->uow->getDocumentPersister($o::class);
 
         $method = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $method->setAccessible(true);
 
         self::assertSame(
             ['int' => $o->int, 'string' => $o->string, 'bool' => $o->bool, 'float' => $o->float],
@@ -43,8 +42,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 
         $persister = $this->uow->getDocumentPersister($o::class);
 
-        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $method->setAccessible(true);
+        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
         $shardKeyQuery = $method->invoke($persister, $o);
 
         self::assertInstanceOf(ObjectId::class, $shardKeyQuery['oid']);
@@ -69,8 +67,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 
         $persister = $this->uow->getDocumentPersister($o::class);
 
-        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $method->setAccessible(true);
+        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
         $shardKeyQuery = $method->invoke($persister, $o);
 
         self::assertSame(['_id' => $o->identifier], $shardKeyQuery);
@@ -88,8 +85,7 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 
         $persister = $this->uow->getDocumentPersister($o::class);
 
-        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $method->setAccessible(true);
+        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
         $shardKeyQuery = $method->invoke($persister, $o);
 
         self::assertSame(['reference.$id' => $userId], $shardKeyQuery);

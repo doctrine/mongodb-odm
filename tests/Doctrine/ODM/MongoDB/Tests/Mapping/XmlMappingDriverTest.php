@@ -29,7 +29,6 @@ class XmlMappingDriverTest extends AbstractMappingDriverTestCase
 
         /** @uses XmlDriver::setShardKey */
         $m = new ReflectionMethod($driver::class, 'setShardKey');
-        $m->setAccessible(true);
         $m->invoke($driver, $class, $element);
 
         self::assertTrue($class->isSharded());

@@ -535,7 +535,6 @@ class UnitOfWorkTest extends BaseTestCase
         $documentPersister = $this->uow->getDocumentPersister(ForumUser::class);
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $user           = new ForumUser();

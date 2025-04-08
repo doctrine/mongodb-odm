@@ -479,7 +479,6 @@ class BuilderTest extends BaseTestCase
 
         $qb                 = $this->getTestQueryBuilder();
         $reflectionProperty = new ReflectionProperty($qb, 'expr');
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($qb, $expr);
 
         self::assertSame($qb, $qb->$method(...$args));
