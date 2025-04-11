@@ -34,6 +34,10 @@ class User extends BaseDocument
     #[ODM\Field(type: 'date')]
     protected $createdAt;
 
+    /** @var UTCDateTime|DateTimeInterface|string */
+    #[ODM\Field(type: 'date', nullable: true, name: 'disable-at')]
+    protected ?\DateTimeInterface $disabledAt;
+
     /** @var Address|null */
     #[ODM\EmbedOne(targetDocument: Address::class)]
     protected $address;
@@ -209,6 +213,11 @@ class User extends BaseDocument
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    public function getDisabledAt(): ?\DateTimeInterface
+    {
+        return $this->disabledAt;
     }
 
     public function getAddress(): ?Address

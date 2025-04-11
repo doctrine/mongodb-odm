@@ -188,10 +188,8 @@ EOF
         if (array_key_exists('%1$s', $data) && ($data['%1$s'] !== null || ($this->class->fieldMappings['%2$s']['nullable'] ?? false))) {
             $value = $data['%1$s'];
             %3$s
-            if (\is_object($return)) {
-              $return = clone $return;
-            }
-            $this->class->reflFields['%2$s']->setValue($document, $return);
+            $field = $this->class->reflFields['%2$s'];
+            if (null !== $return) { $field->setValue($document, clone $return); } else { $field->setValue($document, null); }
             $hydratedData['%2$s'] = $return;
         }
 

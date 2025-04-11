@@ -84,6 +84,20 @@ class DateTest extends BaseTestCase
         self::assertNotEmpty($changeset);
     }
 
+    // Test Issue #2753
+    public function testNullableDateInstanceValue(): void
+    {
+        $user = new User();
+        $user->setCreatedAt(new DateTime('1985-09-01'));
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $user = $this->dm->getRepository($user::class)->findOneBy([]);
+        self::assertInstanceOf(DateTime::class, $user->getCreatedAt());
+        self::assertNull($user->getDisabledAt());
+    }
+
     public function testDateInstanceValueChangeDoesCauseUpdateIfValueIsTheSame(): void
     {
         $user = new User();
