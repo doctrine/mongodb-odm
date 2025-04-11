@@ -185,7 +185,7 @@ EOF
                     <<<'EOF'
 
         // Field(type: "date")
-        if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
+        if (array_key_exists('%1$s', $data) && ($data['%1$s'] !== null || ($this->class->fieldMappings['%2$s']['nullable'] ?? false))) {
             $value = $data['%1$s'];
             %3$s
             if (\is_object($return)) {
