@@ -185,10 +185,13 @@ EOF
                     <<<'EOF'
 
         // Field(type: "date")
-        if (isset($data['%1$s'])) {
+        if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
             $value = $data['%1$s'];
             %3$s
-            $this->class->reflFields['%2$s']->setValue($document, clone $return);
+            if (\is_object($return)) {
+              $return = clone $return;
+            }
+            $this->class->reflFields['%2$s']->setValue($document, $return);
             $hydratedData['%2$s'] = $return;
         }
 
