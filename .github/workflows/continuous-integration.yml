@@ -69,13 +69,14 @@ jobs:
             dependencies: "highest"
             symfony-version: "stable"
             proxy: "proxy-manager"
-          # Test with ext-2.0
+          # Test with ext-1.21
           - topology: "server"
             php-version: "8.2"
             mongodb-version: "7.0"
-            driver-version: "mongodb/mongo-php-driver@v2.x"
+            driver-version: "1.21.0"
             dependencies: "highest"
             symfony-version: "7"
+            proxy: "lazy-ghost"
           # Test with a 5.0 sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
 #          - topology: "sharded_cluster"
