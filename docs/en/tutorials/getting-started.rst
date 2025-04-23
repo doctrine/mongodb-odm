@@ -165,7 +165,7 @@ You can provide your mapping information in Annotations or XML:
 .. note::
 
    The ``$id`` property above is annotated with the ``#[Id]`` attribute, which
-   makes it special. It will be use dby Doctrine to store the unique identifier
+   makes it special. It will be used by Doctrine to store the unique identifier
    of the document. If you do not provide a value for ``$id``, Doctrine will
    automatically generate an `ObjectId`_ when you persist the document.
 
