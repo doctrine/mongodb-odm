@@ -24,9 +24,9 @@ jobs:
           - "8.3"
           - "8.4"
         mongodb-version:
+          - "8.0"
           - "7.0"
           - "6.0"
-          - "5.0"
         driver-version:
           - "stable"
         topology:
@@ -41,7 +41,7 @@ jobs:
           # Test against lowest dependencies
           - dependencies: "lowest"
             php-version: "8.1"
-            mongodb-version: "5.0"
+            mongodb-version: "6.0"
             driver-version: "1.21.0"
             topology: "server"
             symfony-version: "stable"
@@ -49,7 +49,7 @@ jobs:
           # Test with highest dependencies
           - topology: "server"
             php-version: "8.2"
-            mongodb-version: "7.0"
+            mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "7"
@@ -57,35 +57,35 @@ jobs:
           # Test with a 5.0 replica set
           - topology: "replica_set"
             php-version: "8.2"
-            mongodb-version: "5.0"
+            mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
             proxy: "lazy-ghost"
           # Test with ProxyManager
           - php-version: "8.2"
-            mongodb-version: "5.0"
+            mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: "stable"
             proxy: "proxy-manager"
-          # Test with ext-1.21
+          # Test with extension 1.21
           - topology: "server"
             php-version: "8.2"
-            mongodb-version: "7.0"
+            mongodb-version: "8.0"
             driver-version: "1.21.0"
             dependencies: "highest"
             symfony-version: "7"
             proxy: "lazy-ghost"
-          # Test with a 5.0 sharded cluster
+          # Test with a sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
-#          - topology: "sharded_cluster"
-#            php-version: "8.2"
-#            mongodb-version: "5.0"
-#            driver-version: "stable"
-#            dependencies: "highest"
-#            symfony-version: "stable"
-#            proxy: "lazy-ghost"
+          - topology: "sharded_cluster"
+            php-version: "8.2"
+            mongodb-version: "6.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: "stable"
+            proxy: "lazy-ghost"
 
     steps:
       - name: "Checkout"
