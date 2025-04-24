@@ -124,14 +124,14 @@ jobs:
       - name: "Remove phpbench/phpbench"
         run: composer remove --no-update --dev phpbench/phpbench
 
-      - name: "Configure Symfony ${{ matrix.php-version }}"
+      - name: "Configure Symfony ${{ matrix.symfony-version }}"
         if: "${{ matrix.symfony-version != 'stable' }}"
         run: |
           composer config minimum-stability dev
           # update symfony deps
-          composer require --no-update symfony/console:^${{ matrix.php-version }}
-          composer require --no-update symfony/var-dumper:^${{ matrix.php-version }}
-          composer require --no-update --dev symfony/cache:^${{ matrix.php-version }}
+          composer require --no-update symfony/console:^${{ matrix.symfony-version }}
+          composer require --no-update symfony/var-dumper:^${{ matrix.symfony-version }}
+          composer require --no-update --dev symfony/cache:^${{ matrix.symfony-version }}
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
