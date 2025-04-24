@@ -46,15 +46,15 @@ jobs:
             topology: "server"
             symfony-version: "stable"
             proxy: "lazy-ghost"
-          # Test with highest dependencies
+          # Test with Symfony 6.4
           - topology: "server"
-            php-version: "8.2"
-            mongodb-version: "8.0"
+            php-version: "8.1"
+            mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "7"
+            symfony-version: "6.4"
             proxy: "lazy-ghost"
-          # Test with a 5.0 replica set
+          # Test with a 6.0 replica set
           - topology: "replica_set"
             php-version: "8.2"
             mongodb-version: "6.0"
@@ -75,7 +75,7 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "1.21.0"
             dependencies: "highest"
-            symfony-version: "7"
+            symfony-version: "stable"
             proxy: "lazy-ghost"
           # Test with a sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
@@ -120,18 +120,18 @@ jobs:
       - name: "Show driver information"
         run: "php --ri mongodb"
 
-      # This allows installing symfony/console 3.4 and 6
+      # Not used, skip transient dependencies
       - name: "Remove phpbench/phpbench"
         run: composer remove --no-update --dev phpbench/phpbench
 
-      - name: "Configure Symfony v7@dev"
-        if: "${{ matrix.symfony-version == '7' }}"
+      - name: "Configure Symfony ${{ matrix.php-version }}"
+        if: "${{ matrix.symfony-version != 'stable' }}"
         run: |
           composer config minimum-stability dev
           # update symfony deps
-          composer require --no-update symfony/console:^7@dev
-          composer require --no-update symfony/var-dumper:^7@dev
-          composer require --no-update --dev symfony/cache:^7@dev
+          composer require --no-update symfony/console:^${{ matrix.php-version }}
+          composer require --no-update symfony/var-dumper:^${{ matrix.php-version }}
+          composer require --no-update --dev symfony/cache:^${{ matrix.php-version }}
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
