@@ -34,20 +34,18 @@ class QueryableEncryptionTest extends BaseTestCase
         self::assertContains('datakeys', $collectionNames);
 
         // Insert a document
-        $patient              = new Patient();
-        $patient->patientName = 'Jon Doe';
-        $patient->patientId   = 12345678;
-
-        $patientRecord                = new PatientRecord();
-        $patientRecord->ssn           = '987-65-4320';
-        $patientRecord->billingAmount = 1200;
-
-        $billing         = new PatientBilling();
-        $billing->type   = 'Visa';
-        $billing->number = '4111111111111111';
-
-        $patientRecord->billing = $billing;
-        $patient->patientRecord = $patientRecord;
+        $patient = new Patient(
+            patientName: 'Jon Doe',
+            patientId: 12345678,
+            patientRecord: new PatientRecord(
+                ssn: '987-65-4320',
+                billing: new PatientBilling(
+                    type: 'Visa',
+                    number: '4111111111111111',
+                ),
+                billingAmount: 1200,
+            ),
+        );
 
         $this->dm->persist($patient);
         $this->dm->flush();
@@ -58,6 +56,7 @@ class QueryableEncryptionTest extends BaseTestCase
         self::assertNotNull($result);
         self::assertSame('Jon Doe', $result->patientName);
         self::assertSame('987-65-4320', $result->patientRecord->ssn);
+        self::assertSame('4111111111111111', $result->patientRecord->billing->number);
 
         // Queryable with range
         $result = $this->dm->getRepository(Patient::class)->findOneBy(['patientRecord.billingAmount' => ['$gt' => 1000, '$lt' => 2000]]);

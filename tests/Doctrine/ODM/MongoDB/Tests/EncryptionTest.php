@@ -9,7 +9,7 @@ use Documents\Encryption\Patient;
 
 class EncryptionTest extends BaseTestCase
 {
-    public function testMetadataIsEncrypted(): void
+    public function testEncryptionFieldMap(): void
     {
         $factory            = new EncryptionFieldMap($this->dm->getMetadataFactory());
         $encryptedFieldsMap = $factory->getEncryptionFieldMap(Patient::class);

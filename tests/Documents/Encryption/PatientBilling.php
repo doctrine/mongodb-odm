@@ -10,9 +10,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
 #[EmbeddedDocument]
 class PatientBilling
 {
-    #[ODM\Field]
-    public string $type;
-
-    #[ODM\Field]
-    public string $number;
+    public function __construct(
+        #[ODM\Field]
+        public string $type,
+        #[ODM\Field]
+        public string $number,
+    ) {
+    }
 }
