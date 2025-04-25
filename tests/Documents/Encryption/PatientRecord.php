@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Documents\Encrypted;
+namespace Documents\Encryption;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
@@ -14,7 +14,7 @@ class PatientRecord
     public ?string $id;
 
     #[ODM\Field]
-    #[ODM\Encrypt]
+    #[ODM\Encrypt(queryType: ODM\Encrypt::QUERY_TYPE_EQUALITY)]
     public string $ssn;
 
     #[ODM\EmbedOne(targetDocument: PatientBilling::class)]
@@ -22,5 +22,6 @@ class PatientRecord
     public PatientBilling $billing;
 
     #[ODM\Field]
+    #[ODM\Encrypt(queryType: ODM\Encrypt::QUERY_TYPE_RANGE, sparsity: 1, trimFactor: 4, min: 100, max: 2000)]
     public int $billingAmount;
 }
