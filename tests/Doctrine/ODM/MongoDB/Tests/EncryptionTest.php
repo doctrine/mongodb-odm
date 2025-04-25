@@ -16,19 +16,19 @@ class EncryptionTest extends BaseTestCase
 
         $expected = [
             [
-                'name' => 'patientRecord.ssn',
-                'type' => 'string',
+                'path' => 'patientRecord.ssn',
+                'bsonType' => 'string',
                 'keyId' => null,
                 'queries' => ['queryType' => 'equality'],
             ],
             [
-                'name' => 'patientRecord.billing',
-                'type' => 'object',
+                'path' => 'patientRecord.billing',
+                'bsonType' => 'object',
                 'keyId' => null,
             ],
             [
-                'name' => 'patientRecord.billingAmount',
-                'type' => 'int',
+                'path' => 'patientRecord.billingAmount',
+                'bsonType' => 'int',
                 'keyId' => null,
                 'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
             ],

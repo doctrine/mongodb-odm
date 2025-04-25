@@ -29,6 +29,7 @@ use Jean85\PrettyVersions;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use MongoDB\Driver\ClientEncryption;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -63,6 +64,8 @@ class DocumentManager implements ObjectManager
      * The Doctrine MongoDB connection instance.
      */
     private Client $client;
+
+    private ClientEncryption $clientEncryption;
 
     /**
      * The used Configuration.
@@ -151,12 +154,7 @@ class DocumentManager implements ObjectManager
         $this->client       = $client ?: new Client(
             'mongodb://127.0.0.1',
             [],
-            [
-                'driver' => [
-                    'name' => 'doctrine-odm',
-                    'version' => self::getVersion(),
-                ],
-            ],
+            $this->getDriverOptions(),
         );
 
         $this->classNameResolver = $this->config->isLazyGhostObjectEnabled()
@@ -223,6 +221,21 @@ class DocumentManager implements ObjectManager
     public function getClient(): Client
     {
         return $this->client;
+    }
+
+    public function getClientEncryption(): ClientEncryption
+    {
+        $autoEncryptionOptions = $this->config->getAutoEncryption();
+
+        if (! $autoEncryptionOptions) {
+            throw new RuntimeException('Auto-encryption is not enabled.');
+        }
+
+        return $this->clientEncryption ??= $this->client->createClientEncryption([
+            'keyVaultNamespace' => $autoEncryptionOptions['keyVaultNamespace'],
+            'kmsProviders' => $autoEncryptionOptions['kmsProviders'],
+            'tlsOptions' => $autoEncryptionOptions['tlsOptions'] ?? [],
+        ]);
     }
 
     /** Gets the metadata factory used to gather the metadata of classes. */
@@ -922,6 +935,23 @@ class DocumentManager implements ObjectManager
         }
 
         return $mapping['targetDocument'];
+    }
+
+    /** @todo move this to the Configuration class, so that it can be use to instantiate the Client outside of the DocumentManager */
+    private function getDriverOptions(): array
+    {
+        $driverOptions = [
+            'driver' => [
+                'name' => 'doctrine-odm',
+                'version' => self::getVersion(),
+            ],
+        ];
+
+        if ($this->config->getAutoEncryption()) {
+            $driverOptions['autoEncryption'] = $this->config->getAutoEncryption();
+        }
+
+        return $driverOptions;
     }
 
     private static function getVersion(): string

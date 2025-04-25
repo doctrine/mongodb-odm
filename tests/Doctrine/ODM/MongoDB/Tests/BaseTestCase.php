@@ -129,8 +129,14 @@ abstract class BaseTestCase extends TestCase
 
     protected static function createTestDocumentManager(): DocumentManager
     {
-        $config = static::getConfiguration();
-        $client = new Client(self::getUri());
+        $config        = static::getConfiguration();
+        $driverOptions = [];
+
+        if ($config->getAutoEncryption()) {
+            $driverOptions['autoEncryption'] = $config->getAutoEncryption();
+        }
+
+        $client = new Client(self::getUri(), [], $driverOptions);
 
         return DocumentManager::create($client, $config);
     }

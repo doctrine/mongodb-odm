@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\ODM\MongoDB\Utility\EncryptionFieldMap;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\Exception\RuntimeException;
@@ -643,10 +644,29 @@ final class SchemaManager
             }
         }
 
-        $this->dm->getDocumentDatabase($documentName)->createCollection(
-            $class->getCollection(),
-            $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
-        );
+        // Encryption is enabled only if the KMS provider is set and at least one field is encrypted
+        if ($this->dm->getConfiguration()->getKmsProvider()) {
+            $encryptedFields = (new EncryptionFieldMap($this->dm->getMetadataFactory()))->getEncryptionFieldMap($class->name);
+
+            if ($encryptedFields) {
+                $options['encryptedFields'] = ['fields' => $encryptedFields];
+            }
+        }
+
+        if (isset($options['encryptedFields'])) {
+            $this->dm->getDocumentDatabase($documentName)->createEncryptedCollection(
+                $class->getCollection(),
+                $this->dm->getClientEncryption(),
+                $this->dm->getConfiguration()->getKmsProvider(),
+                null, // @todo when is it necessary to set the master key?
+                $options,
+            );
+        } else {
+            $this->dm->getDocumentDatabase($documentName)->createCollection(
+                $class->getCollection(),
+                $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
+            );
+        }
     }
 
     /**

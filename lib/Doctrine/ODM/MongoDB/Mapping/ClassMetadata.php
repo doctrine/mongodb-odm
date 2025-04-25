@@ -803,6 +803,13 @@ use function trigger_deprecation;
      */
     public $isReadOnly;
 
+    /**
+     * READ-ONLY: A flag for whether or not this document has encrypted fields.
+     *
+     * @var bool
+     */
+    public $isEncrypted = false;
+
     /** READ ONLY: stores metadata about the time series collection */
     public ?TimeSeries $timeSeriesOptions = null;
 

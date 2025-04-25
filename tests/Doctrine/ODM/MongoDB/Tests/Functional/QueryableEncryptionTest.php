@@ -1,35 +1,83 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use MongoDB\Driver\ClientEncryption;
+use Documents\Encryption\Patient;
+use Documents\Encryption\PatientBilling;
+use Documents\Encryption\PatientRecord;
+use MongoDB\BSON\Binary;
+use MongoDB\Client;
+
+use function base64_decode;
+use function iterator_to_array;
 
 class QueryableEncryptionTest extends BaseTestCase
 {
-    public function testBasic(): void
-    {
+    private const LOCAL_MASTERKEY = 'quTJGRzz3TS2yrPUzNf9Ajv+rG2cn0buRsWT6i6BTQihznxZkhYKzyagXZZ05+y/FMEV1kpC79reiJSpysytFyEcXXJChjBsH2iTzBK8uWFN2dN7udzYjWvBJmWKbhhm';
 
+    public function testCreateAndQueryEncryptedCollection(): void
+    {
+        // @todo skip if not using MongoDB < 7, single node or not enterprise
+        $client   = new Client(self::getUri());
+        $database = $client->getDatabase(DOCTRINE_MONGODB_DATABASE);
+
+        // Create the encrypted collection
+        $this->dm->getSchemaManager()->createDocumentCollection(Patient::class);
+
+        // Test created collectionss
+        $collectionNames = iterator_to_array($database->listCollectionNames());
+        self::assertContains('patients', $collectionNames);
+        self::assertContains('datakeys', $collectionNames);
+
+        // Insert a document
+        $patient              = new Patient();
+        $patient->patientName = 'Jon Doe';
+        $patient->patientId   = 12345678;
+
+        $patientRecord                = new PatientRecord();
+        $patientRecord->ssn           = '987-65-4320';
+        $patientRecord->billingAmount = 1200;
+
+        $billing         = new PatientBilling();
+        $billing->type   = 'Visa';
+        $billing->number = '4111111111111111';
+
+        $patientRecord->billing = $billing;
+        $patient->patientRecord = $patientRecord;
+
+        $this->dm->persist($patient);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // Queryable with equality
+        $result = $this->dm->getRepository(Patient::class)->findOneBy(['patientRecord.ssn' => '987-65-4320']);
+        self::assertNotNull($result);
+        self::assertSame('Jon Doe', $result->patientName);
+        self::assertSame('987-65-4320', $result->patientRecord->ssn);
+
+        // Queryable with range
+        $result = $this->dm->getRepository(Patient::class)->findOneBy(['patientRecord.billingAmount' => ['$gt' => 1000, '$lt' => 2000]]);
+        self::assertSame('Jon Doe', $result->patientName);
+        self::assertSame('987-65-4320', $result->patientRecord->ssn);
+        self::assertSame('4111111111111111', $result->patientRecord->billing->number);
     }
 
-
-    protected static function getConfiguration(): Configuration
+    protected static function createTestDocumentManager(): DocumentManager
     {
-        $config = parent::getConfiguration();
+        $config = static::getConfiguration();
+        $config->setAutoEncryption([
+            'keyVaultNamespace' => DOCTRINE_MONGODB_DATABASE . '.datakeys',
+            'kmsProviders' => [
+                'local' => ['key' => new Binary(base64_decode(self::LOCAL_MASTERKEY))],
+            ],
+        ]);
 
-        return $config;
+        $client = new Client(self::getUri(), [], ['autoEncryption' => $config->getAutoEncryption()]);
+
+        return DocumentManager::create($client, $config);
     }
-}
-
-#[ODM\Document]
-class EncryptedDocument
-{
-    #[ODM\Id]
-    public string $id;
-
-    #[ODM\Field]
-    #[ODM\Encrypt(queryType: ClientEncryption::QUERY_TYPE_EQUALITY)]
-    private string $sensitiveField;
 }

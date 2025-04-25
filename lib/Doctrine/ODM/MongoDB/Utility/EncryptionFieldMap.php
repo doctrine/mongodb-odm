@@ -30,6 +30,7 @@ final class EncryptionFieldMap
     {
         $classMetadata = $this->classMetadataFactory->getMetadataFor($className);
         foreach ($classMetadata->fieldMappings as $mapping) {
+            // @todo support polymorphic types and inheritence?
             // Add fields recursively
             if ($mapping['embedded'] ?? false) {
                 yield from $this->createEncryptionFieldMap($mapping['targetDocument'], $path . $mapping['name'] . '.');
@@ -40,8 +41,8 @@ final class EncryptionFieldMap
             }
 
             $field = [
-                'name' => $path . $mapping['name'],
-                'type' => match ($mapping['type']) {
+                'path' => $path . $mapping['name'],
+                'bsonType' => match ($mapping['type']) {
                     'one' => 'object',
                     'many' => 'array',
                     default => $mapping['type'],
