@@ -34,7 +34,6 @@ class User extends BaseDocument
     #[ODM\Field(type: 'date')]
     protected $createdAt;
 
-    /** @var ?DateTimeInterface */
     #[ODM\Field(type: 'date', nullable: true, name: 'disable-at')]
     protected ?DateTimeInterface $disabledAt;
 

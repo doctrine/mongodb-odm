@@ -84,7 +84,6 @@ class DateTest extends BaseTestCase
         self::assertNotEmpty($changeset);
     }
 
-    // Test Issue #2753
     public function testNullableDateInstanceValue(): void
     {
         $user = new User();
