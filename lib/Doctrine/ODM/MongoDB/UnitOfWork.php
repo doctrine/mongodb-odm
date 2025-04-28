@@ -1952,7 +1952,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $prop = $this->reflectionService->getAccessibleProperty($class->name, $name);
                 assert($prop instanceof ReflectionProperty);
 
-                if (method_exists($prop, 'isInitialized') && ! $prop->isInitialized($document)) {
+                if (! $prop->isInitialized($document)) {
                     continue;
                 }
 
