@@ -33,7 +33,6 @@ parameters:
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
-  #checkMissingIterableValueType: true
 
   # Disabled due to inconsistent errors upon encountering psalm types
   reportUnmatchedIgnoredErrors: false
