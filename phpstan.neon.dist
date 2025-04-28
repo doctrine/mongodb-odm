@@ -22,6 +22,10 @@ parameters:
       - message: '#^Circular definition detected in type alias#'
         path: lib/Doctrine/ODM/MongoDB/Aggregation/
 
+      # Keep type assertions even when type is declared
+      - identifier: staticMethod.alreadyNarrowedType
+        path: tests/Doctrine/
+
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
