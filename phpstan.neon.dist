@@ -25,27 +25,16 @@ parameters:
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
-  checkMissingIterableValueType: true
+  #checkMissingIterableValueType: true
 
   # Disabled due to inconsistent errors upon encountering psalm types
   reportUnmatchedIgnoredErrors: false
 
 # To be removed when reaching phpstan level 6
-services:
-  - class: PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
-    arguments:
-      paramOut: %featureToggles.paramOutType%
-    tags:
-      - phpstan.rules.rule
-
-  - class: PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
-    arguments:
-      paramOut: %featureToggles.paramOutType%
-    tags:
-      - phpstan.rules.rule
-
 rules:
   - PHPStan\Rules\Constants\MissingClassConstantTypehintRule
+  - PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
   - PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule
+  - PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
   - PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
   - PHPStan\Rules\Properties\MissingPropertyTypehintRule
