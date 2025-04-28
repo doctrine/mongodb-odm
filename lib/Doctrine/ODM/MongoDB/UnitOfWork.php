@@ -255,6 +255,7 @@ final class UnitOfWork implements PropertyChangedListener
      * The document persister instances used to persist document instances.
      *
      * @var array<class-string, Persisters\DocumentPersister>
+     * @phpstan-ignore missingType.generics
      */
     private array $persisters = [];
 
