@@ -11,7 +11,7 @@ use MongoDB\BSON\ObjectId;
 class Profile
 {
     #[ODM\Id]
-    private ObjectId $profileId;
+    private string $profileId;
 
     /** @var string|null */
     #[ODM\Field]
@@ -25,12 +25,12 @@ class Profile
     #[ODM\ReferenceOne(targetDocument: File::class, cascade: ['all'])]
     private $image;
 
-    public function setProfileId(ObjectId $profileId): void
+    public function setProfileId(string|ObjectId $profileId): void
     {
-        $this->profileId = $profileId;
+        $this->profileId = (string) $profileId;
     }
 
-    /** @return ObjectId|string|null */
+    /** @return string|null */
     public function getProfileId()
     {
         return $this->profileId;
