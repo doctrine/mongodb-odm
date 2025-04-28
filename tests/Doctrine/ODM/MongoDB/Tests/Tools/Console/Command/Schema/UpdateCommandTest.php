@@ -13,11 +13,9 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class UpdateCommandTest extends AbstractCommandTestCase
 {
-    /** @var Command */
-    protected $command;
+    protected ?Command $command;
 
-    /** @var CommandTester */
-    protected $commandTester;
+    protected ?CommandTester $commandTester;
 
     public function setUp(): void
     {
@@ -39,8 +37,8 @@ class UpdateCommandTest extends AbstractCommandTestCase
     {
         parent::tearDown();
 
-        unset($this->command);
-        unset($this->commandTester);
+        $this->command       = null;
+        $this->commandTester = null;
     }
 
     public function testProcessValidator(): void
