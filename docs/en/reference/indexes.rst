@@ -246,7 +246,7 @@ Now if we had a ``BlogPost`` document with the ``Comment`` document embedded man
         #[Index]
         private string $slug;
 
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[EmbedMany(targetDocument: Comment::class)]
         private Collection $comments;
     }

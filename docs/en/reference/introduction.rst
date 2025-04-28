@@ -87,7 +87,7 @@ the features.
     #[ODM\Document]
     class Manager extends BaseEmployee
     {
-        /** @var Collection<Project> */
+        /** @var Collection<int, Project> */
         #[ODM\ReferenceMany(targetDocument: Project::class)]
         public Collection $projects;
 

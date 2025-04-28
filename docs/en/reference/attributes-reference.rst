@@ -217,7 +217,7 @@ Optional arguments:
 
     class User
     {
-        /** @var Collection<BookTag|SongTag> */
+        /** @var Collection<int, BookTag|SongTag> */
         #[EmbedMany(
             strategy:'set',
             discriminatorField:'type',
@@ -987,7 +987,7 @@ Optional arguments:
 
     class User
     {
-        /** @var Collection<Item> */
+        /** @var Collection<int, Item> */
         #[ReferenceMany(
             strategy: 'set',
             targetDocument: Item::class,

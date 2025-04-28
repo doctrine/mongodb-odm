@@ -73,7 +73,7 @@ Embed many documents:
         {
             // ...
 
-            /** @var Collection<PhoneNumber> */
+            /** @var Collection<int, PhoneNumber> */
             #[EmbedMany(targetDocument: Phonenumber::class)]
             private Collection $phoneNumbers;
 
@@ -283,7 +283,7 @@ You can achieve this behavior by using the `storeEmptyArray` option for embedded
         {
             // ...
 
-            /** @var Collection<PhoneNumber> */
+            /** @var Collection<int, PhoneNumber> */
             #[EmbedMany(targetDocument: PhoneNumber::class, storeEmptyArray: true)]
             private Collection $phoneNumbers;
             // ...

@@ -94,7 +94,7 @@ Reference many documents:
         {
             // ...
 
-            /** @var Collection<Account> */
+            /** @var Collection<int, Account> */
             #[ReferenceMany(targetDocument: Account::class)]
             private Collection $accounts;
 
@@ -205,7 +205,7 @@ in each `DBRef`_ object:
         {
             // ..
 
-            /** @var Collection<Album|Song> */
+            /** @var Collection<int, Album|Song> */
             #[ReferenceMany(
                 discriminatorMap: [
                     'album' => Album::class,
@@ -240,7 +240,7 @@ a certain class, you can optionally specify a default discriminator value:
         {
             // ..
 
-            /** @var Collection<Album|Song> */
+            /** @var Collection<int, Album|Song> */
             #[ReferenceMany(
                 discriminatorMap: [
                     'album' => Album::class,
@@ -453,7 +453,7 @@ You can achieve this behavior by using the `storeEmptyArray` option.
         {
             // ...
 
-            /** @var Collection<Account> */
+            /** @var Collection<int, Account> */
             #[ReferenceMany(targetDocument: Account::class, storeEmptyArray: true)]
             private Collection $accounts;
 

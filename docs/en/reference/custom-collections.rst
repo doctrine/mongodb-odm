@@ -20,7 +20,7 @@ persistence-related features.
     {
         // ...
 
-        /** @var Collection<Section> */
+        /** @var Collection<int, Section> */
         #[EmbedMany(targetDocument: Section::class)]
         public Collection $sections;
 
@@ -55,7 +55,7 @@ and ensuring that your custom class is initialized in the owning class' construc
     {
         // ...
 
-        /** @var Collection<Section> */
+        /** @var Collection<int, Section> */
         #[EmbedMany(
             collectionClass: SectionCollection::class,
             targetDocument: Section::class,
