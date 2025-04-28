@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
@@ -60,7 +61,7 @@ class ParentObject
     #[ODM\Id]
     private $id;
 
-    /** @var Collection<int, ChildObject>|array<ChildObject> */
+    /** @var Collection<int, ChildObject> */
     #[ODM\ReferenceMany(targetDocument: ChildObject::class, cascade: 'all')]
     private $children;
 
@@ -96,7 +97,7 @@ class ParentObject
     #[ODM\PreUpdate]
     public function prePersistPreUpdate(): void
     {
-        $this->children = [$this->child];
+        $this->children = new ArrayCollection([$this->child]);
     }
 
     #[ODM\PreUpdate]
@@ -105,7 +106,7 @@ class ParentObject
         $this->childEmbedded->setName('changed');
     }
 
-    /** @return Collection<int, ChildObject>|array<ChildObject> */
+    /** @return Collection<int, ChildObject> */
     public function getChildren()
     {
         return $this->children;
