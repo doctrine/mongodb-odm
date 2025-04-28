@@ -1749,7 +1749,7 @@ final class UnitOfWork implements PropertyChangedListener
      * NOTE: This method always considers documents that are not yet known to
      * this UnitOfWork as NEW.
      *
-     * @param array<string, object> $visited
+     * @param array<int, object> $visited
      *
      * @throws InvalidArgumentException
      * @throws MongoDBException
