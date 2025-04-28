@@ -26,6 +26,10 @@ parameters:
       - identifier: staticMethod.alreadyNarrowedType
         path: tests/Doctrine/
 
+      - message: '#with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata does not specify its types: T$#'
+        identifier: missingType.generics
+
+
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
