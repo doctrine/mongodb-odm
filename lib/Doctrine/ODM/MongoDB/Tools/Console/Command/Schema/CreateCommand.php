@@ -72,8 +72,10 @@ class CreateCommand extends AbstractCommand
 
             try {
                 if (isset($class)) {
+                    // @phpstan-ignore arguments.count, arguments.count
                     $this->{'processDocument' . $method}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
                 } else {
+                    // @phpstan-ignore arguments.count, arguments.count
                     $this->{'process' . $method}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input), $background);
                 }
 
