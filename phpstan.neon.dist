@@ -11,7 +11,7 @@ parameters:
   excludePaths:
     - tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures/User.php
     - tests/Hydrators/
-    - tests/PersistentCollections/
+    - tests/PersistentCollections/ (?)
     - tests/Proxies/
   treatPhpDocTypesAsCertain: false
   ignoreErrors:
