@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests;
+namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Utility\EncryptionFieldMap;
 use Documents\Encryption\Patient;
 
-class EncryptionTest extends BaseTestCase
+class EncryptionFieldMapTest extends BaseTestCase
 {
     public function testEncryptionFieldMap(): void
     {
