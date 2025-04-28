@@ -23,7 +23,7 @@ class Order
     public function __construct(
         #[ReferenceOne(targetDocument: Customer::class)]
         public Customer $customer,
-        /** @var Collection<OrderLine> */
+        /** @var Collection<int, OrderLine> */
         #[EmbedMany(targetDocument: OrderLine::class)]
         public Collection $orderLines = new ArrayCollection(),
     ) {

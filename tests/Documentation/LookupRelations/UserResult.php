@@ -19,7 +19,7 @@ class UserResult
     #[Field(type: 'string')]
     public string $name;
 
-    /** @var Collection<UserOrderResult> */
+    /** @var Collection<int, UserOrderResult> */
     #[EmbedMany(targetDocument: UserOrderResult::class)]
     public Collection $orders;
 }

@@ -21,7 +21,7 @@ class OrderResult
     #[Field(type: 'date_immutable')]
     public DateTimeImmutable $date;
 
-    /** @var Collection<Item> */
+    /** @var Collection<int, Item> */
     #[EmbedMany(targetDocument: Item::class)]
     public Collection $items;
 

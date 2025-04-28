@@ -468,6 +468,7 @@ class BuilderTest extends BaseTestCase
         self::assertCount(1, $qb->getQueryArray());
     }
 
+    /** @param array<int, mixed> $args */
     #[DataProvider('provideProxiedExprMethods')]
     public function testProxiedExprMethods(string $method, array $args = []): void
     {

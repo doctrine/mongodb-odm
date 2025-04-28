@@ -14,7 +14,7 @@ class Manager extends BaseEmployee
     #[ODM\Id]
     public string $id;
 
-    /** @var Collection<Project> */
+    /** @var Collection<int, Project> */
     #[ODM\ReferenceMany(targetDocument: Project::class)]
     public Collection $projects;
 

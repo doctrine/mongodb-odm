@@ -94,6 +94,8 @@ abstract class AbstractDriverTestCase extends TestCase
      * @param string[] $paths
      *
      * @return FileDriver
+     *
+     * @phpstan-ignore missingType.generics
      */
     abstract protected function getDriver(array $paths = []);
 }

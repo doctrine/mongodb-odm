@@ -574,21 +574,24 @@ class QueryTest extends BaseTestCase
                 return false;
             }
 
+            /** @phpstan-ignore missingType.iterableValue */
             public function setTypeMap(array $typemap): void
             {
             }
 
+            /** @phpstan-ignore missingType.iterableValue */
             public function toArray(): array
             {
                 return iterator_to_array($this);
             }
 
-            public function current(): array|null
+            /** @phpstan-ignore missingType.iterableValue */
+            public function current(): object|array|null
             {
                 return parent::current();
             }
 
-            public function key(): int|null
+            public function key(): int
             {
                 return parent::key();
             }

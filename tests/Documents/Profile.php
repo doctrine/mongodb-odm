@@ -10,9 +10,8 @@ use MongoDB\BSON\ObjectId;
 #[ODM\Document]
 class Profile
 {
-    /** @var ObjectId|string|null */
     #[ODM\Id]
-    private $profileId;
+    private ObjectId $profileId;
 
     /** @var string|null */
     #[ODM\Field]
