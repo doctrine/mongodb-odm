@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use Jean85\PrettyVersions;
 use LogicException;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
@@ -144,6 +145,29 @@ class Configuration
     private bool $useTransactionalFlush = false;
 
     private bool $useLazyGhostObject = false;
+
+    private static string $version;
+
+    /**
+     * Provides the driver options to be used when creating the MongoDB client.
+     *
+     * @return array<string, mixed>
+     */
+    public function getDriverOptions(): array
+    {
+        $driverOptions = [
+            'driver' => [
+                'name' => 'doctrine-odm',
+                'version' => self::getVersion(),
+            ],
+        ];
+
+        if (isset($this->attributes['autoEncryption'])) {
+            $driverOptions['autoEncryption'] = $this->attributes['autoEncryption'];
+        }
+
+        return $driverOptions;
+    }
 
     /**
      * Adds a namespace under a certain alias.
@@ -703,6 +727,19 @@ class Configuration
         }
 
         return array_key_first($this->attributes['autoEncryption']['kmsProviders']);
+    }
+
+    private static function getVersion(): string
+    {
+        if (self::$version === null) {
+            try {
+                self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
+            } catch (Throwable) {
+                return self::$version = 'unknown';
+            }
+        }
+
+        return self::$version;
     }
 }
 
