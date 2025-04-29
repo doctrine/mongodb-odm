@@ -67,12 +67,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
 
 		-
-			message: '#^Unsafe usage of new static\(\)\.$#'
-			identifier: new.static
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\:\:execute\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
 			identifier: missingType.generics
 			count: 1
