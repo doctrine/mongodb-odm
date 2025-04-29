@@ -673,12 +673,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnsetStage.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Configuration\:\:setAutoGenerateProxyClasses\(\) has InvalidArgumentException in PHPDoc @throws tag but it''s not thrown\.$#'
-			identifier: throws.unusedType
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Configuration.php
-
-		-
 			message: '#^Return type \(Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\) of method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManager\:\:getMetadataFactory\(\)$#'
 			identifier: method.childReturnType
 			count: 1
