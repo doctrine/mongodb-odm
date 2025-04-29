@@ -39,9 +39,9 @@ parameters:
 
 # To be removed when reaching phpstan level 6
 rules:
-  - PHPStan\Rules\Constants\MissingClassConstantTypehintRule
-  - PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
-  - PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule
-  - PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
-  - PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
-  - PHPStan\Rules\Properties\MissingPropertyTypehintRule
+    - PHPStan\Rules\Constants\MissingClassConstantTypehintRule
+    - PHPStan\Rules\Functions\MissingFunctionParameterTypehintRule
+    - PHPStan\Rules\Functions\MissingFunctionReturnTypehintRule
+    - PHPStan\Rules\Methods\MissingMethodParameterTypehintRule
+    - PHPStan\Rules\Methods\MissingMethodReturnTypehintRule
+    - PHPStan\Rules\Properties\MissingPropertyTypehintRule
