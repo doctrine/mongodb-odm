@@ -8,9 +8,12 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\Account;
 use Documents\Address;
+use Documents\Encryption\ClientCard;
+use Documents\Encryption\PatientRecord;
 use Documents\Group;
 use Documents\Phonenumber;
 use Documents\Profile;
+use MongoDB\Driver\ClientEncryption;
 use PHPUnit\Framework\TestCase;
 use TestDocuments\EmbeddedDocument;
 use TestDocuments\NullableFieldsDocument;
@@ -520,5 +523,38 @@ abstract class AbstractDriverTestCase extends TestCase
             'prime' => [],
             'storeEmptyArray' => false,
         ], $classMetadata->fieldMappings['groups']);
+    }
+
+    public function testEncryptFieldMapping(): void
+    {
+        $classMetadata = new ClassMetadata(PatientRecord::class);
+        $this->driver->loadMetadataForClass(PatientRecord::class, $classMetadata);
+
+        self::assertFalse($classMetadata->isEncrypted);
+
+        self::assertSame([
+            'queryType' => ClientEncryption::QUERY_TYPE_EQUALITY,
+        ], $classMetadata->fieldMappings['ssn']['encrypt']);
+
+        self::assertSame([], $classMetadata->fieldMappings['billing']['encrypt']);
+
+        self::assertSame([
+            'queryType' => ClientEncryption::QUERY_TYPE_RANGE,
+            'sparsity' => 1,
+            'trimFactor' => 4,
+            'min' => 100,
+            'max' => 2000,
+        ], $classMetadata->fieldMappings['billingAmount']['encrypt']);
+    }
+
+    public function testEncryptEmbeddedDocumentMapping(): void
+    {
+        $classMetadata = new ClassMetadata(ClientCard::class);
+        $this->driver->loadMetadataForClass(ClientCard::class, $classMetadata);
+
+        self::assertTrue($classMetadata->isEncrypted);
+
+        self::assertArrayNotHasKey('encrypt', $classMetadata->fieldMappings['type']);
+        self::assertArrayNotHasKey('encrypt', $classMetadata->fieldMappings['number']);
     }
 }

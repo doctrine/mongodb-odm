@@ -98,6 +98,9 @@ class XmlDriver extends FileDriver
             $metadata->isMappedSuperclass = true;
         } elseif ($xmlRoot->getName() === 'embedded-document') {
             $metadata->isEmbeddedDocument = true;
+            if (isset($xmlRoot->encrypt)) {
+                $metadata->isEncrypted = true;
+            }
         } elseif ($xmlRoot->getName() === 'query-result-document') {
             $metadata->isQueryResultDocument = true;
         } elseif ($xmlRoot->getName() === 'view') {
@@ -305,6 +308,30 @@ class XmlDriver extends FileDriver
                     $mapping['version'] = ((string) $attributes['version'] === 'true');
                 } elseif (isset($attributes['lock'])) {
                     $mapping['lock'] = ((string) $attributes['lock'] === 'true');
+                }
+
+                if (isset($field->encrypt)) {
+                    $mapping['encrypt'] = [];
+                    foreach ($field->encrypt->attributes() as $encryptKey => $encryptValue) {
+                        switch ($encryptKey) {
+                            case 'queryType':
+                                $mapping['encrypt'][$encryptKey] = (string) $encryptValue;
+                                break;
+                            case 'min':
+                            case 'max':
+                                $mapping['encrypt'][$encryptKey] = match ($mapping['type']) {
+                                    'int' => (int) $encryptValue,
+                                    'string' => (string) $encryptValue,
+                                };
+                                break;
+                            case 'sparsity':
+                            case 'prevision':
+                            case 'trimFactor':
+                            case 'contention':
+                                $mapping['encrypt'][$encryptKey] = (int) $encryptValue;
+                                break;
+                        }
+                    }
                 }
 
                 $this->addFieldMapping($metadata, $mapping);
