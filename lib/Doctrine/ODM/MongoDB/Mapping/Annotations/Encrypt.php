@@ -20,7 +20,7 @@ use function in_array;
  * @Annotation
  * @NamedArgumentConstructor
  */
-#[Attribute(Attribute::TARGET_PROPERTY)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 final class Encrypt implements Annotation
 {
     public const QUERY_TYPE_EQUALITY = ClientEncryption::QUERY_TYPE_EQUALITY;

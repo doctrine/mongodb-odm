@@ -306,4 +306,12 @@ final class MappingException extends BaseMappingException
             $fieldName,
         ));
     }
+
+    public static function rootDocumentCannotBeEncrypted(string $className): self
+    {
+        return new self(sprintf(
+            'The root document class "%s" cannot be encrypted. Only fields and embedded documents can be encrypted.',
+            $className,
+        ));
+    }
 }
