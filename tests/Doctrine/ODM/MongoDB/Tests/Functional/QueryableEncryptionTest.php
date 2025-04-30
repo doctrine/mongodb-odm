@@ -19,6 +19,13 @@ class QueryableEncryptionTest extends BaseTestCase
 {
     private const LOCAL_MASTERKEY = 'quTJGRzz3TS2yrPUzNf9Ajv+rG2cn0buRsWT6i6BTQihznxZkhYKzyagXZZ05+y/FMEV1kpC79reiJSpysytFyEcXXJChjBsH2iTzBK8uWFN2dN7udzYjWvBJmWKbhhm';
 
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->skipTestIfQueryableEncryptionNotSupported();
+    }
+
     public function testCreateAndQueryEncryptedCollection(): void
     {
         // @todo skip if not using MongoDB < 7, single node or not enterprise
