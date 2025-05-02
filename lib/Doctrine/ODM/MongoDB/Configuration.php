@@ -33,6 +33,7 @@ use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
+use Throwable;
 
 use function array_key_exists;
 use function array_key_first;
