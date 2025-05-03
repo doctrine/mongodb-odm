@@ -34,6 +34,8 @@ use function strtolower;
  *             maxNumPassages?: int,
  *         },
  *         returnStoredSource?: bool,
+ *         searchBefore?: string,
+ *         searchAfter?: string,
  *         sort?: object,
  *         autocomplete?: object,
  *         compound?: object,
@@ -61,6 +63,8 @@ class Search extends Stage implements SupportsAllSearchOperators
     private ?object $count            = null;
     private ?object $highlight        = null;
     private ?bool $returnStoredSource = null;
+    private ?string $searchBefore     = null;
+    private ?string $searchAfter      = null;
     private ?SearchOperator $operator = null;
 
     /** @var array<string, -1|1|SortMeta> */
@@ -90,6 +94,14 @@ class Search extends Stage implements SupportsAllSearchOperators
 
         if ($this->returnStoredSource !== null) {
             $params->returnStoredSource = $this->returnStoredSource;
+        }
+
+        if ($this->searchBefore) {
+            $params->searchBefore = $this->searchBefore;
+        }
+
+        if ($this->searchAfter) {
+            $params->searchAfter = $this->searchAfter;
         }
 
         if ($this->sort) {
@@ -141,6 +153,20 @@ class Search extends Stage implements SupportsAllSearchOperators
     public function returnStoredSource(bool $returnStoredSource = true): static
     {
         $this->returnStoredSource = $returnStoredSource;
+
+        return $this;
+    }
+
+    public function searchBefore(string $searchBefore): static
+    {
+        $this->searchBefore = $searchBefore;
+
+        return $this;
+    }
+
+    public function searchAfter(string $searchAfter): static
+    {
+        $this->searchAfter = $searchAfter;
 
         return $this;
     }
