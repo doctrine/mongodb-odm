@@ -692,7 +692,7 @@ class Configuration
      *
      * @see https://www.php.net/manual/en/mongodb-driver-clientencryption.construct.php
      *
-     * @param AutoEncryptionOptions $options
+     * @phpstan-param AutoEncryptionOptions $options
      *
      * @throws InvalidArgumentException If the options are invalid.
      */
@@ -714,7 +714,7 @@ class Configuration
      *
      * @see https://www.php.net/manual/en/mongodb-driver-clientencryption.construct.php
      *
-     * @return AutoEncryptionOptions
+     * @phpstan-return AutoEncryptionOptions
      */
     public function getAutoEncryption(): ?array
     {
@@ -732,7 +732,7 @@ class Configuration
 
     private static function getVersion(): string
     {
-        if (self::$version === null) {
+        if (! isset(self::$version)) {
             try {
                 self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
             } catch (Throwable) {
