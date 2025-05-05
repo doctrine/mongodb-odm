@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use MongoDB\BSON\Document;
 use TestDocuments\AlsoLoadDocument;
 use TestDocuments\CustomIdGenerator;
+use TestDocuments\InvalidEmbeddedDocument;
 use TestDocuments\InvalidPartialFilterDocument;
 use TestDocuments\SchemaInvalidDocument;
 use TestDocuments\SchemaValidatedDocument;
@@ -73,6 +74,16 @@ class XmlDriverTest extends AbstractDriverTestCase
         $this->expectExceptionMessageMatches('#The mapping file .+ is invalid#');
 
         $this->driver->loadMetadataForClass(InvalidPartialFilterDocument::class, $classMetadata);
+    }
+
+    public function testInvalidEmbeddedDocument(): void
+    {
+        $classMetadata = new ClassMetadata(InvalidEmbeddedDocument::class);
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessageMatches('#The mapping file .+ is invalid#');
+
+        $this->driver->loadMetadataForClass(InvalidEmbeddedDocument::class, $classMetadata);
     }
 
     public function testWildcardIndexName(): void

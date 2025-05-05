@@ -16,9 +16,9 @@
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="embedded-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="mapped-superclass" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
-        <xs:element name="query-result-document" type="odm:document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="embedded-document" type="odm:embedded-document" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="mapped-superclass" type="odm:mapped-superclass" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element name="query-result-document" type="odm:query-result-document" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="view" type="odm:view" minOccurs="0" maxOccurs="unbounded" />
         <xs:element name="gridfs-file" type="odm:gridfs-file" minOccurs="0" maxOccurs="unbounded" />
       </xs:choice>
@@ -26,15 +26,51 @@
   </xs:element>
 
   <xs:complexType name="embedded-document">
-    <xs:attribute name="name" type="xs:NMTOKEN" />
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="id" type="odm:id" minOccurs="0" />
+      <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
+      <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
+    </xs:choice>
+
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="inheritance-type" type="odm:inheritance-type" />
   </xs:complexType>
 
   <xs:complexType name="mapped-superclass">
-    <xs:attribute name="name" type="xs:NMTOKEN" />
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="id" type="odm:id" minOccurs="0" />
+      <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
+      <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
+    </xs:choice>
+
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="inheritance-type" type="odm:inheritance-type" />
   </xs:complexType>
 
   <xs:complexType name="query-result-document">
-    <xs:attribute name="name" type="xs:NMTOKEN" />
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="id" type="odm:id" minOccurs="0" />
+      <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
+      <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
+    </xs:choice>
+
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="inheritance-type" type="odm:inheritance-type" />
   </xs:complexType>
 
   <xs:complexType name="view">
