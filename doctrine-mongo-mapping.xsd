@@ -33,6 +33,10 @@
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
+      <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0" />
       <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
       <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
     </xs:choice>
@@ -49,12 +53,25 @@
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
+      <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0" />
       <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
       <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
     </xs:choice>
 
+    <xs:attribute name="db" type="xs:NMTOKEN" />
     <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="write-concern" type="xs:string" />
+    <xs:attribute name="collection" type="xs:NMTOKEN" />
+    <xs:attribute name="capped-collection" type="xs:boolean" />
+    <xs:attribute name="capped-collection-size" type="xs:integer" />
+    <xs:attribute name="capped-collection-max" type="xs:integer" />
+    <xs:attribute name="repository-class" type="xs:string" />
     <xs:attribute name="inheritance-type" type="odm:inheritance-type" />
+    <xs:attribute name="change-tracking-policy" type="odm:change-tracking-policy" />
+    <xs:attribute name="read-only" type="xs:boolean" />
   </xs:complexType>
 
   <xs:complexType name="query-result-document">
@@ -65,12 +82,14 @@
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
+      <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
+      <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
+      <xs:element name="lifecycle-callbacks" type="odm:lifecycle-callbacks" minOccurs="0" />
       <xs:element name="also-load-methods" type="odm:also-load-methods" minOccurs="0" />
-      <xs:element name="indexes" type="odm:indexes" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="name" type="xs:string" />
-    <xs:attribute name="inheritance-type" type="odm:inheritance-type" />
   </xs:complexType>
 
   <xs:complexType name="view">
