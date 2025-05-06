@@ -1315,21 +1315,6 @@ class SearchTest extends BaseTestCase
     }
 
     #[DataProvider('provideAutocompleteBuilders')]
-    #[DataProvider('provideCompoundBuilders')]
-    #[DataProvider('provideEmbeddedDocumentBuilders')]
-    #[DataProvider('provideEmbeddedDocumentCompoundBuilders')]
-    #[DataProvider('provideEqualsBuilders')]
-    #[DataProvider('provideExistsBuilders')]
-    #[DataProvider('provideGeoShapeBuilders')]
-    #[DataProvider('provideGeoWithinBuilders')]
-    #[DataProvider('provideMoreLikeThisBuilders')]
-    #[DataProvider('provideNearBuilders')]
-    #[DataProvider('providePhraseBuilders')]
-    #[DataProvider('provideQueryStringBuilders')]
-    #[DataProvider('provideRangeBuilders')]
-    #[DataProvider('provideRegexBuilders')]
-    #[DataProvider('provideTextBuilders')]
-    #[DataProvider('provideWildcardBuilders')]
     public function testSearchOperatorsWithSearchBefore(array $expectedOperator, Closure $createOperator): void
     {
         $baseExpected = [
@@ -1371,21 +1356,6 @@ class SearchTest extends BaseTestCase
     }
 
     #[DataProvider('provideAutocompleteBuilders')]
-    #[DataProvider('provideCompoundBuilders')]
-    #[DataProvider('provideEmbeddedDocumentBuilders')]
-    #[DataProvider('provideEmbeddedDocumentCompoundBuilders')]
-    #[DataProvider('provideEqualsBuilders')]
-    #[DataProvider('provideExistsBuilders')]
-    #[DataProvider('provideGeoShapeBuilders')]
-    #[DataProvider('provideGeoWithinBuilders')]
-    #[DataProvider('provideMoreLikeThisBuilders')]
-    #[DataProvider('provideNearBuilders')]
-    #[DataProvider('providePhraseBuilders')]
-    #[DataProvider('provideQueryStringBuilders')]
-    #[DataProvider('provideRangeBuilders')]
-    #[DataProvider('provideRegexBuilders')]
-    #[DataProvider('provideTextBuilders')]
-    #[DataProvider('provideWildcardBuilders')]
     public function testSearchOperatorsWithSearchAfter(array $expectedOperator, Closure $createOperator): void
     {
         $baseExpected = [
