@@ -656,6 +656,16 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
 
 		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SearchTest\\:\\:testSearchOperatorsWithSearchBefore\\(\\) has parameter \\$expectedOperator with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
+
+		-
+			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SearchTest\\:\\:testSearchOperatorsWithSearchAfter\\(\\) has parameter \\$expectedOperator with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
+
+		-
 			message: "#^Method Doctrine\\\\ODM\\\\MongoDB\\\\Tests\\\\Aggregation\\\\Stage\\\\SetWindowFieldsTest\\:\\:testOperators\\(\\) has parameter \\$args with no type specified\\.$#"
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SetWindowFieldsTest.php
