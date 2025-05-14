@@ -1525,6 +1525,18 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperatorsWithSearchAfter\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
+
+		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperatorsWithSearchBefore\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SearchTest.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperatorsWithSort\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
