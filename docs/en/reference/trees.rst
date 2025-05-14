@@ -23,7 +23,7 @@ Full Tree in Single Document
         #[Field(type: 'string')]
         private string $body;
 
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[EmbedMany(targetDocument: Comment::class)]
         private Collection $comments;
 
@@ -39,7 +39,7 @@ Full Tree in Single Document
         #[Field(type: 'string')]
         private string $text;
 
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[EmbedMany(targetDocument: Comment::class)]
         private Collection $replies;
 
@@ -115,7 +115,7 @@ Child Reference
         #[Field(type: 'string')]
         private string $name;
 
-        /** @var Collection<Category> */
+        /** @var Collection<int, Category> */
         #[ReferenceMany(targetDocument: Category::class)]
         #[Index]
         private Collection $children;
@@ -172,12 +172,12 @@ Array of Ancestors
         #[Id]
         private string $id;
 
-        /** @var Collection<Category> */
+        /** @var Collection<int, Category> */
         #[ReferenceMany(targetDocument: Category::class)]
         #[Index]
         private Collection $ancestors;
 
-        /** @var Collection<Category> */
+        /** @var Collection<int, Category> */
         #[ReferenceOne(targetDocument: Category::class)]
         #[Index]
         private ?Category $parent = null;

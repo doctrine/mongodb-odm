@@ -10,7 +10,7 @@ use Documents\Functional\Embedded;
 #[ODM\EmbeddedDocument]
 final class FileMetadata
 {
-    /** @var User */
+    /** @var User|null */
     #[ODM\ReferenceOne(targetDocument: User::class, cascade: ['persist'])]
     private $owner;
 

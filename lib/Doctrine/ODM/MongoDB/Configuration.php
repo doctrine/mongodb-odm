@@ -286,8 +286,6 @@ class Configuration
      * during each script execution.
      *
      * @param self::AUTOGENERATE_* $mode
-     *
-     * @throws InvalidArgumentException If an invalid mode was given.
      */
     public function setAutoGenerateProxyClasses(int $mode): void
     {

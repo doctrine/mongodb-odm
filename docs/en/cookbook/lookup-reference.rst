@@ -68,7 +68,7 @@ and a date.
         #[Field(type: 'date_immutable')]
         public DateTimeImmutable $date;
 
-        /** @var Collection<Item> */
+        /** @var Collection<int, Item> */
         #[ReferenceMany(
             targetDocument: Item::class,
             cascade: 'all',
@@ -378,7 +378,7 @@ You need to create a new class to hold the result of the aggregation.
         #[Field(type: 'date_immutable')]
         public DateTimeImmutable $date;
 
-        /** @var Collection<Item> */
+        /** @var Collection<int, Item> */
         #[EmbedMany(targetDocument: Item::class)]
         public Collection $items;
 
@@ -631,7 +631,7 @@ but not the user.
         #[Field(type: 'string')]
         public string $name;
 
-        /** @var Collection<UserOrderResult> */
+        /** @var Collection<int, UserOrderResult> */
         #[EmbedMany(targetDocument: UserOrderResult::class)]
         public Collection $orders;
     }
@@ -645,7 +645,7 @@ but not the user.
         #[Field(type: 'date_immutable')]
         public DateTimeImmutable $date;
 
-        /** @var Collection<Item> */
+        /** @var Collection<int, Item> */
         #[EmbedMany(targetDocument: Item::class)]
         public Collection $items;
     }

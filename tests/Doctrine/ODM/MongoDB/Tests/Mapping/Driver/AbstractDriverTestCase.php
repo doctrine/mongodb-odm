@@ -21,8 +21,7 @@ use TestDocuments\User;
 
 abstract class AbstractDriverTestCase extends TestCase
 {
-    /** @var MappingDriver|null */
-    protected $driver;
+    protected MappingDriver|null $driver;
 
     public function setUp(): void
     {
@@ -31,7 +30,7 @@ abstract class AbstractDriverTestCase extends TestCase
 
     public function tearDown(): void
     {
-        unset($this->driver);
+        $this->driver = null;
     }
 
     public function testDriver(): void

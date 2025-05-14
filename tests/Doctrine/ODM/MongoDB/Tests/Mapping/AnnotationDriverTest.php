@@ -84,7 +84,11 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
         self::assertEquals(1, $indexes[0]['keys']['foo']);
     }
 
-    /** @param list<string>|null $errors */
+    /**
+     * @param list<string> $errors
+     *
+     * @param-out list<string> $errors
+     */
     private function captureDeprecationMessages(callable $callable, ?array &$errors): mixed
     {
         /* TODO: this method can be replaced with expectUserDeprecationMessage() in PHPUnit 11+.

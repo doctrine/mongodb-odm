@@ -141,7 +141,7 @@ Now you can embed the ``Keyword`` document many times in the ``Product``:
     {
         // ...
 
-        /** @var Collection<Keyword> */
+        /** @var Collection<int, Keyword> */
         #[EmbedMany(targetDocument: Keyword::class)]
         public Collection $keywords;
 

@@ -23,7 +23,7 @@ and changes are tracked and persisted separately. Here is an example:
     {
         // ...
 
-        /** @var Collection<BlogPost> */
+        /** @var Collection<int, BlogPost> */
         #[ReferenceMany(targetDocument: BlogPost::class)]
         private Collection $posts;
     }
@@ -66,7 +66,7 @@ One to Many
     {
         // ...
 
-        /** @var Collection<BlogPost> */
+        /** @var Collection<int, BlogPost> */
         #[ReferenceMany(targetDocument: BlogPost::class, mappedBy: 'user')]
         private Collection $posts;
     }
@@ -189,11 +189,11 @@ Self-Referencing Many to Many
     {
         // ...
 
-        /** @var Collection<User> */
+        /** @var Collection<int, User> */
         #[ReferenceMany(targetDocument: User::class, mappedBy: 'myFriends')]
         public Collection $friendsWithMe;
 
-        /** @var Collection<User> */
+        /** @var Collection<int, User> */
         #[ReferenceMany(targetDocument: User::class, inversedBy: 'friendsWithMe')]
         public Collection $myFriends;
 

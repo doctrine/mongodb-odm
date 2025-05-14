@@ -35,11 +35,11 @@ querying by the BlogPost's ID.
     {
         // ...
 
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[ReferenceMany(targetDocument: Comment::class, mappedBy: 'blogPost')]
         private Collection $comments;
 
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[ReferenceMany(
              targetDocument: Comment::class,
              mappedBy: 'blogPost',
@@ -88,7 +88,7 @@ administrators:
 
     class BlogPost
     {
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[ReferenceMany(
              targetDocument: Comment::class,
              mappedBy: 'blogPost',
@@ -109,7 +109,7 @@ call on the Comment repository class to populate the reference.
 
     class BlogPost
     {
-        /** @var Collection<Comment> */
+        /** @var Collection<int, Comment> */
         #[ReferenceMany(
              targetDocument: Comment::class,
              mappedBy: 'blogPost',

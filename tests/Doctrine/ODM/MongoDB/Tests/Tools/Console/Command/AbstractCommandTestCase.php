@@ -11,8 +11,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 
 abstract class AbstractCommandTestCase extends BaseTestCase
 {
-    /** @var Application */
-    protected $application;
+    protected ?Application $application;
 
     public function setUp(): void
     {
@@ -32,6 +31,6 @@ abstract class AbstractCommandTestCase extends BaseTestCase
     {
         parent::tearDown();
 
-        unset($this->application);
+        $this->application = null;
     }
 }

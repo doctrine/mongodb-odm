@@ -11,7 +11,7 @@ parameters:
   excludePaths:
     - tests/Doctrine/ODM/MongoDB/Tests/Mapping/Driver/fixtures/User.php
     - tests/Hydrators/
-    - tests/PersistentCollections/
+    - tests/PersistentCollections/ (?)
     - tests/Proxies/
   treatPhpDocTypesAsCertain: false
   ignoreErrors:
@@ -22,10 +22,17 @@ parameters:
       - message: '#^Circular definition detected in type alias#'
         path: lib/Doctrine/ODM/MongoDB/Aggregation/
 
+      # Keep type assertions even when type is declared
+      - identifier: staticMethod.alreadyNarrowedType
+        path: tests/Doctrine/
+
+      - message: '#with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata does not specify its types: T$#'
+        identifier: missingType.generics
+
+
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
-  checkMissingIterableValueType: true
 
   # Disabled due to inconsistent errors upon encountering psalm types
   reportUnmatchedIgnoredErrors: false

@@ -16,6 +16,8 @@ use function strpos;
 
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.
+ *
+ * @extends FilterIterator<int, ClassMetadata<object>, ArrayIterator>
  */
 class MetadataFilter extends FilterIterator implements Countable
 {

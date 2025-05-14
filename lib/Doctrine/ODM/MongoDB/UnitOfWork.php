@@ -255,6 +255,7 @@ final class UnitOfWork implements PropertyChangedListener
      * The document persister instances used to persist document instances.
      *
      * @var array<class-string, Persisters\DocumentPersister>
+     * @phpstan-ignore missingType.generics
      */
     private array $persisters = [];
 
@@ -1749,7 +1750,7 @@ final class UnitOfWork implements PropertyChangedListener
      * NOTE: This method always considers documents that are not yet known to
      * this UnitOfWork as NEW.
      *
-     * @param array<string, object> $visited
+     * @param array<int, object> $visited
      *
      * @throws InvalidArgumentException
      * @throws MongoDBException
@@ -1952,7 +1953,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $prop = $this->reflectionService->getAccessibleProperty($class->name, $name);
                 assert($prop instanceof ReflectionProperty);
 
-                if (method_exists($prop, 'isInitialized') && ! $prop->isInitialized($document)) {
+                if (! $prop->isInitialized($document)) {
                     continue;
                 }
 

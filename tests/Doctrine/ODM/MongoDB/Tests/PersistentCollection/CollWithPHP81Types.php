@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
  */
 class CollWithPHP81Types extends ArrayCollection
 {
+    /** @phpstan-ignore missingType.generics, missingType.generics */
     public function intersection(Collection&ArrayCollection $param): Collection&ArrayCollection
     {
         return $param;

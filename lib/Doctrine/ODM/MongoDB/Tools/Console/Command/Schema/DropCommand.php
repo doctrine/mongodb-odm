@@ -72,8 +72,10 @@ class DropCommand extends AbstractCommand
 
             try {
                 if (is_string($class)) {
+                    // @phpstan-ignore arguments.count
                     $this->{'processDocument' . $method}($sm, $class, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 } else {
+                    // @phpstan-ignore arguments.count
                     $this->{'process' . $method}($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
                 }
 
