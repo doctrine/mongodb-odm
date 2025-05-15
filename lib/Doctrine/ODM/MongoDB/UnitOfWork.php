@@ -1790,7 +1790,12 @@ final class UnitOfWork implements PropertyChangedListener
                 // Document becomes managed again
                 unset($this->scheduledDocumentDeletions[$oid]);
 
-                $this->persistNew($class, $document);
+                if ($class->isEmbeddedDocument) {
+                    $this->documentStates[$oid] = self::STATE_MANAGED;
+                } else {
+                    $this->persistNew($class, $document);
+                }
+
                 break;
 
             case self::STATE_DETACHED:
