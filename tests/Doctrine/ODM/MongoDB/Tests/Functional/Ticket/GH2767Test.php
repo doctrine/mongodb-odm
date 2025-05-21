@@ -14,7 +14,7 @@ class GH2767Test extends BaseTestCase
     public function testRemovePersistEmbedded(): void
     {
         // Start with a parent document and 1 embedded document, both with removedCount = 0
-        $document = new TestDocument([new TestEmbeddedDocument()]);
+        $document = new GH2767TestDocument([new GH2767TestEmbeddedDocument()]);
         $this->dm->persist($document);
         $this->dm->flush();
         $id = $document->id;
@@ -31,7 +31,7 @@ class GH2767Test extends BaseTestCase
         $this->dm->flush();
         $this->dm->clear();
 
-        $repository = $this->dm->getRepository(TestDocument::class);
+        $repository = $this->dm->getRepository(GH2767TestDocument::class);
         $result     = $repository->find($id);
 
         self::assertEquals(1, $result->removedCount);
@@ -40,7 +40,7 @@ class GH2767Test extends BaseTestCase
 }
 
 #[ODM\Document]
-class TestDocument
+class GH2767TestDocument
 {
     #[ODM\Id]
     public ?string $id = null;
@@ -48,11 +48,11 @@ class TestDocument
     #[ODM\Field(type: 'int')]
     public int $removedCount = 0;
 
-    /** @var Collection<int, TestEmbeddedDocument> */
-    #[ODM\EmbedMany(targetDocument: TestEmbeddedDocument::class)]
+    /** @var Collection<int, GH2767TestEmbeddedDocument> */
+    #[ODM\EmbedMany(targetDocument: GH2767TestEmbeddedDocument::class)]
     public $embeddedDocuments;
 
-    /** @param TestEmbeddedDocument[] $embeddedDocuments */
+    /** @param GH2767TestEmbeddedDocument[] $embeddedDocuments */
     public function __construct(array $embeddedDocuments)
     {
         $this->embeddedDocuments = new ArrayCollection($embeddedDocuments);
@@ -68,7 +68,7 @@ class TestDocument
 }
 
 #[ODM\EmbeddedDocument]
-class TestEmbeddedDocument
+class GH2767TestEmbeddedDocument
 {
     #[ODM\Field(type: 'int')]
     public int $removedCount = 0;
