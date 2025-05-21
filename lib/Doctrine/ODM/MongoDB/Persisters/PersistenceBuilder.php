@@ -282,30 +282,35 @@ final class PersistenceBuilder
                     }
                 }
 
+            // @EmbedMany
+            } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
+                foreach ($new as $key => $embeddedDoc) {
+                    if ($this->uow->isScheduledForInsert($embeddedDoc)) {
+                        continue;
+                    }
+
+                    $update = $this->prepareUpsertData($embeddedDoc);
+                    foreach ($update as $cmd => $values) {
+                        foreach ($values as $name => $value) {
+                            $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+                        }
+                    }
+                }
+
             // @ReferenceOne
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
-            // @ReferenceMany, @EmbedMany
-            } elseif ($mapping['type'] === ClassMetadata::MANY) {
-                if (! $mapping['isInverseSide'] && $new instanceof PersistentCollectionInterface && $new->isDirty() && CollectionHelper::isAtomic($mapping['strategy'])) {
-                    $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
-                } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
-                    foreach ($new as $key => $embeddedDoc) {
-                        if ($this->uow->isScheduledForInsert($embeddedDoc)) {
-                            continue;
-                        }
-
-                        $update = $this->prepareUpsertData($embeddedDoc);
-                        foreach ($update as $cmd => $values) {
-                            foreach ($values as $name => $value) {
-                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
-                            }
-                        }
-                    }
-                }
+            // @ReferenceMany
+            } elseif (
+                $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
+                && $new instanceof PersistentCollectionInterface && $new->isDirty()
+                && CollectionHelper::isAtomic($mapping['strategy'])
+            ) {
+                $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
-            // @EmbedMany and @ReferenceMany are handled by CollectionPersister
+
+            // @ReferenceMany is handled by CollectionPersister
         }
 
         // add discriminator if the class has one
