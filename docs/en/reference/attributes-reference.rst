@@ -339,14 +339,14 @@ multiple document classes, and even other embedded documents!
 #[Encrypt]
 ----------
 
-The `#[Encrypt]` attribute is used to define an encrypted field mapping for a document property. It allows you to configure fields for encryption and queryable encryption in MongoDB.
+The ``#[Encrypt]`` attribute is used to define an encrypted field mapping for a document property. It allows you to configure fields for encryption and queryable encryption in MongoDB.
 
 Optional arguments:
 
 - ``queryType`` - Specifies the query type for the field. Possible values:
   - ``null`` (default) - Field is not queryable.
-  - ``QUERY_TYPE_EQUALITY`` - Enables equality queries.
-  - ``QUERY_TYPE_RANGE`` - Enables range queries.
+  - ``EncryptQuery::Equality`` - Enables equality queries.
+  - ``EncryptQuery::Range`` - Enables range queries.
 - ``min``, ``max`` - Specify minimum and maximum (inclusive) queryable values fora field when possible, as smaller bounds improve query efficiency. If querying values outside of these bounds, MongoDB returns an error.
 - ``sparsity``, ``prevision``, ``trimFactor``, ``contention`` - For advanced users only. The default values for these options are suitable for the majority of use cases, and should only be modified if your use case requires it.
 
@@ -357,6 +357,7 @@ Example:
     <?php
 
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 
     #[Document]
     class Client
@@ -364,11 +365,12 @@ Example:
         // ...
 
         #[Field]
-        #[Encrypt(queryType: Encrypt::QUERY_TYPE_EQUALITY)]
+        #[Encrypt(queryType: EncryptQuery::Equality)]
         public string $name;
     }
 
-For more details, refer to the MongoDB documentation on [Queryable Encryption](https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/).
+For more details, refer to the MongoDB documentation on
+`Queryable Encryption <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
 
 #[Field]
 --------
