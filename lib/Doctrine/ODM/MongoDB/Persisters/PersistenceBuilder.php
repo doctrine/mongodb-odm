@@ -283,7 +283,7 @@ final class PersistenceBuilder
                 }
 
             // @EmbedMany
-            } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
+            } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY && ! CollectionHelper::isAtomic($mapping['strategy'])) {
                 foreach ($new as $key => $embeddedDoc) {
                     if ($this->uow->isScheduledForInsert($embeddedDoc)) {
                         continue;
