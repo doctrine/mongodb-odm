@@ -220,6 +220,7 @@ class DocumentManager implements ObjectManager
         return $this->client;
     }
 
+    /** @internal */
     public function getClientEncryption(): ClientEncryption
     {
         $autoEncryptionOptions = $this->config->getAutoEncryption();
