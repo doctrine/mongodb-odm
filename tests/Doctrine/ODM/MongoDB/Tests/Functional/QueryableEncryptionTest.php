@@ -12,13 +12,11 @@ use Documents\Encryption\PatientRecord;
 use MongoDB\BSON\Binary;
 use MongoDB\Client;
 
-use function base64_decode;
 use function iterator_to_array;
+use function random_bytes;
 
 class QueryableEncryptionTest extends BaseTestCase
 {
-    private const LOCAL_MASTERKEY = 'quTJGRzz3TS2yrPUzNf9Ajv+rG2cn0buRsWT6i6BTQihznxZkhYKzyagXZZ05+y/FMEV1kpC79reiJSpysytFyEcXXJChjBsH2iTzBK8uWFN2dN7udzYjWvBJmWKbhhm';
-
     public function setUp(): void
     {
         parent::setUp();
@@ -28,7 +26,6 @@ class QueryableEncryptionTest extends BaseTestCase
 
     public function testCreateAndQueryEncryptedCollection(): void
     {
-        // @todo skip if not using MongoDB < 7, single node or not enterprise
         $client   = new Client(self::getUri());
         $database = $client->getDatabase(DOCTRINE_MONGODB_DATABASE);
 
@@ -67,6 +64,7 @@ class QueryableEncryptionTest extends BaseTestCase
 
         // Queryable with range
         $result = $this->dm->getRepository(Patient::class)->findOneBy(['patientRecord.billingAmount' => ['$gt' => 1000, '$lt' => 2000]]);
+        self::assertNotNull($result);
         self::assertSame('Jon Doe', $result->patientName);
         self::assertSame('987-65-4320', $result->patientRecord->ssn);
         self::assertSame('4111111111111111', $result->patientRecord->billing->number);
@@ -78,7 +76,7 @@ class QueryableEncryptionTest extends BaseTestCase
         $config->setAutoEncryption([
             'keyVaultNamespace' => DOCTRINE_MONGODB_DATABASE . '.datakeys',
             'kmsProviders' => [
-                'local' => ['key' => new Binary(base64_decode(self::LOCAL_MASTERKEY))],
+                'local' => ['key' => new Binary(random_bytes(96))],
             ],
         ]);
 
