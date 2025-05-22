@@ -33,8 +33,8 @@ use Iterator as SplIterator;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
+use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Exception\Exception as DriverException;
-use MongoDB\Driver\Exception\WriteException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
@@ -266,7 +266,7 @@ final class DocumentPersister
                 $this->executeUpsert($document, $options);
                 $this->handleCollections($document, $options);
                 unset($this->queuedUpserts[$oid]);
-            } catch (WriteException $e) {
+            } catch (BulkWriteException $e) {
                 unset($this->queuedUpserts[$oid]);
 
                 throw $e;
@@ -338,7 +338,7 @@ final class DocumentPersister
             $this->collection->updateOne($criteria, $data, $options);
 
             return;
-        } catch (WriteException $e) {
+        } catch (BulkWriteException $e) {
             if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
                 throw $e;
             }
