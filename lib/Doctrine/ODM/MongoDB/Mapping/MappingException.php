@@ -314,4 +314,14 @@ final class MappingException extends BaseMappingException
             $className,
         ));
     }
+
+    public static function invalidEncryptedQueryRangeType(string $className, string $fieldName, string $type): self
+    {
+        return new self(sprintf(
+            'The field type "%s" for field "%s::%s" is not supported for "range" query on encrypted field.',
+            $type,
+            $className,
+            $fieldName,
+        ));
+    }
 }

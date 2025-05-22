@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
+use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
+use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Document;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use SimpleXMLElement;
 
@@ -313,24 +317,17 @@ class XmlDriver extends FileDriver
                 if (isset($field->encrypt)) {
                     $mapping['encrypt'] = [];
                     foreach ($field->encrypt->attributes() as $encryptKey => $encryptValue) {
-                        switch ($encryptKey) {
-                            case 'queryType':
-                                $mapping['encrypt'][$encryptKey] = (string) $encryptValue;
-                                break;
-                            case 'min':
-                            case 'max':
-                                $mapping['encrypt'][$encryptKey] = match ($mapping['type']) {
-                                    'int' => (int) $encryptValue,
-                                    'string' => (string) $encryptValue,
-                                };
-                                break;
-                            case 'sparsity':
-                            case 'prevision':
-                            case 'trimFactor':
-                            case 'contention':
-                                $mapping['encrypt'][$encryptKey] = (int) $encryptValue;
-                                break;
-                        }
+                        $mapping['encrypt'][$encryptKey] = match ($encryptKey) {
+                            'queryType' => (string) $encryptValue,
+                            'min', 'max' => match ($mapping['type']) {
+                                Type::INT => (int) $encryptValue,
+                                Type::FLOAT => (float) $encryptValue,
+                                Type::DECIMAL128 => new Decimal128((string) $encryptValue),
+                                Type::DATE, Type::DATE_IMMUTABLE => new UTCDateTime(new DateTimeImmutable((string) $encryptValue)),
+                                default => null, // Invalid
+                            },
+                            'sparsity', 'prevision', 'trimFactor', 'contention' => (int) $encryptValue,
+                        };
                     }
                 }
 
