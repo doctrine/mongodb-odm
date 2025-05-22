@@ -659,7 +659,7 @@ final class SchemaManager
                 $this->dm->getClientEncryption(),
                 $this->dm->getConfiguration()->getKmsProvider(),
                 null, // @todo when is it necessary to set the master key?
-                $options,
+                $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
             );
         } else {
             $this->dm->getDocumentDatabase($documentName)->createCollection(
