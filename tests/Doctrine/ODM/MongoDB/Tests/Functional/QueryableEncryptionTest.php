@@ -12,6 +12,7 @@ use Documents\Encryption\PatientRecord;
 use MongoDB\BSON\Binary;
 use MongoDB\Client;
 
+use MongoDB\Model\BSONDocument;
 use function iterator_to_array;
 use function random_bytes;
 
@@ -57,7 +58,7 @@ class QueryableEncryptionTest extends BaseTestCase
 
         // Data is encrypted
         $document = $nonEncryptedDatabase->getCollection('patients')->findOne(['patientName' => 'Jon Doe']);
-        self::assertNotNull($document);
+        self::assertInstanceOf(BSONDocument::class, $document);
         self::assertSame('Jon Doe', $document->patientName);
         self::assertSame(12345678, $document->patientId);
         self::assertInstanceOf(Binary::class, $document->patientRecord->ssn);

@@ -339,7 +339,9 @@ multiple document classes, and even other embedded documents!
 #[Encrypt]
 ----------
 
-The ``#[Encrypt]`` attribute is used to define an encrypted field mapping for a document property. It allows you to configure fields for encryption and queryable encryption in MongoDB.
+The ``#[Encrypt]`` attribute is used to define an encrypted field mapping for a
+document property. It allows you to configure fields for encryption and queryable
+encryption in MongoDB.
 
 Optional arguments:
 
@@ -347,8 +349,12 @@ Optional arguments:
   - ``null`` (default) - Field is not queryable.
   - ``EncryptQuery::Equality`` - Enables equality queries.
   - ``EncryptQuery::Range`` - Enables range queries.
-- ``min``, ``max`` - Specify minimum and maximum (inclusive) queryable values fora field when possible, as smaller bounds improve query efficiency. If querying values outside of these bounds, MongoDB returns an error.
-- ``sparsity``, ``prevision``, ``trimFactor``, ``contention`` - For advanced users only. The default values for these options are suitable for the majority of use cases, and should only be modified if your use case requires it.
+- ``min``, ``max`` - Specify minimum and maximum (inclusive) queryable values
+  for a field when possible, as smaller bounds improve query efficiency. If
+  querying values outside of these bounds, MongoDB returns an error.
+- ``sparsity``, ``prevision``, ``trimFactor``, ``contention`` - For advanced
+  users only. The default values for these options are suitable for the majority
+  of use cases, and should only be modified if your use case requires it.
 
 Example:
 
@@ -362,8 +368,6 @@ Example:
     #[Document]
     class Client
     {
-        // ...
-
         #[Field]
         #[Encrypt(queryType: EncryptQuery::Equality)]
         public string $name;

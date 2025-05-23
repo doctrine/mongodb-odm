@@ -1519,12 +1519,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SetWindowFieldsTest.php
 
 		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 5
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
-
-		-
 			message: '#^Constant DOCTRINE_MONGODB_SERVER not found\.$#'
 			identifier: constant.notFound
 			count: 1
@@ -1559,12 +1553,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php
-
-		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
 
 		-
 			message: '#^Parameter \#2 \$projects of class Documents\\Developer constructor expects Doctrine\\Common\\Collections\\Collection\<int, Documents\\Project\>\|null, Doctrine\\Common\\Collections\\ArrayCollection\<int, Documents\\SubProject\> given\.$#'
@@ -1721,12 +1709,6 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM116Test.php
-
-		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
 
 		-
 			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
@@ -1903,12 +1885,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
 
 		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\QueryTest\:\:createCursorMock\(\) return type has no value type specified in iterable type Traversable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1917,12 +1893,6 @@ parameters:
 		-
 			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, query\?\: array\<string, mixed\>, \.\.\.\}, array\{type\: \-1\} given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
-
-		-
-			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
