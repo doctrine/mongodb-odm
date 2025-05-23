@@ -11,6 +11,8 @@ use MongoDB\Driver\Monitoring\CommandSucceededEvent;
 use MongoDB\Driver\Server;
 use Throwable;
 
+use function method_exists;
+
 final class Command
 {
     private CommandStartedEvent $startedEvent;
@@ -70,9 +72,24 @@ final class Command
         return $this->startedEvent->getRequestId();
     }
 
+    /** @deprecated This method is failing with MongoDB Extension v2.0+, use getHost and getPort instead. */
     public function getServer(): Server
     {
+        if (! method_exists($this->finishedEvent, 'getServer')) {
+            throw new LogicException('getServer() is not available in MongoDB Extension v2.0+');
+        }
+
         return $this->finishedEvent->getServer();
+    }
+
+    public function getPort(): int
+    {
+        return $this->finishedEvent->getPort();
+    }
+
+    public function getHost(): string
+    {
+        return $this->finishedEvent->getHost();
     }
 
     public function getReply(): object
