@@ -544,8 +544,6 @@ final class DocumentPersister
         assert($this->collection instanceof Collection);
         $baseCursor = $this->collection->find($criteria, $options);
 
-        assert($baseCursor instanceof CursorInterface && $baseCursor instanceof SplIterator);
-
         return $this->wrapCursor($baseCursor);
     }
 
@@ -592,7 +590,7 @@ final class DocumentPersister
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
      */
-    private function wrapCursor(SplIterator&CursorInterface $baseCursor): Iterator
+    private function wrapCursor(CursorInterface $baseCursor): Iterator
     {
         return new CachingIterator(new HydratingIterator($baseCursor, $this->dm->getUnitOfWork(), $this->class));
     }

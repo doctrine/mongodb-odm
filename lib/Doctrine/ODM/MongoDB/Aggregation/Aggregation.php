@@ -56,14 +56,11 @@ final class Aggregation implements IterableResult
         $options = array_merge($this->options, ['cursor' => true]);
 
         $cursor = $this->collection->aggregate($this->pipeline, $options);
-        // This assertion can be dropped when requiring mongodb/mongodb 1.17.0
-        assert($cursor instanceof CursorInterface);
-        assert($cursor instanceof SPLIterator);
 
         return $this->prepareIterator($cursor);
     }
 
-    private function prepareIterator(CursorInterface&SPLIterator $cursor): Iterator
+    private function prepareIterator(CursorInterface $cursor): Iterator
     {
         if ($this->classMetadata) {
             $cursor = new HydratingIterator($cursor, $this->dm->getUnitOfWork(), $this->classMetadata);
