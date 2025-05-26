@@ -11,12 +11,10 @@ use Doctrine\ODM\MongoDB\Iterator\IterableResult;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Iterator as SPLIterator;
 use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
 
 use function array_merge;
-use function assert;
 
 /** @phpstan-import-type PipelineExpression from Builder */
 final class Aggregation implements IterableResult
