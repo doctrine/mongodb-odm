@@ -333,8 +333,8 @@ final class DocumentPersister
             $data  = ['$set' => ['_id' => $criteria['_id']]];
         }
 
+        assert($this->collection instanceof Collection);
         try {
-            assert($this->collection instanceof Collection);
             $this->collection->updateOne($criteria, $data, $options);
 
             return;
@@ -344,7 +344,6 @@ final class DocumentPersister
             }
         }
 
-        assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$set' => new stdClass()], $options);
     }
 
