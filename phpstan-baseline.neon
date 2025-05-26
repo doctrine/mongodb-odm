@@ -1,8 +1,20 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Call to an undefined method MongoDB\\Driver\\Monitoring\\CommandFailedEvent\|MongoDB\\Driver\\Monitoring\\CommandSucceededEvent\:\:getServer\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/APM/Command.php
+
+		-
 			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
+			count: 2
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
+
+		-
+			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
 
@@ -721,12 +733,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Call to function is_subclass_of\(\) with class\-string and mixed will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata has type alias SearchIndexDefinition with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 2
@@ -1107,7 +1113,7 @@ parameters:
 		-
 			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
+			count: 2
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
 		-
@@ -1118,6 +1124,12 @@ parameters:
 
 		-
 			message: '#^Instanceof between MongoDB\\Collection and MongoDB\\Collection will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
+
+		-
+			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
@@ -1215,6 +1227,12 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$array \(non\-empty\-list\) of array_values is already a list, call has no effect\.$#'
 			identifier: arrayValues.list
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
+
+		-
+			message: '#^Result of && is always true\.$#'
+			identifier: booleanAnd.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
@@ -1519,6 +1537,12 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SetWindowFieldsTest.php
 
 		-
+			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
+			identifier: constant.notFound
+			count: 5
+			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
+
+		-
 			message: '#^Constant DOCTRINE_MONGODB_SERVER not found\.$#'
 			identifier: constant.notFound
 			count: 1
@@ -1553,6 +1577,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php
+
+		-
+			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
 
 		-
 			message: '#^Parameter \#2 \$projects of class Documents\\Developer constructor expects Doctrine\\Common\\Collections\\Collection\<int, Documents\\Project\>\|null, Doctrine\\Common\\Collections\\ArrayCollection\<int, Documents\\SubProject\> given\.$#'
@@ -1709,6 +1739,12 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM116Test.php
+
+		-
+			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
 
 		-
 			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
@@ -1885,6 +1921,12 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
 
 		-
+			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
+			identifier: constant.notFound
+			count: 2
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\QueryTest\:\:createCursorMock\(\) return type has no value type specified in iterable type Traversable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1893,6 +1935,12 @@ parameters:
 		-
 			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, query\?\: array\<string, mixed\>, \.\.\.\}, array\{type\: \-1\} given\.$#'
 			identifier: argument.type
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
+
+		-
+			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
+			identifier: constant.notFound
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
