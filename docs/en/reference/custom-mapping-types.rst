@@ -25,6 +25,7 @@ a ``DateTimeImmutable`` when the data is read from the database.
     use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
     use Doctrine\ODM\MongoDB\Types\Type;
     use MongoDB\BSON\UTCDateTime;
+    use RuntimeException;
 
     class DateTimeWithTimezoneType extends Type
     {
@@ -33,6 +34,10 @@ a ``DateTimeImmutable`` when the data is read from the database.
 
         public function convertToPHPValue($value): DateTimeImmutable
         {
+            if (!isset($value['utc'], $value['tz'])) {
+                throw new RuntimeException('Database value cannot be converted to date with timezone. Expected array with "utc" and "tz" keys.');
+            }
+
             $timeZone = new DateTimeZone($value['tz']);
             $dateTime = $value['utc']
                 ->toDateTime()
@@ -43,8 +48,13 @@ a ``DateTimeImmutable`` when the data is read from the database.
 
         public function convertToDatabaseValue($value): array
         {
-            if (! isset($value['utc'], $value['tz'])) {
-                throw new RuntimeException('Database value cannot be converted to date with timezone. Expected array with "utc" and "tz" keys.');
+            if (!$value instanceof DateTimeImmutable) {
+                throw new \RuntimeException(
+                    sprintf(
+                        'Expected instance of \DateTimeImmutable, got %s',
+                        gettype($value)
+                    )
+                );
             }
 
             return [
