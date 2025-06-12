@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                  http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+    <document name="Documents\Encryption\RangeTypes">
+        <id/>
+        <field name="intField" type="int">
+            <encrypt queryType="range" min="5" max="10"/>
+        </field>
+        <field name="floatField" type="float">
+            <encrypt queryType="range" min="5.5" max="10.5"/>
+        </field>
+        <field name="decimalField" type="decimal128">
+            <encrypt queryType="range" min="0.1" max="0.2"/>
+        </field>
+        <field name="dateField" type="date_immutable">
+            <encrypt queryType="range" min="2000-01-01 00:00:00" max="2100-01-01 00:00:00"/>
+        </field>
+        <field name="intField" type="int">
+            <encrypt queryType="range" min="5" max="10"/>
+        </field>
+    </document>
+
+</doctrine-mongo-mapping>

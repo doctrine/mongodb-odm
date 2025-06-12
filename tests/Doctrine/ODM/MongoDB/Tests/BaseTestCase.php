@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
+use MongoDB\Driver\Command;
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
@@ -190,6 +191,24 @@ abstract class BaseTestCase extends TestCase
         }
 
         $this->markTestSkipped('Test does not apply on sharded clusters');
+    }
+
+    protected function skipTestIfQueryableEncryptionNotSupported(): void
+    {
+        if ($this->getPrimaryServer()->getType() === Server::TYPE_STANDALONE) {
+            $this->markTestSkipped('Queryable Encryption test requires a replica set or sharded cluster');
+        }
+
+        $buildInfo = $this->getPrimaryServer()->executeCommand(
+            DOCTRINE_MONGODB_DATABASE,
+            new Command(['buildInfo' => 1]),
+        )->toArray()[0];
+
+        if (! in_array('enterprise', $buildInfo->modules ?? [])) {
+            $this->markTestSkipped('Queryable Encryption test requires MongoDB Atlas or Enterprise');
+        }
+
+        $this->requireVersion($buildInfo->version, '8.0', '<', 'Queryable Encryption test requires MongoDB 8.0 or higher');
     }
 
     protected function requireVersion(string $installedVersion, string $requiredVersion, ?string $operator, string $message): void

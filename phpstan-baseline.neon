@@ -1,8 +1,20 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Call to an undefined method MongoDB\\Driver\\Monitoring\\CommandFailedEvent\|MongoDB\\Driver\\Monitoring\\CommandSucceededEvent\:\:getServer\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/APM/Command.php
+
+		-
 			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
+			count: 2
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
+
+		-
+			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
 
@@ -721,12 +733,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Call to function is_subclass_of\(\) with class\-string and mixed will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata has type alias SearchIndexDefinition with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 2
@@ -943,13 +949,19 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/AttributeReader.php
 
 		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:getSearchIndexFieldDefinition\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Parameter \#2 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:addFieldMapping\(\) expects array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}, array\<string, bool\|non\-empty\-list\<string\>\|string\> given\.$#'
+			message: '#^Parameter \#2 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:addFieldMapping\(\) expects array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}, array\<string, array\<int\<0, max\>\|string, float\|int\|MongoDB\\BSON\\Decimal128\|MongoDB\\BSON\\UTCDateTime\|string\|null\>\|bool\|string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
@@ -1107,7 +1119,7 @@ parameters:
 		-
 			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
+			count: 2
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
 		-
@@ -1118,6 +1130,12 @@ parameters:
 
 		-
 			message: '#^Instanceof between MongoDB\\Collection and MongoDB\\Collection will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
+
+		-
+			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
@@ -1215,6 +1233,12 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$array \(non\-empty\-list\) of array_values is already a list, call has no effect\.$#'
 			identifier: arrayValues.list
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
+
+		-
+			message: '#^Result of && is always true\.$#'
+			identifier: booleanAnd.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
@@ -1459,6 +1483,18 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/UnitOfWork.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Utility\\EncryptionFieldMap\:\:createEncryptionFieldMap\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Utility/EncryptionFieldMap.php
+
+		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Utility\\EncryptionFieldMap\:\:getEncryptionFieldMap\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Utility/EncryptionFieldMap.php
+
+		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
 			identifier: argument.templateType
 			count: 3
@@ -1519,12 +1555,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Aggregation/Stage/SetWindowFieldsTest.php
 
 		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 5
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
-
-		-
 			message: '#^Constant DOCTRINE_MONGODB_SERVER not found\.$#'
 			identifier: constant.notFound
 			count: 1
@@ -1543,12 +1573,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
 
 		-
-			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/BaseTestCase.php
-
-		-
 			message: '#^Used constant DOCTRINE_MONGODB_SERVER not found\.$#'
 			identifier: constant.notFound
 			count: 1
@@ -1561,20 +1585,8 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentManagerTest.php
 
 		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
-
-		-
 			message: '#^Parameter \#2 \$projects of class Documents\\Developer constructor expects Doctrine\\Common\\Collections\\Collection\<int, Documents\\Project\>\|null, Doctrine\\Common\\Collections\\ArrayCollection\<int, Documents\\SubProject\> given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
-
-		-
-			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
 
@@ -1651,6 +1663,30 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/NestedDocumentsTest.php
 
 		-
+			message: '#^Access to an undefined property MongoDB\\Model\\BSONDocument\:\:\$patientId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryableEncryptionTest.php
+
+		-
+			message: '#^Access to an undefined property MongoDB\\Model\\BSONDocument\:\:\$patientName\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryableEncryptionTest.php
+
+		-
+			message: '#^Access to an undefined property MongoDB\\Model\\BSONDocument\:\:\$patientRecord\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryableEncryptionTest.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Doctrine\\ODM\\MongoDB\\Configuration\:\:setAutoEncryption\(\) expects array\{keyVaultNamespace\: string, kmsProviders\: array\<string, array\<string, string\>\>, tlsOptions\?\: array\{kmip\: array\{tlsCAFile\: string, tlsCertificateKeyFile\: string\}\}\}, array\{keyVaultNamespace\: non\-falsy\-string, kmsProviders\: array\{local\: array\{key\: MongoDB\\BSON\\Binary\}\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/QueryableEncryptionTest.php
+
+		-
 			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1721,18 +1757,6 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM116Test.php
-
-		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
-
-		-
-			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/Id/IncrementGeneratorTest.php
 
 		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\AnnotationDriverTestSuper\:\:\$private is unused\.$#'
@@ -1903,12 +1927,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Query/BuilderTest.php
 
 		-
-			message: '#^Constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\QueryTest\:\:createCursorMock\(\) return type has no value type specified in iterable type Traversable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1917,12 +1935,6 @@ parameters:
 		-
 			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, query\?\: array\<string, mixed\>, \.\.\.\}, array\{type\: \-1\} given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
-
-		-
-			message: '#^Used constant DOCTRINE_MONGODB_DATABASE not found\.$#'
-			identifier: constant.notFound
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/QueryTest.php
 
@@ -2063,6 +2075,12 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Ecommerce/StockItem.php
+
+		-
+			message: '#^Method Documents\\Encryption\\Client\:\:__construct\(\) has parameter \$clientCards with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/Documents/Encryption/Client.php
 
 		-
 			message: '#^Property Documents\\Event\:\:\$id is never written, only read\.$#'

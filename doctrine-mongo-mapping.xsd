@@ -31,6 +31,7 @@
       <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
@@ -183,7 +184,31 @@
     <xs:attribute name="mode" type="odm:read-preference-values" />
   </xs:complexType>
 
+  <xs:complexType name="encrypt-field">
+    <xs:attribute name="queryType">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="equality" />
+          <xs:enumeration value="range" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="min" type="xs:string" />
+    <xs:attribute name="max" type="xs:string" />
+    <xs:attribute name="sparsity" type="xs:integer" />
+    <xs:attribute name="prevision" type="xs:integer" />
+    <xs:attribute name="trimFactor" type="xs:integer" />
+    <xs:attribute name="contention" type="xs:integer" />
+  </xs:complexType>
+
+  <xs:complexType name="encrypt-embedded-document">
+  </xs:complexType>
+
   <xs:complexType name="field">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
+    </xs:choice>
+
     <xs:attribute name="name" type="xs:NMTOKEN" />
     <xs:attribute name="type" type="xs:NMTOKEN" />
     <xs:attribute name="strategy" type="odm:storage-strategy" default="set" />

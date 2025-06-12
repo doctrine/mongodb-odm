@@ -29,6 +29,9 @@ parameters:
       - message: '#with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata does not specify its types: T$#'
         identifier: missingType.generics
 
+      - message: '#^(Constant|Used constant) DOCTRINE_MONGODB_DATABASE not found\.$#'
+        identifier: constant.notFound
+        path: tests/
 
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true

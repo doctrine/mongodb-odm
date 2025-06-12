@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use Jean85\PrettyVersions;
 use LogicException;
 use MongoDB\Driver\WriteConcern;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
@@ -32,10 +33,15 @@ use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
+use Throwable;
 
 use function array_key_exists;
+use function array_key_first;
 use function class_exists;
+use function count;
 use function interface_exists;
+use function is_array;
+use function is_string;
 use function trigger_deprecation;
 use function trim;
 
@@ -50,6 +56,11 @@ use function trim;
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @phpstan-import-type CommitOptions from UnitOfWork
+ * @phpstan-type AutoEncryptionOptions array{
+ *     keyVaultNamespace: string,
+ *     kmsProviders: array<string, array<string, string>>,
+ *     tlsOptions?: array{kmip: array{tlsCAFile: string, tlsCertificateKeyFile: string}},
+ * }
  */
 class Configuration
 {
@@ -121,7 +132,8 @@ class Configuration
      *      persistentCollectionNamespace?: string,
      *      proxyDir?: string,
      *      proxyNamespace?: string,
-     *      repositoryFactory?: RepositoryFactory
+     *      repositoryFactory?: RepositoryFactory,
+     *      autoEncryption?: AutoEncryptionOptions,
      * }
      */
     private array $attributes = [];
@@ -134,6 +146,29 @@ class Configuration
     private bool $useTransactionalFlush = false;
 
     private bool $useLazyGhostObject = false;
+
+    private static string $version;
+
+    /**
+     * Provides the driver options to be used when creating the MongoDB client.
+     *
+     * @return array<string, mixed>
+     */
+    public function getDriverOptions(): array
+    {
+        $driverOptions = [
+            'driver' => [
+                'name' => 'doctrine-odm',
+                'version' => self::getVersion(),
+            ],
+        ];
+
+        if (isset($this->attributes['autoEncryption'])) {
+            $driverOptions['autoEncryption'] = $this->attributes['autoEncryption'];
+        }
+
+        return $driverOptions;
+    }
 
     /**
      * Adds a namespace under a certain alias.
@@ -650,6 +685,63 @@ class Configuration
     public function isLazyGhostObjectEnabled(): bool
     {
         return $this->useLazyGhostObject;
+    }
+
+    /**
+     * Set the options for auto-encryption.
+     *
+     * @see https://www.php.net/manual/en/mongodb-driver-clientencryption.construct.php
+     *
+     * @phpstan-param AutoEncryptionOptions $options
+     *
+     * @throws InvalidArgumentException If the options are invalid.
+     */
+    public function setAutoEncryption(array $options): void
+    {
+        if (! isset($options['keyVaultNamespace']) || ! is_string($options['keyVaultNamespace'])) {
+            throw new InvalidArgumentException('The "keyVaultNamespace" option is required.');
+        }
+
+        // @todo Throw en exception if multiple KMS providers are defined. This is not supported yet and would require a setting for the KMS provider to use when creating a new collection
+        if (! isset($options['kmsProviders']) || ! is_array($options['kmsProviders']) || count($options['kmsProviders']) < 1) {
+            throw new InvalidArgumentException('The "kmsProviders" option is required.');
+        }
+
+        $this->attributes['autoEncryption'] = $options;
+    }
+
+    /**
+     * Get the options for auto-encryption.
+     *
+     * @see https://www.php.net/manual/en/mongodb-driver-clientencryption.construct.php
+     *
+     * @phpstan-return AutoEncryptionOptions
+     */
+    public function getAutoEncryption(): ?array
+    {
+        return $this->attributes['autoEncryption'] ?? null;
+    }
+
+    public function getKmsProvider(): ?string
+    {
+        if (! isset($this->attributes['autoEncryption'])) {
+            return null;
+        }
+
+        return array_key_first($this->attributes['autoEncryption']['kmsProviders']);
+    }
+
+    private static function getVersion(): string
+    {
+        if (! isset(self::$version)) {
+            try {
+                self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
+            } catch (Throwable) {
+                return self::$version = 'unknown';
+            }
+        }
+
+        return self::$version;
     }
 }
 
