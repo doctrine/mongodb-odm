@@ -699,6 +699,14 @@ final class SchemaManager
 
         $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
 
+        // When automatic encryption is enabled, we need to drop the metadata collections,
+        // we don't check if the class metadata has encrypted fields, because
+        // that does not mean that the existing collection is encrypted or not.
+        // "esc" and "ecoc" collections cannot be configured
+        if ($this->dm->getConfiguration()->getKmsProvider()) {
+            $options['encryptedFields'] = [];
+        }
+
         $this->dm->getDocumentCollection($documentName)->drop($options);
 
         if (! $class->isFile) {
