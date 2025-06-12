@@ -35,6 +35,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 use Throwable;
 
+use function array_diff_key;
 use function array_key_exists;
 use function array_key_first;
 use function class_exists;
@@ -63,6 +64,7 @@ use function trim;
  *     kmsProvider?: string,
  *     masterKey?: array<string, mixed>|null,
  *     tlsOptions?: array{kmip: array{tlsCAFile: string, tlsCertificateKeyFile: string}},
+ *     ...
  * }
  */
 class Configuration
