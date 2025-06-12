@@ -58,7 +58,8 @@ use function trim;
  * @phpstan-import-type CommitOptions from UnitOfWork
  * @phpstan-type AutoEncryptionOptions array{
  *     keyVaultNamespace: string,
- *     kmsProviders: array<string, array<string, string>>,
+ *     kmsProviders: array<string, array<string, mixed>>,
+ *     kmsProvider?: string,
  *     masterKey?: array<string, mixed>|null,
  *     tlsOptions?: array{kmip: array{tlsCAFile: string, tlsCertificateKeyFile: string}},
  * }
@@ -700,14 +701,20 @@ class Configuration
     public function setAutoEncryption(array $options): void
     {
         if (! isset($options['keyVaultNamespace']) || ! is_string($options['keyVaultNamespace'])) {
-            throw new InvalidArgumentException('The "keyVaultNamespace" option is required.');
+            throw new InvalidArgumentException('The "keyVaultNamespace" encryption option is required.');
         }
 
-        if (! is_array($options['kmsProviders'] ?? null) || count($options['kmsProviders']) !== 1) {
-            throw new InvalidArgumentException('AutoEncryption requires a single KMS provider.');
+        if (! is_array($options['kmsProviders'] ?? null) || count($options['kmsProviders']) === 0) {
+            throw new InvalidArgumentException('The "kmsProviders" encryption option is required and must be a non-empty.');
         }
 
-        if (array_key_first($options['kmsProviders']) !== 'local' && ! isset($options['masterKey'])) {
+        if (! isset($options['kmsProvider']) && count($options['kmsProviders']) > 1) {
+            throw new InvalidArgumentException('The "kmsProvider" encryption option is required when multiple KMS providers are specified.');
+        }
+
+        $options['kmsProvider'] ??= array_key_first($options['kmsProviders']);
+
+        if ($options['kmsProvider'] !== 'local' && ! isset($options['masterKey'])) {
             throw new InvalidArgumentException('The "masterKey" option is required when the KMS provider is not "local".');
         }
 
@@ -731,11 +738,7 @@ class Configuration
      */
     public function getKmsProvider(): ?string
     {
-        if (! isset($this->attributes['autoEncryption'])) {
-            return null;
-        }
-
-        return array_key_first($this->attributes['autoEncryption']['kmsProviders']);
+        return $this->attributes['autoEncryption']['kmsProvider'] ?? null;
     }
 
     /**
