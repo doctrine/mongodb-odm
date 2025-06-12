@@ -107,6 +107,7 @@ use function trigger_deprecation;
  *      order?: int|string,
  *      background?: bool,
  *      enumType?: class-string<BackedEnum>,
+ *      encrypt?: array{queryType?: ?string, min?: mixed, max?: mixed, sparsity?: int<1, 4>, prevision?: int, trimFactor?: int, contention?: int}
  * }
  * @phpstan-type FieldMapping array{
  *      type: string,
@@ -153,6 +154,7 @@ use function trigger_deprecation;
  *      alsoLoadFields?: list<string>,
  *      enumType?: class-string<BackedEnum>,
  *      storeEmptyArray?: bool,
+ *      encrypt?: array{queryType?: ?string, min?: mixed, max?: mixed, sparsity?: int<1, 4>, prevision?: int, trimFactor?: int, contention?: int},
  * }
  * @phpstan-type AssociationFieldMapping array{
  *      type?: string,
@@ -800,6 +802,11 @@ use function trigger_deprecation;
      * @var bool
      */
     public $isReadOnly;
+
+    /**
+     * READ-ONLY: A flag for whether or not this document has encrypted fields.
+     */
+    public bool $isEncrypted = false;
 
     /** READ ONLY: stores metadata about the time series collection */
     public ?TimeSeries $timeSeriesOptions = null;

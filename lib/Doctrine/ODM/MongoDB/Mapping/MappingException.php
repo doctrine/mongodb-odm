@@ -306,4 +306,22 @@ final class MappingException extends BaseMappingException
             $fieldName,
         ));
     }
+
+    public static function rootDocumentCannotBeEncrypted(string $className): self
+    {
+        return new self(sprintf(
+            'The root document class "%s" cannot be encrypted. Only fields and embedded documents can be encrypted.',
+            $className,
+        ));
+    }
+
+    public static function invalidEncryptedQueryRangeType(string $className, string $fieldName, string $type): self
+    {
+        return new self(sprintf(
+            'The field type "%s" for field "%s::%s" is not supported for "range" query on encrypted field.',
+            $type,
+            $className,
+            $fieldName,
+        ));
+    }
 }

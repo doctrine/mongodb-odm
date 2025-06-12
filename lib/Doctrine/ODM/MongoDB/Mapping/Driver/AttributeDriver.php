@@ -32,7 +32,7 @@ use function is_array;
 use function trigger_deprecation;
 
 /**
- * The AtttributeDriver reads the mapping metadata from attributes.
+ * The AttributeDriver reads the mapping metadata from attributes.
  */
 class AttributeDriver implements MappingDriver
 {
@@ -149,6 +149,8 @@ class AttributeDriver implements MappingDriver
                 if (isset($attribute->level)) {
                     $metadata->setValidationLevel($attribute->level);
                 }
+            } elseif ($attribute instanceof ODM\Encrypt) {
+                $metadata->isEncrypted = true;
             }
         }
 
@@ -264,6 +266,8 @@ class AttributeDriver implements MappingDriver
                     $mapping['version'] = true;
                 } elseif ($propertyAttribute instanceof ODM\Lock) {
                     $mapping['lock'] = true;
+                } elseif ($propertyAttribute instanceof ODM\Encrypt) {
+                    $mapping['encrypt'] = (array) $propertyAttribute;
                 }
             }
 

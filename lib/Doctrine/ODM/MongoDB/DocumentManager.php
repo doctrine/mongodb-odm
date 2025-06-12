@@ -25,10 +25,10 @@ use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
-use Jean85\PrettyVersions;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
+use MongoDB\Driver\ClientEncryption;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -63,6 +63,8 @@ class DocumentManager implements ObjectManager
      * The Doctrine MongoDB connection instance.
      */
     private Client $client;
+
+    private ClientEncryption $clientEncryption;
 
     /**
      * The used Configuration.
@@ -138,8 +140,6 @@ class DocumentManager implements ObjectManager
     /** @var ProxyClassNameResolver&ClassNameResolver  */
     private ProxyClassNameResolver $classNameResolver;
 
-    private static ?string $version = null;
-
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -151,12 +151,7 @@ class DocumentManager implements ObjectManager
         $this->client       = $client ?: new Client(
             'mongodb://127.0.0.1',
             [],
-            [
-                'driver' => [
-                    'name' => 'doctrine-odm',
-                    'version' => self::getVersion(),
-                ],
-            ],
+            $this->config->getDriverOptions(),
         );
 
         $this->classNameResolver = $this->config->isLazyGhostObjectEnabled()
@@ -223,6 +218,22 @@ class DocumentManager implements ObjectManager
     public function getClient(): Client
     {
         return $this->client;
+    }
+
+    /** @internal */
+    public function getClientEncryption(): ClientEncryption
+    {
+        $autoEncryptionOptions = $this->config->getAutoEncryption();
+
+        if (! $autoEncryptionOptions) {
+            throw new RuntimeException('Auto-encryption is not enabled.');
+        }
+
+        return $this->clientEncryption ??= $this->client->createClientEncryption([
+            'keyVaultNamespace' => $autoEncryptionOptions['keyVaultNamespace'],
+            'kmsProviders' => $autoEncryptionOptions['kmsProviders'],
+            'tlsOptions' => $autoEncryptionOptions['tlsOptions'] ?? [],
+        ]);
     }
 
     /** Gets the metadata factory used to gather the metadata of classes. */
@@ -922,18 +933,5 @@ class DocumentManager implements ObjectManager
         }
 
         return $mapping['targetDocument'];
-    }
-
-    private static function getVersion(): string
-    {
-        if (self::$version === null) {
-            try {
-                self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
-            } catch (Throwable) {
-                return 'unknown';
-            }
-        }
-
-        return self::$version;
     }
 }
