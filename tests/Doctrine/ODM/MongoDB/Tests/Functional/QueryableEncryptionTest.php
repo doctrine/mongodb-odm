@@ -11,8 +11,8 @@ use Documents\Encryption\PatientBilling;
 use Documents\Encryption\PatientRecord;
 use MongoDB\BSON\Binary;
 use MongoDB\Client;
-
 use MongoDB\Model\BSONDocument;
+
 use function iterator_to_array;
 use function random_bytes;
 

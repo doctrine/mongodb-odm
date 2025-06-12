@@ -702,6 +702,7 @@ class Configuration
             throw new InvalidArgumentException('The "keyVaultNamespace" option is required.');
         }
 
+        // @todo Throw en exception if multiple KMS providers are defined. This is not supported yet and would require a setting for the KMS provider to use when creating a new collection
         if (! isset($options['kmsProviders']) || ! is_array($options['kmsProviders']) || count($options['kmsProviders']) < 1) {
             throw new InvalidArgumentException('The "kmsProviders" option is required.');
         }
