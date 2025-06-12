@@ -59,6 +59,7 @@ use function trim;
  * @phpstan-type AutoEncryptionOptions array{
  *     keyVaultNamespace: string,
  *     kmsProviders: array<string, array<string, string>>,
+ *     masterKey?: array<string, mixed>|null,
  *     tlsOptions?: array{kmip: array{tlsCAFile: string, tlsCertificateKeyFile: string}},
  * }
  */
@@ -702,9 +703,12 @@ class Configuration
             throw new InvalidArgumentException('The "keyVaultNamespace" option is required.');
         }
 
-        // @todo Throw en exception if multiple KMS providers are defined. This is not supported yet and would require a setting for the KMS provider to use when creating a new collection
-        if (! isset($options['kmsProviders']) || ! is_array($options['kmsProviders']) || count($options['kmsProviders']) < 1) {
-            throw new InvalidArgumentException('The "kmsProviders" option is required.');
+        if (! is_array($options['kmsProviders'] ?? null) || count($options['kmsProviders']) !== 1) {
+            throw new InvalidArgumentException('AutoEncryption requires a single KMS provider.');
+        }
+
+        if (array_key_first($options['kmsProviders']) !== 'local' && ! isset($options['masterKey'])) {
+            throw new InvalidArgumentException('The "masterKey" option is required when the KMS provider is not "local".');
         }
 
         $this->attributes['autoEncryption'] = $options;
@@ -722,6 +726,9 @@ class Configuration
         return $this->attributes['autoEncryption'] ?? null;
     }
 
+    /**
+     * Get the KMS provider name used for auto-encryption.
+     */
     public function getKmsProvider(): ?string
     {
         if (! isset($this->attributes['autoEncryption'])) {
@@ -729,6 +736,16 @@ class Configuration
         }
 
         return array_key_first($this->attributes['autoEncryption']['kmsProviders']);
+    }
+
+    /**
+     * Get the master key used for auto-encryption.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getMasterKey(): ?array
+    {
+        return $this->attributes['autoEncryption']['masterKey'] ?? null;
     }
 
     private static function getVersion(): string
