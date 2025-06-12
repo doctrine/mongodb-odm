@@ -134,9 +134,7 @@ class ConfigurationTest extends BaseTestCase
             'The "keyVaultNamespace" encryption option is required.',
             [
                 'kmsProviders' => [
-                    'local' => [
-                        'key' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
-                    ],
+                    'local' => ['key' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234']],
                 ],
             ],
         ];
@@ -146,10 +144,7 @@ class ConfigurationTest extends BaseTestCase
             [
                 'keyVaultNamespace' => 'encryption.__keyVault',
                 'kmsProviders' => [
-                    'aws' => [
-                        'accessKeyId' => 'AKIA',
-                        'secretAccessKey' => 'SECRET',
-                    ],
+                    'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
                 ],
             ],
         ];
@@ -159,16 +154,20 @@ class ConfigurationTest extends BaseTestCase
             [
                 'keyVaultNamespace' => 'encryption.__keyVault',
                 'kmsProviders' => [
-                    'aws' => [
-                        'accessKeyId' => 'AKIA',
-                        'secretAccessKey' => 'SECRET',
-                    ],
-                    'azure' => [
-                        'tenantId' => 'TENANT_ID',
-                        'clientId' => 'CLIENT_ID',
-                        'clientSecret' => 'CLIENT_SECRET',
-                    ],
+                    'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
+                    'azure' => ['tenantId' => 'TENANT_ID', 'clientId' => 'CLIENT_ID', 'clientSecret' => 'CLIENT_SECRET'],
                 ],
+            ],
+        ];
+
+        yield [
+            'The "kmsProvider" encryption option "azure" is not defined in the "kmsProviders" option.',
+            [
+                'keyVaultNamespace' => 'encryption.__keyVault',
+                'kmsProviders' => [
+                    'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
+                ],
+                'kmsProvider' => 'azure',
             ],
         ];
     }

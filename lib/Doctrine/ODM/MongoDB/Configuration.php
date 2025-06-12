@@ -42,6 +42,7 @@ use function count;
 use function interface_exists;
 use function is_array;
 use function is_string;
+use function sprintf;
 use function trigger_deprecation;
 use function trim;
 
@@ -713,6 +714,10 @@ class Configuration
         }
 
         $options['kmsProvider'] ??= array_key_first($options['kmsProviders']);
+
+        if (! array_key_exists($options['kmsProvider'], $options['kmsProviders'])) {
+            throw new InvalidArgumentException(sprintf('The "kmsProvider" encryption option "%s" is not defined in the "kmsProviders" option.', $options['kmsProvider']));
+        }
 
         if ($options['kmsProvider'] !== 'local' && ! isset($options['masterKey'])) {
             throw new InvalidArgumentException('The "masterKey" option is required when the KMS provider is not "local".');
