@@ -92,7 +92,7 @@ class QueryableEncryptionTest extends BaseTestCase
             ],
         ]);
 
-        $client = new Client(self::getUri(), [], ['autoEncryption' => $config->getAutoEncryption()]);
+        $client = new Client(self::getUri(), [], $config->getDriverOptions());
 
         return DocumentManager::create($client, $config);
     }

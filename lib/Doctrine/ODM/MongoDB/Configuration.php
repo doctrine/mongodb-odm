@@ -167,7 +167,10 @@ class Configuration
         ];
 
         if (isset($this->attributes['autoEncryption'])) {
-            $driverOptions['autoEncryption'] = $this->attributes['autoEncryption'];
+            $driverOptions['autoEncryption'] = array_diff_key(
+                $this->attributes['autoEncryption'],
+                ['kmsProvider' => 0, 'masterKey' => 0],
+            );
         }
 
         return $driverOptions;
