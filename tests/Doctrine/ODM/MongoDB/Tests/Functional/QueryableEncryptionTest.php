@@ -87,7 +87,7 @@ class QueryableEncryptionTest extends BaseTestCase
         $config = static::getConfiguration();
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setKmsProvider([
-            'name' => 'local',
+            'type' => 'local',
             'key' => new Binary(random_bytes(96)),
         ]);
 

@@ -57,7 +57,7 @@ use function trim;
  *     $dm = DocumentManager::create(new Connection(), $config);
  *
  * @phpstan-import-type CommitOptions from UnitOfWork
- * @phpstan-type KmsProvider array{name: string, ...}
+ * @phpstan-type KmsProvider array{type: string, ...}
  */
 class Configuration
 {
@@ -709,7 +709,7 @@ class Configuration
 
     /**
      * Set the KMS provider to use for auto-encryption. The name of the KMS provider
-     * must be specified in the 'name' key of the array.
+     * must be specified in the 'type' key of the array.
      *
      * @see https://www.php.net/manual/en/mongodb-driver-clientencryption.construct.php
      *
@@ -717,12 +717,12 @@ class Configuration
      */
     public function setKmsProvider(array $kmsProvider): void
     {
-        if (! isset($kmsProvider['name'])) {
-            throw ConfigurationException::kmsProviderNameRequired();
+        if (! isset($kmsProvider['type'])) {
+            throw ConfigurationException::kmsProviderTypeRequired();
         }
 
-        if (! is_string($kmsProvider['name'])) {
-            throw ConfigurationException::kmsProviderNameMustBeString();
+        if (! is_string($kmsProvider['type'])) {
+            throw ConfigurationException::kmsProviderTypeMustBeString();
         }
 
         $this->attributes['kmsProvider'] = $kmsProvider;
@@ -759,7 +759,7 @@ class Configuration
      */
     public function getDefaultKmsProvider(): ?string
     {
-        return $this->attributes['kmsProvider']['name'] ?? null;
+        return $this->attributes['kmsProvider']['type'] ?? null;
     }
 
     /**
@@ -769,11 +769,11 @@ class Configuration
      */
     public function getDefaultMasterKey(): ?array
     {
-        if (! isset($this->attributes['kmsProvider']) || $this->attributes['kmsProvider']['name'] === 'local') {
+        if (! isset($this->attributes['kmsProvider']) || $this->attributes['kmsProvider']['type'] === 'local') {
             return null;
         }
 
-        return $this->attributes['defaultMasterKey'] ?? throw ConfigurationException::masterKeyRequired($this->attributes['kmsProvider']['name']);
+        return $this->attributes['defaultMasterKey'] ?? throw ConfigurationException::masterKeyRequired($this->attributes['kmsProvider']['type']);
     }
 
     private static function getVersion(): string
@@ -793,7 +793,7 @@ class Configuration
     private function getAutoEncryptionOptions(): array
     {
         return [
-            'kmsProviders' => [$this->attributes['kmsProvider']['name'] => array_diff_key($this->attributes['kmsProvider'], ['name' => 0])],
+            'kmsProviders' => [$this->attributes['kmsProvider']['type'] => array_diff_key($this->attributes['kmsProvider'], ['type' => 0])],
             'keyVaultNamespace' => $this->getDefaultDB() . '.datakeys',
             ...$this->attributes['autoEncryption'] ?? [],
         ];

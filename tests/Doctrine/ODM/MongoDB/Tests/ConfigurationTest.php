@@ -47,7 +47,7 @@ class ConfigurationTest extends TestCase
     public function testLocalKmsProvider(): void
     {
         $c = new Configuration();
-        $c->setKmsProvider(['name' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
+        $c->setKmsProvider(['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
         $c->setAutoEncryption(['extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020']]);
         $c->setDefaultDB('default_database');
 
@@ -66,7 +66,7 @@ class ConfigurationTest extends TestCase
     public function testKmsProvider(): void
     {
         $c = new Configuration();
-        $c->setKmsProvider(['name' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
+        $c->setKmsProvider(['type' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
         $c->setAutoEncryption(['keyVaultNamespace' => 'keyvault.datakeys']);
         $c->setDefaultMasterKey($masterKey = ['region' => 'us-east-1', 'key' => 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-ab12-cd34-ef56-1234567890ab']);
 
@@ -90,7 +90,7 @@ class ConfigurationTest extends TestCase
             'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
             'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
         ]);
-        $c->setKmsProvider(['name' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
+        $c->setKmsProvider(['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
 
         self::assertSame([
             'kmsProviders' => [
@@ -115,7 +115,7 @@ class ConfigurationTest extends TestCase
     public function testMissingDefaultMasterKey(): void
     {
         $c = new Configuration();
-        $c->setKmsProvider(['name' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
+        $c->setKmsProvider(['type' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
 
         self::expectException(ConfigurationException::class);
         self::expectExceptionMessage('The "masterKey" configuration is required for the KMS provider "aws".');
@@ -139,23 +139,23 @@ class ConfigurationTest extends TestCase
         $c->getClientEncryptionOptions();
     }
 
-    public function testKmsProviderNameRequired(): void
+    public function testKmsProviderTypeRequired(): void
     {
         $c = new Configuration();
         self::expectException(ConfigurationException::class);
-        self::expectExceptionMessage('The KMS provider "name" is required.');
+        self::expectExceptionMessage('The KMS provider "type" is required.');
 
         // @phpstan-ignore argument.type
         $c->setKmsProvider(['foo' => 'bar']);
     }
 
-    public function testKmsProviderNameMustBeString(): void
+    public function testKmsProviderTypeMustBeString(): void
     {
         $c = new Configuration();
         self::expectException(ConfigurationException::class);
-        self::expectExceptionMessage('The KMS provider "name" must be a non-empty string.');
+        self::expectExceptionMessage('The KMS provider "type" must be a non-empty string.');
 
         // @phpstan-ignore argument.type
-        $c->setKmsProvider(['name' => ['not', 'a', 'string']]);
+        $c->setKmsProvider(['type' => ['not', 'a', 'string']]);
     }
 }

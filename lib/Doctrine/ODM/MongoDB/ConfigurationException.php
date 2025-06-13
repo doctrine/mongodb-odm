@@ -35,14 +35,14 @@ final class ConfigurationException extends Exception
         return new self('MongoDB client encryption options are not set in configuration');
     }
 
-    public static function kmsProviderNameRequired(): self
+    public static function kmsProviderTypeRequired(): self
     {
-        return new self('The KMS provider "name" is required.');
+        return new self('The KMS provider "type" is required.');
     }
 
-    public static function kmsProviderNameMustBeString(): self
+    public static function kmsProviderTypeMustBeString(): self
     {
-        return new self('The KMS provider "name" must be a non-empty string.');
+        return new self('The KMS provider "type" must be a non-empty string.');
     }
 
     public static function kmsProvidersOptionMustUseSetter(): self
