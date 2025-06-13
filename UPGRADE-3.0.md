@@ -1,5 +1,9 @@
 # UPGRADE FROM 2.x to 3.0
 
+## Composer
+
+Composer version 1 is no longer supported. Please upgrade to Composer 2.
+
 ## Aggregation
 
 The new `Doctrine\ODM\MongoDB\Aggregation\Builder::getAggregation()` method

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB;
 
+use Composer\InstalledVersions;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -25,7 +26,6 @@ use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
-use Jean85\PrettyVersions;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -926,14 +926,10 @@ class DocumentManager implements ObjectManager
 
     private static function getVersion(): string
     {
-        if (self::$version === null) {
-            try {
-                self::$version = PrettyVersions::getVersion('doctrine/mongodb-odm')->getPrettyVersion();
-            } catch (Throwable) {
-                return 'unknown';
-            }
+        try {
+            return self::$version ??= InstalledVersions::getPrettyVersion('doctrine/mongodb-odm') ?? 'unknown';
+        } catch (Throwable) {
+            return 'error';
         }
-
-        return self::$version;
     }
 }
