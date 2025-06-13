@@ -27,4 +27,9 @@ final class ConfigurationException extends Exception
     {
         return new self('No proxy directory was configured. Please set a target directory first!');
     }
+
+    public static function kmsProvidersNotSupported(): self
+    {
+        return new self('Setting multiple KMS providers is not supported. Please set a single KMS provider in your configuration.');
+    }
 }

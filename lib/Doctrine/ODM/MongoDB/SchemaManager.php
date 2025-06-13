@@ -645,7 +645,7 @@ final class SchemaManager
         }
 
         // Encryption is enabled only if the KMS provider is set and at least one field is encrypted
-        if ($this->dm->getConfiguration()->getAutoEncryption()) {
+        if ($this->dm->getConfiguration()->getDefaultKmsProvider()) {
             $encryptedFields = (new EncryptionFieldMap($this->dm->getMetadataFactory()))->getEncryptionFieldMap($class->name);
 
             if ($encryptedFields) {
@@ -657,8 +657,8 @@ final class SchemaManager
             $this->dm->getDocumentDatabase($documentName)->createEncryptedCollection(
                 $class->getCollection(),
                 $this->dm->getClientEncryption(),
-                $this->dm->getConfiguration()->getKmsProvider(),
-                $this->dm->getConfiguration()->getMasterKey(),
+                $this->dm->getConfiguration()->getDefaultKmsProvider(),
+                $this->dm->getConfiguration()->getDefaultMasterKey(),
                 $this->getWriteOptions($maxTimeMs, $writeConcern, $options),
             );
         } else {

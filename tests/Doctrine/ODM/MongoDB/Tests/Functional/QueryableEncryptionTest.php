@@ -85,11 +85,10 @@ class QueryableEncryptionTest extends BaseTestCase
     protected static function createTestDocumentManager(): DocumentManager
     {
         $config = static::getConfiguration();
-        $config->setAutoEncryption([
-            'keyVaultNamespace' => DOCTRINE_MONGODB_DATABASE . '.datakeys',
-            'kmsProviders' => [
-                'local' => ['key' => new Binary(random_bytes(96))],
-            ],
+        $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
+        $config->setKmsProvider([
+            'name' => 'local',
+            'key' => new Binary(random_bytes(96)),
         ]);
 
         $client = new Client(self::getUri(), [], $config->getDriverOptions());

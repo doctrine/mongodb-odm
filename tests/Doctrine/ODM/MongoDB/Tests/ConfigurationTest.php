@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
-use Generator;
-use InvalidArgumentException;
-use PHPUnit\Framework\Attributes\DataProvider;
+use MongoDB\Driver\Manager;
+use PHPUnit\Framework\TestCase;
 
-class ConfigurationTest extends BaseTestCase
+class ConfigurationTest extends TestCase
 {
     public function testDefaultPersistentCollectionFactory(): void
     {
@@ -44,131 +44,88 @@ class ConfigurationTest extends BaseTestCase
         self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled after setTransactionalFlush(false)');
     }
 
-    public function testAutoEncryptionWithMultipleKmsProviders(): void
+    public function testLocalKmsProvider(): void
     {
-        $masterKey = ['region' => 'us-east-1', 'key' => 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-ab12-cd34-ef56-1234567890ab'];
-        $c         = new Configuration();
-        $c->setAutoEncryption([
-            'keyVaultNamespace' => 'encryption.__keyVault',
-            'kmsProviders' => [
-                'azure' => [
-                    'tenantId' => 'TENANT_ID',
-                    'clientId' => 'CLIENT_ID',
-                    'clientSecret' => 'CLIENT_SECRET',
-                ],
-                'aws' => [
-                    'accessKeyId' => 'AKIA',
-                    'secretAccessKey' => 'SECRET',
-                ],
-            ],
-            'kmsProvider' => 'aws',
-            'masterKey' => $masterKey,
-        ]);
+        $c = new Configuration();
+        $c->setKmsProvider(['name' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
+        $c->setAutoEncryption(['extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020']]);
+        $c->setDefaultDB('default_database');
 
-        self::assertSame($masterKey, $c->getMasterKey());
-        self::assertSame('aws', $c->getKmsProvider());
-        self::assertArrayHasKey('kmsProviders', $c->getAutoEncryption());
+        self::assertSame('local', $c->getDefaultKmsProvider());
+        self::assertNull($c->getDefaultMasterKey());
+        self::assertEquals([
+            'kmsProviders' => [
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+            ],
+            'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
+            // Default key vault namespace
+            'keyVaultNamespace' => 'default_database.datakeys',
+        ], $c->getDriverOptions()['autoEncryption']);
     }
 
-    public function testAutoEncryptionSingleKmsProvider(): void
+    public function testKmsProvider(): void
     {
-        $masterKey = ['region' => 'us-east-1', 'key' => 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-ab12-cd34-ef56-1234567890ab'];
-        $c         = new Configuration();
-        $c->setAutoEncryption([
-            'keyVaultNamespace' => 'encryption.__keyVault',
-            'kmsProviders' => [
-                'aws' => [
-                    'accessKeyId' => 'AKIA',
-                    'secretAccessKey' => 'SECRET',
-                ],
-            ],
-            'masterKey' => $masterKey,
-        ]);
+        $c = new Configuration();
+        $c->setKmsProvider(['name' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
+        $c->setAutoEncryption(['keyVaultNamespace' => 'keyvault.datakeys']);
+        $c->setDefaultMasterKey($masterKey = ['region' => 'us-east-1', 'key' => 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-ab12-cd34-ef56-1234567890ab']);
 
-        self::assertSame($masterKey, $c->getMasterKey());
-        self::assertSame('aws', $c->getKmsProvider());
-        self::assertArrayHasKey('kmsProviders', $c->getAutoEncryption());
+        self::assertSame('aws', $c->getDefaultKmsProvider());
+        self::assertSame($masterKey, $c->getDefaultMasterKey());
+        self::assertEquals([
+            'kmsProviders' => [
+                'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
+            ],
+            // Key vault namespace from the configuration
+            'keyVaultNamespace' => 'keyvault.datakeys',
+        ], $c->getDriverOptions()['autoEncryption']);
     }
 
-    public function testAutoEncryptionWithLocalKmsProvider(): void
+    public function testAutoEncryptionOptions(): void
     {
         $c = new Configuration();
         $c->setAutoEncryption([
-            'keyVaultNamespace' => 'encryption.__keyVault',
-            'kmsProviders' => [
-                'local' => [
-                    'key' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
-                ],
-            ],
+            'keyVaultClient' => $keyVaultClient = new Manager(),
+            'keyVaultNamespace' => 'keyvault.datakeys',
+            'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
+            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
         ]);
+        $c->setKmsProvider(['name' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
 
-        self::assertNull($c->getMasterKey());
-        self::assertSame('local', $c->getKmsProvider());
-        self::assertArrayHasKey('kmsProviders', $c->getAutoEncryption());
+        self::assertSame([
+            'kmsProviders' => [
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+            ],
+            'keyVaultNamespace' => 'keyvault.datakeys',
+            'keyVaultClient' => $keyVaultClient,
+            'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
+            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+        ], $c->getDriverOptions()['autoEncryption']);
+
+        self::assertSame([
+            'kmsProviders' => [
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+            ],
+            'keyVaultNamespace' => 'keyvault.datakeys',
+            'keyVaultClient' => $keyVaultClient,
+            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+        ], $c->getClientEncryptionOptions());
     }
 
-    /** @phpstan-ignore missingType.iterableValue */
-    #[DataProvider('provideInvalidAutoEncryptionConfigurations')]
-    public function testAutoEncryptionMissingConfiguration(string $message, array $config): void
+    public function testMissingDefaultMasterKey(): void
+    {
+        $c = new Configuration();
+        $c->setKmsProvider(['name' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
+
+        self::expectException(ConfigurationException::class);
+        $c->getDefaultMasterKey();
+    }
+
+    public function testKmsProvidersIsForbiddenInAutoEncryptionOptions(): void
     {
         $c = new Configuration();
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage($message);
-
-        // @phpstan-ignore argument.type
-        $c->setAutoEncryption($config);
-    }
-
-    public function provideInvalidAutoEncryptionConfigurations(): Generator
-    {
-        yield [
-            'The "kmsProviders" encryption option is required and must be a non-empty.',
-            [
-                'keyVaultNamespace' => 'encryption.__keyVault',
-                'kmsProviders' => [],
-            ],
-        ];
-
-        yield [
-            'The "keyVaultNamespace" encryption option is required.',
-            [
-                'kmsProviders' => [
-                    'local' => ['key' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234']],
-                ],
-            ],
-        ];
-
-        yield [
-            'The "masterKey" option is required when the KMS provider is not "local".',
-            [
-                'keyVaultNamespace' => 'encryption.__keyVault',
-                'kmsProviders' => [
-                    'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
-                ],
-            ],
-        ];
-
-        yield [
-            'The "kmsProvider" encryption option is required when multiple KMS providers are specified.',
-            [
-                'keyVaultNamespace' => 'encryption.__keyVault',
-                'kmsProviders' => [
-                    'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
-                    'azure' => ['tenantId' => 'TENANT_ID', 'clientId' => 'CLIENT_ID', 'clientSecret' => 'CLIENT_SECRET'],
-                ],
-            ],
-        ];
-
-        yield [
-            'The "kmsProvider" encryption option "azure" is not defined in the "kmsProviders" option.',
-            [
-                'keyVaultNamespace' => 'encryption.__keyVault',
-                'kmsProviders' => [
-                    'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
-                ],
-                'kmsProvider' => 'azure',
-            ],
-        ];
+        self::expectException(ConfigurationException::class);
+        $c->setAutoEncryption(['kmsProviders' => ['aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']]]);
     }
 }
