@@ -43,7 +43,6 @@ use function array_key_exists;
 use function class_exists;
 use function interface_exists;
 use function is_string;
-use function sprintf;
 use function trigger_deprecation;
 use function trim;
 
@@ -180,7 +179,7 @@ class Configuration
     public function getClientEncryptionOptions(): array
     {
         if (! isset($this->attributes['kmsProvider'])) {
-            throw new ConfigurationException('MongoDB client encryption options are not set in configuration');
+            throw ConfigurationException::clientEncryptionOptionsNotSet();
         }
 
         return array_intersect_key($this->getAutoEncryptionOptions(), [
@@ -719,11 +718,11 @@ class Configuration
     public function setKmsProvider(array $kmsProvider): void
     {
         if (! isset($kmsProvider['name'])) {
-            throw new ConfigurationException('The "name" KMS provider option is required.');
+            throw ConfigurationException::kmsProviderNameRequired();
         }
 
         if (! is_string($kmsProvider['name'])) {
-            throw new ConfigurationException('The "name" KMS provider option must be a non-empty string.');
+            throw ConfigurationException::kmsProviderNameMustBeString();
         }
 
         $this->attributes['kmsProvider'] = $kmsProvider;
@@ -749,7 +748,7 @@ class Configuration
     public function setAutoEncryption(array $options): void
     {
         if (isset($options['kmsProviders'])) {
-            throw new ConfigurationException('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method.');
+            throw ConfigurationException::kmsProvidersOptionMustUseSetter();
         }
 
         $this->attributes['autoEncryption'] = $options;
@@ -774,7 +773,7 @@ class Configuration
             return null;
         }
 
-        return $this->attributes['defaultMasterKey'] ?? throw new ConfigurationException(sprintf('The "masterKey" configuration is required for the KMS provider "%s".', $this->attributes['kmsProvider']['name']));
+        return $this->attributes['defaultMasterKey'] ?? throw ConfigurationException::masterKeyRequired($this->attributes['kmsProvider']['name']);
     }
 
     private static function getVersion(): string

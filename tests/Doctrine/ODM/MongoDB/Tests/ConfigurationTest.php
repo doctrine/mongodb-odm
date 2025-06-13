@@ -118,6 +118,7 @@ class ConfigurationTest extends TestCase
         $c->setKmsProvider(['name' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
 
         self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The "masterKey" configuration is required for the KMS provider "aws".');
         $c->getDefaultMasterKey();
     }
 
@@ -126,6 +127,35 @@ class ConfigurationTest extends TestCase
         $c = new Configuration();
 
         self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method.');
         $c->setAutoEncryption(['kmsProviders' => ['aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']]]);
+    }
+
+    public function testClientEncryptionOptionsNotSet(): void
+    {
+        $c = new Configuration();
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('MongoDB client encryption options are not set in configuration');
+        $c->getClientEncryptionOptions();
+    }
+
+    public function testKmsProviderNameRequired(): void
+    {
+        $c = new Configuration();
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The KMS provider "name" is required.');
+
+        // @phpstan-ignore argument.type
+        $c->setKmsProvider(['foo' => 'bar']);
+    }
+
+    public function testKmsProviderNameMustBeString(): void
+    {
+        $c = new Configuration();
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The KMS provider "name" must be a non-empty string.');
+
+        // @phpstan-ignore argument.type
+        $c->setKmsProvider(['name' => ['not', 'a', 'string']]);
     }
 }

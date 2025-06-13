@@ -6,6 +6,8 @@ namespace Doctrine\ODM\MongoDB;
 
 use Exception;
 
+use function sprintf;
+
 final class ConfigurationException extends Exception
 {
     public static function persistentCollectionDirMissing(): self
@@ -28,8 +30,28 @@ final class ConfigurationException extends Exception
         return new self('No proxy directory was configured. Please set a target directory first!');
     }
 
-    public static function kmsProvidersNotSupported(): self
+    public static function clientEncryptionOptionsNotSet(): self
     {
-        return new self('Setting multiple KMS providers is not supported. Please set a single KMS provider in your configuration.');
+        return new self('MongoDB client encryption options are not set in configuration');
+    }
+
+    public static function kmsProviderNameRequired(): self
+    {
+        return new self('The KMS provider "name" is required.');
+    }
+
+    public static function kmsProviderNameMustBeString(): self
+    {
+        return new self('The KMS provider "name" must be a non-empty string.');
+    }
+
+    public static function kmsProvidersOptionMustUseSetter(): self
+    {
+        return new self('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method.');
+    }
+
+    public static function masterKeyRequired(string $provider): self
+    {
+        return new self(sprintf('The "masterKey" configuration is required for the KMS provider "%s".', $provider));
     }
 }
