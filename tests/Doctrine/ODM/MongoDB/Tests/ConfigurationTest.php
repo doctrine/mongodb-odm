@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
+use MongoDB\Driver\Manager;
+use PHPUnit\Framework\TestCase;
 
-class ConfigurationTest extends BaseTestCase
+class ConfigurationTest extends TestCase
 {
     public function testDefaultPersistentCollectionFactory(): void
     {
@@ -39,5 +42,120 @@ class ConfigurationTest extends BaseTestCase
 
         $c->setUseTransactionalFlush(false);
         self::assertFalse($c->isTransactionalFlushEnabled(), 'Transactional flush is disabled after setTransactionalFlush(false)');
+    }
+
+    public function testLocalKmsProvider(): void
+    {
+        $c = new Configuration();
+        $c->setKmsProvider(['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
+        $c->setAutoEncryption(['extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020']]);
+        $c->setDefaultDB('default_database');
+
+        self::assertSame('local', $c->getDefaultKmsProvider());
+        self::assertNull($c->getDefaultMasterKey());
+        self::assertEquals([
+            'kmsProviders' => [
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+            ],
+            'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
+            // Default key vault namespace
+            'keyVaultNamespace' => 'default_database.datakeys',
+        ], $c->getDriverOptions()['autoEncryption']);
+    }
+
+    public function testKmsProvider(): void
+    {
+        $c = new Configuration();
+        $c->setKmsProvider(['type' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
+        $c->setAutoEncryption(['keyVaultNamespace' => 'keyvault.datakeys']);
+        $c->setDefaultMasterKey($masterKey = ['region' => 'us-east-1', 'key' => 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-ab12-cd34-ef56-1234567890ab']);
+
+        self::assertSame('aws', $c->getDefaultKmsProvider());
+        self::assertSame($masterKey, $c->getDefaultMasterKey());
+        self::assertEquals([
+            'kmsProviders' => [
+                'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
+            ],
+            // Key vault namespace from the configuration
+            'keyVaultNamespace' => 'keyvault.datakeys',
+        ], $c->getDriverOptions()['autoEncryption']);
+    }
+
+    public function testAutoEncryptionOptions(): void
+    {
+        $c = new Configuration();
+        $c->setAutoEncryption([
+            'keyVaultClient' => $keyVaultClient = new Manager(),
+            'keyVaultNamespace' => 'keyvault.datakeys',
+            'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
+            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+        ]);
+        $c->setKmsProvider(['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
+
+        self::assertSame([
+            'kmsProviders' => [
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+            ],
+            'keyVaultNamespace' => 'keyvault.datakeys',
+            'keyVaultClient' => $keyVaultClient,
+            'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
+            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+        ], $c->getDriverOptions()['autoEncryption']);
+
+        self::assertSame([
+            'kmsProviders' => [
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+            ],
+            'keyVaultNamespace' => 'keyvault.datakeys',
+            'keyVaultClient' => $keyVaultClient,
+            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+        ], $c->getClientEncryptionOptions());
+    }
+
+    public function testMissingDefaultMasterKey(): void
+    {
+        $c = new Configuration();
+        $c->setKmsProvider(['type' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
+
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The "masterKey" configuration is required for the KMS provider "aws".');
+        $c->getDefaultMasterKey();
+    }
+
+    public function testKmsProvidersIsForbiddenInAutoEncryptionOptions(): void
+    {
+        $c = new Configuration();
+
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method.');
+        $c->setAutoEncryption(['kmsProviders' => ['aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']]]);
+    }
+
+    public function testClientEncryptionOptionsNotSet(): void
+    {
+        $c = new Configuration();
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('MongoDB client encryption options are not set in configuration');
+        $c->getClientEncryptionOptions();
+    }
+
+    public function testKmsProviderTypeRequired(): void
+    {
+        $c = new Configuration();
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The KMS provider "type" is required.');
+
+        // @phpstan-ignore argument.type
+        $c->setKmsProvider(['foo' => 'bar']);
+    }
+
+    public function testKmsProviderTypeMustBeString(): void
+    {
+        $c = new Configuration();
+        self::expectException(ConfigurationException::class);
+        self::expectExceptionMessage('The KMS provider "type" must be a non-empty string.');
+
+        // @phpstan-ignore argument.type
+        $c->setKmsProvider(['type' => ['not', 'a', 'string']]);
     }
 }

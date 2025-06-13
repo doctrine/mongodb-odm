@@ -223,17 +223,17 @@ class DocumentManager implements ObjectManager
     /** @internal */
     public function getClientEncryption(): ClientEncryption
     {
-        $autoEncryptionOptions = $this->config->getAutoEncryption();
+        if (isset($this->clientEncryption)) {
+            return $this->clientEncryption;
+        }
 
-        if (! $autoEncryptionOptions) {
+        $options = $this->config->getClientEncryptionOptions();
+
+        if (! $options) {
             throw new RuntimeException('Auto-encryption is not enabled.');
         }
 
-        return $this->clientEncryption ??= $this->client->createClientEncryption([
-            'keyVaultNamespace' => $autoEncryptionOptions['keyVaultNamespace'],
-            'kmsProviders' => $autoEncryptionOptions['kmsProviders'],
-            'tlsOptions' => $autoEncryptionOptions['tlsOptions'] ?? [],
-        ]);
+        return $this->clientEncryption = $this->client->createClientEncryption($options);
     }
 
     /** Gets the metadata factory used to gather the metadata of classes. */
