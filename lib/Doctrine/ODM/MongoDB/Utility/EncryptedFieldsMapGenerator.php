@@ -16,6 +16,7 @@ use function iterator_to_array;
 
 final class EncryptedFieldsMapGenerator
 {
+    /** @var array<class-string, true> */
     private array $generatorStack = [];
 
     public function __construct(private ClassMetadataFactoryInterface $classMetadataFactory)
@@ -25,7 +26,7 @@ final class EncryptedFieldsMapGenerator
     /**
      * Returns the full encryption fields map for a document manager
      *
-     * @return array<class-string, array<string, array>>
+     * @return array<class-string, array<int, array{path: string, bsonType: string, keyId: ?string}>>
      */
     public function getEncryptedFieldsMap(): array
     {
@@ -52,6 +53,8 @@ final class EncryptedFieldsMapGenerator
      * Generate the encryption field map from the class metadata.
      *
      * @param class-string $className
+     *
+     * @return array<int, array{path: string, bsonType: string, keyId: ?string}>
      */
     public function getEncryptedFieldsMapForClass(string $className): array
     {
@@ -62,6 +65,13 @@ final class EncryptedFieldsMapGenerator
         return iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
     }
 
+    /**
+     * @phpstan-param ClassMetadata<T> $classMetadata
+     *
+     * @return Generator<int, array{path: string, bsonType: string, keyId: ?string}>
+     *
+     * @template T of object
+     */
     private function createEncryptedFieldsMapForClass(ClassMetadata $classMetadata, string $path = ''): Generator
     {
         if ($classMetadata->isEncrypted && ! $classMetadata->isEmbeddedDocument) {
