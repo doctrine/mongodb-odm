@@ -16,9 +16,6 @@ use function iterator_to_array;
 
 final class EncryptedFieldsMapGenerator
 {
-    /** @var array<class-string, true> */
-    private array $generatorStack = [];
-
     public function __construct(private ClassMetadataFactoryInterface $classMetadataFactory)
     {
     }
@@ -60,30 +57,30 @@ final class EncryptedFieldsMapGenerator
     {
         $classMetadata = $this->classMetadataFactory->getMetadataFor($className);
 
-        $this->generatorStack = [];
-
         return iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
     }
 
     /**
+     * @param array<class-string, true> $visitedClasses
      * @phpstan-param ClassMetadata<T> $classMetadata
      *
      * @return Generator<int, array{path: string, bsonType: string, keyId: ?string}>
      *
      * @template T of object
      */
-    private function createEncryptedFieldsMapForClass(ClassMetadata $classMetadata, string $path = ''): Generator
-    {
+    private function createEncryptedFieldsMapForClass(
+        ClassMetadata $classMetadata,
+        string $path = '',
+        array $visitedClasses = [],
+    ): Generator {
         if ($classMetadata->isEncrypted && ! $classMetadata->isEmbeddedDocument) {
             throw MappingException::rootDocumentCannotBeEncrypted($classMetadata->getName());
         }
 
-        if (isset($this->generatorStack[$classMetadata->getName()])) {
+        if (isset($visitedClasses[$classMetadata->getName()])) {
             // Prevent infinite recursion due to circular references in the metadata
             return;
         }
-
-        $this->generatorStack[$classMetadata->getName()] = true;
 
         foreach ($classMetadata->fieldMappings as $mapping) {
             // @todo support polymorphic types and inheritence?
@@ -99,6 +96,7 @@ final class EncryptedFieldsMapGenerator
                     yield from $this->createEncryptedFieldsMapForClass(
                         $embedMetadata,
                         $path . $mapping['name'] . '.',
+                        $visitedClasses + [$classMetadata->getName() => true],
                     );
                 }
             }
@@ -127,7 +125,5 @@ final class EncryptedFieldsMapGenerator
 
             yield $field;
         }
-
-        unset($this->generatorStack[$classMetadata->getName()]);
     }
 }
