@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\ODM\MongoDB\Utility\EncryptionFieldMap;
+use Doctrine\ODM\MongoDB\Utility\EncryptedFieldsMapGenerator;
 use InvalidArgumentException;
 use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\Exception\RuntimeException;
@@ -647,7 +647,7 @@ final class SchemaManager
 
         // Encryption is enabled only if the KMS provider is set and at least one field is encrypted
         if ($this->dm->getConfiguration()->getDefaultKmsProvider()) {
-            $encryptedFields = (new EncryptionFieldMap($this->dm->getMetadataFactory()))->getEncryptionFieldMap($class->name);
+            $encryptedFields = (new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory()))->getEncryptedFieldsMapForClass($class->name);
 
             if ($encryptedFields) {
                 $options['encryptedFields'] = ['fields' => $encryptedFields];

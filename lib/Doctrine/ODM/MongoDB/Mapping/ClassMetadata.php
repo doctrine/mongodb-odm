@@ -2183,6 +2183,15 @@ use function trigger_deprecation;
         return $this->isView;
     }
 
+    public function isDocument(): bool
+    {
+        return ! $this->isView
+            && ! $this->isEmbeddedDocument
+            && ! $this->isFile
+            && ! $this->isQueryResultDocument
+            && ! $this->isMappedSuperclass;
+    }
+
     /** @param class-string $rootClass */
     public function markViewOf(string $rootClass): void
     {
