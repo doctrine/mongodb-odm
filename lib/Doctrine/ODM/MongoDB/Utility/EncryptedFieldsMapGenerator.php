@@ -14,28 +14,72 @@ use function array_filter;
 use function assert;
 use function iterator_to_array;
 
-final class EncryptionFieldMap
+final class EncryptedFieldsMapGenerator
 {
     public function __construct(private ClassMetadataFactoryInterface $classMetadataFactory)
     {
     }
 
     /**
+     * Returns the full encryption fields map for a document manager
+     *
+     * @return array<class-string, array<int, array{path: string, bsonType: string, keyId: ?string}>>
+     */
+    public function getEncryptedFieldsMap(): array
+    {
+        $encryptedFieldsMap = [];
+
+        $allMetadata = $this->classMetadataFactory->getAllMetadata();
+        foreach ($allMetadata as $classMetadata) {
+            if (! $classMetadata->isDocument()) {
+                continue;
+            }
+
+            $classMap = iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
+            if ($classMap === []) {
+                continue;
+            }
+
+            $encryptedFieldsMap[$classMetadata->getName()] = $classMap;
+        }
+
+        return $encryptedFieldsMap;
+    }
+
+    /**
      * Generate the encryption field map from the class metadata.
      *
      * @param class-string $className
+     *
+     * @return array<int, array{path: string, bsonType: string, keyId: ?string}>
      */
-    public function getEncryptionFieldMap(string $className): array
+    public function getEncryptedFieldsMapForClass(string $className): array
     {
         $classMetadata = $this->classMetadataFactory->getMetadataFor($className);
 
-        return iterator_to_array($this->createEncryptionFieldMap($classMetadata));
+        return iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
     }
 
-    private function createEncryptionFieldMap(ClassMetadata $classMetadata, string $path = ''): Generator
-    {
+    /**
+     * @param array<class-string, true> $visitedClasses
+     * @phpstan-param ClassMetadata<T> $classMetadata
+     *
+     * @return Generator<int, array{path: string, bsonType: string, keyId: ?string}>
+     *
+     * @template T of object
+     */
+    private function createEncryptedFieldsMapForClass(
+        ClassMetadata $classMetadata,
+        string $path = '',
+        array $visitedClasses = [],
+    ): Generator {
         if ($classMetadata->isEncrypted && ! $classMetadata->isEmbeddedDocument) {
             throw MappingException::rootDocumentCannotBeEncrypted($classMetadata->getName());
+        }
+
+        if (isset($visitedClasses[$classMetadata->getName()])) {
+            // Prevent infinite recursion due to circular references in the metadata
+            return;
         }
 
         foreach ($classMetadata->fieldMappings as $mapping) {
@@ -49,9 +93,10 @@ final class EncryptionFieldMap
                 if ($embedMetadata->isEncrypted) {
                     $mapping['encrypt'] ??= []; // @todo get the keyId
                 } elseif (! isset($mapping['encrypt'])) {
-                    yield from $this->createEncryptionFieldMap(
+                    yield from $this->createEncryptedFieldsMapForClass(
                         $embedMetadata,
                         $path . $mapping['name'] . '.',
+                        $visitedClasses + [$classMetadata->getName() => true],
                     );
                 }
             }
