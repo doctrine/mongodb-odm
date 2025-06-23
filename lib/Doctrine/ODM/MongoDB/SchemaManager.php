@@ -703,7 +703,7 @@ final class SchemaManager
         // we don't check if the class metadata has encrypted fields, because
         // that does not mean that the existing collection is encrypted or not.
         // "esc" and "ecoc" collections cannot be configured
-        if ($this->dm->getConfiguration()->getKmsProvider()) {
+        if ($this->dm->getConfiguration()->getDefaultKmsProvider()) {
             $options['encryptedFields'] = [];
         }
 
