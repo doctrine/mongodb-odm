@@ -111,13 +111,17 @@ final class EncryptedFieldsMapGenerator
             $field = [
                 'path' => $path . $mapping['name'],
                 'bsonType' => match ($mapping['type']) {
-                    ClassMetadata::ONE => 'object',
-                    ClassMetadata::MANY => 'array',
-                    Type::STRING => 'string',
+                    ClassMetadata::ONE, Type::HASH => 'object',
+                    ClassMetadata::MANY, Type::COLLECTION => 'array',
                     Type::INT, Type::INTEGER => 'int',
                     Type::FLOAT => 'double',
                     Type::DECIMAL128 => 'decimal',
                     Type::DATE, Type::DATE_IMMUTABLE => 'date',
+                    Type::TIMESTAMP => 'timestamp',
+                    Type::OBJECTID => 'objectId',
+                    Type::STRING => 'string',
+                    Type::BINDATA, Type::BINDATABYTEARRAY, Type::BINDATAFUNC, Type::BINDATACUSTOM, Type::BINDATAUUID, Type::BINDATAMD5, Type::BINDATAUUIDRFC4122 => 'binData',
+                    // Type BOOL is not supported in encrypted fields map
                     default => throw new LogicException(sprintf('Type "%s" is not supported in encrypted fields map.', $mapping['type'])),
                 },
                 'keyId' => null, // Generate the key automatically

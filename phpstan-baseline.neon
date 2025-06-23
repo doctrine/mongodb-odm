@@ -961,7 +961,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Parameter \#2 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:addFieldMapping\(\) expects array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}, array\<string, array\<int\<0, max\>\|string, float\|int\|MongoDB\\BSON\\Decimal128\|MongoDB\\BSON\\UTCDateTime\|string\|null\>\|bool\|string\> given\.$#'
+			message: '#^Parameter \#2 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:addFieldMapping\(\) expects array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}, array\<string, array\<int\<0, max\>\|string, mixed\>\|bool\|string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
