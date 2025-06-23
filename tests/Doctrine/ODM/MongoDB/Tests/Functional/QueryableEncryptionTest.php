@@ -13,6 +13,7 @@ use MongoDB\BSON\Binary;
 use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 
+use function count;
 use function iterator_to_array;
 use function random_bytes;
 
@@ -80,6 +81,13 @@ class QueryableEncryptionTest extends BaseTestCase
         self::assertSame('Jon Doe', $result->patientName);
         self::assertSame('987-65-4320', $result->patientRecord->ssn);
         self::assertSame('4111111111111111', $result->patientRecord->billing->number);
+
+        // Drop the encrypted collection
+        $collectionCount = count($nonEncryptedDatabase->listCollectionNames());
+        $this->dm->getSchemaManager()->dropDocumentCollection(Patient::class);
+        $collectionNames = iterator_to_array($nonEncryptedDatabase->listCollectionNames());
+        self::assertNotContains('patients', $collectionNames);
+        self::assertSame($collectionCount - 3, count($collectionNames), 'The 2 metadata collections should also be dropped');
     }
 
     protected static function createTestDocumentManager(): DocumentManager
