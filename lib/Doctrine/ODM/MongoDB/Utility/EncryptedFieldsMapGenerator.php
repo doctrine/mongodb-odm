@@ -8,11 +8,14 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Generator;
+use LogicException;
 
 use function array_filter;
 use function assert;
 use function iterator_to_array;
+use function sprintf;
 
 final class EncryptedFieldsMapGenerator
 {
@@ -108,11 +111,15 @@ final class EncryptedFieldsMapGenerator
             $field = [
                 'path' => $path . $mapping['name'],
                 'bsonType' => match ($mapping['type']) {
-                    'one' => 'object',
-                    'many' => 'array',
-                    default => $mapping['type'],
+                    ClassMetadata::ONE => 'object',
+                    ClassMetadata::MANY => 'array',
+                    Type::STRING => 'string',
+                    Type::INT, Type::INTEGER => 'int',
+                    Type::FLOAT => 'double',
+                    Type::DECIMAL128 => 'decimal',
+                    Type::DATE, Type::DATE_IMMUTABLE => 'date',
+                    default => throw new LogicException(sprintf('Type "%s" is not supported in encrypted fields map.', $mapping['type'])),
                 },
-                // @todo allow setting a keyId in #[Encrypt] attribute
                 'keyId' => null, // Generate the key automatically
             ];
 

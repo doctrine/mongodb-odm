@@ -90,24 +90,27 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
             ],
             [
                 'path' => 'floatField',
-                'bsonType' => 'float',
+                'bsonType' => 'double',
                 'keyId' => null,
-                'queries' => ['queryType' => 'range', 'min' => 5.5, 'max' => 10.5],
+                'queries' => ['queryType' => 'range', 'min' => 5.5, 'max' => 10.5, 'precision' => 1],
             ],
             [
                 'path' => 'decimalField',
-                'bsonType' => 'decimal128',
+                'bsonType' => 'decimal',
                 'keyId' => null,
-                'queries' => ['queryType' => 'range', 'min' => new Decimal128('0.1'), 'max' => new Decimal128('0.2')],
+                'queries' => ['queryType' => 'range', 'min' => new Decimal128('0.1'), 'max' => new Decimal128('0.2'), 'precision' => 2],
             ],
             [
                 'path' => 'dateField',
-                'bsonType' => 'date_immutable',
+                'bsonType' => 'date',
                 'keyId' => null,
                 'queries' => [
                     'queryType' => 'range',
                     'min' => new UTCDateTime(new DateTimeImmutable('2000-01-01 00:00:00')),
                     'max' => new UTCDateTime(new DateTimeImmutable('2100-01-01 00:00:00')),
+                    'sparsity' => 1,
+                    'trimFactor' => 3,
+                    'contention' => 4,
                 ],
             ],
         ];

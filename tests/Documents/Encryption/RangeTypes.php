@@ -29,14 +29,21 @@ class RangeTypes
     public int $intField;
 
     #[Field(type: Type::FLOAT)]
-    #[Encrypt(EncryptQuery::Range, min: 5.5, max: 10.5)]
+    #[Encrypt(EncryptQuery::Range, min: 5.5, max: 10.5, precision: 1)]
     public float $floatField;
 
     #[Field(type: Type::DECIMAL128)]
-    #[Encrypt(EncryptQuery::Range, min: new Decimal128('0.1'), max: new Decimal128('0.2'))]
+    #[Encrypt(EncryptQuery::Range, min: new Decimal128('0.1'), max: new Decimal128('0.2'), precision: 2)]
     public Decimal128 $decimalField;
 
     #[Field(type: Type::DATE_IMMUTABLE)]
-    #[Encrypt(EncryptQuery::Range, min: new DateTimeImmutable('2000-01-01 00:00:00'), max: new DateTimeImmutable('2100-01-01 00:00:00'))]
+    #[Encrypt(
+        queryType: EncryptQuery::Range,
+        min: new DateTimeImmutable('2000-01-01 00:00:00'),
+        max: new DateTimeImmutable('2100-01-01 00:00:00'),
+        sparsity: 1,
+        trimFactor: 3,
+        contention: 4,
+    )]
     public DateTimeImmutable $dateField;
 }

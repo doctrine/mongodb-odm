@@ -320,13 +320,13 @@ class XmlDriver extends FileDriver
                         $mapping['encrypt'][$encryptKey] = match ($encryptKey) {
                             'queryType' => (string) $encryptValue,
                             'min', 'max' => match ($mapping['type']) {
-                                Type::INT => (int) $encryptValue,
+                                Type::INT, Type::INTEGER => (int) $encryptValue,
                                 Type::FLOAT => (float) $encryptValue,
                                 Type::DECIMAL128 => new Decimal128((string) $encryptValue),
                                 Type::DATE, Type::DATE_IMMUTABLE => new UTCDateTime(new DateTimeImmutable((string) $encryptValue)),
                                 default => null, // Invalid
                             },
-                            'sparsity', 'prevision', 'trimFactor', 'contention' => (int) $encryptValue,
+                            'sparsity', 'precision', 'trimFactor', 'contention' => (int) $encryptValue,
                         };
                     }
                 }
