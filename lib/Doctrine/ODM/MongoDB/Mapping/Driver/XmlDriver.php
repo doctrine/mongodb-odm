@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -15,9 +14,7 @@ use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
-use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Document;
-use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use SimpleXMLElement;
 
@@ -319,14 +316,8 @@ class XmlDriver extends FileDriver
                     foreach ($field->encrypt->attributes() as $encryptKey => $encryptValue) {
                         $mapping['encrypt'][$encryptKey] = match ($encryptKey) {
                             'queryType' => (string) $encryptValue,
-                            'min', 'max' => match ($mapping['type']) {
-                                Type::INT => (int) $encryptValue,
-                                Type::FLOAT => (float) $encryptValue,
-                                Type::DECIMAL128 => new Decimal128((string) $encryptValue),
-                                Type::DATE, Type::DATE_IMMUTABLE => new UTCDateTime(new DateTimeImmutable((string) $encryptValue)),
-                                default => null, // Invalid
-                            },
-                            'sparsity', 'prevision', 'trimFactor', 'contention' => (int) $encryptValue,
+                            'min', 'max' => Type::getType($mapping['type'])->convertToDatabaseValue((string) $encryptValue),
+                            'sparsity', 'precision', 'trimFactor', 'contention' => (int) $encryptValue,
                         };
                     }
                 }

@@ -28,7 +28,7 @@ final class Encrypt implements Annotation
     /**
      * @param EncryptQuery|null $queryType  Set the query type for the field, null if not queryable.
      * @param int<1, 4>|null    $sparsity
-     * @param positive-int|null $prevision
+     * @param positive-int|null $precision
      * @param positive-int|null $trimFactor
      * @param positive-int|null $contention
      */
@@ -37,7 +37,7 @@ final class Encrypt implements Annotation
         int|float|Int64|Decimal128|UTCDateTime|DateTimeInterface|null $min = null,
         int|float|Int64|Decimal128|UTCDateTime|DateTimeInterface|null $max = null,
         public ?int $sparsity = null,
-        public ?int $prevision = null,
+        public ?int $precision = null,
         public ?int $trimFactor = null,
         public ?int $contention = null,
     ) {
