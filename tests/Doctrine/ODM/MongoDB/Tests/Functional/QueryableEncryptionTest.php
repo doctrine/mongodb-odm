@@ -14,6 +14,7 @@ use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 
 use function count;
+use function getenv;
 use function iterator_to_array;
 use function random_bytes;
 
@@ -98,6 +99,15 @@ class QueryableEncryptionTest extends BaseTestCase
             'type' => 'local',
             'key' => new Binary(random_bytes(96)),
         ]);
+
+        $autoEncryptionOptions = [];
+
+        $cryptSharedLibPath = getenv('CRYPT_SHARED_LIB_PATH');
+        if ($cryptSharedLibPath) {
+            $autoEncryptionOptions['extraOptions']['cryptSharedLibPath'] = $cryptSharedLibPath;
+        }
+
+        $config->setAutoEncryption($autoEncryptionOptions);
 
         $client = new Client(self::getUri(), [], $config->getDriverOptions());
 
