@@ -121,7 +121,7 @@ final class EncryptedFieldsMapGenerator
                     Type::OBJECTID => 'objectId',
                     Type::STRING => 'string',
                     Type::BINDATA, Type::BINDATABYTEARRAY, Type::BINDATAFUNC, Type::BINDATACUSTOM, Type::BINDATAUUID, Type::BINDATAMD5, Type::BINDATAUUIDRFC4122 => 'binData',
-                    // Type BOOL is not supported in encrypted fields map
+                    Type::BOOL, Type::BOOLEAN => 'bool',
                     default => throw new LogicException(sprintf('Type "%s" is not supported in encrypted fields map.', $mapping['type'])),
                 },
                 'keyId' => null, // Generate the key automatically
