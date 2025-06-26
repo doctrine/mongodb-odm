@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use BadMethodCallException;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
@@ -89,6 +90,17 @@ abstract class Type
     /** Prevent instantiation and force use of the factory method. */
     final private function __construct()
     {
+    }
+
+    /**
+     * Returns the alias name of the BSON type.
+     *
+     * @link https://www.mongodb.com/docs/manual/reference/bson-types/
+     */
+    public function getBSONType(): BsonType
+    {
+        // This method will be abstract in the next major version.
+        throw new BadMethodCallException(sprintf('The method "%s::getBSONType" is not implemented. You must implement this method in the concrete type class.', static::class));
     }
 
     /**

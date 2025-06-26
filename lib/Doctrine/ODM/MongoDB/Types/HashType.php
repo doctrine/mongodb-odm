@@ -13,6 +13,11 @@ use function is_array;
  */
 class HashType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Object;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value !== null && ! is_array($value)) {

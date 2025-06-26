@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use LogicException;
+
+use function sprintf;
+
 /**
  * The Id type.
  */
 class CustomIdType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        throw new LogicException(sprintf('Cannot determine BSON type for "%s".', self::class));
+    }
+
     public function convertToDatabaseValue($value)
     {
         return $value;

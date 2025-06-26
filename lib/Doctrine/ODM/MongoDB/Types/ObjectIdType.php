@@ -11,6 +11,11 @@ use MongoDB\BSON\ObjectId;
  */
 class ObjectIdType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::ObjectId;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {

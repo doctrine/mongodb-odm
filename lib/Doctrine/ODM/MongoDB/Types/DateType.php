@@ -28,6 +28,11 @@ use const STR_PAD_LEFT;
  */
 class DateType extends Type implements Versionable
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Date;
+    }
+
     /**
      * Converts a value to a DateTime.
      * Supports microseconds

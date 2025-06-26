@@ -14,6 +14,11 @@ use function substr;
  */
 class TimestampType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Timestamp;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value instanceof Timestamp) {

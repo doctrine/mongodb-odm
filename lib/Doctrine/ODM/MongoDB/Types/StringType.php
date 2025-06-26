@@ -11,6 +11,11 @@ use MongoDB\BSON\Regex;
  */
 class StringType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::String;
+    }
+
     public function convertToDatabaseValue($value)
     {
         return $value === null || $value instanceof Regex ? $value : (string) $value;

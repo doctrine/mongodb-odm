@@ -12,6 +12,11 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
  */
 class IdType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::ObjectId;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {

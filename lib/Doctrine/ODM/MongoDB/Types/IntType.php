@@ -11,6 +11,11 @@ use function max;
  */
 class IntType extends Type implements Incrementable, Versionable
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Int32;
+    }
+
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? (int) $value : null;

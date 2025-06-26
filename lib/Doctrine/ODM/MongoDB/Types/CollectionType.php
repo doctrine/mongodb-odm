@@ -14,6 +14,11 @@ use function is_array;
  */
 class CollectionType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Array;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value !== null && ! is_array($value)) {

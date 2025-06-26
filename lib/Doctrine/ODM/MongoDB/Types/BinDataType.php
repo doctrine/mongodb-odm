@@ -22,6 +22,11 @@ class BinDataType extends Type
      */
     protected $binDataType = Binary::TYPE_GENERIC;
 
+    public function getBSONType(): BsonType
+    {
+        return BsonType::BinaryData;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {

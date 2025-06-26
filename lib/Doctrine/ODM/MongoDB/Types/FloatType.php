@@ -9,6 +9,11 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class FloatType extends Type implements Incrementable
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Double;
+    }
+
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? (float) $value : null;

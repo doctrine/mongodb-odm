@@ -13,6 +13,11 @@ class Decimal128Type extends Type implements Incrementable, Versionable
 {
     use ClosureToPHP;
 
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Decimal128;
+    }
+
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {

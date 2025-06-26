@@ -9,6 +9,11 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class BooleanType extends Type
 {
+    public function getBSONType(): BsonType
+    {
+        return BsonType::Boolean;
+    }
+
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? (bool) $value : null;
