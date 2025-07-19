@@ -17,8 +17,10 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Timestamp;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\Uid\UuidV4;
 
 use function get_debug_type;
+use function hex2bin;
 use function md5;
 use function str_pad;
 use function str_repeat;
@@ -66,6 +68,7 @@ class TypeTest extends BaseTestCase
             'objectId' => [Type::OBJECTID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')],
             'raw' => [Type::RAW, (object) ['foo' => 'bar']],
             'decimal128' => [Type::DECIMAL128, '4.20', new Decimal128('4.20')],
+            'uuid' => [Type::UUID, new UuidV4('550e8400-e29b-41d4-a716-446655440000'), new Binary(hex2bin('550e8400e29b41d4a716446655440000'), Binary::TYPE_UUID)],
         ];
     }
 
