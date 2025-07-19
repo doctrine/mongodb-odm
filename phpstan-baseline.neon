@@ -2107,6 +2107,18 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
 
 		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with arguments MongoDB\\BSON\\Binary, null and ''Binary UUIDs are…'' will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Types/BinaryUuidTypeTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertSame\(\) with arguments Symfony\\Component\\Uid\\UuidV4, null and ''Uuid objects are…'' will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Types/BinaryUuidTypeTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\ArrayTest\:\:\$id is unused\.$#'
 			identifier: property.unused
 			count: 1
