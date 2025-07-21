@@ -319,4 +319,22 @@ final class MappingException extends BaseMappingException
             $className,
         ));
     }
+
+    public static function unsupportedTypeForAutoGenerator(string $className, string $type): self
+    {
+        return new self(sprintf(
+            'The type "%s" can not be used for auto ID generation in class "%s".',
+            $type,
+            $className,
+        ));
+    }
+
+    public static function autoIdGeneratorNeedsType(string $className, string $identifierFieldName): self
+    {
+        return new self(sprintf(
+            'The auto ID generator for class "%s" requires the identifier field "%s" to have a type.',
+            $className,
+            $identifierFieldName,
+        ));
+    }
 }

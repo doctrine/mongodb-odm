@@ -10,11 +10,11 @@ use MongoDB\BSON\ObjectId;
 /**
  * AutoGenerator generates a native ObjectId
  *
- * @deprecated
+ * @internal
  */
-final class AutoGenerator extends AbstractIdGenerator
+final class ObjectIdGenerator extends AbstractIdGenerator
 {
-    public function generate(DocumentManager $dm, object $document)
+    public function generate(DocumentManager $dm, object $document): ObjectId
     {
         return new ObjectId();
     }

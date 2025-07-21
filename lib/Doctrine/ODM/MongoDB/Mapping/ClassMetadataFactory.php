@@ -12,15 +12,17 @@ use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Id\AlnumGenerator;
-use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
+use Doctrine\ODM\MongoDB\Id\ObjectIdGenerator;
+use Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
+use ReflectionNamedType;
 
 use function assert;
 use function get_class_methods;
@@ -186,7 +188,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             if ($parent->idGenerator) {
                 $class->setIdGenerator($parent->idGenerator);
             }
-        } else {
+        } elseif ($class->identifier) {
             $this->completeIdGeneratorMapping($class);
         }
 
@@ -230,12 +232,36 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         return new ClassMetadata($className);
     }
 
+    private function generateAutoIdGenerator(ClassMetadata $class): void
+    {
+        $identifierMapping = $class->getIdentifierMapping();
+        switch ($identifierMapping['type']) {
+            case 'id':
+            case 'objectId':
+                $class->setIdGenerator(new ObjectIdGenerator());
+                break;
+            case 'uuid':
+                $reflectionProperty = $class->getReflectionProperty($identifierMapping['fieldName']);
+                if (! $reflectionProperty->getType() instanceof ReflectionNamedType) {
+                    throw MappingException::autoIdGeneratorNeedsType($class->name, $identifierMapping['fieldName']);
+                }
+
+                $class->setIdGenerator(new SymfonyUuidGenerator($reflectionProperty->getType()->getName()));
+                break;
+            default:
+                throw MappingException::unsupportedTypeForAutoGenerator(
+                    $class->name,
+                    $identifierMapping['type'],
+                );
+        }
+    }
+
     private function completeIdGeneratorMapping(ClassMetadata $class): void
     {
         $idGenOptions = $class->generatorOptions;
         switch ($class->generatorType) {
             case ClassMetadata::GENERATOR_TYPE_AUTO:
-                $class->setIdGenerator(new AutoGenerator());
+                $this->generateAutoIdGenerator($class);
                 break;
             case ClassMetadata::GENERATOR_TYPE_INCREMENT:
                 $incrementGenerator = new IncrementGenerator();

@@ -345,18 +345,6 @@ class IdTest extends BaseTestCase
         $this->dm->persist(new CustomIdUser('Maciej'));
     }
 
-    public function testStrategyAutoWithNotValidIdThrowsException(): void
-    {
-        $user     = new TestIdTypesIdAutoUser();
-        $user->id = 1;
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(
-            'Doctrine\ODM\MongoDB\Tests\Functional\TestIdTypesIdAutoUser uses AUTO identifier generation strategy ' .
-            'but provided identifier is not a valid ObjectId.',
-        );
-        $this->dm->persist($user);
-    }
-
     private function createIdTestClass(string $type, string $strategy): string
     {
         $shortClassName = sprintf('TestIdTypes%s%sUser', ucfirst($type), ucfirst($strategy));

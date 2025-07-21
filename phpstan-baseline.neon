@@ -883,6 +883,12 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:generateAutoIdGenerator\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:initializeReflection\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
