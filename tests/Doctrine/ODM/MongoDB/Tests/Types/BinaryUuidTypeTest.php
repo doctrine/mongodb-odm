@@ -42,6 +42,7 @@ class BinaryUuidTypeTest extends TestCase
         $binaryUuid = new Binary($uuid->toBinary(), Binary::TYPE_UUID);
 
         self::assertEquals($uuid, $type->convertToPHPValue($binaryUuid), 'Binary UUIDs are converted to Uuid objects');
+        self::assertSame($uuid, $type->convertToPHPValue($uuid), 'Uuid objects are returned as is');
     }
 
     public function testConvertInvalidBinaryUuid(): void
@@ -95,5 +96,6 @@ class BinaryUuidTypeTest extends TestCase
         };
 
         self::assertEquals($uuid, $convertToPHPValue($binaryUuid), 'Binary UUIDs are converted to Uuid objects');
+        self::assertSame($uuid, $convertToPHPValue($uuid), 'Uuid objects are returned as is');
     }
 }

@@ -29,6 +29,10 @@ class BinaryUuidType extends Type
 
     public function convertToPHPValue(mixed $value): Uuid
     {
+        if ($value instanceof Uuid) {
+            return $value;
+        }
+
         if (! $value instanceof Binary || $value->getType() !== Binary::TYPE_UUID) {
             throw new Exception('Invalid data received for Uuid');
         }
@@ -51,6 +55,6 @@ PHP;
 
     public function closureToPHP(): string
     {
-        return '$return = \Symfony\Component\Uid\Uuid::fromString($value->getData());';
+        return '$return = $value instanceof \Symfony\Component\Uid\Uuid ? $value : \Symfony\Component\Uid\Uuid::fromString($value->getData());';
     }
 }
