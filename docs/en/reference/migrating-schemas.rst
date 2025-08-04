@@ -18,10 +18,9 @@ problem!
 Creating a collection
 --------------------
 
-MongoDB will create collections automatically upon first insertion, there are
-situation you must create them explicitly. This allows you to configure specific
-options, such as indexes and validation rules. Explicit creation is also required
-features like encrypted collections.
+Collections automatically created by the MongoDB server upon first insertion.
+You must explicitly create the collections if you need specific options, such as
+validation rules. In particular, encrypted collections must be created explicitly.
 
 .. code-block:: php
 
