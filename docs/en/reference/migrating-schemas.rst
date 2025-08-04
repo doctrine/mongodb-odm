@@ -18,10 +18,10 @@ problem!
 Creating a collection
 --------------------
 
-MongoDB does not require you to create collections before using them, but
-this operation is recommended for setting up indexes or validation rules. It's
-also required to create encrypted collections, which are not supported by
-Doctrine MongoDB ODM.
+MongoDB will create collections automatically upon first insertion, there are
+situation you must create them explicitly. This allows you to configure specific
+options, such as indexes and validation rules. Explicit creation is also required
+features like encrypted collections.
 
 .. code-block:: php
 
@@ -30,7 +30,7 @@ Doctrine MongoDB ODM.
     // Assuming $dm is your DocumentManager instance
     $schemaManager = $dm->getSchemaManager();
 
-To create the collections for all the documents classes, you can use the
+To create the collections for all the document classes, you can use the
 `createCollections()` method on the ``DocumentManager``:
 
 .. code-block:: php

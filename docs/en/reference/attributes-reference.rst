@@ -377,11 +377,11 @@ Example:
         public string $name;
     }
 
-The ``#[Encrypt]`` attribute is can be added to an class with `#[EmbeddedDocument]`_.
+The ``#[Encrypt]`` attribute can be added to a class with `#[EmbeddedDocument]`_.
 This will encrypt the entire embedded document, in the field that contains it.
 Queryable encryption is not supported for embedded documents, so the ``queryType``
-argument is not applicable in this case. In this case, the embedded document is
-stored as a binary value in the parent document.
+argument is not applicable. Encrypted embedded documents are stored as a binary
+value in the parent document.
 
 .. code-block:: php
 
