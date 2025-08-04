@@ -356,6 +356,10 @@ Optional arguments:
   users only. The default values for these options are suitable for the majority
   of use cases, and should only be modified if your use case requires it.
 
+.. note::
+
+    Queryable encryption is only supported in MongoDB version 8.0 and later.
+
 Example:
 
 .. code-block:: php
@@ -373,8 +377,49 @@ Example:
         public string $name;
     }
 
+The ``#[Encrypt]`` attribute is can be added to an class with `#[EmbeddedDocument]`_.
+This will encrypt the entire embedded document, in the field that contains it.
+Queryable encryption is not supported for embedded documents, so the ``queryType``
+argument is not applicable in this case. In this case, the embedded document is
+stored as a binary value in the parent document.
+
+.. code-block:: php
+
+    <?php
+
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
+
+    #[Encrypt]
+    #[EmbeddedDocument]
+    class CreditCard
+    {
+        #[Field]
+        public string $number;
+
+        #[Field]
+        public string $expiryDate;
+    }
+
+    #[Document]
+    class User
+    {
+        #[EmbedOne(targetDocument: CreditCard::class)]
+        public CreditCard $creditCard;
+    }
+
 For more details, refer to the MongoDB documentation on
 `Queryable Encryption <https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/>`_.
+
+
+.. note::
+
+    The encrypted collection must be created with the `Schema Manager`_ before
+    before inserting documents.
+
+.. note::
+
+    Due to the way the encrypted fields map is generated, the queryable encryption
+    is not compatible with ``SINGLE_COLLECTION`` inheritance.
 
 #[Field]
 --------
@@ -1439,5 +1484,6 @@ root class specified in the view mapping.
 .. _DBRef: https://docs.mongodb.com/manual/reference/database-references/#dbrefs
 .. _geoNear command: https://docs.mongodb.com/manual/reference/command/geoNear/
 .. _MongoDB\BSON\ObjectId: https://www.php.net/class.mongodb-bson-objectid
+.. _Schema Manager: ../reference/migrating-schemas
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>
