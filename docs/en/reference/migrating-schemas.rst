@@ -18,7 +18,7 @@ problem!
 Creating a collection
 --------------------
 
-Collections automatically created by the MongoDB server upon first insertion.
+Collections are automatically created by the MongoDB server upon first insertion.
 You must explicitly create the collections if you need specific options, such as
 validation rules. In particular, encrypted collections must be created explicitly.
 
