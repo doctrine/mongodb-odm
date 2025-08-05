@@ -15,6 +15,44 @@ problem!
     for the Google App Engine datastore. Additional information may be found in
     the `Objectify schema migration`_ documentation.
 
+Creating a collection
+--------------------
+
+Collections are automatically created by the MongoDB server upon first insertion.
+You must explicitly create the collections if you need specific options, such as
+validation rules. In particular, encrypted collections must be created explicitly.
+
+.. code-block:: php
+
+    <?php
+
+    // Assuming $dm is your DocumentManager instance
+    $schemaManager = $dm->getSchemaManager();
+
+To create the collections for all the document classes, you can use the
+`createCollections()` method on the ``DocumentManager``:
+
+.. code-block:: php
+
+    <?php
+
+    $schemaManager->createCollections();
+
+For a specific document class, you can use the `createDocumentCollection()`
+method with the class name as an argument:
+
+    <?php
+
+    $schemaManager->createDocumentCollection(Person::class);
+
+Once the collection is created, you can also set up indexes with ``ensureIndexes``,
+and search indexes with ``createSearchIndexes``:
+
+    <?php
+
+    $schemaManager->ensureIndexes();
+    $schemaManager->createSearchIndexes();
+
 Renaming a Field
 ----------------
 
