@@ -92,6 +92,22 @@ jobs:
             dependencies: "highest"
             symfony-version: "stable"
             proxy: "lazy-ghost"
+          # Test with upcoming Symfony 7.4
+          - topology: "server"
+            php-version: "8.2"
+            mongodb-version: "8.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: "7.4"
+            proxy: "lazy-ghost"
+          # Test with upcoming Symfony 8.0
+          - topology: "server"
+            php-version: "8.4"
+            mongodb-version: "8.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: "8.0"
+            proxy: "native"
           # Test with a sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
 #          - topology: "sharded_cluster"
@@ -127,7 +143,6 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          tools: "pecl"
           extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
           coverage: "none"
           ini-values: "zend.assertions=1"
@@ -147,6 +162,10 @@ jobs:
           composer require --no-update symfony/console:^${{ matrix.symfony-version }}
           composer require --no-update symfony/var-dumper:^${{ matrix.symfony-version }}
           composer require --no-update --dev symfony/cache:^${{ matrix.symfony-version }}
+          if dpkg --compare-versions "${{ matrix.symfony-version }}" lt "8.0"; then
+            # LazyGhostTrait was removed from symfony/var-exporter >= 8.0
+            composer require --dev symfony/var-exporter:^${{ matrix.symfony-version }}
+          fi
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"

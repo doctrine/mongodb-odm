@@ -18,8 +18,13 @@ jobs:
         symfony:
           - "stable"
         proxy:
-          - "lazy-ghost"
+          - "native"
         include:
+          # Test with LazyGhostObject
+          - php-version: "8.2"
+            symfony: "7.4"
+            proxy: "lazy-ghost"
+            os: "ubuntu-latest"
           # Test with ProxyManager
           - php-version: "8.1"
             symfony: "6.4"

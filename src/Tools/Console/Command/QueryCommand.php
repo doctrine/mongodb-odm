@@ -27,8 +27,7 @@ class QueryCommand extends Command
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this
         ->setName('odm:query')

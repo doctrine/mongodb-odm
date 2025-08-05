@@ -31,8 +31,7 @@ class GeneratePersistentCollectionsCommand extends Command
 {
     use CommandCompatibility;
 
-    /** @return void */
-    protected function configure()
+    private function doConfigure(): void
     {
         $this
             ->setName('odm:generate:persistent-collections')

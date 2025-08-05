@@ -31,8 +31,7 @@ class DropCommand extends AbstractCommand
         self::SEARCH_INDEX => ['search index(es)', 'search indexes'],
     ];
 
-    /** @return void */
-    protected function configure()
+    protected function doConfigure(): void
     {
         parent::configure();
 

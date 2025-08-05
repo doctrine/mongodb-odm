@@ -19,16 +19,15 @@ use function is_string;
 
 abstract class AbstractCommand extends Command
 {
+    use AbstractCommandCompatibility;
+
     public const DB           = 'db';
     public const COLLECTION   = 'collection';
     public const INDEX        = 'index';
     public const SEARCH_INDEX = 'search-index';
 
-    /** @return void */
-    protected function configure()
+    private function configureCommonOptions(): void
     {
-        parent::configure();
-
         $this
             ->addOption('maxTimeMs', null, InputOption::VALUE_REQUIRED, 'An optional maxTimeMs that will be used for all schema operations.')
             ->addOption('w', null, InputOption::VALUE_REQUIRED, 'An optional w option for the write concern that will be used for all schema operations.')

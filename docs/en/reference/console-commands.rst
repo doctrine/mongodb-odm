@@ -1,7 +1,7 @@
 Console Commands
 ================
 
-Doctrine MongoDB ODM offers some console commands, which utilize Symfony2's
+Doctrine MongoDB ODM offers some console commands, which utilize Symfony's
 Console component, to ease your development process:
 
 - ``odm:clear-cache:metadata`` - Clear all metadata cache of the various cache drivers.
