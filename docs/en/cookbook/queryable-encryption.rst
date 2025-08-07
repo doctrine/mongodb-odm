@@ -83,7 +83,6 @@ fields that require encryption.
         /**
          * Encrypted with range queries.
          * This allows us to query for billing amounts within a certain range.
-         * min, max, and sparsity are required for range queries.
          */
         #[ODM\Field(type: 'int')]
         #[Encrypt(queryType: EncryptQuery::Range, min: 0, max: 5000, sparsity: 1)]
@@ -112,7 +111,7 @@ documentation. We'll use the ``local`` KMS provider for simplicity. For this
 provider, you need a 96-byte master key.
 The following code will look for the key in a local file (``master-key.bin``)
 and generate it if it doesn't exist. In a production environment, you should
-use an other key management service (KMS).
+use a non-local key management service (KMS).
 
 .. code-block:: php
 
