@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
+use Traversable;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
@@ -25,20 +26,21 @@ class AnnotationDriver extends AttributeDriver
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      *
-     * @param Reader               $reader The AnnotationReader to use, duck-typed.
-     * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
+     * @param Reader                                             $reader The AnnotationReader to use, duck-typed.
+     * @param string|string[]|Traversable<array-key,string>|null $paths  Iterable of source file paths (if {@see Traversable} is given),
+     *                                                                   or an array of directories where mapping classes can be found.
      */
     public function __construct($reader, $paths = null)
     {
         $this->reader = $reader;
 
-        $this->addPaths((array) $paths);
+        $this->initializePaths($paths);
     }
 
     /**
      * Factory method for the Annotation Driver
      *
-     * @param string[]|string $paths
+     * @param string|string[]|Traversable<array-key,string> $paths
      */
     public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
     {

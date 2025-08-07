@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
+use ArrayIterator;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -16,11 +17,13 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use LogicException;
 use MongoDB\BSON\Document;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
+use Traversable;
 
 use function array_merge;
 use function array_replace;
@@ -29,6 +32,9 @@ use function class_exists;
 use function constant;
 use function count;
 use function is_array;
+use function is_string;
+use function property_exists;
+use function sprintf;
 use function trigger_deprecation;
 
 /**
@@ -45,7 +51,10 @@ class AttributeDriver implements MappingDriver
      */
     protected $reader;
 
-    /** @param string|string[]|null $paths */
+    /**
+     * @param string|string[]|Traversable<array-key,string>|null $paths Iterable of source file paths (if {@see Traversable} is given),
+     *                                                                  or an array of directories where mapping classes can be found.
+     */
     public function __construct($paths = null, ?Reader $reader = null)
     {
         if ($reader !== null) {
@@ -59,7 +68,31 @@ class AttributeDriver implements MappingDriver
 
         $this->reader = $reader ?? new AttributeReader();
 
-        $this->addPaths((array) $paths);
+        $this->initializePaths($paths);
+    }
+
+    /** @param string|iterable<string>|null $paths */
+    final protected function initializePaths(string|iterable|null $paths): void
+    {
+        if (is_string($paths)) {
+            $paths = [$paths];
+        } elseif ($paths === null) {
+            $paths = new ArrayIterator([]);
+        }
+
+        $isFilePaths = $paths instanceof Traversable;
+
+        if (! $isFilePaths) {
+            $this->addPaths((array) $paths);
+
+            return;
+        }
+
+        if (! property_exists(self::class, 'filePaths')) {
+            throw new LogicException(sprintf('Source file paths support for %s is available since doctrine/persistence 4.1.', static::class));
+        }
+
+        $this->filePaths = $paths;
     }
 
     public function isTransient($className): bool
@@ -416,7 +449,7 @@ class AttributeDriver implements MappingDriver
     /**
      * Factory method for the Attribute Driver
      *
-     * @param string[]|string $paths
+     * @param string|string[]|Traversable<array-key,string> $paths
      *
      * @return AttributeDriver
      */

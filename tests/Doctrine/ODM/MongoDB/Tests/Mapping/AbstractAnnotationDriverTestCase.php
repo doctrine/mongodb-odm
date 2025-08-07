@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
@@ -15,6 +14,7 @@ use Documents\CmsUser;
 use Generator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
+use Stubs\AnnotationDriverFactory;
 
 use function assert;
 
@@ -76,8 +76,7 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     public function testLoadMetadataForNonDocumentThrowsException(): void
     {
         $cm               = new ClassMetadata('stdClass');
-        $reader           = new AnnotationReader();
-        $annotationDriver = new AnnotationDriver($reader);
+        $annotationDriver = AnnotationDriverFactory::createAnnotationDriver();
 
         $this->expectException(MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
@@ -87,8 +86,7 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm               = new ClassMetadata(ColumnWithoutType::class);
-        $reader           = new AnnotationReader();
-        $annotationDriver = new AnnotationDriver($reader);
+        $annotationDriver = AnnotationDriverFactory::createAnnotationDriver();
 
         $annotationDriver->loadMetadataForClass(stdClass::class, $cm);
         self::assertEquals('id', $cm->fieldMappings['id']['type']);
@@ -255,9 +253,8 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
 
     protected function loadDriverForCMSDocuments(): MappingDriver
     {
-        $annotationDriver = static::loadDriver();
+        $annotationDriver = static::loadDriver([__DIR__ . '/../../../../../Documents']);
         assert($annotationDriver instanceof AnnotationDriver || $annotationDriver instanceof AttributeDriver);
-        $annotationDriver->addPaths([__DIR__ . '/../../../../../Documents']);
 
         return $annotationDriver;
     }

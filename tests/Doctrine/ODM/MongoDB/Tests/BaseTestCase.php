@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -17,6 +16,7 @@ use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
+use Stubs\AttributeDriverFactory;
 
 use function array_key_exists;
 use function array_map;
@@ -124,7 +124,7 @@ abstract class BaseTestCase extends TestCase
 
     protected static function createMetadataDriverImpl(): MappingDriver
     {
-        return AttributeDriver::create(__DIR__ . '/../../../../Documents');
+        return AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../../../../Documents']);
     }
 
     protected static function createTestDocumentManager(): DocumentManager
