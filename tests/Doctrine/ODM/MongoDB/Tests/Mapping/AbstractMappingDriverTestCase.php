@@ -34,7 +34,8 @@ use function usort;
 
 abstract class AbstractMappingDriverTestCase extends BaseTestCase
 {
-    abstract protected static function loadDriver(): MappingDriver;
+    /** @param list<string> $paths */
+    abstract protected static function loadDriver(array $paths = []): MappingDriver;
 
     protected static function createMetadataDriverImpl(): MappingDriver
     {

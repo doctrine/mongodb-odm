@@ -12,12 +12,16 @@ use ReflectionMethod;
 use SimpleXMLElement;
 use stdClass;
 
+use function assert;
+
 use const DIRECTORY_SEPARATOR;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTestCase
 {
-    protected static function loadDriver(): MappingDriver
+    protected static function loadDriver(array $paths = []): MappingDriver
     {
+        assert($paths === []);
+
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Stubs\AttributeDriverFactory;
 
 class AttributeDriverTest extends AbstractAnnotationDriverTestCase
 {
-    protected static function loadDriver(): MappingDriver
+    protected static function loadDriver(array $paths = []): MappingDriver
     {
-        return new AttributeDriver();
+        return AttributeDriverFactory::createAttributeDriver($paths);
     }
 }
