@@ -196,7 +196,7 @@
     <xs:attribute name="min" type="xs:string" />
     <xs:attribute name="max" type="xs:string" />
     <xs:attribute name="sparsity" type="xs:integer" />
-    <xs:attribute name="prevision" type="xs:integer" />
+    <xs:attribute name="precision" type="xs:integer" />
     <xs:attribute name="trimFactor" type="xs:integer" />
     <xs:attribute name="contention" type="xs:integer" />
   </xs:complexType>
