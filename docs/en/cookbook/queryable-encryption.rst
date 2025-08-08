@@ -133,8 +133,13 @@ use a non-local key management service (KMS).
 
     $config = new Configuration();
     // Enable auto encryption and set the KMS provider.
-    $config->setAutoEncryption(true);
-    $config->setKmsProvider('local', ['key' => $masterKey]);
+    $config->setAutoEncryption([
+        'keyVaultNamespace' => 'encryption.datakeys'
+    ]);
+    $config->setKmsProvider([
+        'type' => 'local',
+        'key' => new Binary($masterKey),
+    ]);
 
     // Other configuration
     $config->setProxyDir(__DIR__ . '/Proxies');
