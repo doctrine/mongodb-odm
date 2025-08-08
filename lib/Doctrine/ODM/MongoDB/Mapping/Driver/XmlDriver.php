@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -937,7 +938,7 @@ class XmlDriver extends FileDriver
         $encryptMapping = [];
         foreach ($encrypt->attributes() as $encryptKey => $encryptValue) {
             $encryptMapping[$encryptKey] = match ($encryptKey) {
-                'queryType' => (string) $encryptValue,
+                'queryType' => EncryptQuery::from((string) $encryptValue),
                 'min', 'max' => Type::getType($type)->convertToDatabaseValue((string) $encryptValue),
                 'sparsity', 'precision', 'trimFactor', 'contention' => (int) $encryptValue,
             };
