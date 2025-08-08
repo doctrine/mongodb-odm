@@ -41,7 +41,7 @@ class TimeSeriesTest extends BaseTestCase
         $document->metadata = 'energy';
 
         $this->dm->persist($document);
-        $this->dm->flush();
+        $this->dm->flush(['withTransaction' => false]);
 
         $this->assertCount(1, $this->dm->getDocumentCollection(TimeSeriesDocument::class)->find());
     }
@@ -57,7 +57,7 @@ class TimeSeriesTest extends BaseTestCase
         $document->metadata = 'energy';
 
         $this->dm->persist($document);
-        $this->dm->flush();
+        $this->dm->flush(['withTransaction' => false]);
 
         $this->assertCount(1, $this->dm->getDocumentCollection(TimeSeriesDocument::class)->find());
     }
