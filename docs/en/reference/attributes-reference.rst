@@ -336,6 +336,8 @@ Unlike normal documents, embedded documents cannot specify their own database or
 collection. That said, a single embedded document class may be used with
 multiple document classes, and even other embedded documents!
 
+.. _encrypt_attribute:
+
 #[Encrypt]
 ----------
 
