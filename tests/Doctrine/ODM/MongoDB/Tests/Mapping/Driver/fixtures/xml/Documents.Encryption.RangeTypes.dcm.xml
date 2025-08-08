@@ -19,9 +19,6 @@
         <field name="dateField" type="date_immutable">
             <encrypt queryType="range" min="2000-01-01 00:00:00" max="2100-01-01 00:00:00"/>
         </field>
-        <field name="intField" type="int">
-            <encrypt queryType="range" min="5" max="10"/>
-        </field>
     </document>
 
 </doctrine-mongo-mapping>
