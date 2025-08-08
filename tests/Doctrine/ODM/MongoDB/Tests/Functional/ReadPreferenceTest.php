@@ -14,6 +14,8 @@ use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use function usleep;
+
 /** @phpstan-type ReadPreferenceTagShape array{dc?: string, usage?: string} */
 class ReadPreferenceTest extends BaseTestCase
 {
@@ -57,7 +59,13 @@ class ReadPreferenceTest extends BaseTestCase
 
         $this->assertReadPreferenceHint($readPreference, $query->getQuery()['readPreference'], $tags);
 
-        $user = $query->getSingleResult();
+        $retries = 0;
+        do {
+            // Wait a bit to ensure replication has caught up.
+            usleep(1_000 * $retries);
+            $user = $query->getSingleResult();
+        } while ($user === null && $retries++ < 100);
+
         self::assertInstanceOf(User::class, $user);
 
         $groups = $user->getGroups();
