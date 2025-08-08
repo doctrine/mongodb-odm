@@ -5,16 +5,9 @@
                         xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
-    <embedded-document name="Documents\Encryption\PatientRecord">
-        <field name="ssn" type="string">
-            <encrypt queryType="equality"/>
-        </field>
-        <embed-one target-document="Documents\Encryption\PatientBilling" field="billing">
-            <encrypt/>
-        </embed-one>
-        <field name="billingAmount" type="int">
-            <encrypt queryType="range" sparsity="1" trimFactor="4" min="100" max="2000" />
-        </field>
+    <embedded-document name="Documents\Encryption\PatientBilling">
+        <field name="type" type="string"/>
+        <field name="number" type="string"/>
     </embedded-document>
 
 </doctrine-mongo-mapping>

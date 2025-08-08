@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use DateTimeImmutable;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\Account;
@@ -17,7 +18,6 @@ use Documents\Phonenumber;
 use Documents\Profile;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\UTCDateTime;
-use MongoDB\Driver\ClientEncryption;
 use PHPUnit\Framework\TestCase;
 use TestDocuments\EmbeddedDocument;
 use TestDocuments\NullableFieldsDocument;
@@ -537,13 +537,13 @@ abstract class AbstractDriverTestCase extends TestCase
         self::assertFalse($classMetadata->isEncrypted);
 
         self::assertSame([
-            'queryType' => ClientEncryption::QUERY_TYPE_EQUALITY,
+            'queryType' => EncryptQuery::Equality,
         ], $classMetadata->fieldMappings['ssn']['encrypt']);
 
         self::assertSame([], $classMetadata->fieldMappings['billing']['encrypt']);
 
         self::assertSame([
-            'queryType' => ClientEncryption::QUERY_TYPE_RANGE,
+            'queryType' => EncryptQuery::Range,
             'sparsity' => 1,
             'trimFactor' => 4,
             'min' => 100,
@@ -568,25 +568,25 @@ abstract class AbstractDriverTestCase extends TestCase
         $this->driver->loadMetadataForClass(RangeTypes::class, $classMetadata);
 
         self::assertEquals([
-            'queryType' => ClientEncryption::QUERY_TYPE_RANGE,
+            'queryType' => EncryptQuery::Range,
             'min' => 5,
             'max' => 10,
         ], $classMetadata->fieldMappings['intField']['encrypt']);
 
         self::assertEquals([
-            'queryType' => ClientEncryption::QUERY_TYPE_RANGE,
+            'queryType' => EncryptQuery::Range,
             'min' => 5.5,
             'max' => 10.5,
         ], $classMetadata->fieldMappings['floatField']['encrypt']);
 
         self::assertEquals([
-            'queryType' => ClientEncryption::QUERY_TYPE_RANGE,
+            'queryType' => EncryptQuery::Range,
             'min' => new Decimal128('0.1'),
             'max' => new Decimal128('0.2'),
         ], $classMetadata->fieldMappings['decimalField']['encrypt']);
 
         self::assertEquals([
-            'queryType' => ClientEncryption::QUERY_TYPE_RANGE,
+            'queryType' => EncryptQuery::Range,
             'min' => new UTCDateTime(new DateTimeImmutable('2000-01-01 00:00:00')),
             'max' => new UTCDateTime(new DateTimeImmutable('2100-01-01 00:00:00')),
         ], $classMetadata->fieldMappings['dateField']['encrypt']);

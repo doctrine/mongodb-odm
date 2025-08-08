@@ -279,6 +279,7 @@
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
     </xs:choice>
 
     <xs:attribute name="target-document" type="xs:string" />
@@ -294,6 +295,7 @@
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
     </xs:choice>
 
     <xs:attribute name="target-document" type="xs:string" />
