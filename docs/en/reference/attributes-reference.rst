@@ -354,7 +354,7 @@ Optional arguments:
 - ``min``, ``max`` - Specify minimum and maximum (inclusive) queryable values
   for a field when possible, as smaller bounds improve query efficiency. If
   querying values outside of these bounds, MongoDB returns an error.
-- ``sparsity``, ``prevision``, ``trimFactor``, ``contention`` - For advanced
+- ``sparsity``, ``precision``, ``trimFactor``, ``contention`` - For advanced
   users only. The default values for these options are suitable for the majority
   of use cases, and should only be modified if your use case requires it.
 
