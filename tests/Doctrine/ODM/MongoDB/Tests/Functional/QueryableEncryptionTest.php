@@ -35,7 +35,7 @@ class QueryableEncryptionTest extends BaseTestCase
         // Create the encrypted collection
         $this->dm->getSchemaManager()->createDocumentCollection(Patient::class);
 
-        // Test created collectionss
+        // Test created collections
         $collectionNames = iterator_to_array($nonEncryptedDatabase->listCollectionNames());
         self::assertContains('patients', $collectionNames);
         self::assertContains('datakeys', $collectionNames);

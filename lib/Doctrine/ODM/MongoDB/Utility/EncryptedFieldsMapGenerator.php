@@ -86,7 +86,7 @@ final class EncryptedFieldsMapGenerator
         }
 
         foreach ($classMetadata->fieldMappings as $mapping) {
-            // @todo support polymorphic types and inheritence?
+            // @todo support polymorphic types and inheritance?
             // Add fields recursively
             if ($mapping['embedded'] ?? false) {
                 $embedMetadata = $this->classMetadataFactory->getMetadataFor($mapping['targetDocument']);
