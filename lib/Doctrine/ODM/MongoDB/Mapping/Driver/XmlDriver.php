@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -312,14 +313,7 @@ class XmlDriver extends FileDriver
                 }
 
                 if (isset($field->encrypt)) {
-                    $mapping['encrypt'] = [];
-                    foreach ($field->encrypt->attributes() as $encryptKey => $encryptValue) {
-                        $mapping['encrypt'][$encryptKey] = match ($encryptKey) {
-                            'queryType' => (string) $encryptValue,
-                            'min', 'max' => Type::getType($mapping['type'])->convertToDatabaseValue((string) $encryptValue),
-                            'sparsity', 'precision', 'trimFactor', 'contention' => (int) $encryptValue,
-                        };
-                    }
+                    $mapping['encrypt'] = $this->addEncryptionMapping($field->encrypt, $mapping['type']);
                 }
 
                 $this->addFieldMapping($metadata, $mapping);
@@ -462,6 +456,10 @@ class XmlDriver extends FileDriver
 
         if (isset($embed->{'default-discriminator-value'})) {
             $mapping['defaultDiscriminatorValue'] = (string) $embed->{'default-discriminator-value'}['value'];
+        }
+
+        if (isset($embed->encrypt)) {
+            $mapping['encrypt'] = $this->addEncryptionMapping($embed->encrypt, $mapping['type']);
         }
 
         if (isset($attributes['not-saved'])) {
@@ -933,6 +931,20 @@ class XmlDriver extends FileDriver
 
         $xmlRoot->metadata->addAttribute('field', 'metadata');
         $this->addEmbedMapping($class, $xmlRoot->metadata, ClassMetadata::ONE);
+    }
+
+    private function addEncryptionMapping(?SimpleXMLElement $encrypt, $type): array
+    {
+        $encryptMapping = [];
+        foreach ($encrypt->attributes() as $encryptKey => $encryptValue) {
+            $encryptMapping[$encryptKey] = match ($encryptKey) {
+                'queryType' => EncryptQuery::from((string) $encryptValue),
+                'min', 'max' => Type::getType($type)->convertToDatabaseValue((string) $encryptValue),
+                'sparsity', 'precision', 'trimFactor', 'contention' => (int) $encryptValue,
+            };
+        }
+
+        return $encryptMapping;
     }
 }
 

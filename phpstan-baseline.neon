@@ -1579,7 +1579,6 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/DocumentRepositoryTest.php
 
 		-
-		-
 			message: '#^Parameter \#2 \$collections of method Doctrine\\ODM\\MongoDB\\Persisters\\CollectionPersister\:\:delete\(\) expects array\<Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface\>, array\<int, array\<Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CollectionPersisterCategory\>\|Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CollectionPersisterCategory\>\> given\.$#'
 			identifier: argument.type
 			count: 3
