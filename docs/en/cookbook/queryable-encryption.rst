@@ -49,7 +49,7 @@ fields that require encryption.
 
     use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
     use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
-    use Doctrine\ODM\MongoDB\Query\EncryptQuery;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 
     #[ODM\Document]
     class Patient
