@@ -9,7 +9,7 @@
         <field name="ssn" type="string">
             <encrypt queryType="equality"/>
         </field>
-        <embed-one target-document="Documents\Encryption\Billing" field="billing">
+        <embed-one target-document="Documents\Encryption\PatientBilling" field="billing">
             <encrypt/>
         </embed-one>
         <field name="billingAmount" type="int">
