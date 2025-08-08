@@ -699,7 +699,16 @@ final class SchemaManager
 
         $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
 
-        $this->dm->getDocumentCollection($documentName)->drop($options);
+        $collection    = $this->dm->getDocumentCollection($documentName);
+        $driverOptions = $this->dm->getConfiguration()->getDriverOptions();
+        // Ensure that metadata collections are dropped if the collection is encrypted
+        // This should be automatically handled by the driver
+        // @see https://jira.mongodb.org/browse/PHPLIB-1702
+        if (isset($driverOptions['autoEncryption']) && ! isset($driverOptions['encryptedFieldsMap'][$collection->getNamespace()])) {
+            $options['encryptedFields'] = [];
+        }
+
+        $collection->drop($options);
 
         if (! $class->isFile) {
             return;
