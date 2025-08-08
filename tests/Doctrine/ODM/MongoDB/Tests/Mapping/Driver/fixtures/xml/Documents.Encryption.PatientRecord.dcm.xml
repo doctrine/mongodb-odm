@@ -9,9 +9,9 @@
         <field name="ssn" type="string">
             <encrypt queryType="equality"/>
         </field>
-        <field name="billing" type="string">
+        <embed-one name="billing" target-document="Documents\Encryption\Billing">
             <encrypt/>
-        </field>
+        </embed-one>
         <field name="billingAmount" type="int">
             <encrypt queryType="range" sparsity="1" trimFactor="4" min="100" max="2000" />
         </field>
