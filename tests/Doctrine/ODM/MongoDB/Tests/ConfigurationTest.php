@@ -55,7 +55,7 @@ class ConfigurationTest extends TestCase
         self::assertNull($c->getDefaultMasterKey());
         self::assertEquals([
             'kmsProviders' => [
-                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => (object) ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
             ],
             'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
             // Default key vault namespace
@@ -74,7 +74,7 @@ class ConfigurationTest extends TestCase
         self::assertSame($masterKey, $c->getDefaultMasterKey());
         self::assertEquals([
             'kmsProviders' => [
-                'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
+                'aws' => (object) ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
             ],
             // Key vault namespace from the configuration
             'keyVaultNamespace' => 'keyvault.datakeys',
@@ -88,27 +88,27 @@ class ConfigurationTest extends TestCase
             'keyVaultClient' => $keyVaultClient = new Manager(),
             'keyVaultNamespace' => 'keyvault.datakeys',
             'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
-            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+            'tlsOptions' => ['local' => ['tlsDisableOCSPEndpointCheck' => true]],
         ]);
         $c->setKmsProvider(['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
 
-        self::assertSame([
+        self::assertEquals([
             'kmsProviders' => [
-                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => (object) ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
             ],
             'keyVaultNamespace' => 'keyvault.datakeys',
             'keyVaultClient' => $keyVaultClient,
             'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
-            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+            'tlsOptions' => ['local' => ['tlsDisableOCSPEndpointCheck' => true]],
         ], $c->getDriverOptions()['autoEncryption']);
 
-        self::assertSame([
+        self::assertEquals([
             'kmsProviders' => [
-                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => (object) ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
             ],
             'keyVaultNamespace' => 'keyvault.datakeys',
             'keyVaultClient' => $keyVaultClient,
-            'tlsOptions' => ['tlsDisableOCSPEndpointCheck' => true],
+            'tlsOptions' => ['local' => ['tlsDisableOCSPEndpointCheck' => true]],
         ], $c->getClientEncryptionOptions());
     }
 

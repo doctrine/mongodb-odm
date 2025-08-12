@@ -793,7 +793,8 @@ class Configuration
     private function getAutoEncryptionOptions(): array
     {
         return [
-            'kmsProviders' => [$this->attributes['kmsProvider']['type'] => array_diff_key($this->attributes['kmsProvider'], ['type' => 0])],
+            // Each kmsProvider must be an object, it can be empty
+            'kmsProviders' => [$this->attributes['kmsProvider']['type'] => (object) array_diff_key($this->attributes['kmsProvider'], ['type' => 0])],
             'keyVaultNamespace' => $this->getDefaultDB() . '.datakeys',
             ...$this->attributes['autoEncryption'] ?? [],
         ];
