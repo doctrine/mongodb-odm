@@ -15,6 +15,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
+use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use LogicException;
@@ -51,13 +52,10 @@ class AttributeDriver implements MappingDriver
      */
     protected $reader;
 
-    /**
-     * @param string|string[]|Traversable<array-key,string>|null $paths Iterable of source file paths (if {@see Traversable} is given),
-     *                                                                  or an array of directories where mapping classes can be found.
-     */
+    /** @param string|string[]|ClassLocator|null $paths */
     public function __construct($paths = null, ?Reader $reader = null)
     {
-        if ($reader !== null) {
+        if ($reader !== null && ! $this instanceof AnnotationDriver) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
                 '2.7',
@@ -68,31 +66,11 @@ class AttributeDriver implements MappingDriver
 
         $this->reader = $reader ?? new AttributeReader();
 
-        $this->initializePaths($paths);
-    }
-
-    /** @param string|iterable<string>|null $paths */
-    final protected function initializePaths(string|iterable|null $paths): void
-    {
-        if (is_string($paths)) {
-            $paths = [$paths];
-        } elseif ($paths === null) {
-            $paths = new ArrayIterator([]);
-        }
-
-        $isFilePaths = $paths instanceof Traversable;
-
-        if (! $isFilePaths) {
+        if ($paths instanceof ClassLocator) {
+            $this->classLocator = $paths;
+        } else {
             $this->addPaths((array) $paths);
-
-            return;
         }
-
-        if (! property_exists(self::class, 'filePaths')) {
-            throw new LogicException(sprintf('Source file paths support for %s is available since doctrine/persistence 4.1.', static::class));
-        }
-
-        $this->filePaths = $paths;
     }
 
     public function isTransient($className): bool
