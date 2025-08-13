@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use ArrayIterator;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -18,13 +17,11 @@ use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
 use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 use Doctrine\Persistence\Mapping\Driver\ColocatedMappingDriver;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use LogicException;
 use MongoDB\BSON\Document;
 use MongoDB\Driver\Exception\UnexpectedValueException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
-use Traversable;
 
 use function array_merge;
 use function array_replace;
@@ -33,9 +30,6 @@ use function class_exists;
 use function constant;
 use function count;
 use function is_array;
-use function is_string;
-use function property_exists;
-use function sprintf;
 use function trigger_deprecation;
 
 /**
@@ -427,7 +421,7 @@ class AttributeDriver implements MappingDriver
     /**
      * Factory method for the Attribute Driver
      *
-     * @param string|string[]|Traversable<array-key,string> $paths
+     * @param string|string[]|ClassLocator $paths
      *
      * @return AttributeDriver
      */

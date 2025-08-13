@@ -28,7 +28,7 @@ class AnnotationDriver extends AttributeDriver
     /**
      * Factory method for the Annotation Driver
      *
-     * @param string|string[]|Traversable<array-key,string> $paths
+     * @param string|string[]|ClassLocator $paths
      */
     public static function create($paths = [], ?Reader $reader = null): AnnotationDriver
     {

@@ -6,9 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
 use MongoDB\Driver\Manager;
@@ -16,10 +18,10 @@ use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
-use Stubs\AttributeDriverFactory;
 
 use function array_key_exists;
 use function array_map;
+use function class_exists;
 use function count;
 use function explode;
 use function getenv;
@@ -124,7 +126,14 @@ abstract class BaseTestCase extends TestCase
 
     protected static function createMetadataDriverImpl(): MappingDriver
     {
-        return AttributeDriverFactory::createAttributeDriver([__DIR__ . '/../../../../Documents']);
+        $paths = [__DIR__ . '/../../../../Documents'];
+
+        // Available in Doctrine Persistence 4.1+
+        if (class_exists(FileClassLocator::class)) {
+            $paths = FileClassLocator::createFromDirectories($paths);
+        }
+
+        return AttributeDriver::create($paths);
     }
 
     protected static function createTestDocumentManager(): DocumentManager

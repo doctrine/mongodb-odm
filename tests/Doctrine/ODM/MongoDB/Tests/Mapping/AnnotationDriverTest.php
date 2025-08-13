@@ -7,10 +7,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Stubs\AnnotationDriverFactory;
 
 use function call_user_func;
+use function class_exists;
 use function restore_error_handler;
 use function set_error_handler;
 use function sprintf;
@@ -21,7 +23,11 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
 {
     protected static function loadDriver(array $paths = []): MappingDriver
     {
-        return AnnotationDriverFactory::createAnnotationDriver($paths);
+        if (class_exists(FileClassLocator::class)) {
+            $paths = FileClassLocator::createFromDirectories($paths);
+        }
+
+        return AnnotationDriver::create($paths);
     }
 
     public function testIndexesClassAnnotationEmitsDeprecationMessage(): void
