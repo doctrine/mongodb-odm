@@ -741,9 +741,9 @@ class Configuration
     /**
      * Set the options for auto-encryption.
      *
-     * @see https://www.php.net/manual/en/mongodb-driver-manager.construct.php
+     * @see https://www.php.net/manual/en/mongodb-driver-manager.construct.php#mongodb-driver-manager.construct-autoencryption
      *
-     * @param array{ keyVaultClient?: Client|Manager, keyVaultNamespace?: string, tlsOptions?: array<string, mixed>, schemaMap?: array<string, mixed>, encryptedFieldsMap?: array<string, mixed>, extraOptions?: array<string, mixed>} $options
+     * @param array{ keyVaultClient?: Client|Manager, keyVaultNamespace?: string, tlsOptions?: array<string, mixed>, schemaMap?: array<string, mixed>, bypassAutoEncryption?: bool, bypassQueryAnalysis?: bool, encryptedFieldsMap?: array<string,mixed>, extraOptions?: array<string, mixed>} $options
      */
     public function setAutoEncryption(array $options): void
     {
