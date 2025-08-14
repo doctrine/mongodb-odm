@@ -118,7 +118,7 @@ class ConfigurationTest extends TestCase
         $c->setKmsProvider(['type' => 'aws', 'accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']);
 
         self::expectException(ConfigurationException::class);
-        self::expectExceptionMessage('The "masterKey" configuration is required for the KMS provider "aws".');
+        self::expectExceptionMessage('The "masterKey" configuration is required for the KMS provider "aws"');
         $c->getDefaultMasterKey();
     }
 
@@ -127,7 +127,7 @@ class ConfigurationTest extends TestCase
         $c = new Configuration();
 
         self::expectException(ConfigurationException::class);
-        self::expectExceptionMessage('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method.');
+        self::expectExceptionMessage('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method');
         $c->setAutoEncryption(['kmsProviders' => ['aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET']]]);
     }
 
@@ -143,7 +143,7 @@ class ConfigurationTest extends TestCase
     {
         $c = new Configuration();
         self::expectException(ConfigurationException::class);
-        self::expectExceptionMessage('The KMS provider "type" is required.');
+        self::expectExceptionMessage('The KMS provider "type" is required');
 
         // @phpstan-ignore argument.type
         $c->setKmsProvider(['foo' => 'bar']);
@@ -153,7 +153,7 @@ class ConfigurationTest extends TestCase
     {
         $c = new Configuration();
         self::expectException(ConfigurationException::class);
-        self::expectExceptionMessage('The KMS provider "type" must be a non-empty string.');
+        self::expectExceptionMessage('The KMS provider "type" must be a non-empty string');
 
         // @phpstan-ignore argument.type
         $c->setKmsProvider(['type' => ['not', 'a', 'string']]);

@@ -37,21 +37,21 @@ final class ConfigurationException extends Exception
 
     public static function kmsProviderTypeRequired(): self
     {
-        return new self('The KMS provider "type" is required.');
+        return new self('The KMS provider "type" is required');
     }
 
     public static function kmsProviderTypeMustBeString(): self
     {
-        return new self('The KMS provider "type" must be a non-empty string.');
+        return new self('The KMS provider "type" must be a non-empty string');
     }
 
     public static function kmsProvidersOptionMustUseSetter(): self
     {
-        return new self('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method.');
+        return new self('The "kmsProviders" encryption option must be set using the "setKmsProvider()" method');
     }
 
     public static function masterKeyRequired(string $provider): self
     {
-        return new self(sprintf('The "masterKey" configuration is required for the KMS provider "%s".', $provider));
+        return new self(sprintf('The "masterKey" configuration is required for the KMS provider "%s"', $provider));
     }
 }
