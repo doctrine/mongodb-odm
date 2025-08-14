@@ -360,7 +360,7 @@ Optional arguments:
 
 .. note::
 
-    Queryable encryption is only supported in MongoDB version 8.0 and later.
+    Queryable encryption is only supported in MongoDB version 7.0 and later.
 
 Example:
 

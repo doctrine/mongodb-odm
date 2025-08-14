@@ -20,7 +20,7 @@ the connection to storing and querying the encrypted data.
 
 .. note::
 
-    Queryable Encryption is only available on MongoDB Enterprise 8.0+ or
+    Queryable Encryption is only available on MongoDB Enterprise 7.0+ or
     MongoDB Atlas.
 
 The Scenario

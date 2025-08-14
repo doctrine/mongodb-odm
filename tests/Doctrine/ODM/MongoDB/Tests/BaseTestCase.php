@@ -208,7 +208,7 @@ abstract class BaseTestCase extends TestCase
             $this->markTestSkipped('Queryable Encryption test requires MongoDB Atlas or Enterprise');
         }
 
-        $this->requireVersion($buildInfo->version, '8.0', '<', 'Queryable Encryption test requires MongoDB 8.0 or higher');
+        $this->requireVersion($buildInfo->version, '7.0', '<', 'Queryable Encryption test requires MongoDB 7.0 or higher');
     }
 
     protected function requireVersion(string $installedVersion, string $requiredVersion, ?string $operator, string $message): void
