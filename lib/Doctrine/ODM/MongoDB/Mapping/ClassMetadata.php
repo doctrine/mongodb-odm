@@ -13,6 +13,7 @@ use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
@@ -25,6 +26,9 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
+use MongoDB\BSON\Decimal128;
+use MongoDB\BSON\Int64;
+use MongoDB\BSON\UTCDateTime;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionEnum;
@@ -67,6 +71,15 @@ use function trigger_deprecation;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
+ * @phpstan-type EncryptConfig array{
+ *     queryType?: ?EncryptQuery,
+ *     min?: float|int|Decimal128|Int64|UTCDateTime|null,
+ *     max?: float|int|Decimal128|Int64|UTCDateTime|null,
+ *     sparsity?: int<1, 4>,
+ *     precision?: positive-int,
+ *     trimFactor?: positive-int,
+ *     contention?: positive-int,
+ * }
  * @phpstan-type FieldMappingConfig array{
  *      type?: string,
  *      fieldName?: string,
@@ -107,7 +120,7 @@ use function trigger_deprecation;
  *      order?: int|string,
  *      background?: bool,
  *      enumType?: class-string<BackedEnum>,
- *      encrypt?: array{queryType?: ?string, min?: mixed, max?: mixed, sparsity?: int<1, 4>, precision?: int, trimFactor?: int, contention?: int}
+ *      encrypt?: EncryptConfig,
  * }
  * @phpstan-type FieldMapping array{
  *      type: string,
@@ -154,7 +167,7 @@ use function trigger_deprecation;
  *      alsoLoadFields?: list<string>,
  *      enumType?: class-string<BackedEnum>,
  *      storeEmptyArray?: bool,
- *      encrypt?: array{queryType?: ?string, min?: mixed, max?: mixed, sparsity?: int<1, 4>, precision?: int, trimFactor?: int, contention?: int},
+ *      encrypt?: EncryptConfig,
  * }
  * @phpstan-type AssociationFieldMapping array{
  *      type?: string,

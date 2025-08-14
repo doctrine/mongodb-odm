@@ -47,6 +47,7 @@ use function trim;
  * XmlDriver is a metadata driver that enables mapping through XML files.
  *
  * @phpstan-import-type FieldMappingConfig from ClassMetadata
+ * @phpstan-import-type EncryptConfig from ClassMetadata
  * @template-extends FileDriver<SimpleXMLElement>
  */
 class XmlDriver extends FileDriver
@@ -933,7 +934,8 @@ class XmlDriver extends FileDriver
         $this->addEmbedMapping($class, $xmlRoot->metadata, ClassMetadata::ONE);
     }
 
-    private function addEncryptionMapping(?SimpleXMLElement $encrypt, $type): array
+    /** @psalm-return EncryptConfig */
+    private function addEncryptionMapping(SimpleXMLElement $encrypt, string $type): array
     {
         $encryptMapping = [];
         foreach ($encrypt->attributes() as $encryptKey => $encryptValue) {
