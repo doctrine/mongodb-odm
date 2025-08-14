@@ -10,10 +10,10 @@ use Documents\Encryption\Patient;
 use Documents\Encryption\PatientBilling;
 use Documents\Encryption\PatientRecord;
 use MongoDB\BSON\Binary;
+use MongoDB\BSON\Regex;
 use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 
-use function count;
 use function getenv;
 use function iterator_to_array;
 use function random_bytes;
@@ -25,6 +25,13 @@ class QueryableEncryptionTest extends BaseTestCase
         parent::setUp();
 
         $this->skipTestIfQueryableEncryptionNotSupported();
+    }
+
+    public function tearDown(): void
+    {
+        $this->dm?->getDocumentCollection(Patient::class)?->drop(['encryptedFields' => []]);
+
+        parent::tearDown();
     }
 
     public function testCreateAndQueryEncryptedCollection(): void
@@ -64,8 +71,11 @@ class QueryableEncryptionTest extends BaseTestCase
         self::assertSame('Jon Doe', $document->patientName);
         self::assertSame(12345678, $document->patientId);
         self::assertInstanceOf(Binary::class, $document->patientRecord->ssn);
+        self::assertSame(Binary::TYPE_ENCRYPTED, $document->patientRecord->ssn->getType());
         self::assertInstanceOf(Binary::class, $document->patientRecord->billing);
+        self::assertSame(Binary::TYPE_ENCRYPTED, $document->patientRecord->billing->getType());
         self::assertInstanceOf(Binary::class, $document->patientRecord->billingAmount);
+        self::assertSame(Binary::TYPE_ENCRYPTED, $document->patientRecord->billingAmount->getType());
 
         // Queryable with equality
         $result = $this->dm->getRepository(Patient::class)->findOneBy(['patientRecord.ssn' => '987-65-4320']);
@@ -84,11 +94,9 @@ class QueryableEncryptionTest extends BaseTestCase
         self::assertSame('4111111111111111', $result->patientRecord->billing->number);
 
         // Drop the encrypted collection
-        $collectionCount = count($nonEncryptedDatabase->listCollectionNames());
         $this->dm->getSchemaManager()->dropDocumentCollection(Patient::class);
-        $collectionNames = iterator_to_array($nonEncryptedDatabase->listCollectionNames());
-        self::assertNotContains('patients', $collectionNames);
-        self::assertSame($collectionCount - 3, count($collectionNames), 'The 2 metadata collections should also be dropped');
+        $collectionNames = iterator_to_array($nonEncryptedDatabase->listCollectionNames(['filter' => ['name' => new Regex('patients')]]));
+        self::assertSame([], $collectionNames, 'The 2 metadata collections should also be dropped');
     }
 
     protected static function createTestDocumentManager(): DocumentManager
