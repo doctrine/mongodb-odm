@@ -35,6 +35,7 @@ use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
+use stdClass;
 use Throwable;
 
 use function array_diff_key;
@@ -792,9 +793,17 @@ class Configuration
     /** @return array<string, mixed> */
     private function getAutoEncryptionOptions(): array
     {
+        $kmsProviderName = $this->attributes['kmsProvider']['type'];
+        $kmsProviderOpts = array_diff_key($this->attributes['kmsProvider'], ['type' => 0]);
+        // To use "Automatic Credentials", the provider options must be an empty document.
+        // Fix the empty array to an empty stdClass object, as the driver expects it.
+        if ($kmsProviderOpts === []) {
+            $kmsProviderOpts = new stdClass();
+        }
+
         return [
             // Each kmsProvider must be an object, it can be empty
-            'kmsProviders' => [$this->attributes['kmsProvider']['type'] => (object) array_diff_key($this->attributes['kmsProvider'], ['type' => 0])],
+            'kmsProviders' => [$kmsProviderName => $kmsProviderOpts],
             'keyVaultNamespace' => $this->getDefaultDB() . '.datakeys',
             ...$this->attributes['autoEncryption'] ?? [],
         ];

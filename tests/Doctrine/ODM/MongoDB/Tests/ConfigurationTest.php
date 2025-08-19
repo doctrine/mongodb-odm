@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 class ConfigurationTest extends TestCase
 {
@@ -55,7 +56,7 @@ class ConfigurationTest extends TestCase
         self::assertNull($c->getDefaultMasterKey());
         self::assertEquals([
             'kmsProviders' => [
-                'local' => (object) ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
             ],
             'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
             // Default key vault namespace
@@ -74,9 +75,23 @@ class ConfigurationTest extends TestCase
         self::assertSame($masterKey, $c->getDefaultMasterKey());
         self::assertEquals([
             'kmsProviders' => [
-                'aws' => (object) ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
+                'aws' => ['accessKeyId' => 'AKIA', 'secretAccessKey' => 'SECRET'],
             ],
             // Key vault namespace from the configuration
+            'keyVaultNamespace' => 'keyvault.datakeys',
+        ], $c->getDriverOptions()['autoEncryption']);
+    }
+
+    public function testEmptyKmsProviderOptions(): void
+    {
+        $c = new Configuration();
+        $c->setKmsProvider(['type' => 'aws']);
+        $c->setAutoEncryption(['keyVaultNamespace' => 'keyvault.datakeys']);
+
+        self::assertEquals([
+            'kmsProviders' => [
+                'aws' => new stdClass(),
+            ],
             'keyVaultNamespace' => 'keyvault.datakeys',
         ], $c->getDriverOptions()['autoEncryption']);
     }
@@ -94,7 +109,7 @@ class ConfigurationTest extends TestCase
 
         self::assertEquals([
             'kmsProviders' => [
-                'local' => (object) ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
             ],
             'keyVaultNamespace' => 'keyvault.datakeys',
             'keyVaultClient' => $keyVaultClient,
@@ -104,7 +119,7 @@ class ConfigurationTest extends TestCase
 
         self::assertEquals([
             'kmsProviders' => [
-                'local' => (object) ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
             ],
             'keyVaultNamespace' => 'keyvault.datakeys',
             'keyVaultClient' => $keyVaultClient,
