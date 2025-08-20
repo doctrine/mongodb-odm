@@ -342,7 +342,7 @@ multiple document classes, and even other embedded documents!
 ----------
 
 The ``#[Encrypt]`` attribute is used to define an encrypted field mapping for a
-document property. It allows you to configure fields for encryption and queryable
+document property. It allows you to configure fields for automatic and queryable
 encryption in MongoDB.
 
 Optional arguments:
@@ -381,6 +381,7 @@ Example:
 
 The ``#[Encrypt]`` attribute can be added to a class with `#[EmbeddedDocument]`_.
 This will encrypt the entire embedded document, in the field that contains it.
+Fields within an encrypted embedded document cannot be individually encrypted.
 Queryable encryption is not supported for embedded documents, so the ``queryType``
 argument is not applicable. Encrypted embedded documents are stored as a binary
 value in the parent document.
