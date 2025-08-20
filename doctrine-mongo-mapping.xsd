@@ -31,7 +31,7 @@
       <xs:element name="field" type="odm:field" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="embed-one" type="odm:embed-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="embed-many" type="odm:embed-many" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" />
       <xs:element name="reference-one" type="odm:reference-one" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="reference-many" type="odm:reference-many" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
@@ -206,7 +206,7 @@
 
   <xs:complexType name="field">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="name" type="xs:NMTOKEN" />
@@ -279,7 +279,7 @@
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
-      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="target-document" type="xs:string" />
@@ -295,7 +295,7 @@
       <xs:element name="discriminator-field" type="odm:discriminator-field" minOccurs="0" />
       <xs:element name="discriminator-map" type="odm:discriminator-map" minOccurs="0" />
       <xs:element name="default-discriminator-value" type="odm:default-discriminator-value" minOccurs="0" />
-      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" maxOccurs="1" />
+      <xs:element name="encrypt" type="odm:encrypt-field" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="target-document" type="xs:string" />
@@ -562,7 +562,7 @@
       <xs:element name="field" type="odm:search-index-field" minOccurs="0" maxOccurs="unbounded" />
       <!-- Note: custom analyzers are intentionally unsupported in XML -->
       <xs:element name="synonym" type="odm:search-index-synonym" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element name="stored-source" type="odm:search-index-stored-source" minOccurs="0" maxOccurs="1" />
+      <xs:element name="stored-source" type="odm:search-index-stored-source" minOccurs="0" />
     </xs:choice>
 
     <xs:attribute name="name" type="xs:string" />
