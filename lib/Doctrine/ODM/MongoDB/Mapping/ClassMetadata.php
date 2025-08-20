@@ -71,6 +71,8 @@ use function trigger_deprecation;
  *    get the whole class name, namespace inclusive, prepended to every property in
  *    the serialized representation).
  *
+ * The EncryptConfig type is identical to the {@see Encrypt} attribute.
+ *
  * @phpstan-type EncryptConfig array{
  *     queryType?: ?EncryptQuery,
  *     min?: float|int|Decimal128|Int64|UTCDateTime|null,
