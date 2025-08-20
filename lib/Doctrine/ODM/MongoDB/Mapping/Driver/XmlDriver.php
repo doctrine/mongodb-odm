@@ -938,11 +938,11 @@ class XmlDriver extends FileDriver
     private function addEncryptionMapping(SimpleXMLElement $encrypt, string $type): array
     {
         $encryptMapping = [];
-        foreach ($encrypt->attributes() as $encryptKey => $encryptValue) {
-            $encryptMapping[$encryptKey] = match ($encryptKey) {
-                'queryType' => EncryptQuery::from((string) $encryptValue),
-                'min', 'max' => Type::getType($type)->convertToDatabaseValue((string) $encryptValue),
-                'sparsity', 'precision', 'trimFactor', 'contention' => (int) $encryptValue,
+        foreach ($encrypt->attributes() as $key => $value) {
+            $encryptMapping[$key] = match ($key) {
+                'queryType' => EncryptQuery::from((string) $value),
+                'min', 'max' => Type::getType($type)->convertToDatabaseValue((string) $value),
+                'sparsity', 'precision', 'trimFactor', 'contention' => (int) $value,
             };
         }
 
