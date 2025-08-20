@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Utility;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -14,7 +13,6 @@ use Generator;
 use LogicException;
 
 use function array_filter;
-use function assert;
 use function iterator_to_array;
 use function sprintf;
 
@@ -139,8 +137,7 @@ final class EncryptedFieldsMapGenerator
 
             // When queryType is null, the field is not queryable
             if (isset($mapping['encrypt']['queryType'])) {
-                $field['queries'] = array_filter($mapping['encrypt'], static fn ($v) => $v !== null);
-                assert($field['queries']['queryType'] instanceof EncryptQuery);
+                $field['queries']              = array_filter($mapping['encrypt'], static fn ($v) => $v !== null);
                 $field['queries']['queryType'] = $field['queries']['queryType']->value;
             }
 
