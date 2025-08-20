@@ -84,7 +84,7 @@ final class EncryptedFieldsMapGenerator
      */
     private function createEncryptedFieldsMapForClass(
         ClassMetadata $classMetadata,
-        string $path = '',
+        string $parentPath = '',
         array $visitedClasses = [],
     ): Generator {
         if ($classMetadata->isEncrypted && ! $classMetadata->isEmbeddedDocument) {
@@ -108,7 +108,7 @@ final class EncryptedFieldsMapGenerator
                 } elseif (! isset($mapping['encrypt'])) {
                     yield from $this->createEncryptedFieldsMapForClass(
                         $embedMetadata,
-                        $path . $mapping['name'] . '.',
+                        $parentPath . $mapping['name'] . '.',
                         $visitedClasses + [$classMetadata->getName() => true],
                     );
                 }
@@ -119,7 +119,7 @@ final class EncryptedFieldsMapGenerator
             }
 
             $field = [
-                'path' => $path . $mapping['name'],
+                'path' => $parentPath . $mapping['name'],
                 'bsonType' => match ($mapping['type']) {
                     ClassMetadata::ONE, Type::HASH => 'object',
                     ClassMetadata::MANY, Type::COLLECTION => 'array',
