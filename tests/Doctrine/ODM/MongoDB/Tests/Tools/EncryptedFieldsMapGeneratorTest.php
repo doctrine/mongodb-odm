@@ -10,11 +10,13 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Utility\EncryptedFieldsMapGenerator;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
+use Documents\Bars\Bar;
 use Documents\Encryption\Client;
 use Documents\Encryption\InvalidRootEncrypt;
 use Documents\Encryption\Patient;
@@ -52,7 +54,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
             ],
         ];
 
-        self::assertEquals($expected, $encryptedFieldsMap);
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
     }
 
     public function testGetEncryptionFieldsMapForClassForEmbeddedDocument(): void
@@ -73,7 +75,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
             ],
         ];
 
-        self::assertSame($expected, $encryptedFieldsMap);
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
     }
 
     public function testVariousRangeTypes(): void
@@ -115,7 +117,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
             ],
         ];
 
-        self::assertEquals($expected, $encryptedFieldsMap);
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
     }
 
     public function testRootDocumentsCannotBeEncrypted(): void
@@ -140,27 +142,56 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
 
         $expectedEncryptedFieldsMap = [
             Patient::class => [
-                [
-                    'path' => 'patientRecord.ssn',
-                    'bsonType' => 'string',
-                    'keyId' => null,
-                    'queries' => ['queryType' => 'equality'],
-                ],
-                [
-                    'path' => 'patientRecord.billing',
-                    'bsonType' => 'object',
-                    'keyId' => null,
-                ],
-                [
-                    'path' => 'patientRecord.billingAmount',
-                    'bsonType' => 'int',
-                    'keyId' => null,
-                    'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                'fields' => [
+                    [
+                        'path' => 'patientRecord.ssn',
+                        'bsonType' => 'string',
+                        'keyId' => null,
+                        'queries' => ['queryType' => 'equality'],
+                    ],
+                    [
+                        'path' => 'patientRecord.billing',
+                        'bsonType' => 'object',
+                        'keyId' => null,
+                    ],
+                    [
+                        'path' => 'patientRecord.billingAmount',
+                        'bsonType' => 'int',
+                        'keyId' => null,
+                        'queries' => ['queryType' => 'range', 'min' => 100, 'max' => 2000, 'sparsity' => 1, 'trimFactor' => 4],
+                    ],
                 ],
             ],
         ];
 
         $this->assertEquals($expectedEncryptedFieldsMap, $encryptedFieldsMap);
+    }
+
+    public function testNoEncryptedFields(): void
+    {
+        $classMetadataFactory = $this->createMetadataFactory(
+            $this->dm->getMetadataFactory(),
+            Bar::class,
+        );
+
+        $factory = new EncryptedFieldsMapGenerator($classMetadataFactory);
+
+        self::assertSame([], $factory->getEncryptedFieldsMap());
+        self::assertNull($factory->getEncryptedFieldsMapForClass(Bar::class));
+    }
+
+    public function testNotADocumentClass(): void
+    {
+        $classMetadataFactory = $this->createMetadataFactory(
+            $this->dm->getMetadataFactory(),
+            PatientRecord::class,
+        );
+
+        $this->expectException(MongoDBException::class);
+        $this->expectExceptionMessage('The class "Documents\Encryption\PatientRecord" is not a document class.');
+
+        $factory = new EncryptedFieldsMapGenerator($classMetadataFactory);
+        $factory->getEncryptedFieldsMapForClass(PatientRecord::class);
     }
 
     private function createMetadataFactory(ClassMetadataFactoryInterface $classMetadataFactory, string ...$className): ClassMetadataFactoryInterface

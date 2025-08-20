@@ -1999,43 +1999,43 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:__construct\(\) has parameter \$classNames with no value type specified in iterable type array\.$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:__construct\(\) has parameter \$classNames with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:doLoadMetadata\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:doLoadMetadata\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:doLoadMetadata\(\) has parameter \$parent with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:doLoadMetadata\(\) has parameter \$parent with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:getAllMetadata\(\) return type with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:getAllMetadata\(\) return type with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:initializeReflection\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:initializeReflection\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:isEntity\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:isEntity\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:168\:\:wakeupReflection\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
+			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:197\:\:wakeupReflection\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php

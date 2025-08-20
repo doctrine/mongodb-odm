@@ -650,7 +650,7 @@ final class SchemaManager
             $encryptedFields = (new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory()))->getEncryptedFieldsMapForClass($class->name);
 
             if ($encryptedFields) {
-                $options['encryptedFields'] = ['fields' => $encryptedFields];
+                $options['encryptedFields'] = $encryptedFields;
             }
         }
 

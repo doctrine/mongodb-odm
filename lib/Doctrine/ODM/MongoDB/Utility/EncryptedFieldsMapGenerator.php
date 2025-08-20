@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Generator;
 use LogicException;
@@ -26,7 +27,7 @@ final class EncryptedFieldsMapGenerator
     /**
      * Returns the full encryption fields map for a document manager
      *
-     * @return array<class-string, array<int, array{path: string, bsonType: string, keyId: ?string}>>
+     * @return array<class-string, array{fields: array<int, array{path: string, bsonType: string, keyId: null}>}>
      */
     public function getEncryptedFieldsMap(): array
     {
@@ -43,7 +44,7 @@ final class EncryptedFieldsMapGenerator
                 continue;
             }
 
-            $encryptedFieldsMap[$classMetadata->getName()] = $classMap;
+            $encryptedFieldsMap[$classMetadata->getName()] = ['fields' => $classMap];
         }
 
         return $encryptedFieldsMap;
@@ -54,20 +55,30 @@ final class EncryptedFieldsMapGenerator
      *
      * @param class-string $className
      *
-     * @return array<int, array{path: string, bsonType: string, keyId: ?string}>
+     * @return array{fields: array<int, array{path: string, bsonType: string, keyId: null}>}|null
      */
-    public function getEncryptedFieldsMapForClass(string $className): array
+    public function getEncryptedFieldsMapForClass(string $className): ?array
     {
         $classMetadata = $this->classMetadataFactory->getMetadataFor($className);
 
-        return iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
+        if (! $classMetadata->isDocument()) {
+            throw MongoDBException::notADocumentClass($className);
+        }
+
+        $fields = iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
+
+        if ($fields === []) {
+            return null;
+        }
+
+        return ['fields' => $fields];
     }
 
     /**
      * @param array<class-string, true> $visitedClasses
      * @phpstan-param ClassMetadata<T> $classMetadata
      *
-     * @return Generator<int, array{path: string, bsonType: string, keyId: ?string}>
+     * @return Generator<int, array{path: string, bsonType: string, keyId: null}>
      *
      * @template T of object
      */
@@ -86,7 +97,6 @@ final class EncryptedFieldsMapGenerator
         }
 
         foreach ($classMetadata->fieldMappings as $mapping) {
-            // @todo support polymorphic types and inheritance?
             // Add fields recursively
             if ($mapping['embedded'] ?? false) {
                 $embedMetadata = $this->classMetadataFactory->getMetadataFor($mapping['targetDocument']);
@@ -94,7 +104,7 @@ final class EncryptedFieldsMapGenerator
                 // When the embedded document class is encrypted, the field is encrypted,
                 // but none of the embedded fields are encrypted separately.
                 if ($embedMetadata->isEncrypted) {
-                    $mapping['encrypt'] ??= []; // @todo get the keyId
+                    $mapping['encrypt'] ??= [];
                 } elseif (! isset($mapping['encrypt'])) {
                     yield from $this->createEncryptedFieldsMapForClass(
                         $embedMetadata,

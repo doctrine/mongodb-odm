@@ -160,4 +160,9 @@ class MongoDBException extends Exception
     {
         return new self('The transactional operation cannot be executed because it was started in a different session.');
     }
+
+    public static function notADocumentClass(string $className): self
+    {
+        return new self(sprintf('The class "%s" is not a document class.', $className));
+    }
 }
