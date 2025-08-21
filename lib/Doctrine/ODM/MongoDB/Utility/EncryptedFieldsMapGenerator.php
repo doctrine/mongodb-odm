@@ -140,12 +140,6 @@ final class EncryptedFieldsMapGenerator
             if (isset($mapping['encrypt']['queryType'])) {
                 $field['queries']              = array_filter($mapping['encrypt'], static fn ($v) => $v !== null);
                 $field['queries']['queryType'] = $field['queries']['queryType']->value;
-
-                foreach (['min', 'max'] as $option) {
-                    if (isset($field['queries'][$option])) {
-                        $field['queries'][$option] = Type::getType($mapping['type'])->convertToDatabaseValue($field['queries'][$option]);
-                    }
-                }
             }
 
             yield $field;

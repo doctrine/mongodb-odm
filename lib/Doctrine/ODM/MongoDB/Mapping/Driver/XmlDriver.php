@@ -940,7 +940,7 @@ class XmlDriver extends FileDriver
         foreach ($encrypt->attributes() as $key => $value) {
             $encryptMapping[$key] = match ($key) {
                 'queryType' => EncryptQuery::from((string) $value),
-                'min', 'max' => $value,
+                'min', 'max' => (string) $value,
                 'sparsity', 'precision', 'trimFactor', 'contention' => (int) $value,
             };
         }

@@ -17,6 +17,7 @@ use Documents\Group;
 use Documents\Phonenumber;
 use Documents\Profile;
 use MongoDB\BSON\Decimal128;
+use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\TestCase;
 use TestDocuments\EmbeddedDocument;
@@ -25,6 +26,8 @@ use TestDocuments\PartialFilterDocument;
 use TestDocuments\PrimedCollectionDocument;
 use TestDocuments\QueryResultDocument;
 use TestDocuments\User;
+
+use const PHP_INT_MAX;
 
 abstract class AbstractDriverTestCase extends TestCase
 {
@@ -572,6 +575,12 @@ abstract class AbstractDriverTestCase extends TestCase
             'min' => 5,
             'max' => 10,
         ], $classMetadata->fieldMappings['intField']['encrypt']);
+
+        self::assertEquals([
+            'queryType' => EncryptQuery::Range,
+            'min' => new Int64(5),
+            'max' => new Int64(PHP_INT_MAX - 5),
+        ], $classMetadata->fieldMappings['int64Field']['encrypt']);
 
         self::assertEquals([
             'queryType' => EncryptQuery::Range,

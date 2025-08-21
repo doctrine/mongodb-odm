@@ -10,6 +10,9 @@
         <field name="intField" type="int">
             <encrypt queryType="range" min="5" max="10"/>
         </field>
+        <field name="int64Field" type="int64">
+            <encrypt queryType="range" min="5" max="9223372036854775802"/>
+        </field>
         <field name="floatField" type="float">
             <encrypt queryType="range" min="5.5" max="10.5"/>
         </field>

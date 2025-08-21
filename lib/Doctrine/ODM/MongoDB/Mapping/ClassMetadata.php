@@ -2386,6 +2386,16 @@ use function trigger_deprecation;
             $mapping['nullable'] = false;
         }
 
+        if (isset($mapping['encrypt']['queryType'])) {
+            // The encrypted range query options min and max must be converted to the database type
+            $type = Type::getType($mapping['type']);
+            foreach (['min', 'max'] as $option) {
+                if (isset($mapping['encrypt'][$option])) {
+                    $mapping['encrypt'][$option] = $type->convertToDatabaseValue($mapping['encrypt'][$option]);
+                }
+            }
+        }
+
         if (
             isset($mapping['reference'])
             && isset($mapping['storeAs'])
