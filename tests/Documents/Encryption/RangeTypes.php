@@ -13,6 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Decimal128;
 
+use const PHP_INT_MAX;
+
 /**
  * Test all supported types for range encrypted queries.
  *
@@ -27,6 +29,10 @@ class RangeTypes
     #[Field(type: Type::INT)]
     #[Encrypt(EncryptQuery::Range, min: 5, max: 10)]
     public int $intField;
+
+    #[Field(type: Type::INT64)]
+    #[Encrypt(EncryptQuery::Range, min: 5, max: PHP_INT_MAX - 5)]
+    public int $int64Field;
 
     #[Field(type: Type::FLOAT)]
     #[Encrypt(EncryptQuery::Range, min: 5.5, max: 10.5, precision: 1)]

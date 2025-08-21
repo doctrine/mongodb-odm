@@ -26,6 +26,7 @@ abstract class Type
     public const CUSTOMID           = 'custom_id';
     public const BOOL               = 'bool';
     public const INT                = 'int';
+    public const INT64              = 'int64';
     public const FLOAT              = 'float';
     public const STRING             = 'string';
     public const DATE               = 'date';
@@ -66,6 +67,7 @@ abstract class Type
         self::BOOLEAN => Types\BooleanType::class,
         self::INT => Types\IntType::class,
         self::INTEGER => Types\IntType::class,
+        self::INT64 => Types\Int64Type::class,
         self::FLOAT => Types\FloatType::class,
         self::STRING => Types\StringType::class,
         self::DATE => Types\DateType::class,

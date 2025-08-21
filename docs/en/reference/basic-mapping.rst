@@ -145,6 +145,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``hash``
 -  ``id``
 -  ``int``
+-  ``int64``
 -  ``key``
 -  ``object_id``
 -  ``raw``

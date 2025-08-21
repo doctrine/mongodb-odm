@@ -23,9 +23,12 @@ use Documents\Encryption\Patient;
 use Documents\Encryption\PatientRecord;
 use Documents\Encryption\RangeTypes;
 use MongoDB\BSON\Decimal128;
+use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
 
 use function array_map;
+
+use const PHP_INT_MAX;
 
 class EncryptedFieldsMapGeneratorTest extends BaseTestCase
 {
@@ -89,6 +92,16 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
                 'bsonType' => 'int',
                 'keyId' => null,
                 'queries' => ['queryType' => 'range', 'min' => 5, 'max' => 10],
+            ],
+            [
+                'path' => 'int64Field',
+                'bsonType' => 'long',
+                'keyId' => null,
+                'queries' => [
+                    'queryType' => 'range',
+                    'min' => new Int64(5),
+                    'max' => new Int64(PHP_INT_MAX - 5),
+                ],
             ],
             [
                 'path' => 'floatField',

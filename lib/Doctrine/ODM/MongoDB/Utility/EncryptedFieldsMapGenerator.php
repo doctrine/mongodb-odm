@@ -122,6 +122,7 @@ final class EncryptedFieldsMapGenerator
                     ClassMetadata::ONE, Type::HASH => 'object',
                     ClassMetadata::MANY, Type::COLLECTION => 'array',
                     Type::INT, Type::INTEGER => 'int',
+                    Type::INT64 => 'long',
                     Type::FLOAT => 'double',
                     Type::DECIMAL128 => 'decimal',
                     Type::DATE, Type::DATE_IMMUTABLE => 'date',
@@ -139,6 +140,12 @@ final class EncryptedFieldsMapGenerator
             if (isset($mapping['encrypt']['queryType'])) {
                 $field['queries']              = array_filter($mapping['encrypt'], static fn ($v) => $v !== null);
                 $field['queries']['queryType'] = $field['queries']['queryType']->value;
+
+                foreach (['min', 'max'] as $option) {
+                    if (isset($field['queries'][$option])) {
+                        $field['queries'][$option] = Type::getType($mapping['type'])->convertToDatabaseValue($field['queries'][$option]);
+                    }
+                }
             }
 
             yield $field;
