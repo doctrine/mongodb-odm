@@ -75,7 +75,7 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     public function testLoadMetadataForNonDocumentThrowsException(): void
     {
         $cm               = new ClassMetadata('stdClass');
-        $annotationDriver = AnnotationDriver::create();
+        $annotationDriver = static::loadDriver();
 
         $this->expectException(MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
@@ -85,7 +85,7 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm               = new ClassMetadata(ColumnWithoutType::class);
-        $annotationDriver = AnnotationDriver::create();
+        $annotationDriver = static::loadDriver();
 
         $annotationDriver->loadMetadataForClass(stdClass::class, $cm);
         self::assertEquals('id', $cm->fieldMappings['id']['type']);

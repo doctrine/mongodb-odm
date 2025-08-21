@@ -49,7 +49,7 @@ class AttributeDriver implements MappingDriver
     /** @param string|string[]|ClassLocator|null $paths */
     public function __construct($paths = null, ?Reader $reader = null)
     {
-        if ($reader !== null && ! $this instanceof AnnotationDriver) {
+        if ($reader !== null) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
                 '2.7',

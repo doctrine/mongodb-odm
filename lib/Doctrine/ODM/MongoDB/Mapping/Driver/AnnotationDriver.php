@@ -14,6 +14,15 @@ use Doctrine\Persistence\Mapping\Driver\ClassLocator;
 class AnnotationDriver extends AttributeDriver
 {
     /**
+     * The annotation reader.
+     *
+     * @internal this property will be private in 3.0
+     *
+     * @var Reader
+     */
+    protected $reader;
+
+    /**
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      *
@@ -22,7 +31,10 @@ class AnnotationDriver extends AttributeDriver
      */
     public function __construct($reader, $paths = null)
     {
-        parent::__construct($paths, $reader);
+        parent::__construct($paths);
+
+        // Setting the reader in the parent constructor is deprecated.
+        $this->reader = $reader;
     }
 
     /**

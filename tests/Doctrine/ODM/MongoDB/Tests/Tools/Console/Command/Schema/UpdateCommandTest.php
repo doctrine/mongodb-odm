@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\Schema;
 
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\AbstractCommandTestCase;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand;
 use Doctrine\Persistence\Mapping\Driver\ClassNames;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\Ecommerce;
 use Documents\SchemaValidated;
 use Symfony\Component\Console\Command\Command;
@@ -88,7 +89,7 @@ class UpdateCommandTest extends AbstractCommandTestCase
         self::assertStringNotContainsString('Updated validation for all classes', $output);
     }
 
-    private function createDriver(): AnnotationDriver
+    private function createDriver(): MappingDriver
     {
         $paths = [__DIR__ . '/../../../../../../../../Documents/Ecommerce'];
         // Available in Doctrine Persistence 4.1+
@@ -104,6 +105,6 @@ class UpdateCommandTest extends AbstractCommandTestCase
             ]);
         }
 
-        return AnnotationDriver::create($paths);
+        return AttributeDriver::create($paths);
     }
 }

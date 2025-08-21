@@ -76,7 +76,7 @@ Slice architecture, you can exclude ``*Test.php``, ``*Controller.php``,
       ->name('*.php')
       ->notName(['*Test.php', '*Controller.php', '*Service.php']);
 
-	  $classLocator = new FileClassLocator($finder);
+    $classLocator = new FileClassLocator($finder);
 
     $driver = new AttributeDriver($classLocator);
     $em->getConfiguration()->setMetadataDriverImpl($driver);
@@ -95,16 +95,6 @@ If you know the list of class names you want to track, use
     $classLocator = new ClassNames($entityClasses);
 
     $driver = new AttributeDriver($classLocator);
-    $em->getConfiguration()->setMetadataDriverImpl($driver);
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
-
-    use Symfony\Component\Finder\Finder;
-
-    $driver = new AttributeDriver([__DIR__ . '/src/Document']);
     $em->getConfiguration()->setMetadataDriverImpl($driver);
 
 Implementing Metadata Drivers
