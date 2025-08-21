@@ -48,6 +48,65 @@ namespace:
     $driver = new \Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver('/path/to/mapping/files');
     $em->getConfiguration()->setMetadataDriverImpl($driver);
 
+The ``AttributeDriver`` can be initialized from a list of directories that
+contain the PHP classes with ODM attributes, or from an instance of a class
+locator that will find the classes:
+
+From a list of directories:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+
+    $driver = new AttributeDriver([__DIR__ . '/src/Document']);
+    $em->getConfiguration()->setMetadataDriverImpl($driver);
+
+Using Symfony Finder to locate classes. For example, if you are using Vertical
+Slice architecture, you can exclude ``*Test.php``, ``*Controller.php``,
+``*Service.php``, etc.:
+
+.. code-block:: php
+    <?php
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+    use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
+    use Symfony\Component\Finder\Finder;
+
+    $finder = new Finder()->files()->in([__DIR__ . '/src/'])
+      ->name('*.php')
+      ->notName(['*Test.php', '*Controller.php', '*Service.php']);
+
+	  $classLocator = new FileClassLocator($finder);
+
+    $driver = new AttributeDriver($classLocator);
+    $em->getConfiguration()->setMetadataDriverImpl($driver);
+
+If you know the list of class names you want to track, use
+``Doctrine\Persistence\Mapping\Driver\ClassNames``:
+
+.. code-block:: php
+    <?php
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+    use Doctrine\Persistence\Mapping\Driver\ClassNames;
+    use App\Document\{Article, Book};
+
+    $entityClasses = [Article::class, Book::class];
+
+    $classLocator = new ClassNames($entityClasses);
+
+    $driver = new AttributeDriver($classLocator);
+    $em->getConfiguration()->setMetadataDriverImpl($driver);
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+
+    use Symfony\Component\Finder\Finder;
+
+    $driver = new AttributeDriver([__DIR__ . '/src/Document']);
+    $em->getConfiguration()->setMetadataDriverImpl($driver);
+
 Implementing Metadata Drivers
 -----------------------------
 

@@ -7,7 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\Schema;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\AbstractCommandTestCase;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand;
-use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
+use Doctrine\Persistence\Mapping\Driver\ClassNames;
+use Documents\Ecommerce;
 use Documents\SchemaValidated;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -89,10 +90,18 @@ class UpdateCommandTest extends AbstractCommandTestCase
 
     private function createDriver(): AnnotationDriver
     {
-        $paths = [__DIR__ . '/../../../../Documents/SchemaValidated'];
+        $paths = [__DIR__ . '/../../../../../../../../Documents/Ecommerce'];
         // Available in Doctrine Persistence 4.1+
-        if (class_exists(FileClassLocator::class)) {
-            $paths = FileClassLocator::createFromDirectories($paths);
+        if (class_exists(ClassNames::class)) {
+            $paths = new ClassNames([
+                Ecommerce\Basket::class,
+                Ecommerce\ConfigurableProduct::class,
+                Ecommerce\Currency::class,
+                Ecommerce\Money::class,
+                Ecommerce\Option::class,
+                Ecommerce\Order::class,
+                Ecommerce\StockItem::class,
+            ]);
         }
 
         return AnnotationDriver::create($paths);

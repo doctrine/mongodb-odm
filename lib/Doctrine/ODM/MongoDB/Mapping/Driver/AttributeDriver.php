@@ -33,7 +33,7 @@ use function is_array;
 use function trigger_deprecation;
 
 /**
- * The AtttributeDriver reads the mapping metadata from attributes.
+ * The AttributeDriver reads the mapping metadata from attributes.
  */
 class AttributeDriver implements MappingDriver
 {
