@@ -18,6 +18,7 @@ use MongoDB\BSON\Timestamp;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+use function get_debug_type;
 use function md5;
 use function str_pad;
 use function str_repeat;
@@ -33,14 +34,12 @@ class TypeTest extends BaseTestCase
         $bsonValue ??= $phpValue;
         $type        = Type::getType($typeName);
 
-        self::assertEquals($phpValue, $type->convertToPHPValue($bsonValue));
-        self::assertEquals($bsonValue, $type->convertToDatabaseValue($phpValue));
+        self::assertSameTypeAndValue($phpValue, $type->convertToPHPValue($bsonValue));
+        self::assertSameTypeAndValue($bsonValue, $type->convertToDatabaseValue($phpValue));
     }
 
     public static function provideTypes(): array
     {
-        $array = ['foo' => 'bar'];
-
         return [
             'id' => [Type::ID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')],
             'intId' => [Type::INTID, 1],
@@ -49,24 +48,24 @@ class TypeTest extends BaseTestCase
             'boolean' => [Type::BOOLEAN, false],
             'int' => [Type::INT, 69],
             'integer' => [Type::INTEGER, 42],
-            'int64' => [Type::INT64, 9223372036854775807, new Int64(9223372036854775807)],
+            'int64' => [Type::INT64, 100, new Int64(100)],
             'float' => [Type::FLOAT, 3.14],
             'string' => [Type::STRING, 'ohai'],
             'minKey' => [Type::KEY, 0, new MinKey()],
             'maxKey' => [Type::KEY, 1, new MaxKey()],
             'timestamp' => [Type::TIMESTAMP, $t = time(), new Timestamp(0, $t)],
-            'binData' => [Type::BINDATA, 'foobarbaz'],
-            'binDataFunc' => [Type::BINDATAFUNC, 'foobarbaz'],
-            'binDataByteArray' => [Type::BINDATABYTEARRAY, 'foobarbaz'],
-            'binDataUuid' => [Type::BINDATAUUID, 'testtesttesttest'],
-            'binDataUuidRFC4122' => [Type::BINDATAUUIDRFC4122, str_repeat('a', 16)],
-            'binDataMD5' => [Type::BINDATAMD5, md5('ODM')],
-            'binDataCustom' => [Type::BINDATACUSTOM, 'foobarbaz'],
+            'binData' => [Type::BINDATA, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_GENERIC)],
+            'binDataFunc' => [Type::BINDATAFUNC, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_FUNCTION)],
+            'binDataByteArray' => [Type::BINDATABYTEARRAY, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_OLD_BINARY)],
+            'binDataUuid' => [Type::BINDATAUUID, 'testtesttesttest', new Binary('testtesttesttest', Binary::TYPE_OLD_UUID)],
+            'binDataUuidRFC4122' => [Type::BINDATAUUIDRFC4122, str_repeat('a', 16), new Binary(str_repeat('a', 16), Binary::TYPE_UUID)],
+            'binDataMD5' => [Type::BINDATAMD5, md5('ODM'), new Binary(md5('ODM'), Binary::TYPE_MD5)],
+            'binDataCustom' => [Type::BINDATACUSTOM, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_USER_DEFINED)],
             'hash' => [Type::HASH, ['foo' => 'bar'], (object) ['foo' => 'bar']],
             'collection' => [Type::COLLECTION, ['foo', 'bar']],
-            'objectId' => [Type::OBJECTID, '507f1f77bcf86cd799439011'],
+            'objectId' => [Type::OBJECTID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')],
             'raw' => [Type::RAW, (object) ['foo' => 'bar']],
-            'decimal128' => [Type::DECIMAL128, '4.20'],
+            'decimal128' => [Type::DECIMAL128, '4.20', new Decimal128('4.20')],
         ];
     }
 
@@ -74,7 +73,7 @@ class TypeTest extends BaseTestCase
     #[DataProvider('provideTypesForIdempotent')]
     public function testConversionIsIdempotent(Type $type, $test): void
     {
-        self::assertEquals($test, $type->convertToDatabaseValue($test));
+        self::assertSameTypeAndValue($test, $type->convertToDatabaseValue($test));
     }
 
     public static function provideTypesForIdempotent(): array
@@ -83,6 +82,7 @@ class TypeTest extends BaseTestCase
             'id' => [Type::getType(Type::ID), new ObjectId()],
             'date' => [Type::getType(Type::DATE), new UTCDateTime()],
             'dateImmutable' => [Type::getType(Type::DATE_IMMUTABLE), new UTCDateTime()],
+            'int64' => [Type::getType(Type::INT64), new Int64(100)],
             'timestamp' => [Type::getType(Type::TIMESTAMP), new Timestamp(0, time())],
             'binData' => [Type::getType(Type::BINDATA), new Binary('foobarbaz', Binary::TYPE_GENERIC)],
             'binDataFunc' => [Type::getType(Type::BINDATAFUNC), new Binary('foobarbaz', Binary::TYPE_FUNCTION)],
@@ -124,5 +124,11 @@ class TypeTest extends BaseTestCase
         $date = new DateTimeImmutable('now');
 
         self::assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
+    }
+
+    private static function assertSameTypeAndValue(mixed $expected, mixed $actual): void
+    {
+        self::assertSame(get_debug_type($expected), get_debug_type($actual));
+        self::assertEquals($expected, $actual);
     }
 }

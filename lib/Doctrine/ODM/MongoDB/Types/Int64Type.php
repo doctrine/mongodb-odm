@@ -13,7 +13,11 @@ class Int64Type extends IntType implements Incrementable, Versionable
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? new Int64($value) : null;
+        if ($value instanceof Int64 || $value === null) {
+            return $value;
+        }
+
+        return new Int64($value);
     }
 
     public function closureToMongo(): string
