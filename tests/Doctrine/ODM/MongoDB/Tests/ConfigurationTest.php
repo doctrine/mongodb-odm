@@ -12,6 +12,9 @@ use MongoDB\Driver\Manager;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
+use function base64_encode;
+use function str_repeat;
+
 class ConfigurationTest extends TestCase
 {
     public function testDefaultPersistentCollectionFactory(): void
@@ -48,7 +51,7 @@ class ConfigurationTest extends TestCase
     public function testLocalKmsProvider(): void
     {
         $c = new Configuration();
-        $c->setKmsProvider(['type' => 'local', 'key' => '1234567890123456789012345678901234567890123456789012345678901234']);
+        $c->setKmsProvider(['type' => 'local', 'key' => base64_encode(str_repeat('1', 96))]);
         $c->setAutoEncryption(['extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020']]);
         $c->setDefaultDB('default_database');
 
@@ -56,7 +59,7 @@ class ConfigurationTest extends TestCase
         self::assertNull($c->getDefaultMasterKey());
         self::assertEquals([
             'kmsProviders' => [
-                'local' => ['key' => '1234567890123456789012345678901234567890123456789012345678901234'],
+                'local' => ['key' => base64_encode(str_repeat('1', 96))],
             ],
             'extraOptions' => ['mongocryptdURI' => 'mongodb://localhost:27020'],
             // Default key vault namespace
