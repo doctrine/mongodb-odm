@@ -112,6 +112,11 @@ provider, you need a 96-byte master key.
 The following code will look for the key in a local file (``master-key.bin``)
 and generate it if it doesn't exist. In a production environment, you should
 use a non-local key management service (KMS).
+For each field marked with ``#[Encrypt]``, the MongoDB driver will generate
+a Data Encryption Key (DEK), encrypt it with the master key, and store it in
+the key vault collection. In Doctrine ODM, the key vault collection is set
+to ``<database>.datakeys`` by default, but you can change it using the
+``keyVaultNamespace`` option.
 
 .. code-block:: php
 
