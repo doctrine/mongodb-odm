@@ -37,7 +37,7 @@ final class EncryptedFieldsMapGenerator
                 continue;
             }
 
-            $classMap = iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
+            $classMap = iterator_to_array($this->createEncryptedFieldsForClass($classMetadata));
             if ($classMap === []) {
                 continue;
             }
@@ -55,7 +55,7 @@ final class EncryptedFieldsMapGenerator
      *
      * @return array{fields: array<int, array{path: string, bsonType: string, keyId: null}>}|null
      */
-    public function getEncryptedFieldsMapForClass(string $className): ?array
+    public function getEncryptedFieldsForClass(string $className): ?array
     {
         $classMetadata = $this->classMetadataFactory->getMetadataFor($className);
 
@@ -63,7 +63,7 @@ final class EncryptedFieldsMapGenerator
             throw MongoDBException::notADocumentClass($className);
         }
 
-        $fields = iterator_to_array($this->createEncryptedFieldsMapForClass($classMetadata));
+        $fields = iterator_to_array($this->createEncryptedFieldsForClass($classMetadata));
 
         if ($fields === []) {
             return null;
@@ -80,7 +80,7 @@ final class EncryptedFieldsMapGenerator
      *
      * @template T of object
      */
-    private function createEncryptedFieldsMapForClass(
+    private function createEncryptedFieldsForClass(
         ClassMetadata $classMetadata,
         string $parentPath = '',
         array $visitedClasses = [],
@@ -104,7 +104,7 @@ final class EncryptedFieldsMapGenerator
                 if ($embedMetadata->isEncrypted) {
                     $mapping['encrypt'] ??= [];
                 } elseif (! isset($mapping['encrypt'])) {
-                    yield from $this->createEncryptedFieldsMapForClass(
+                    yield from $this->createEncryptedFieldsForClass(
                         $embedMetadata,
                         $parentPath . $mapping['name'] . '.',
                         $visitedClasses + [$classMetadata->getName() => true],

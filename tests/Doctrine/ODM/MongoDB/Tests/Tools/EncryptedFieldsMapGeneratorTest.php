@@ -35,7 +35,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
     public function testGetEncryptionFieldsMapForClass(): void
     {
         $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
-        $encryptedFieldsMap = $factory->getEncryptedFieldsMapForClass(Patient::class);
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(Patient::class);
 
         $expected = [
             [
@@ -60,10 +60,10 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
     }
 
-    public function testGetEncryptionFieldsMapForClassForEmbeddedDocument(): void
+    public function testGetEncryptionFieldsForClassWithEmbeddedDocument(): void
     {
         $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
-        $encryptedFieldsMap = $factory->getEncryptedFieldsMapForClass(Client::class);
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(Client::class);
 
         $expected = [
             [
@@ -84,7 +84,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
     public function testVariousRangeTypes(): void
     {
         $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
-        $encryptedFieldsMap = $factory->getEncryptedFieldsMapForClass(RangeTypes::class);
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(RangeTypes::class);
 
         $expected = [
             [
@@ -139,7 +139,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         $this->expectExceptionMessage('The root document class "Documents\Encryption\InvalidRootEncrypt" cannot be encrypted. Only fields and embedded documents can be encrypted.');
 
         $factory = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
-        $factory->getEncryptedFieldsMapForClass(InvalidRootEncrypt::class);
+        $factory->getEncryptedFieldsForClass(InvalidRootEncrypt::class);
     }
 
     public function testGetEncryptionFieldsMap(): void
@@ -190,7 +190,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         $factory = new EncryptedFieldsMapGenerator($classMetadataFactory);
 
         self::assertSame([], $factory->getEncryptedFieldsMap());
-        self::assertNull($factory->getEncryptedFieldsMapForClass(Bar::class));
+        self::assertNull($factory->getEncryptedFieldsForClass(Bar::class));
     }
 
     public function testNotADocumentClass(): void
@@ -204,7 +204,7 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         $this->expectExceptionMessage('The class "Documents\Encryption\PatientRecord" is not a document class.');
 
         $factory = new EncryptedFieldsMapGenerator($classMetadataFactory);
-        $factory->getEncryptedFieldsMapForClass(PatientRecord::class);
+        $factory->getEncryptedFieldsForClass(PatientRecord::class);
     }
 
     private function createMetadataFactory(ClassMetadataFactoryInterface $classMetadataFactory, string ...$className): ClassMetadataFactoryInterface

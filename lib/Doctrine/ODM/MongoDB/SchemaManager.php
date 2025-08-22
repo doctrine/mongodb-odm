@@ -647,7 +647,7 @@ final class SchemaManager
 
         // Encryption is enabled only if the KMS provider is set and at least one field is encrypted
         if ($this->dm->getConfiguration()->getDefaultKmsProvider()) {
-            $encryptedFields = (new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory()))->getEncryptedFieldsMapForClass($class->name);
+            $encryptedFields = (new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory()))->getEncryptedFieldsForClass($class->name);
 
             if ($encryptedFields) {
                 $options['encryptedFields'] = $encryptedFields;
