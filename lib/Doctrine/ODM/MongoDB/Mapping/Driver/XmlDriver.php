@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use DOMDocument;
@@ -941,7 +940,7 @@ class XmlDriver extends FileDriver
         foreach ($encrypt->attributes() as $key => $value) {
             $encryptMapping[$key] = match ($key) {
                 'queryType' => EncryptQuery::from((string) $value),
-                'min', 'max' => Type::getType($type)->convertToDatabaseValue((string) $value),
+                'min', 'max' => (string) $value,
                 'sparsity', 'precision', 'trimFactor', 'contention' => (int) $value,
             };
         }

@@ -122,6 +122,7 @@ final class EncryptedFieldsMapGenerator
                     ClassMetadata::ONE, Type::HASH => 'object',
                     ClassMetadata::MANY, Type::COLLECTION => 'array',
                     Type::INT, Type::INTEGER => 'int',
+                    Type::INT64 => 'long',
                     Type::FLOAT => 'double',
                     Type::DECIMAL128 => 'decimal',
                     Type::DATE, Type::DATE_IMMUTABLE => 'date',
