@@ -261,6 +261,9 @@ Limitations
   To use QE with inheritance, you must manually define the complete
   ``encryptedFieldsMap`` for the entire hierarchy and provide it directly in
   the client options, bypassing the ODM's automatic generation.
+- Embedded documents and collections are encrypted as a whole. You cannot
+  be updated partially. Only the ``set*`` and ``atomicSet*`` collection
+  strategies can be used.
 - For a complete list of hard limitations, please refer to the official
   `Queryable Encryption Limitations`_ documentation.
 
