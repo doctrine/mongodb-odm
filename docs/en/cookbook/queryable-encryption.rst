@@ -257,10 +257,8 @@ Limitations
   helper method.
 - Automatic generation of the ``encryptedFieldsMap`` is not compatible with
   ``SINGLE_COLLECTION`` inheritance. Because all classes in the hierarchy
-  share a single collection, they must also share a single encryption schema.
-  To use QE with inheritance, you must manually define the complete
-  ``encryptedFieldsMap`` for the entire hierarchy and provide it directly in
-  the client options, bypassing the ODM's automatic generation.
+  share a single collection, the ``SchemaManager`` cannot merge their encrypted
+  fields before creating the collection.
 - Embedded documents and collections are encrypted as a whole. You cannot
   be updated partially. Only the ``set*`` and ``atomicSet*`` collection
   strategies can be used.
