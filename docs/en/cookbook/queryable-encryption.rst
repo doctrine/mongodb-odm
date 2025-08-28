@@ -259,10 +259,10 @@ Limitations
   ``SINGLE_COLLECTION`` inheritance. Because all classes in the hierarchy
   share a single collection, the ``SchemaManager`` cannot merge their encrypted
   fields before creating the collection.
-- Embedded documents and collections are encrypted as a whole. You cannot
-  be updated partially. Only the ``set*`` and ``atomicSet*`` collection
-  strategies can be used.
-- For a complete list of hard limitations, please refer to the official
+- Embedded documents and collections are encrypted as a whole. As such,
+  they cannot be partially updated. Only the ``set*`` and ``atomicSet*``
+  collection strategies can be used.
+- For a complete list of limitations, please refer to the official
   `Queryable Encryption Limitations`_ documentation.
 
 .. _MongoDB\Driver\Manager: https://www.php.net/manual/en/mongodb-driver-manager.construct.php#mongodb-driver-manager.construct-autoencryption
