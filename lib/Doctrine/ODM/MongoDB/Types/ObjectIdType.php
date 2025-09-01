@@ -9,7 +9,7 @@ use MongoDB\BSON\ObjectId;
 /**
  * The ObjectId type.
  */
-class ObjectIdType extends Type
+class ObjectIdType extends Type implements Versionable
 {
     public function convertToDatabaseValue($value)
     {
@@ -37,5 +37,10 @@ class ObjectIdType extends Type
     public function closureToPHP(): string
     {
         return '$return = (string) $value;';
+    }
+
+    public function getNextVersion($current): ObjectId
+    {
+        return new ObjectId();
     }
 }

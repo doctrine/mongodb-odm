@@ -105,7 +105,7 @@ a ``LockException`` is thrown, which indicates that the document was already mod
 .. note::
 
     Only types implementing the ``\Doctrine\ODM\MongoDB\Types\Versionable`` interface can be used for versioning.
-    Following ODM types can be used for versioning: ``int``, ``decimal128``, ``date``, and ``date_immutable``.
+    Following ODM types can be used for versioning: ``int``, ``decimal128``, ``date``, ``date_immutable``, and ``object_id``.
 
 Document Configuration
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -190,7 +190,7 @@ Choosing the Field Type
 """""""""""""""""""""""
 
 When using the date-based type in a high-concurrency environment, it is still possible to create multiple documents
-with the same version and cause a conflict. This can be avoided by using the ``int`` or ``decimal128`` type.
+with the same version and cause a conflict. This can be avoided by using the ``int``, ``decimal128``, or ``object_id`` type.
 
 Usage
 """""
