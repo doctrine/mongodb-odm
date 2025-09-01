@@ -25,6 +25,6 @@ class GH2310Container
 #[ODM\EmbeddedDocument]
 class GH2310Embedded
 {
-    #[ODM\Field(type: 'integer')]
+    #[ODM\Field(type: 'int')]
     public int $value;
 }
