@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Documentation\CustomMapping;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\UTCDateTime;
 use RuntimeException;
+
+use function gettype;
+use function sprintf;
 
 class DateTimeWithTimezoneType extends Type
 {
@@ -32,13 +34,18 @@ class DateTimeWithTimezoneType extends Type
         return DateTimeImmutable::createFromMutable($dateTime);
     }
 
-    /**
-     * @param DateTimeInterface $value
-     *
-     * @return array{utc: UTCDateTime, tz: string}
-     */
+    /** @return array{utc: UTCDateTime, tz: string} */
     public function convertToDatabaseValue($value): array
     {
+        if (! $value instanceof DateTimeImmutable) {
+            throw new RuntimeException(
+                sprintf(
+                    'Expected instance of \DateTimeImmutable, got %s',
+                    gettype($value),
+                ),
+            );
+        }
+
         return [
             'utc' => new UTCDateTime($value),
             'tz' => $value->getTimezone()->getName(),

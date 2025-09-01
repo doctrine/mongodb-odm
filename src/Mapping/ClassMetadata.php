@@ -2823,9 +2823,19 @@ use const PHP_VERSION_ID;
      */
     private function validateAndCompleteTypedFieldMapping(array $mapping): array
     {
+        if (isset($mapping['type'])) {
+            return $mapping;
+        }
+
         $type = $this->reflClass->getProperty($mapping['fieldName'])->getType();
 
-        if (! $type instanceof ReflectionNamedType || isset($mapping['type'])) {
+        if (! $type instanceof ReflectionNamedType) {
+            return $mapping;
+        }
+
+        if (! $type->isBuiltin() && Type::hasType($type->getName())) {
+            $mapping['type'] = $type->getName();
+
             return $mapping;
         }
 
@@ -2836,6 +2846,7 @@ use const PHP_VERSION_ID;
                 throw MappingException::nonBackedEnumMapped($this->name, $mapping['fieldName'], $reflection->getName());
             }
 
+            // Use the backing type of the enum for the mapping type
             $type = $reflection->getBackingType();
             assert($type instanceof ReflectionNamedType);
             $mapping['enumType'] = $reflection->getName();

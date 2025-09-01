@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
-use InvalidArgumentException;
-use MongoDB\BSON\ObjectId;
 use Symfony\Component\Uid\Uuid;
 
 use function end;
 use function explode;
 use function gettype;
 use function is_object;
-use function sprintf;
 use function str_replace;
 
 /**
@@ -157,52 +155,52 @@ abstract class Type
     /**
      * Get a Type instance.
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidTypeException
      */
     public static function getType(string $type): Type
     {
         if (! isset(self::$typesMap[$type])) {
-            throw new InvalidArgumentException(sprintf('Invalid type specified "%s".', $type));
+            throw InvalidTypeException::invalidTypeName($type);
         }
 
-        if (! isset(self::$typeObjects[$type])) {
-            $className                = self::$typesMap[$type];
-            self::$typeObjects[$type] = new $className();
-        }
-
-        return self::$typeObjects[$type];
+        return self::$typeObjects[$type] ??= new (self::$typesMap[$type]);
     }
 
     /**
      * Get a Type instance based on the type of the passed php variable.
      *
      * @param mixed $variable
-     *
-     * @throws InvalidArgumentException
      */
     public static function getTypeFromPHPVariable($variable): ?Type
     {
         if (is_object($variable)) {
-            if ($variable instanceof DateTimeInterface) {
-                return self::getType(self::DATE);
+            if ($variable instanceof DateTimeImmutable) {
+                return self::getType(self::DATE_IMMUTABLE);
             }
 
-            if ($variable instanceof ObjectId) {
-                return self::getType(self::ID);
+            if ($variable instanceof DateTimeInterface) {
+                return self::getType(self::DATE);
             }
 
             if ($variable instanceof Uuid) {
                 return self::getType(self::UUID);
             }
-        } else {
-            $type = gettype($variable);
-            switch ($type) {
-                case 'integer':
-                    return self::getType('int');
+
+            // Try the variable class as type name
+            if (self::hasType($variable::class)) {
+                return self::getType($variable::class);
             }
+
+            return null;
         }
 
-        return null;
+        return match (gettype($variable)) {
+            'integer' => self::getType(self::INT),
+            'boolean' => self::getType(self::BOOL),
+            'double' => self::getType(self::FLOAT),
+            'string' => self::getType(self::STRING),
+            default => null,
+        };
     }
 
     /**

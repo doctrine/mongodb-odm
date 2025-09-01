@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
@@ -22,6 +23,7 @@ use Symfony\Component\Uid\UuidV4;
 use function get_debug_type;
 use function hex2bin;
 use function md5;
+use function sprintf;
 use function str_pad;
 use function str_repeat;
 use function time;
@@ -127,6 +129,46 @@ class TypeTest extends BaseTestCase
         $date = new DateTimeImmutable('now');
 
         self::assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
+    }
+
+    #[DataProvider('provideTypeFromPHPVariable')]
+    public function testGetTypeFromPHPVariable(?Type $expectedType, mixed $variable): void
+    {
+        $type = Type::getTypeFromPHPVariable($variable);
+
+        if ($expectedType === null) {
+            self::assertNull($type);
+        } elseif ($type === null) {
+            self::fail(sprintf('Type is null, expected "%s"', $expectedType::class));
+        } else {
+            self::assertInstanceOf($expectedType::class, $type, $type::class);
+        }
+    }
+
+    public static function provideTypeFromPHPVariable(): array
+    {
+        return [
+            'null' => [null, null],
+            'bool' => [Type::getType(Type::BOOL), true],
+            'int' => [Type::getType(Type::INT), 1],
+            'float' => [Type::getType(Type::FLOAT), 3.14],
+            'string' => [Type::getType(Type::STRING), 'ohai'],
+            'DateTime' => [Type::getType(Type::DATE), new DateTime()],
+            'DateTimeImmutable' => [Type::getType(Type::DATE_IMMUTABLE), new DateTimeImmutable()],
+            'unknown object' => [
+                null,
+                new class () {
+                },
+            ],
+        ];
+    }
+
+    public function testInvalidType(): void
+    {
+        self::expectException(InvalidTypeException::class);
+        self::expectExceptionMessage('Invalid type specified: "foo"');
+
+        Type::getType('foo');
     }
 
     private static function assertSameTypeAndValue(mixed $expected, mixed $actual): void
