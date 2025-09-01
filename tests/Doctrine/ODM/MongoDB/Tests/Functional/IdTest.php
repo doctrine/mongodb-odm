@@ -364,19 +364,22 @@ class IdTest extends BaseTestCase
 
         if (! class_exists($className)) {
             $code = sprintf(
-                'namespace Doctrine\ODM\MongoDB\Tests\Functional;
+                <<<'PHP'
+                namespace %s;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+                use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-#[ODM\Document]
-class %s
-{
-    #[ODM\Id(strategy: "%s", options: ["type" => "%s"])]
-    public $id;
+                #[ODM\Document]
+                class %s
+                {
+                    #[ODM\Id(strategy: "%s", options: ["type" => "%s"])]
+                    public $id;
 
-    #[ODM\Field(type: "string")]
-    public $test = "test";
-}',
+                    #[ODM\Field(type: "string")]
+                    public $test = "test";
+                }
+                PHP,
+                __NAMESPACE__,
                 $shortClassName,
                 $strategy,
                 $type,
