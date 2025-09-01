@@ -218,7 +218,7 @@ final class DocumentPersister
                     $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
                 }
 
-                $data[$versionMapping['name']] = $type->convertPHPToDatabaseValue($nextVersion);
+                $data[$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
             }
 
             $inserts[] = $data;
@@ -296,7 +296,7 @@ final class DocumentPersister
                 $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
             }
 
-            $data['$set'][$versionMapping['name']] = $type->convertPHPToDatabaseValue($nextVersion);
+            $data['$set'][$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
         }
 
         foreach (array_keys($criteria) as $field) {
@@ -377,8 +377,8 @@ final class DocumentPersister
             $type           = Type::getType($versionMapping['type']);
             assert($type instanceof Versionable);
             $nextVersion                             = $type->getNextVersion($currentVersion);
-            $update['$set'][$versionMapping['name']] = Type::convertPHPToDatabaseValue($nextVersion);
-            $query[$versionMapping['name']]          = Type::convertPHPToDatabaseValue($currentVersion);
+            $update['$set'][$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
+            $query[$versionMapping['name']]          = $type->convertToDatabaseValue($currentVersion);
         }
 
         if (! empty($update)) {
