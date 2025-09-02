@@ -24,6 +24,7 @@ class SearchIndex implements Annotation
      * @param list<array>|null              $analyzers
      * @param SearchIndexStoredSource|null  $storedSource
      * @param list<SearchIndexSynonym>|null $synonyms
+     * @param string|null                   $type         Type of index: 'search' (default) or 'vectorSearch'
      */
     public function __construct(
         public ?string $name = null,
@@ -34,6 +35,7 @@ class SearchIndex implements Annotation
         public ?array $analyzers = null,
         public $storedSource = null,
         public ?array $synonyms = null,
+        public ?string $type = null,
     ) {
     }
 }

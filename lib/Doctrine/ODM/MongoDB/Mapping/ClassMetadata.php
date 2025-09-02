@@ -1245,7 +1245,7 @@ use function trigger_deprecation;
      *
      * @phpstan-param SearchIndexDefinition $definition
      */
-    public function addSearchIndex(array $definition, ?string $name = null): void
+    public function addSearchIndex(array $definition, ?string $name = null, ?string $type): void
     {
         $name ??= self::DEFAULT_SEARCH_INDEX_NAME;
 
@@ -1256,6 +1256,7 @@ use function trigger_deprecation;
         $this->searchIndexes[] = [
             'definition' => $definition,
             'name' => $name,
+            'type' => $type,
         ];
     }
 

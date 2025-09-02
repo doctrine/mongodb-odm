@@ -386,7 +386,7 @@ class AttributeDriver implements MappingDriver
             }
         }
 
-        $class->addSearchIndex($definition, $index->name ?? null);
+        $class->addSearchIndex($definition, $index->name, $index->type);
     }
 
     /**

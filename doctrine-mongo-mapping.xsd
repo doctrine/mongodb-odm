@@ -566,11 +566,19 @@
     </xs:choice>
 
     <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="type" type="odm:search-index-type" />
     <xs:attribute name="dynamic" type="xs:boolean" />
     <xs:attribute name="analyzer" type="xs:string" />
     <xs:attribute name="searchAnalyzer" type="xs:string" />
     <xs:attribute name="storedSource" type="xs:boolean" />
   </xs:complexType>
+
+  <xs:simpleType name="search-index-type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="search" />
+      <xs:enumeration value="vectorSearch" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <!-- https://www.mongodb.com/docs/atlas/atlas-search/define-field-mappings/ -->
   <xs:complexType name="search-index-field">
