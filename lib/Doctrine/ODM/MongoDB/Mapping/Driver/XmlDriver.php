@@ -210,6 +210,12 @@ class XmlDriver extends FileDriver
             }
         }
 
+        if (isset($xmlRoot->{'vector-search-indexes'})) {
+            foreach ($xmlRoot->{'vector-search-indexes'}->{'vector-search-index'} as $searchIndex) {
+                $this->addVectorSearchIndex($metadata, $searchIndex);
+            }
+        }
+
         if (isset($xmlRoot->{'shard-key'})) {
             $this->setShardKey($metadata, $xmlRoot->{'shard-key'}[0]);
         }
@@ -746,6 +752,45 @@ class XmlDriver extends FileDriver
         }
 
         return $fieldDefinition;
+    }
+
+    /** @param ClassMetadata<object> $class */
+    private function addVectorSearchIndex(ClassMetadata $class, SimpleXMLElement $searchIndex): void
+    {
+        $definition = ['fields' => []];
+
+        foreach ($searchIndex->{'vector-field'} as $vectorField) {
+            $field = [
+                'type' => 'vector',
+                'path' => (string) $vectorField['path'],
+                'numDimensions' => (int) $vectorField['numDimensions'],
+                'similarity' => (string) $vectorField['similarity'],
+            ];
+            if (isset($vectorField['quantization'])) {
+                $field['quantization'] = (string) $vectorField['quantization'];
+            }
+
+            if (isset($vectorField['hnswMaxEdges'])) {
+                $field['hnswOptions']['maxEdges'] = (int) $vectorField['hnswMaxEdges'];
+            }
+
+            if (isset($vectorField['hnswNumEdgeCandidates'])) {
+                $field['hnswOptions']['numEdgeCandidates'] = (int) $vectorField['hnswNumEdgeCandidates'];
+            }
+
+            $definition['fields'][] = $field;
+        }
+
+        foreach ($searchIndex->{'filter-field'} as $filterField) {
+            $definition['fields'][] = [
+                'type' => 'filter',
+                'path' => (string) $filterField['path'],
+            ];
+        }
+
+        $name = isset($searchIndex['name']) ? (string) $searchIndex['name'] : null;
+
+        $class->addSearchIndex($definition, $name, 'vectorSearch');
     }
 
     /** @return array<string, array<string, mixed>|scalar|null> */

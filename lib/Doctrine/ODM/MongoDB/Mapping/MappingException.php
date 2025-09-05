@@ -297,6 +297,11 @@ final class MappingException extends BaseMappingException
         return new self(sprintf('%s search index "%s" must be dynamic or specify a field mapping', $className, $indexName));
     }
 
+    public static function emptyVectorSearchIndexDefinition(string $className, string $indexName): self
+    {
+        return new self(sprintf('%s vector search index "%s" must have a vector field', $className, $indexName));
+    }
+
     public static function timeSeriesFieldNotFound(string $className, string $fieldName, string $field): self
     {
         return new self(sprintf(

@@ -115,13 +115,14 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     #[Depends('testDocumentLevelWriteConcern')]
     public function testFieldMappings(ClassMetadata $class): ClassMetadata
     {
-        self::assertCount(14, $class->fieldMappings);
+        self::assertCount(15, $class->fieldMappings);
         self::assertTrue(isset($class->fieldMappings['identifier']));
         self::assertTrue(isset($class->fieldMappings['version']));
         self::assertTrue(isset($class->fieldMappings['lock']));
         self::assertTrue(isset($class->fieldMappings['name']));
         self::assertTrue(isset($class->fieldMappings['email']));
         self::assertTrue(isset($class->fieldMappings['roles']));
+        self::assertTrue(isset($class->fieldMappings['embedding']));
 
         return $class;
     }
@@ -237,7 +238,7 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     #[Depends('testIdentifier')]
     public function testAssocations(ClassMetadata $class): ClassMetadata
     {
-        self::assertCount(14, $class->fieldMappings);
+        self::assertCount(15, $class->fieldMappings);
 
         return $class;
     }
@@ -433,6 +434,7 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         $expectedIndexes = [
             [
                 'name' => 'default',
+                'type' => 'search',
                 'definition' => [
                     'mappings' => ['dynamic' => true],
                     'analyzer' => 'lucene.standard',
@@ -442,6 +444,7 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
             ],
             [
                 'name' => 'usernameAndPhoneNumbers',
+                'type' => 'search',
                 'definition' => [
                     'mappings' => [
                         'fields' => [
@@ -469,6 +472,30 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
                             'name' => 'mySynonyms',
                             'analyzer' => 'lucene.english',
                             'source' => ['collection' => 'synonyms'],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'type' => 'vectorSearch',
+                'name' => 'embeddingIndex',
+                'definition' => [
+                    'fields' => [
+                        [
+                            'type' => 'vector',
+                            'path' => 'embedding',
+                            'numDimensions' => 1536,
+                            'similarity' => 'euclidean',
+                            'quantization' => 'scalar',
+                            'hnswOptions' => ['maxEdges' => 16, 'numEdgeCandidates' => 200],
+                        ],
+                        [
+                            'type' => 'filter',
+                            'path' => 'name',
+                        ],
+                        [
+                            'type' => 'filter',
+                            'path' => 'email',
                         ],
                     ],
                 ],
@@ -729,6 +756,19 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
  *     {"name"="mySynonyms", "analyzer"="lucene.english", "source"={"collection"="synonyms"}},
  *   },
  * )
+ * @ODM\VectorSearchIndex(
+ *   fields={
+ *     {"type"="vector",
+ *      "path"="embedding",
+ *      "numDimensions"=1536,
+ *      "similarity"="euclidean",
+ *      "quantization"="scalar",
+ *      "hnswOptions"={"maxEdges"=16, "numEdgeCandidates"=200, },
+ *     },
+ *     {"type"="filter", "path"="name"}
+ *   },
+ *   name="embeddingIndex",
+ * )
  * @ODM\ShardKey(keys={"name"="asc"},unique=true,numInitialChunks=4096)
  * @ODM\ReadPreference("primaryPreferred", tags={
  *   { "dc"="east" },
@@ -763,6 +803,27 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     synonyms: [
         ['name' => 'mySynonyms', 'analyzer' => 'lucene.english', 'source' => ['collection' => 'synonyms']],
     ],
+)]
+#[ODM\VectorSearchIndex(
+    fields: [
+        [
+            'type' => 'vector',
+            'path' => 'embedding',
+            'numDimensions' => 1536,
+            'similarity' => ClassMetadata::VECTOR_SIMILARITY_EUCLIDEAN,
+            'quantization' => ClassMetadata::VECTOR_QUANTIZATION_SCALAR,
+            'hnswOptions' => ['maxEdges' => 16, 'numEdgeCandidates' => 200],
+        ],
+        [
+            'type' => 'filter',
+            'path' => 'name',
+        ],
+        [
+            'type' => 'filter',
+            'path' => 'email',
+        ],
+    ],
+    name: 'embeddingIndex',
 )]
 #[ODM\ShardKey(keys: ['name' => 'asc'], unique: true, numInitialChunks: 4096)]
 #[ODM\ReadPreference('primaryPreferred', tags: [['dc' => 'east'], ['dc' => 'west'], []])]
@@ -889,6 +950,14 @@ class AbstractMappingDriverUser
      */
     #[ODM\Field(type: 'collection')]
     public $roles = [];
+
+    /**
+     * @ODM\Field(type="collection")
+     *
+     * @var int[]
+     */
+    #[ODM\Field(type: 'collection')]
+    public $embedding = [];
 
     /** @ODM\PrePersist */
     #[ODM\PrePersist]

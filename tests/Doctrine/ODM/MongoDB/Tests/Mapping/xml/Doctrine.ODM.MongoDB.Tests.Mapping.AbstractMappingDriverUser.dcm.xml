@@ -28,6 +28,7 @@
         <field field-name="mysqlProfileId" type="int" unique="true" drop-dups="true" order="desc" />
         <field field-name="createdAt" type="date" />
         <field field-name="roles" type="collection" />
+        <field field-name="embedding" type="collection" />
         <indexes>
             <index unique="true">
                 <key name="username" order="desc" />
@@ -59,6 +60,13 @@
                 <synonym name="mySynonyms" analyzer="lucene.english" sourceCollection="synonyms" />
             </search-index>
         </search-indexes>
+        <vector-search-indexes>
+            <vector-search-index name="embeddingIndex">
+                <vector-field path="embedding" numDimensions="1536" similarity="euclidean" quantization="scalar" hnswMaxEdges="16" hnswNumEdgeCandidates="200" />
+                <filter-field path="name" />
+                <filter-field path="email" />
+            </vector-search-index>
+        </vector-search-indexes>
         <reference-one target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Address" field="address">
             <cascade>
                 <remove />

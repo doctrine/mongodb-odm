@@ -8,7 +8,6 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\SearchIndex;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -106,6 +105,10 @@ class AttributeDriver implements MappingDriver
 
             if ($attribute instanceof ODM\SearchIndex) {
                 $this->addSearchIndex($metadata, $attribute);
+            }
+
+            if ($attribute instanceof ODM\VectorSearchIndex) {
+                $this->addVectorSearchIndex($metadata, $attribute);
             }
 
             if ($attribute instanceof ODM\Indexes) {
@@ -370,7 +373,7 @@ class AttributeDriver implements MappingDriver
     }
 
     /** @param ClassMetadata<object> $class */
-    private function addSearchIndex(ClassMetadata $class, SearchIndex $index): void
+    private function addSearchIndex(ClassMetadata $class, ODM\SearchIndex $index): void
     {
         $definition = [];
 
@@ -386,7 +389,17 @@ class AttributeDriver implements MappingDriver
             }
         }
 
-        $class->addSearchIndex($definition, $index->name ?? null);
+        $class->addSearchIndex($definition, $index->name ?? null, 'search');
+    }
+
+    /** @param ClassMetadata<object> $class */
+    private function addVectorSearchIndex(ClassMetadata $class, ODM\VectorSearchIndex $index): void
+    {
+        $definition = [
+            'fields' => $index->fields,
+        ];
+
+        $class->addSearchIndex($definition, $index->name ?? null, 'vectorSearch');
     }
 
     /**

@@ -35,6 +35,7 @@ use ReflectionEnum;
 use ReflectionNamedType;
 use ReflectionProperty;
 
+use function array_column;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -262,6 +263,17 @@ use function trigger_deprecation;
  *      name: string,
  *      definition: SearchIndexDefinition
  * }
+ * @phpstan-type VectorSearchIndexField array{
+ *     type: 'vector'|'filter',
+ *     path: string,
+ *     numDimensions?: int,
+ *     similarity?: self::VECTOR_SIMILARITY_*,
+ *     quantization?: self::VECTOR_QUANTIZATION_*,
+ *     hnswOptions?: array{maxEdges?: int, numEdgeCandidates?: int}
+ * }
+ * @phpstan-type VectorSearchIndexDefinition array{
+ *     fields: list<VectorSearchIndexField>
+ * }
  * @phpstan-type ShardKeys array<string, mixed>
  * @phpstan-type ShardOptions array<string, mixed>
  * @phpstan-type ShardKey array{
@@ -458,6 +470,13 @@ use function trigger_deprecation;
      * @see https://www.mongodb.com/docs/manual/reference/command/createSearchIndexes/
      */
     public const DEFAULT_SEARCH_INDEX_NAME = 'default';
+
+    public const VECTOR_SIMILARITY_EUCLIDEAN   = 'euclidean';
+    public const VECTOR_SIMILARITY_COSINE      = 'cosine';
+    public const VECTOR_SIMILARITY_DOT_PRODUCT = 'dot_product';
+    public const VECTOR_QUANTIZATION_NONE      = 'none';
+    public const VECTOR_QUANTIZATION_SCALAR    = 'scalar';
+    public const VECTOR_QUANTIZATION_BINARY    = 'binary';
 
     private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
 
@@ -1243,19 +1262,25 @@ use function trigger_deprecation;
     /**
      * Add a search index for this Document.
      *
-     * @phpstan-param SearchIndexDefinition $definition
+     * @phpstan-param SearchIndexDefinition|VectorSearchIndexDefinition $definition
+     * @phpstan-param 'search'|'vectorSearch' $type
      */
-    public function addSearchIndex(array $definition, ?string $name = null): void
+    public function addSearchIndex(array $definition, ?string $name = null, string $type = 'search'): void
     {
         $name ??= self::DEFAULT_SEARCH_INDEX_NAME;
 
-        if (empty($definition['mappings']['dynamic']) && empty($definition['mappings']['fields'])) {
+        if ($type === 'search' && empty($definition['mappings']['dynamic']) && empty($definition['mappings']['fields'])) {
             throw MappingException::emptySearchIndexDefinition($this->name, $name);
+        }
+
+        if ($type === 'vectorSearch' && ! in_array('vector', array_column($definition['fields'] ?? [], 'type'), true)) {
+            throw MappingException::emptyVectorSearchIndexDefinition($this->name, $name);
         }
 
         $this->searchIndexes[] = [
             'definition' => $definition,
             'name' => $name,
+            'type' => $type,
         ];
     }
 

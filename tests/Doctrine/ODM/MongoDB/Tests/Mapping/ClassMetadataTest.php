@@ -39,6 +39,7 @@ use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\Document;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use ReflectionClass;
 use ReflectionException;
 use stdClass;
@@ -980,6 +981,34 @@ class ClassMetadataTest extends BaseTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('stdClass search index "default" must be dynamic or specify a field mapping');
         $cm->addSearchIndex(['mappings' => []]);
+    }
+
+    #[TestWith([null, ClassMetadata::DEFAULT_SEARCH_INDEX_NAME, ['mappings' => ['dynamic' => true]]])]
+    #[TestWith(['custom_name', 'custom_name', ['mappings' => ['fields' => ['title' => ['type' => 'string']]]]])]
+    public function testSearchIndexDefinition(?string $name, string $expectedName, array $definition): void
+    {
+        $cm = new ClassMetadata('stdClass');
+        $cm->addSearchIndex($definition, $name);
+
+        self::assertSame([
+            [
+                'definition' => $definition,
+                'name' => $expectedName,
+                'type' => 'search',
+            ],
+        ], $cm->getSearchIndexes());
+    }
+
+    #[TestWith([[]])]
+    #[TestWith([['fields' => []]])]
+    #[TestWith([['fields' => [['type' => 'filter', 'path' => 'foo']]]])]
+    public function testEmptyVectorSearchIndexDefinition(array $definition): void
+    {
+        $cm = new ClassMetadata('stdClass');
+
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('stdClass vector search index "default" must have a vector field');
+        $cm->addSearchIndex($definition, name: 'default', type: 'vector');
     }
 
     public function testTimeSeriesMappingOnlyWithTimeField(): void
