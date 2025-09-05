@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 #[ODM\Index(keys: ['topic' => 'asc'])]
-#[ODM\SearchIndex(dynamic: true)]
+#[ODM\SearchIndex(name: 'search_articles', dynamic: true)]
 #[ODM\Document]
 class CmsArticle
 {

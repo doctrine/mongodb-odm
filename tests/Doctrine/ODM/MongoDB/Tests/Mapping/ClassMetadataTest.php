@@ -1008,7 +1008,35 @@ class ClassMetadataTest extends BaseTestCase
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('stdClass vector search index "default" must have a vector field');
-        $cm->addSearchIndex($definition, name: 'default', type: 'vector');
+        $cm->addSearchIndex($definition, 'default', 'vectorSearch');
+    }
+
+    public function testVectorSearchIndexDefinition(): void
+    {
+        $definition = [
+            'fields' => [
+                [
+                    'type' => 'vector',
+                    'path' => 'embedding',
+                    'numDimensions' => 85,
+                    'similarity' => ClassMetadata::VECTOR_SIMILARITY_COSINE,
+                ],
+                [
+                    'type' => 'filter',
+                    'path' => 'category',
+                ],
+            ],
+        ];
+        $cm         = new ClassMetadata('stdClass');
+        $cm->addSearchIndex($definition, 'embeddings_index', 'vectorSearch');
+
+        self::assertSame([
+            [
+                'definition' => $definition,
+                'name' => 'embeddings_index',
+                'type' => 'vectorSearch',
+            ],
+        ], $cm->getSearchIndexes());
     }
 
     public function testTimeSeriesMappingOnlyWithTimeField(): void

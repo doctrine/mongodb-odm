@@ -1867,6 +1867,18 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ClassMetadataTest\:\:testEmptyVectorSearchIndexDefinition\(\) has parameter \$definition with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+
+		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ClassMetadataTest\:\:testSearchIndexDefinition\(\) has parameter \$definition with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataTest.php
+
+		-
 			message: '#^Property DoctrineGlobal_User\:\:\$email is unused\.$#'
 			identifier: property.unused
 			count: 1

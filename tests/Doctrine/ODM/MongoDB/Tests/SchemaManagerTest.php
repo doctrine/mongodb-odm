@@ -25,6 +25,7 @@ use Documents\SimpleReferenceUser;
 use Documents\TimeSeries\TimeSeriesDocument;
 use Documents\Tournament\Tournament;
 use Documents\UserName;
+use Documents\VectorEmbedding;
 use InvalidArgumentException;
 use Iterator;
 use MongoDB\BSON\Document;
@@ -48,6 +49,7 @@ use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 
 use function array_count_values;
+use function array_key_exists;
 use function array_map;
 use function assert;
 use function in_array;
@@ -72,10 +74,11 @@ class SchemaManagerTest extends BaseTestCase
         ShardedOneWithDifferentKey::class,
     ];
 
-    /** @var list<class-string> */
+    /** @var array<class-string, list<string>> */
     private array $searchIndexedClasses = [
-        CmsAddress::class,
-        CmsArticle::class,
+        CmsAddress::class => ['default'],
+        CmsArticle::class => ['search_articles'],
+        VectorEmbedding::class => ['default', 'vector_int'],
     ];
 
     /** @var list<class-string> */
@@ -112,12 +115,7 @@ class SchemaManagerTest extends BaseTestCase
                 $this->documentCollections[$cm->getCollection()] = $this->getMockCollection($cm->getCollection());
             }
 
-            $db = $this->getDatabaseName($cm);
-            if (isset($this->documentDatabases[$db])) {
-                continue;
-            }
-
-            $this->documentDatabases[$db] = $this->getMockDatabase();
+            $this->documentDatabases[$this->getDatabaseName($cm)] ??= $this->getMockDatabase();
         }
 
         $client->method('getDatabase')->willReturnCallback(fn (string $db) => $this->documentDatabases[$db]);
@@ -392,17 +390,18 @@ class SchemaManagerTest extends BaseTestCase
 
     public function testCreateSearchIndexes(): void
     {
-        $searchIndexedCollections = array_map(
-            fn (string $fqcn) => $this->dm->getClassMetadata($fqcn)->getCollection(),
-            $this->searchIndexedClasses,
-        );
+        $searchIndexesPerCollectionName = [];
+        foreach ($this->searchIndexedClasses as $fqcn => $indexes) {
+            $searchIndexesPerCollectionName[$this->dm->getClassMetadata($fqcn)->getCollection()] = $indexes;
+        }
+
         foreach ($this->documentCollections as $collectionName => $collection) {
-            if (in_array($collectionName, $searchIndexedCollections)) {
+            if (array_key_exists($collectionName, $searchIndexesPerCollectionName)) {
                 $collection
                     ->expects($this->once())
                     ->method('createSearchIndexes')
                     ->with($this->anything())
-                    ->willReturn(['default']);
+                    ->willReturn($searchIndexesPerCollectionName[$collectionName]);
             } else {
                 $collection->expects($this->never())->method('createSearchIndexes');
             }
@@ -413,14 +412,58 @@ class SchemaManagerTest extends BaseTestCase
 
     public function testCreateDocumentSearchIndexes(): void
     {
-        $cmsArticleCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $expectedCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
-            if ($collectionName === $cmsArticleCollectionName) {
+            if ($collectionName === $expectedCollectionName) {
                 $collection
                     ->expects($this->once())
                     ->method('createSearchIndexes')
-                    ->with($this->anything())
-                    ->willReturn(['default']);
+                    ->with([
+                        [
+                            'definition' => ['mappings' => ['dynamic' => true]],
+                            'name' => 'search_articles',
+                            'type' => 'search',
+                        ],
+                    ])
+                    ->willReturn(['search_articles']);
+            } else {
+                $collection->expects($this->never())->method('createSearchIndexes');
+            }
+        }
+
+        $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testCreateDocumentVectorSearchIndexes(): void
+    {
+        $expectedCollectionName = $this->dm->getClassMetadata(VectorEmbedding::class)->getCollection();
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if ($collectionName === $expectedCollectionName) {
+                $collection
+                    ->expects($this->once())
+                    ->method('createSearchIndexes')
+                    ->with([
+                        [
+                            'definition' => [
+                                'fields' => [
+                                    ['type' => 'vector', 'path' => 'vectorFloat', 'numDimensions' => 3, 'similarity' => 'dot_product'],
+                                ],
+                            ],
+                            'name' => 'default',
+                            'type' => 'vectorSearch',
+                        ],
+                        [
+                            'definition' => [
+                                'fields' => [
+                                    ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => 'cosine'],
+                                    ['type' => 'filter', 'path' => 'filterField'],
+                                ],
+                            ],
+                            'name' => 'vector_int',
+                            'type' => 'vectorSearch',
+                        ],
+                    ])
+                    ->willReturn(['default', 'vector_int']);
             } else {
                 $collection->expects($this->never())->method('createSearchIndexes');
             }

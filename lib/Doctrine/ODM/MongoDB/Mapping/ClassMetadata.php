@@ -1269,6 +1269,10 @@ use function trigger_deprecation;
     {
         $name ??= self::DEFAULT_SEARCH_INDEX_NAME;
 
+        if ($type !== 'search' && $type !== 'vectorSearch') {
+            throw new InvalidArgumentException(sprintf('Search index type must be either "search" or "vectorSearch", "%s" given.', $type));
+        }
+
         if ($type === 'search' && empty($definition['mappings']['dynamic']) && empty($definition['mappings']['fields'])) {
             throw MappingException::emptySearchIndexDefinition($this->name, $name);
         }
