@@ -1167,6 +1167,10 @@ Optional arguments:
 This attribute is used to specify :ref:`search indexes <search_indexes>` for
 `MongoDB Atlas Search <https://www.mongodb.com/docs/atlas/atlas-search/>`__.
 
+.. note::
+
+    For vector search indexes, see :ref:`vector_search_index` below.
+
 The arguments correspond to arguments for
 `MongoDB\Collection::createSearchIndex() <https://www.mongodb.com/docs/php-library/current/reference/method/MongoDBCollection-createSearchIndex/>`__.
 Excluding ``name``, arguments are used to create the
@@ -1396,6 +1400,73 @@ for the related collection.
 
         // rest of the class code...
     }
+
+#[VectorSearchIndex]
+--------------------
+
+.. _vector_search_index:
+
+The ``#[VectorSearchIndex]`` attribute is used to define a vector search index
+on a document class. This enables efficient similarity search on vector fields,
+such as those used for machine learning embeddings.
+
+Optional arguments:
+
+- ``name``: (optional) The name of the vector search index. If omitted, a default name is used.
+- ``fields`` (required): A list of field definitions. Each field definition is an associative array describing a vector or filter field. For vector fields, the following keys are supported:
+
+  - ``type``: Must be set to ``'vector'`` for vector fields or ``'filter'`` for filter fields.
+  - ``path``: The name of the field in the document to index.
+  - ``numDimensions``: (vector fields only) The number of dimensions in the vector.
+  - ``similarity``: (vector fields only) The vector similarity function to use. Supported values include ``'euclidean'``, ``'cosine'``, and ``'dotProduct'``. Use the constants from ``Doctrine\ODM\MongoDB\Mapping\ClassMetadata::VECTOR_SIMILARITY_*`` for best compatibility.
+  - ``quantization``: (vector fields only, optional) The quantization method, e.g., ``'scalar'``.
+  - ``hnswOptions``: (vector fields only, optional) Options for the HNSW algorithm: ``maxEdges`` and ``numEdgeCandidates``.
+
+  For filter fields, only ``type: 'filter'`` and ``path`` are required.
+
+
+Example:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+    use Doctrine\ODM\MongoDB\Mapping\Annotations\VectorSearchIndex;
+    use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+    use Doctrine\ODM\MongoDB\Types\Type;
+
+    #[Document(collection: 'vector_embeddings')]
+    #[VectorSearchIndex(
+        fields: [
+            [
+                'type' => 'vector',
+                'path' => 'plotEmbeddingVoyage3Large',
+                'numDimensions' => 2048,
+                'similarity' => ClassMetadata::VECTOR_SIMILARITY_DOT_PRODUCT,
+                'quantization' => ClassMetadata::VECTOR_QUANTIZATION_SCALAR,
+            ],
+            [
+                'type' => 'filter',
+                'path' => 'category',
+            ],
+        ],
+    )]
+    class VectorEmbedding
+    {
+        #[Id]
+        public ?string $id = null;
+
+        /** @var list<float> */
+        #[Field(type: Type::COLLECTION)]
+        public array $plotEmbeddingVoyage3Large = [];
+
+        #[Field)]
+        public string $category;
+    }
+
+For more details, see the MongoDB documentation on `Atlas Vector Search <https://www.mongodb.com/docs/atlas/atlas-vector-search/>`_.
 
 #[Version]
 ----------
