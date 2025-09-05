@@ -9,7 +9,9 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
- * Defines a search index on a class.
+ * Defines a vector search index on a class.
+ *
+ * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/
  *
  * @Annotation
  * @NamedArgumentConstructor

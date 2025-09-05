@@ -1462,7 +1462,7 @@ Example:
         #[Field(type: Type::COLLECTION)]
         public array $plotEmbeddingVoyage3Large = [];
 
-        #[Field)]
+        #[Field]
         public string $category;
     }
 

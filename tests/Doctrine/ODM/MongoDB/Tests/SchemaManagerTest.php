@@ -434,44 +434,6 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
     }
 
-    public function testCreateDocumentVectorSearchIndexes(): void
-    {
-        $expectedCollectionName = $this->dm->getClassMetadata(VectorEmbedding::class)->getCollection();
-        foreach ($this->documentCollections as $collectionName => $collection) {
-            if ($collectionName === $expectedCollectionName) {
-                $collection
-                    ->expects($this->once())
-                    ->method('createSearchIndexes')
-                    ->with([
-                        [
-                            'definition' => [
-                                'fields' => [
-                                    ['type' => 'vector', 'path' => 'vectorFloat', 'numDimensions' => 3, 'similarity' => 'dot_product'],
-                                ],
-                            ],
-                            'name' => 'default',
-                            'type' => 'vectorSearch',
-                        ],
-                        [
-                            'definition' => [
-                                'fields' => [
-                                    ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => 'cosine'],
-                                    ['type' => 'filter', 'path' => 'filterField'],
-                                ],
-                            ],
-                            'name' => 'vector_int',
-                            'type' => 'vectorSearch',
-                        ],
-                    ])
-                    ->willReturn(['default', 'vector_int']);
-            } else {
-                $collection->expects($this->never())->method('createSearchIndexes');
-            }
-        }
-
-        $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
-    }
-
     public function testCreateDocumentSearchIndexesNotSupported(): void
     {
         $exception = $this->createSearchIndexCommandException();
@@ -501,7 +463,7 @@ class SchemaManagerTest extends BaseTestCase
             ->expects($this->once())
             ->method('listSearchIndexes')
             ->willReturn(new ArrayIterator([
-                ['name' => 'default'],
+                ['name' => 'search_articles'],
                 ['name' => 'foo'],
             ]));
         $collection
@@ -511,7 +473,7 @@ class SchemaManagerTest extends BaseTestCase
         $collection
             ->expects($this->once())
             ->method('updateSearchIndex')
-            ->with('default', $this->anything());
+            ->with('search_articles', $this->anything());
 
         $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
     }

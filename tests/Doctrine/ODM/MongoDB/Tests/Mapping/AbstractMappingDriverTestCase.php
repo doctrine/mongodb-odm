@@ -758,14 +758,16 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
  * )
  * @ODM\VectorSearchIndex(
  *   fields={
- *     {"type"="vector",
- *      "path"="embedding",
- *      "numDimensions"=1536,
- *      "similarity"="euclidean",
- *      "quantization"="scalar",
- *      "hnswOptions"={"maxEdges"=16, "numEdgeCandidates"=200, },
+ *     {
+ *       "type"="vector",
+ *       "path"="embedding",
+ *       "numDimensions"=1536,
+ *       "similarity"="euclidean",
+ *       "quantization"="scalar",
+ *       "hnswOptions"={"maxEdges"=16, "numEdgeCandidates"=200, },
  *     },
- *     {"type"="filter", "path"="name"}
+ *     {"type"="filter", "path"="name"},
+ *     {"type"="filter", "path"="email"},
  *   },
  *   name="embeddingIndex",
  * )

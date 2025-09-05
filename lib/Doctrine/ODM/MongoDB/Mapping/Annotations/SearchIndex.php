@@ -11,6 +11,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 /**
  * Defines a search index on a class.
  *
+ * @see https://www.mongodb.com/docs/atlas/atlas-search/index-definitions/
+ *
  * @Annotation
  * @NamedArgumentConstructor
  * @phpstan-import-type SearchIndexStoredSource from ClassMetadata
