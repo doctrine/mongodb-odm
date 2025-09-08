@@ -31,6 +31,7 @@ Doctrine MongoDB ODM provides integration for the following aggregation pipeline
 - `$skip <https://docs.mongodb.com/manual/reference/operator/aggregation/skip/>`_
 - `$sort <https://docs.mongodb.com/manual/reference/operator/aggregation/project/>`_
 - `$sortByCount <https://docs.mongodb.com/manual/reference/operator/aggregation/sortByCount/>`_
+- `$vectorSearch <https://docs.mongodb.com/manual/reference/operator/aggregation/vectorSearch/>`_
 - `$unionWith <https://docs.mongodb.com/manual/reference/operator/aggregation/unionWith/>`_
 - `$unset <https://docs.mongodb.com/manual/reference/operator/aggregation/unset/>`_
 - `$unwind <https://docs.mongodb.com/manual/reference/operator/aggregation/unwind/>`_
@@ -42,6 +43,10 @@ Doctrine MongoDB ODM provides integration for the following aggregation pipeline
     was added in Doctrine MongoDB ODM 2.6. Please consult the MongoDB
     documentation to ensure that the pipeline stage is available in the MongoDB
     version you are using.
+
+.. note::
+
+    Support for ``$vectorSearch`` was added in Doctrine MongoDB ODM 2.13.
 
 $addFields
 ----------
@@ -783,6 +788,37 @@ The example above is equivalent to the following pipeline:
             ->field('count')
             ->sum(1)
         ->sort(['count' => -1])
+    ;
+
+$vectorSearch
+-------------
+
+The ``$vectorSearch`` stage performs a vector similarity search on the specified
+field or fields which must be covered by an Atlas Vector Search index.
+This stage is only available when using MongoDB Atlas. ``$vectorSearch`` must be
+the first stage in the aggregation pipeline.
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Products::class);
+    $builder
+        ->vectorSearch()
+            ->index('vectorIndexName')
+            ->path('vectorField')
+            ->filter(
+                $builder->matchExpr()
+                    ->field('status')
+                    ->notEqual('discontinued')
+            )
+            ->queryVector([0.1, 0.2, 0.3, 0.4, 0.5])
+            ->numCandidates($limit * 20)
+            ->limit($limit)
+        ->project()
+            ->field('_id')->expression(0)
+            ->field('product')->expression('$$ROOT')
+            ->field('score')->meta('vectorSearchScore');
     ;
 
 $unionWith
