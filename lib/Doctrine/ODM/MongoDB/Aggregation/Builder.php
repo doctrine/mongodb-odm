@@ -653,6 +653,19 @@ class Builder
     }
 
     /**
+     * The $vectorSearch stage performs a vector similarity search on the specified
+     * field which must be covered by an Atlas Vector Search index.
+     *
+     * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-stage/#mongodb-pipeline-pipe.-vectorSearch
+     */
+    public function vectorSearch(): Stage\VectorSearch
+    {
+        $stage = new Stage\VectorSearch($this);
+
+        return $this->addStage($stage);
+    }
+
+    /**
      * Performs a union of two collections. $unionWith combines pipeline results
      * from two collections into a single result set. The stage outputs the
      * combined result set (including duplicates) to the next stage.
