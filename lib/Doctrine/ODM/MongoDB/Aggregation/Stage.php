@@ -368,10 +368,14 @@ abstract class Stage
      * The $search stage performs a full-text search on the specified field or
      * fields which must be covered by an Atlas Search index.
      *
+     * @deprecated Since doctrine/mongodb-odm 2.13. This $search stage must be the first of the pipeline, use Builder::search() instead.
+     *
      * @see https://www.mongodb.com/docs/atlas/atlas-search/query-syntax/#mongodb-pipeline-pipe.-search
      */
     public function search(): Stage\Search
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Using "%s" is deprecated because the $search stage must be the first of the pipeline, use "%s::search()" instead.', __METHOD__, Builder::class);
+
         return $this->builder->search();
     }
 
