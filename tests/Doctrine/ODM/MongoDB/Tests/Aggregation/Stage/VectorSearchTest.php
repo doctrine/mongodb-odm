@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\VectorSearch;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use MongoDB\BSON\Binary;
 
 class VectorSearchTest extends BaseTestCase
 {
@@ -66,6 +67,14 @@ class VectorSearchTest extends BaseTestCase
         $stage = new VectorSearch($this->getTestAggregationBuilder());
         $stage->queryVector([1, 2, 3]);
         self::assertSame(['$vectorSearch' => ['queryVector' => [1, 2, 3]]], $stage->getExpression());
+    }
+
+    public function testQueryVectorAcceptsBinary(): void
+    {
+        $stage        = new VectorSearch($this->getTestAggregationBuilder());
+        $binaryVector = new Binary("\x01\x02\x03", 9);
+        $stage->queryVector($binaryVector);
+        self::assertSame(['$vectorSearch' => ['queryVector' => $binaryVector]], $stage->getExpression());
     }
 
     public function testChainingAllOptions(): void

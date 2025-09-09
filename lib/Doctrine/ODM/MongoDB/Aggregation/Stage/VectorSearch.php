@@ -7,11 +7,12 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Query\Expr;
+use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 
 /**
- * @phpstan-type Vector list<int|Int64>|list<float|Decimal128>|list<bool|0|1>
+ * @phpstan-type Vector list<int|Int64>|list<float|Decimal128>|list<bool|0|1>|Binary
  * @phpstan-type VectorSearchStageExpression array{
  *     '$vectorSearch': object{
  *         exact?: bool,
@@ -33,7 +34,7 @@ class VectorSearch extends Stage
     private ?int $numCandidates = null;
     private ?string $path       = null;
     /** @phpstan-var Vector|null */
-    private ?array $queryVector = null;
+    private array|Binary|null $queryVector = null;
 
     public function __construct(Builder $builder)
     {
@@ -118,7 +119,7 @@ class VectorSearch extends Stage
     }
 
     /** @phpstan-param Vector $queryVector */
-    public function queryVector(array $queryVector): static
+    public function queryVector(array|Binary $queryVector): static
     {
         $this->queryVector = $queryVector;
 
