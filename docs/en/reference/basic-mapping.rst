@@ -273,7 +273,7 @@ object ID. The available strategies are:
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
 - ``CUSTOM`` - Defers generation to an implementation of ``IdGenerator`` specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
-- ``UUID`` - Generates a UUID identifier.
+- ``UUID`` - Generates a UUID identifier (deprecated).
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
 
 Here is an example how to manually set a string identifier for your documents:

@@ -303,6 +303,8 @@ use function trigger_deprecation;
 
     /**
      * UUID means Doctrine will generate a uuid for us.
+     *
+     * @deprecated
      */
     public const GENERATOR_TYPE_UUID = 3;
 

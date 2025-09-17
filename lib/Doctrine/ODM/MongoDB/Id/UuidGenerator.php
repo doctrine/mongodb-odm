@@ -20,6 +20,8 @@ use function substr;
 
 /**
  * Generates UUIDs.
+ *
+ * @deprecated
  */
 final class UuidGenerator extends AbstractIdGenerator
 {
