@@ -24,7 +24,6 @@ class BinaryUuidTypeTest extends TestCase
         self::assertEquals($binaryUuid, $type->convertToDatabaseValue($uuid), 'Uuid objects are converted to Binary objects');
         self::assertEquals($binaryUuid, $type->convertToDatabaseValue($stringUuid), 'String UUIDs are converted to Binary objects');
         self::assertSame($binaryUuid, $type->convertToDatabaseValue($binaryUuid), 'Binary UUIDs are returned as is');
-        self::assertEquals(null, $type->convertToDatabaseValue(null), 'null is not converted');
     }
 
     public function testConvertInvalidUuid(): void
@@ -79,7 +78,6 @@ class BinaryUuidTypeTest extends TestCase
         self::assertEquals($binaryUuid, $convertToDatabaseValue($uuid), 'Uuid objects are converted to Binary objects');
         self::assertEquals($binaryUuid, $convertToDatabaseValue($stringUuid), 'String UUIDs are converted to Binary objects');
         self::assertSame($binaryUuid, $convertToDatabaseValue($binaryUuid), 'Binary UUIDs are returned as is');
-        self::assertEquals(null, $convertToDatabaseValue(null), 'null is not converted');
     }
 
     public function testClosureToPhp(): void

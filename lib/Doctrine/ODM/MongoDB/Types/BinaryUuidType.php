@@ -8,6 +8,9 @@ use Exception;
 use MongoDB\BSON\Binary;
 use Symfony\Component\Uid\Uuid;
 
+use function get_debug_type;
+use function sprintf;
+
 class BinaryUuidType extends Type
 {
     public function convertToDatabaseValue(mixed $value): ?Binary
@@ -33,11 +36,15 @@ class BinaryUuidType extends Type
             return $value;
         }
 
-        if (! $value instanceof Binary || $value->getType() !== Binary::TYPE_UUID) {
-            throw new Exception('Invalid data received for Uuid');
+        if (! $value instanceof Binary) {
+            throw new Exception(sprintf('Invalid data of type "%s" received for Uuid', get_debug_type($value)));
         }
 
-        return Uuid::fromString($value->getData());
+        if ($value->getType() !== Binary::TYPE_UUID) {
+            throw new Exception(sprintf('Invalid binary data of type %d received for Uuid', $value->getType()));
+        }
+
+        return Uuid::fromBinary($value->getData());
     }
 
     public function closureToMongo(): string
@@ -55,6 +62,6 @@ PHP;
 
     public function closureToPHP(): string
     {
-        return '$return = $value instanceof \Symfony\Component\Uid\Uuid ? $value : \Symfony\Component\Uid\Uuid::fromString($value->getData());';
+        return '$return = $value instanceof \Symfony\Component\Uid\Uuid ? $value : \Symfony\Component\Uid\Uuid::fromBinary($value->getData());';
     }
 }
