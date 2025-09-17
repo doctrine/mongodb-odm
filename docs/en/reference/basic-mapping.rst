@@ -151,6 +151,7 @@ Here is a quick overview of the built-in mapping types:
 -  ``raw``
 -  ``string``
 -  ``timestamp``
+-  ``uuid``
 
 You can read more about the available MongoDB types on `php.net <https://www.php.net/mongodb.bson>`_.
 
@@ -178,6 +179,7 @@ This list explains some of the less obvious mapping types:
 -  ``id``: string to ObjectId by default, but other formats are possible
 -  ``timestamp``: string to ``MongoDB\BSON\Timestamp``
 -  ``raw``: any type
+-  ``uuid``: Symfony UUID to MongoDB\BSON\Binary instance with a "uuid" type
 
 .. note::
 
@@ -206,6 +208,7 @@ follows:
 - ``float``: ``float``
 - ``int``: ``int``
 - ``string``: ``string``
+- ``Symfony\Component\Uid\Uuid``: ``uuid``
 
 Doctrine can also autoconfigure any backed ``enum`` it encounters: ``type``
 will be set to ``string`` or ``int``, depending on the enum's backing type,
@@ -269,12 +272,16 @@ Here is an example:
 You can configure custom ID strategies if you don't want to use the default
 object ID. The available strategies are:
 
-- ``AUTO`` - Uses the native generated ObjectId.
+- ``AUTO`` - Automatically generates an ObjectId or Symfony UUID depending on the identifier type.
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
 - ``CUSTOM`` - Defers generation to an implementation of ``IdGenerator`` specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
 - ``UUID`` - Generates a UUID identifier (deprecated).
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
+
+When using the ``AUTO`` strategy in combination with a UUID identifier, the generator can create UUIDs of type 1, type 4,
+and type 7 automatically. For all other UUID types, assign the identifier manually in combination with the ``NONE``
+strategy.
 
 Here is an example how to manually set a string identifier for your documents:
 
