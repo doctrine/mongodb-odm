@@ -1068,7 +1068,6 @@ final class DocumentPersister
 
             $preparedQueryElements = $this->prepareQueryElement($key, $value, null, true, $isNewObj);
             foreach ($preparedQueryElements as [$preparedKey, $preparedValue]) {
-                $preparedValue               = $this->convertToDatabaseValue($key, $preparedValue);
                 $preparedQuery[$preparedKey] = $preparedValue;
             }
         }
@@ -1083,21 +1082,23 @@ final class DocumentPersister
      *
      * @return mixed
      */
-    private function convertToDatabaseValue(string $fieldName, $value)
+    private function convertToDatabaseValue(string $fieldName, $value, ?ClassMetadata $class = null)
     {
+        $class ??= $this->class;
+
         if (is_array($value)) {
             foreach ($value as $k => $v) {
                 if ($k === '$exists' || $k === '$type' || $k === '$currentDate') {
                     continue;
                 }
 
-                $value[$k] = $this->convertToDatabaseValue($fieldName, $v);
+                $value[$k] = $this->convertToDatabaseValue($fieldName, $v, $class);
             }
 
             return $value;
         }
 
-        if (! $this->class->hasField($fieldName)) {
+        if (! $class->hasField($fieldName)) {
             if ($value instanceof BackedEnum) {
                 $value = $value->value;
             }
@@ -1105,7 +1106,7 @@ final class DocumentPersister
             return Type::convertPHPToDatabaseValue($value);
         }
 
-        $mapping  = $this->class->fieldMappings[$fieldName];
+        $mapping  = $class->fieldMappings[$fieldName];
         $typeName = $mapping['type'];
 
         if (! empty($mapping['reference']) || ! empty($mapping['embedded'])) {
@@ -1143,15 +1144,15 @@ final class DocumentPersister
      *
      * @return array<array{string, mixed}>
      */
-    private function prepareQueryElement(string $fieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
+    private function prepareQueryElement(string $originalFieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false): array
     {
         $class ??= $this->class;
 
         // @todo Consider inlining calls to ClassMetadata methods
 
         // Process all non-identifier fields by translating field names
-        if ($class->hasField($fieldName) && ! $class->isIdentifier($fieldName)) {
-            $mapping   = $class->fieldMappings[$fieldName];
+        if ($class->hasField($originalFieldName) && ! $class->isIdentifier($originalFieldName)) {
+            $mapping   = $class->fieldMappings[$originalFieldName];
             $fieldName = $mapping['name'];
 
             if (! $prepareValue) {
@@ -1176,7 +1177,7 @@ final class DocumentPersister
 
             // No further preparation unless we're dealing with a simple reference
             if (empty($mapping['reference']) || $mapping['storeAs'] !== ClassMetadata::REFERENCE_STORE_AS_ID || empty((array) $value)) {
-                return [[$fieldName, $value]];
+                return [[$fieldName, $this->convertToDatabaseValue($originalFieldName, $value, $class)]];
             }
 
             // Additional preparation for one or more simple reference values
@@ -1195,7 +1196,7 @@ final class DocumentPersister
         }
 
         // Process identifier fields
-        if (($class->hasField($fieldName) && $class->isIdentifier($fieldName)) || $fieldName === '_id') {
+        if (($class->hasField($originalFieldName) && $class->isIdentifier($originalFieldName)) || $originalFieldName === '_id') {
             $fieldName = '_id';
 
             if (! $prepareValue) {
@@ -1215,8 +1216,8 @@ final class DocumentPersister
         }
 
         // No processing for unmapped, non-identifier, non-dotted field names
-        if (strpos($fieldName, '.') === false) {
-            return [[$fieldName, $value]];
+        if (strpos($originalFieldName, '.') === false) {
+            return [[$originalFieldName, $prepareValue ? $this->convertToDatabaseValue($originalFieldName, $value, $class) : $value]];
         }
 
         /* Process "fieldName.objectProperty" queries (on arrays or objects).
@@ -1225,11 +1226,11 @@ final class DocumentPersister
          * significant: "fieldName.objectProperty" with an optional index or key
          * for collections stored as either BSON arrays or objects.
          */
-        $e = explode('.', $fieldName, 4);
+        $e = explode('.', $originalFieldName, 4);
 
         // No further processing for unmapped fields
         if (! isset($class->fieldMappings[$e[0]])) {
-            return [[$fieldName, $value]];
+            return [[$originalFieldName, $prepareValue ? $this->convertToDatabaseValue($e[0], $value, $class) : $value]];
         }
 
         $mapping = $class->fieldMappings[$e[0]];
@@ -1246,6 +1247,7 @@ final class DocumentPersister
             $mapping['type'] === ClassMetadata::MANY && CollectionHelper::isHash($mapping['strategy'])
                 && isset($e[2])
         ) {
+            $fieldName            = $originalFieldName;
             $objectProperty       = $e[2];
             $objectPropertyPrefix = $e[1] . '.';
             $nextObjectProperty   = implode('.', array_slice($e, 3));
@@ -1262,7 +1264,7 @@ final class DocumentPersister
         } else {
             $fieldName = $e[0] . '.' . $e[1];
 
-            return [[$fieldName, $value]];
+            return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($e[0], $value, $class) : $value]];
         }
 
         // No further processing for fields without a targetDocument mapping
@@ -1271,7 +1273,7 @@ final class DocumentPersister
                 $fieldName .= '.' . $nextObjectProperty;
             }
 
-            return [[$fieldName, $value]];
+            return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($e[0], $value, $class) : $value]];
         }
 
         $targetClass = $this->dm->getClassMetadata($mapping['targetDocument']);
@@ -1282,7 +1284,7 @@ final class DocumentPersister
                 $fieldName .= '.' . $nextObjectProperty;
             }
 
-            return [[$fieldName, $value]];
+            return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($objectProperty, $value, $targetClass) : $value]];
         }
 
         $targetMapping      = $targetClass->getFieldMapping($objectProperty);
@@ -1329,7 +1331,7 @@ final class DocumentPersister
                     $nextObjectProperty = '$' . $nextObjectProperty;
                 }
 
-                $fieldNames = [[$nextObjectProperty, $value]];
+                $fieldNames = [[$nextObjectProperty, $prepareValue ? $this->convertToDatabaseValue($nextObjectProperty, $value, $nextTargetClass) : $value]];
             }
 
             return array_map(static function ($preparedTuple) use ($fieldName) {
@@ -1339,7 +1341,7 @@ final class DocumentPersister
             }, $fieldNames);
         }
 
-        return [[$fieldName, $value]];
+        return [[$fieldName, $this->convertToDatabaseValue($objectProperty, $value, $targetClass)]];
     }
 
     /**

@@ -837,6 +837,35 @@ class BuilderTest extends BaseTestCase
         self::assertInstanceOf(UnrewindableIterator::class, $query->execute());
     }
 
+    public function testQueryPreparesNestedValues(): void
+    {
+        $objectId  = new ObjectId();
+        $oidString = (string) $objectId;
+
+        $embedded           = new EmbeddedForNestedFieldPreparation();
+        $embedded->objectId = $oidString;
+
+        $builder = new Builder($this->dm, DocumentForNestedFieldPreparation::class);
+        $builder
+            ->updateOne()
+            ->field('embedded.embedded.objectId')
+            ->equals($oidString)
+            ->field('embedded.embedded.embedded')
+            ->set($embedded);
+
+        $query  = $builder->getQuery()->getQuery();
+        $filter = $query['query'];
+        $newObj = $query['newObj'];
+
+        self::assertArrayHasKey('embedded.embedded.test', $filter);
+        self::assertInstanceOf(ObjectId::class, $filter['embedded.embedded.test']);
+
+        self::assertArrayHasKey('embedded.embedded.embedded', $newObj['$set']);
+        self::assertIsArray($newObj['$set']['embedded.embedded.embedded']);
+        self::assertArrayHasKey('test', $newObj['$set']['embedded.embedded.embedded']);
+        self::assertInstanceOf(ObjectId::class, $newObj['$set']['embedded.embedded.embedded']['test']);
+    }
+
     private function getTestQueryBuilder(): Builder
     {
         return new Builder($this->dm, User::class);
@@ -921,4 +950,24 @@ class ChildC extends ParentClass
     /** @var Collection<int, object> */
     #[ODM\ReferenceMany(storeAs: 'dbRef')]
     public $featurePartialMany;
+}
+
+#[ODM\Document]
+class DocumentForNestedFieldPreparation
+{
+    #[ODM\Id]
+    public string $id;
+
+    #[ODM\EmbedOne(targetDocument: EmbeddedForNestedFieldPreparation::class)]
+    public EmbeddedForNestedFieldPreparation $embedded;
+}
+
+#[ODM\EmbeddedDocument]
+class EmbeddedForNestedFieldPreparation
+{
+    #[ODM\Field(name: 'test', type: Type::OBJECTID)]
+    public string $objectId;
+
+    #[ODM\EmbedOne(targetDocument: self::class)]
+    public ?EmbeddedForNestedFieldPreparation $embedded = null;
 }
