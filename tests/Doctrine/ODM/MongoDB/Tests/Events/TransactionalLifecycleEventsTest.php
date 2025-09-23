@@ -23,16 +23,6 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $this->skipTestIfTransactionalFlushDisabled();
     }
 
-    public function tearDown(): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => 'off',
-        ]);
-
-        parent::tearDown();
-    }
-
     public function testPersistEvents(): void
     {
         $root       = new RootEventDocument();
@@ -41,7 +31,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $root->embedded       = new EmbeddedEventDocument();
         $root->embedded->name = 'embedded';
 
-        $this->createFailPoint('insert');
+        $this->createFailPoint('insert', transient: true);
 
         $this->dm->persist($root);
         $this->dm->flush();
@@ -61,7 +51,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $this->dm->persist($root);
         $this->dm->flush();
 
-        $this->createFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $root->name           = 'updated';
         $root->embedded->name = 'updated';
@@ -85,7 +75,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $this->dm->persist($root);
         $this->dm->flush();
 
-        $this->createFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $root->name = 'updated';
 
@@ -108,7 +98,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $this->dm->persist($root);
         $this->dm->flush();
 
-        $this->createFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $root->embedded->name = 'updated';
 
@@ -136,7 +126,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $this->dm->persist($root);
         $this->dm->flush();
 
-        $this->createFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $root->name     = 'updated';
         $root->embedded = $secondEmbedded;
@@ -168,7 +158,7 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $this->dm->persist($root);
         $this->dm->flush();
 
-        $this->createFailPoint('delete');
+        $this->createFailPoint('delete', transient: true);
 
         $this->dm->remove($root);
         $this->dm->flush();
@@ -184,19 +174,6 @@ class TransactionalLifecycleEventsTest extends BaseTestCase
         $client = new Client(self::getUri(false), [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         return DocumentManager::create($client, $config);
-    }
-
-    private function createFailPoint(string $failCommand): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'errorLabels' => ['TransientTransactionError'],
-                'failCommands' => [$failCommand],
-            ],
-        ]);
     }
 }
 

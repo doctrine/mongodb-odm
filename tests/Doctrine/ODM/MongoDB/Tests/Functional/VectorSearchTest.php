@@ -8,17 +8,11 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\VectorEmbedding;
 use PHPUnit\Framework\Attributes\Group;
 
-use function iterator_to_array;
 use function sleep;
 
 #[Group('atlas')]
 class VectorSearchTest extends BaseTestCase
 {
-    protected function tearDown(): void
-    {
-        $this->dm->getDocumentCollection(VectorEmbedding::class)->drop();
-    }
-
     public function testAtlasVectorSearch(): void
     {
         // Create the collection by ensuring the schema

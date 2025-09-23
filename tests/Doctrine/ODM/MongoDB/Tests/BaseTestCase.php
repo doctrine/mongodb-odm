@@ -14,6 +14,7 @@ use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
 use MongoDB\Driver\Command;
+use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
@@ -45,6 +46,7 @@ abstract class BaseTestCase extends TestCase
     protected static bool $allowsTransactions = true;
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
+    private bool $disableFailPoints = false;
 
     protected function setUp(): void
     {
@@ -52,16 +54,26 @@ abstract class BaseTestCase extends TestCase
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    protected  function tearDown(): void
+    protected function tearDown(): void
     {
         if (! $this->dm) {
             return;
         }
 
+        $client = $this->dm->getClient();
+
+        // Remove any fail points that may have been set
+        if ($this->disableFailPoints) {
+            $client->getDatabase('admin')->command([
+                'configureFailPoint' => 'failCommand',
+                'mode' => 'off',
+            ]);
+            $this->disableFailPoints = false;
+        }
+
         // Check if the database exists. Calling listCollections on a non-existing
         // database in a sharded setup will cause an invalid command cursor to be
         // returned
-        $client        = $this->dm->getClient();
         $databases     = iterator_to_array($client->listDatabases());
         $databaseNames = array_map(static fn (DatabaseInfo $database) => $database->getName(), $databases);
         if (! in_array(DOCTRINE_MONGODB_DATABASE, $databaseNames)) {
@@ -213,10 +225,6 @@ abstract class BaseTestCase extends TestCase
             new Command(['buildInfo' => 1]),
         )->toArray()[0];
 
-        if (! in_array('enterprise', $buildInfo->modules ?? [])) {
-            $this->markTestSkipped('Queryable Encryption test requires MongoDB Atlas or Enterprise');
-        }
-
         $this->requireVersion($buildInfo->version, '7.0', '<', 'Queryable Encryption test requires MongoDB 7.0 or higher');
     }
 
@@ -293,5 +301,28 @@ abstract class BaseTestCase extends TestCase
         $manager = new Manager(self::getUri());
 
         return $manager->selectServer()->getType() !== Server::TYPE_STANDALONE;
+    }
+
+    protected function createFailPoint(string $failCommand, bool $transient = false, int $times = 1): void
+    {
+        try {
+            $this->dm->getClient()->getManager()->executeCommand(
+                'admin',
+                new Command([
+                    'configureFailPoint' => 'failCommand',
+                    'mode'               => ['times' => $times],
+                    'data' => [
+                        'errorCode' => 192, // FailPointEnabled
+                        'errorLabels' => $transient ? ['TransientTransactionError'] : [],
+                        'failCommands' => [$failCommand],
+                    ],
+                ]),
+            );
+            $this->disableFailPoints = true;
+        } catch (CommandException $commandException) {
+            if ($commandException->getCode() === 59) {
+                self::markTestSkipped('Test skipped because the server does not support fail points');
+            }
+        }
     }
 }

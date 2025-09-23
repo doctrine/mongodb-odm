@@ -18,16 +18,6 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
     // This test requires transactions to be disabled
     protected static bool $allowsTransactions = false;
 
-    public function tearDown(): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => 'off',
-        ]);
-
-        parent::tearDown();
-    }
-
     public function testInsertErrorKeepsFailingInsertions(): void
     {
         $firstUser           = new ForumUser();
@@ -445,17 +435,5 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $client = new Client(self::getUri(false), [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 
         return DocumentManager::create($client, $config);
-    }
-
-    private function createFailpoint(string $commandName): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => [$commandName],
-            ],
-        ]);
     }
 }

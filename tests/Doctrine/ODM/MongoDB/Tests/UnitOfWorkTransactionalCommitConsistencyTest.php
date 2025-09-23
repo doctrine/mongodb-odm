@@ -25,16 +25,6 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->skipTestIfNoTransactionSupport();
     }
 
-    public function tearDown(): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => 'off',
-        ]);
-
-        parent::tearDown();
-    }
-
     public function testFatalInsertError(): void
     {
         $firstUser           = new ForumUser();
@@ -48,7 +38,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $friendUser = new FriendUser('GromNaN');
         $this->uow->persist($friendUser);
 
-        $this->createFatalFailPoint('insert');
+        $this->createFailPoint('insert');
 
         try {
             $this->uow->commit();
@@ -92,7 +82,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->uow->persist($friendUser);
 
         // Add a failpoint that triggers a transient error. The transaction will be retried and succeeds
-        $this->createTransientFailPoint('insert');
+        $this->createFailPoint('insert', transient: true);
 
         $this->uow->commit();
 
@@ -130,7 +120,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $this->uow->persist($friendUser);
 
         // Add a failpoint that triggers multiple transient errors. The transaction is expected to fail
-        $this->createTransientFailPoint('insert', 2);
+        $this->createFailPoint('insert', transient: true, times: 2);
 
         try {
             $this->uow->commit();
@@ -251,7 +241,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $user->username = 'alcaeus';
         $this->uow->persist($user);
 
-        $this->createFatalFailPoint('update');
+        $this->createFailPoint('update');
 
         try {
             $this->uow->commit();
@@ -278,7 +268,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $user->username = 'alcaeus';
         $this->uow->persist($user);
 
-        $this->createTransientFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $this->uow->commit();
 
@@ -300,7 +290,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $user->username = 'jmikola';
 
-        $this->createFatalFailPoint('update');
+        $this->createFailPoint('update');
 
         try {
             $this->uow->commit();
@@ -328,7 +318,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $user->username = 'jmikola';
 
-        $this->createTransientFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $this->uow->commit();
 
@@ -353,7 +343,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $address->setCity('Olching');
         $user->setAddress($address);
 
-        $this->createFatalFailPoint('update');
+        $this->createFailPoint('update');
 
         try {
             $this->uow->commit();
@@ -381,7 +371,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $address->setCity('Olching');
         $user->setAddress($address);
 
-        $this->createTransientFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $this->uow->commit();
 
@@ -405,7 +395,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $address->setCity('Munich');
 
-        $this->createFatalFailPoint('update');
+        $this->createFailPoint('update');
 
         try {
             $this->uow->commit();
@@ -435,7 +425,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $address->setCity('Munich');
 
-        $this->createTransientFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $this->uow->commit();
 
@@ -459,7 +449,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $user->removeAddress();
 
-        $this->createFatalFailPoint('update');
+        $this->createFailPoint('update');
 
         try {
             $this->uow->commit();
@@ -491,7 +481,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $user->removeAddress();
 
-        $this->createTransientFailPoint('update');
+        $this->createFailPoint('update', transient: true);
 
         $this->uow->commit();
 
@@ -515,7 +505,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $this->uow->remove($user);
 
-        $this->createFatalFailPoint('delete');
+        $this->createFailPoint('delete');
 
         try {
             $this->uow->commit();
@@ -549,7 +539,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
 
         $this->uow->remove($user);
 
-        $this->createTransientFailPoint('delete');
+        $this->createFailPoint('delete', transient: true);
 
         $this->uow->commit();
 
@@ -582,7 +572,7 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         // Remove fooUser and create a transient failpoint to force the deletion
         // to fail. This exposes the issue with collections
         $this->uow->remove($fooUser);
-        $this->createTransientFailPoint('delete');
+        $this->createFailPoint('delete', transient: true);
 
         $this->uow->commit();
 
@@ -607,30 +597,5 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $configuration->setUseTransactionalFlush(true);
 
         return $configuration;
-    }
-
-    private function createTransientFailPoint(string $failCommand, int $times = 1): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => $times],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'errorLabels' => ['TransientTransactionError'],
-                'failCommands' => [$failCommand],
-            ],
-        ]);
-    }
-
-    private function createFatalFailPoint(string $failCommand): void
-    {
-        $this->dm->getClient()->getDatabase('admin')->command([
-            'configureFailPoint' => 'failCommand',
-            'mode' => ['times' => 1],
-            'data' => [
-                'errorCode' => 192, // FailPointEnabled
-                'failCommands' => [$failCommand],
-            ],
-        ]);
     }
 }
