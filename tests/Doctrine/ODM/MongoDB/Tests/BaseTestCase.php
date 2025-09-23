@@ -46,13 +46,13 @@ abstract class BaseTestCase extends TestCase
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->dm  = static::createTestDocumentManager();
         $this->uow = $this->dm->getUnitOfWork();
     }
 
-    public function tearDown(): void
+    protected  function tearDown(): void
     {
         if (! $this->dm) {
             return;

@@ -159,7 +159,7 @@ jobs:
           topology: ${{ matrix.topology }}
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit"
+        run: "vendor/bin/phpunit --exclude-group=atlas"
         env:
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
           USE_LAZY_GHOST_OBJECTS: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}"

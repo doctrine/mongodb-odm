@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  mongodb-atlas-local:
+    image: mongodb/mongodb-atlas-local
+    ports:
+      - "27018:27017"

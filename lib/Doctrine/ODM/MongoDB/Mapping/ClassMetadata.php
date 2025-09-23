@@ -473,7 +473,7 @@ use function trigger_deprecation;
 
     public const VECTOR_SIMILARITY_EUCLIDEAN   = 'euclidean';
     public const VECTOR_SIMILARITY_COSINE      = 'cosine';
-    public const VECTOR_SIMILARITY_DOT_PRODUCT = 'dot_product';
+    public const VECTOR_SIMILARITY_DOT_PRODUCT = 'dotProduct';
     public const VECTOR_QUANTIZATION_NONE      = 'none';
     public const VECTOR_QUANTIZATION_SCALAR    = 'scalar';
     public const VECTOR_QUANTIZATION_BINARY    = 'binary';
