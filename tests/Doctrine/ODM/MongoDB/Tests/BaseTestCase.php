@@ -225,6 +225,10 @@ abstract class BaseTestCase extends TestCase
             new Command(['buildInfo' => 1]),
         )->toArray()[0];
 
+        if (! in_array('enterprise', $buildInfo->modules ?? [])) {
+            $this->markTestSkipped('Queryable Encryption test requires MongoDB Atlas or Enterprise');
+        }
+
         $this->requireVersion($buildInfo->version, '7.0', '<', 'Queryable Encryption test requires MongoDB 7.0 or higher');
     }
 
