@@ -14,6 +14,11 @@ The `Doctrine\ODM\MongoDB\Id\AbstractIdGenerator` class has been removed. Custom
 ID generators must implement the `Doctrine\ODM\MongoDB\Id\IdGenerator`
 interface.
 
+The `Doctrine\ODM\MongoDB\Id\UuidGenerator` class has been removed. Use a custom
+generator to generate string UUIDs. For more efficient storage of UUIDs, use the
+`Doctrine\ODM\MongoDB\Types\BinaryUuidType` type in combination with the
+`Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator` generator.
+
 ## Metadata
 The `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` class has been marked final and
 will no longer be extendable.
