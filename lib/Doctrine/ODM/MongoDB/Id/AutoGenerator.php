@@ -10,7 +10,7 @@ use MongoDB\BSON\ObjectId;
 /**
  * AutoGenerator generates a native ObjectId
  *
- * @deprecated
+ * @deprecated use ObjectIdGenerator instead
  */
 final class AutoGenerator extends AbstractIdGenerator
 {
