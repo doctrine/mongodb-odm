@@ -2407,7 +2407,7 @@ use function trigger_deprecation;
 
             $this->generatorOptions = $mapping['options'] ?? [];
             if ($this->generatorType !== self::GENERATOR_TYPE_AUTO) {
-                if (! $this->generatorOptions['type'] ?? null) {
+                if (! empty($this->generatorOptions['type'])) {
                     $mapping['type'] = (string) $this->generatorOptions['type'];
                 } elseif (empty($mapping['type'])) {
                     $mapping['type'] = $this->generatorType === self::GENERATOR_TYPE_INCREMENT ? Type::INT : Type::CUSTOMID;
