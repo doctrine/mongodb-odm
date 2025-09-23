@@ -1,0 +1,115 @@
+name: "Atlas CI"
+
+on:
+  push:
+    branches:
+      - "*.x"
+      - "feature/*"
+  pull_request:
+    branches:
+      - "*.x"
+      - "feature/*"
+
+env:
+  MONGODB_EXT_V1: mongodb-1.21.0
+  MONGODB_EXT_V2: stable
+
+jobs:
+  atlas-local:
+    runs-on: "${{ matrix.os }}"
+
+    name: "PHP/${{ matrix.php }} Symfony/${{ matrix.symfony }} Driver/${{ matrix.driver }} Proxy/${{ matrix.proxy }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "ubuntu-latest"
+        php:
+          - "8.2"
+          - "8.3"
+          - "8.4"
+        symfony:
+          - "stable"
+          - "6.4"
+        driver:
+          - 1
+          - 2
+        proxy:
+          - "lazy-ghost"
+        include:
+          # Test with ProxyManager
+          - php: "8.2"
+            symfony: "stable"
+            driver: 2
+            proxy: "proxy-manager"
+            os: "ubuntu-latest"
+
+    steps:
+      - uses: "actions/checkout@v5"
+
+      - name: "Create MongoDB Atlas Local"
+        run: |
+          docker run --name mongodb -p 27017:27017 --detach mongodb/mongodb-atlas-local:latest
+          until docker exec --tty mongodb mongosh --eval "db.runCommand({ ping: 1 })"; do
+            sleep 1
+          done
+          until docker exec --tty mongodb mongosh --eval "db.createCollection('connection_test') && db.getCollection('connection_test').createSearchIndex({mappings:{dynamic: true}})"; do
+            sleep 1
+          done
+
+      - name: "Show MongoDB server status"
+        run: |
+          docker exec --tty mongodb mongosh --eval "db.runCommand({ serverStatus: 1 })"
+
+      - name: Setup cache environment
+        id: extcache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ matrix.driver == 1 && env.MONGODB_EXT_V1 || env.MONGODB_EXT_V2 }}
+          key: "extcache-v1"
+
+      - name: Cache extensions
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.extcache.outputs.dir }}
+          key: ${{ steps.extcache.outputs.key }}
+          restore-keys: ${{ steps.extcache.outputs.key }}
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php }}"
+          tools: "pecl"
+          extensions: "bcmath,${{ matrix.driver == 1 && env.MONGODB_EXT_V1 || env.MONGODB_EXT_V2 }}"
+          coverage: "xdebug"
+          ini-values: "zend.assertions=1"
+
+      - name: "Show driver information"
+        run: "php --ri mongodb"
+
+      # Not used, skip transient dependencies
+      - name: "Remove phpbench/phpbench"
+        run: composer remove --no-update --dev phpbench/phpbench
+
+      - name: "Configure Symfony ${{ matrix.symfony }}"
+        if: "${{ matrix.symfony != 'stable' }}"
+        run: |
+          composer config minimum-stability dev
+          # update symfony deps
+          composer require --no-update symfony/console:^${{ matrix.symfony }}
+          composer require --no-update symfony/var-dumper:^${{ matrix.symfony }}
+          composer require --no-update --dev symfony/cache:^${{ matrix.symfony }}
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v3"
+        with:
+          dependency-versions: "highest"
+          composer-options: "--prefer-dist"
+
+      - name: "Run PHPUnit with Atlas Local"
+        run: "vendor/bin/phpunit --coverage-clover coverage.xml"
+        env:
+          DOCTRINE_MONGODB_SERVER: "mongodb://127.0.0.1:27017/?directConnection=true"
+          USE_LAZY_GHOST_OBJECTS: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}
