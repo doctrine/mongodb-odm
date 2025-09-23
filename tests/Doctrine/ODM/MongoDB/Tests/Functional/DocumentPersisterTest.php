@@ -134,10 +134,10 @@ class DocumentPersisterTest extends BaseTestCase
             ['association.nested', 'associationName.nestedName'],
             ['association.nested.$id', 'associationName.nestedName.$id'],
             ['association.nested._id', 'associationName.nestedName._id'],
-            ['association.nested.id', 'associationName.nestedName._id'],
-            ['association.nested.association.nested.$id', 'associationName.nestedName.associationName.nestedName.$id'],
-            ['association.nested.association.nested.id', 'associationName.nestedName.associationName.nestedName._id'],
-            ['association.nested.association.nested.firstName', 'associationName.nestedName.associationName.nestedName.firstName'],
+            ['association.nested.id', 'associationName.nestedName.id'],
+            ['association.nested.association.nested.$id', 'associationName.nestedName.association.nested.$id'],
+            ['association.nested.association.nested.id', 'associationName.nestedName.association.nested.id'],
+            ['association.nested.association.nested.firstName', 'associationName.nestedName.association.nested.firstName'],
         ];
     }
 
