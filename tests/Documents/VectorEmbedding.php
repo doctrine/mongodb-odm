@@ -20,9 +20,9 @@ use Doctrine\ODM\MongoDB\Types\Type;
 #[VectorSearchIndex(
     name: 'vector_int',
     fields: [
-        ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => ClassMetadata::VECTOR_SIMILARITY_COSINE],
         ['type' => 'filter', 'path' => 'filterField'],
         ['type' => 'filter', 'path' => 'not_mapped_filter'],
+        ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => ClassMetadata::VECTOR_SIMILARITY_COSINE],
     ],
 )]
 class VectorEmbedding

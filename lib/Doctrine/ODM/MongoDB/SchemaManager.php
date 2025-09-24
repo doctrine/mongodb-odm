@@ -20,12 +20,14 @@ use function array_diff;
 use function array_diff_key;
 use function array_filter;
 use function array_keys;
+use function array_map;
 use function array_merge;
 use function array_search;
 use function array_unique;
 use function array_values;
 use function assert;
 use function count;
+use function hrtime;
 use function implode;
 use function in_array;
 use function is_array;
@@ -35,6 +37,7 @@ use function iterator_to_array;
 use function ksort;
 use function sprintf;
 use function str_contains;
+use function usleep;
 
 /**
  * @phpstan-import-type IndexMapping from ClassMetadata
@@ -338,6 +341,65 @@ final class SchemaManager
     }
 
     /**
+     * Wait until all search indexes are queryable for the given document classes.
+     *
+     * @param list<class-string>|null $classNames List of class names to check, or null to check all mapped classes
+     * @param positive-int            $maxTimeMs  Maximum time to wait in milliseconds (default: 10,000 ms)
+     * @param positive-int            $waitTimeMs Time to wait between checks in milliseconds (default: 100 ms)
+     */
+    public function waitForSearchIndexes(?array $classNames = null, int $maxTimeMs = 10_000, int $waitTimeMs = 100): void
+    {
+        if ($maxTimeMs < 1) {
+            throw new InvalidArgumentException('$maxTimeMs must be a positive number of milliseconds.');
+        }
+
+        if ($waitTimeMs < 1) {
+            throw new InvalidArgumentException('$waitTimeMs must be a positive number of milliseconds.');
+        }
+
+        $classes = $classNames === null ? $this->metadataFactory->getAllMetadata() : array_map($this->metadataFactory->getMetadataFor(...), $classNames);
+
+        /** @var array<class-string, string[]> $indexesToCheck Search indexes for each class */
+        $indexesToCheck = [];
+        foreach ($classes as $class) {
+            if (! $class->hasSearchIndexes()) {
+                continue;
+            }
+
+            $indexesToCheck[$class->getName()] = array_column($class->getSearchIndexes(), 'name');
+        }
+
+        $start = hrtime(true);
+        while ($indexesToCheck) {
+            if (hrtime(true) > $start + $maxTimeMs * 1_000_000) {
+                throw new MongoDBException(sprintf('Timed out waiting for search indexes to become queryable after %d ms. Search indexes are not ready for the following class(es): %s', $maxTimeMs, implode(', ', array_keys($indexesToCheck))));
+            }
+
+            foreach ($indexesToCheck as $className => $indexNames) {
+                $collection = $this->dm->getDocumentCollection($className);
+
+                /** @var array<string, bool> $indexStatus Queryable status for each index name */
+                $indexStatus = array_column(iterator_to_array($collection->listSearchIndexes([
+                    'filter' => ['name' => ['$in' => array_keys($indexNames)]],
+                    'typeMap' => ['root' => 'array'],
+                ])), 'queryable', 'name');
+
+                // Check that all indexes exist
+                $missingIndexes = array_diff_key($indexNames, array_keys($indexStatus));
+                if ($missingIndexes) {
+                    throw SchemaException::missingSearchIndex($className, $missingIndexes);
+                }
+
+                // Remove the indexes that are ready from the list of indexes to check
+                $indexesToCheck[$className] = array_keys(array_filter($indexStatus, static fn ($queryable) => ! $queryable));
+            }
+
+            // Remove empty arrays and wait before checking again
+            ($indexesToCheck = array_filter($indexesToCheck)) && usleep($waitTimeMs * 1_000);
+        }
+    }
+
+    /**
      * Create search indexes for the given document class.
      *
      * @param class-string $documentName
@@ -368,7 +430,7 @@ final class SchemaManager
         $unprocessedNames = array_diff($definedNames, $createdNames);
 
         if (! empty($unprocessedNames)) {
-            throw new InvalidArgumentException(sprintf('The following search indexes for %s were not created: %s', $class->name, implode(', ', $unprocessedNames)));
+            throw SchemaException::missingSearchIndex($class->name, $unprocessedNames);
         }
     }
 

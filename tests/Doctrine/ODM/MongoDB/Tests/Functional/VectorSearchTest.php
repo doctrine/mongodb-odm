@@ -6,9 +6,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\VectorEmbedding;
+use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
-
-use function sleep;
 
 #[Group('atlas')]
 class VectorSearchTest extends BaseTestCase
@@ -20,7 +19,6 @@ class VectorSearchTest extends BaseTestCase
 
         // Create the collection and vector search indexes
         $schemaManager->createDocumentCollection(VectorEmbedding::class);
-        $schemaManager->createDocumentSearchIndexes(VectorEmbedding::class);
 
         // Insert some test documents with vector embeddings
         $doc1              = new VectorEmbedding();
@@ -41,10 +39,14 @@ class VectorSearchTest extends BaseTestCase
         $this->dm->persist($doc1);
         $this->dm->persist($doc2);
         $this->dm->persist($doc3);
-        $this->dm->flush();
+        // Write with majority concern to ensure data is visible for search
+        $this->dm->flush(['writeConcern' => new WriteConcern(WriteConcern::MAJORITY)]);
+
+        // Index must be created after data insertion, so the index status is not immediately "READY"
+        $schemaManager->createDocumentSearchIndexes(VectorEmbedding::class);
 
         // Wait for search index to be ready (Atlas Local needs time to build the index)
-        sleep(2);
+        $schemaManager->waitForSearchIndexes([VectorEmbedding::class]);
 
         $results = $this->dm->createAggregationBuilder(VectorEmbedding::class)
             ->vectorSearch()

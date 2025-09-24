@@ -9,6 +9,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
+use Doctrine\ODM\MongoDB\SchemaException;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Documents\BaseDocument;
 use Documents\CmsAddress;
@@ -418,8 +419,8 @@ class SchemaManagerTest extends BaseTestCase
             ->with($this->anything())
             ->willReturn(['foo']);
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('The following search indexes for Documents\CmsArticle were not created: search_articles');
+        $this->expectException(SchemaException::class);
+        $this->expectExceptionMessage('The document class "Documents\CmsArticle" is missing the following search index(es): "search_articles"');
 
         $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
     }
@@ -486,9 +487,9 @@ class SchemaManagerTest extends BaseTestCase
                                 'name' => 'vector_int',
                                 'definition' => [
                                     'fields' => [
-                                        ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => 'cosine'],
                                         ['type' => 'filter', 'path' => 'filterField'],
                                         ['type' => 'filter', 'path' => 'not_mapped_filter'],
+                                        ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => 'cosine'],
                                     ],
                                 ],
                             ],

@@ -7,9 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use Documents\CmsUser;
+use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
-
-use function sleep;
 
 #[Group('atlas')]
 class AtlasSearchTest extends BaseTestCase
@@ -18,7 +17,6 @@ class AtlasSearchTest extends BaseTestCase
     {
         $schemaManager = $this->dm->getSchemaManager();
         $schemaManager->createDocumentCollection(CmsArticle::class);
-        $schemaManager->createDocumentSearchIndexes(CmsArticle::class);
 
         $user         = new CmsUser();
         $user->status = 'active';
@@ -45,10 +43,15 @@ class AtlasSearchTest extends BaseTestCase
         $this->dm->persist($article1);
         $this->dm->persist($article2);
         $this->dm->persist($article3);
-        $this->dm->flush();
+
+        // Write with majority concern to ensure data is visible for search
+        $this->dm->flush(['writeConcern' => new WriteConcern(WriteConcern::MAJORITY)]);
+
+        // Index must be created after data insertion, so the index status is not immediately "READY"
+        $schemaManager->createDocumentSearchIndexes(CmsArticle::class);
 
         // Wait for the search index to be ready (Atlas Local needs time to build the index)
-        sleep(2);
+        $schemaManager->waitForSearchIndexes([CmsArticle::class, CmsUser::class]);
 
         $results = $this->dm->createAggregationBuilder(CmsArticle::class)
             ->search()

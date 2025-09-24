@@ -385,18 +385,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata has type alias SearchIndexDefinition with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata has type alias SearchIndexMapping with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Instanceof between Doctrine\\Persistence\\Reflection\\RuntimeReflectionProperty and ReflectionProperty will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
@@ -409,21 +397,9 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:addSearchIndex\(\) has parameter \$definition with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:getBucketName\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:getSearchIndexes\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 2
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
@@ -454,12 +430,6 @@ parameters:
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:\$rootClass \(class\-string\|null\) is never assigned null so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:\$searchIndexes type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 2
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
