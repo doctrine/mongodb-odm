@@ -179,7 +179,7 @@ This list explains some of the less obvious mapping types:
 -  ``id``: string to ObjectId by default, but other formats are possible
 -  ``timestamp``: string to ``MongoDB\BSON\Timestamp``
 -  ``raw``: any type
--  ``uuid``: Symfony UUID to MongoDB\BSON\Binary instance with a "uuid" type
+-  ``uuid``: `Symfony UID <https://symfony.com/doc/current/components/uid.html>`_ to ``MongoDB\BSON\Binary`` instance with a "uuid" type
 
 .. note::
 
