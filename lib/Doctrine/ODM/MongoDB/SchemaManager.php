@@ -39,6 +39,7 @@ use function str_contains;
 /**
  * @phpstan-import-type IndexMapping from ClassMetadata
  * @phpstan-import-type IndexOptions from ClassMetadata
+ * @phpstan-import-type SearchIndexMapping from ClassMetadata
  */
 final class SchemaManager
 {
@@ -355,7 +356,7 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot create search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
-        $searchIndexes = $class->getSearchIndexes();
+        $searchIndexes = $this->prepareSearchIndexes($class);
 
         if (empty($searchIndexes)) {
             return;
@@ -410,7 +411,7 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot update search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
-        $searchIndexes = $class->getSearchIndexes();
+        $searchIndexes = $this->prepareSearchIndexes($class);
         $collection    = $this->dm->getDocumentCollection($class->name);
 
         $definedNames = array_column($searchIndexes, 'name');
@@ -484,6 +485,59 @@ final class SchemaManager
         foreach ($searchIndexes as $searchIndex) {
             $collection->dropSearchIndex($searchIndex['name']);
         }
+    }
+
+    /**
+     * @param ClassMetadata<object> $class
+     *
+     * @phpstan-return list<SearchIndexMapping>
+     */
+    private function prepareSearchIndexes(ClassMetadata $class): array
+    {
+        $persister  = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
+        $indexes    = $class->getSearchIndexes();
+        $newIndexes = [];
+
+        foreach ($indexes as $index) {
+            $definition = $index['definition'];
+            if (is_array($definition['fields'] ?? null)) {
+                // Vector Search Index
+                $fields = [];
+                foreach ($definition['fields'] as $field) {
+                    $key = $persister->prepareFieldName($field['path']);
+                    if ($class->hasField($key)) {
+                        $field['path'] = $class->getFieldMapping($key)['name'];
+                    } else {
+                        $field['path'] = $key;
+                    }
+
+                    $fields[] = $field;
+                }
+
+                $definition['fields'] = $fields;
+            } elseif (is_array($definition['mappings']['fields'] ?? null)) {
+                // Search Index with fields mappings
+                $fields = [];
+                foreach ($definition['mappings']['fields'] as $name => $field) {
+                    $key = $persister->prepareFieldName($name);
+                    if ($class->hasField($key)) {
+                        $fields[$class->getFieldMapping($key)['name']] = $field;
+                    } else {
+                        $fields[$key] = $field;
+                    }
+                }
+
+                $definition['mappings']['fields'] = $fields;
+            }
+
+            $newIndexes[] = [
+                'type' => $index['type'],
+                'name' => $index['name'],
+                'definition' => $definition,
+            ];
+        }
+
+        return $newIndexes;
     }
 
     /**
