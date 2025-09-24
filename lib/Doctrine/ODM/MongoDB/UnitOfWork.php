@@ -45,7 +45,6 @@ use function get_class;
 use function in_array;
 use function is_array;
 use function is_object;
-use function is_string;
 use function method_exists;
 use function preg_match;
 use function serialize;
@@ -1140,7 +1139,7 @@ final class UnitOfWork implements PropertyChangedListener
                 ));
             }
 
-            if (is_string($idValue) && $class->getIdentifier()['type'] === Type::ID && $class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && ! preg_match('#^[0-9a-f]{24}$#', (string) $idValue)) {
+            if ($class->getIdentifierMapping()['type'] === Type::ID && $idValue !== null && $class->generatorType === ClassMetadata::GENERATOR_TYPE_AUTO && ! preg_match('#^[0-9a-f]{24}$#', (string) $idValue)) {
                 throw new InvalidArgumentException(sprintf(
                     '%s uses AUTO identifier generation strategy but provided identifier is not a valid ObjectId.',
                     $document::class,
