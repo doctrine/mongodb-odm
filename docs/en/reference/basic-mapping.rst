@@ -283,6 +283,12 @@ When using the ``AUTO`` strategy in combination with a UUID identifier, the gene
 and type 7 automatically. For all other UUID types, assign the identifier manually in combination with the ``NONE``
 strategy.
 
+.. note::
+
+    The ``UUID`` generator is deprecated, as it stores UUIDs as strings. It is recommended to use the ``AUTO`` strategy
+    with a ``uuid`` type identifier field instead. If you need to keep generating string UUIDs, you can use the
+    ``CUSTOM`` strategy with your own generator.
+
 Here is an example how to manually set a string identifier for your documents:
 
 .. configuration-block::
