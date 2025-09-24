@@ -18,11 +18,7 @@ use function str_replace;
 use function strlen;
 use function substr;
 
-/**
- * Generates UUIDs.
- *
- * @deprecated without replacement. Use a custom generator or switch to binary UUIDs.
- */
+/** @deprecated without replacement. Use a custom generator or switch to binary UUIDs. */
 final class UuidGenerator extends AbstractIdGenerator
 {
     /**
