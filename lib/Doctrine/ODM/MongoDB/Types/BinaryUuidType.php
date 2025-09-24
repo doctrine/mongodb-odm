@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-use Exception;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use Symfony\Component\Uid\Uuid;
@@ -33,11 +32,11 @@ class BinaryUuidType extends Type
         }
 
         if (! $value instanceof Binary) {
-            throw new Exception(sprintf('Invalid data of type "%s" received for Uuid', get_debug_type($value)));
+            throw new InvalidArgumentException(sprintf('Invalid data of type "%s" received for Uuid', get_debug_type($value)));
         }
 
         if ($value->getType() !== Binary::TYPE_UUID) {
-            throw new Exception(sprintf('Invalid binary data of type %d received for Uuid', $value->getType()));
+            throw new InvalidArgumentException(sprintf('Invalid binary data of type %d received for Uuid', $value->getType()));
         }
 
         return Uuid::fromBinary($value->getData());
