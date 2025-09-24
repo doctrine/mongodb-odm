@@ -7,35 +7,28 @@ on:
       - "feature/*"
   push:
 
-env:
-  MONGODB_EXT_V1: mongodb-1.21.0
-  MONGODB_EXT_V2: stable
-
 jobs:
   atlas-local:
     runs-on: "${{ matrix.os }}"
-    name: "PHP/${{ matrix.php }} Symfony/${{ matrix.symfony }} Driver/${{ matrix.driver-version }} Proxy/${{ matrix.proxy }}"
+    name: "PHP/${{ matrix.php-version }} Symfony/${{ matrix.symfony }} Proxy/${{ matrix.proxy }}"
     strategy:
       fail-fast: false
       matrix:
         os:
           - "ubuntu-latest"
-        php:
+        php-version:
           - "8.2"
           - "8.3"
           - "8.4"
         symfony:
           - "stable"
           - "6.4"
-        driver-version:
-          - "stable"
         proxy:
           - "lazy-ghost"
         include:
           # Test with ProxyManager
-          - php: "8.2"
+          - php-version: "8.2"
             symfony: "stable"
-            driver-version: "stable"
             proxy: "proxy-manager"
             os: "ubuntu-latest"
 
@@ -64,7 +57,7 @@ jobs:
         uses: shivammathur/cache-extensions@v1
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
+          extensions: "mongodb, bcmath"
           key: "extcache-v1"
 
       - name: Cache extensions
@@ -79,7 +72,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           tools: "pecl"
-          extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
+          extensions: "mongodb, bcmath"
           coverage: "none"
           ini-values: "zend.assertions=1"
 

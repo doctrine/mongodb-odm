@@ -323,8 +323,9 @@ abstract class BaseTestCase extends TestCase
                 ]),
             );
             $this->disableFailPoints = true;
-        } catch (CommandException $commandException) {
-            if ($commandException->getCode() === 59) {
+        } catch (CommandException $exception) {
+            // no such command: 'configureFailPoint'
+            if ($exception->getCode() === 59) {
                 self::markTestSkipped('Test skipped because the server does not support fail points');
             }
         }
