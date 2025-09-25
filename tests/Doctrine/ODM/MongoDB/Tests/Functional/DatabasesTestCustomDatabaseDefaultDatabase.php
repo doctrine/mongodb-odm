@@ -12,12 +12,12 @@ class DatabasesTest extends BaseTestCase
 {
     public function testCustomDatabase(): void
     {
-        self::assertEquals('test_custom', $this->dm->getDocumentDatabase(CustomDatabaseTest::class)->getDatabaseName());
+        self::assertEquals('test_custom', $this->dm->getDocumentDatabase(TestCustomDatabase::class)->getDatabaseName());
     }
 
     public function testDefaultDatabase(): void
     {
-        self::assertEquals('test_default', $this->dm->getDocumentDatabase(DefaultDatabaseTest::class)->getDatabaseName());
+        self::assertEquals('test_default', $this->dm->getDocumentDatabase(TestDefaultDatabase::class)->getDatabaseName());
     }
 
     protected static function getConfiguration(): Configuration
@@ -31,7 +31,7 @@ class DatabasesTest extends BaseTestCase
 }
 
 #[ODM\Document(db: 'test_custom')]
-class CustomDatabaseTest
+class TestCustomDatabase
 {
     /** @var string|null */
     #[ODM\Id]
@@ -39,7 +39,7 @@ class CustomDatabaseTest
 }
 
 #[ODM\Document]
-class DefaultDatabaseTest
+class TestDefaultDatabase
 {
     /** @var string|null */
     #[ODM\Id]

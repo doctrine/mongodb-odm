@@ -257,7 +257,7 @@ class UnitOfWorkTest extends BaseTestCase
     #[DataProvider('getScheduleForUpdateWithArraysTests')]
     public function testScheduleForUpdateWithArrays(?array $origData, ?array $updateData, bool $shouldInUpdate): void
     {
-        $arrayTest = new ArrayTest($origData);
+        $arrayTest = new ArrayDocument($origData);
         $this->uow->persist($arrayTest);
         $this->uow->computeChangeSets();
         $this->uow->commit();
@@ -701,7 +701,7 @@ class NotifyChangedRelatedItem
 }
 
 #[ODM\Document]
-class ArrayTest
+class ArrayDocument
 {
     /** @var string|null */
     #[ODM\Id]

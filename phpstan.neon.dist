@@ -33,6 +33,15 @@ parameters:
         identifier: constant.notFound
         path: tests/
 
+      # Unused properties from test document classes
+      - message: '#^Property (DoctrineGlobal_|Documents\\|Doctrine\\ODM\\MongoDB\\Tests\\)[^:]+(?<!Test)::\$[a-zA-Z0-9_]+ is unused\.$#'
+        identifier: property.unused
+        path: tests/
+
+      - message: '#^Property (DoctrineGlobal_|Documents\\|Doctrine\\ODM\\MongoDB\\Tests\\)[^:]+(?<!Test)::\$[a-zA-Z0-9_]+ \(.*\) is never assigned .* so it can be removed from the property type\.$#'
+        identifier: property.unusedType
+        path: tests/
+
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true
