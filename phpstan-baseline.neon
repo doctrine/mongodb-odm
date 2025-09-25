@@ -1,30 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method MongoDB\\Driver\\Monitoring\\CommandFailedEvent\|MongoDB\\Driver\\Monitoring\\CommandSucceededEvent\:\:getServer\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/APM/Command.php
-
-		-
-			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and MongoDB\\Driver\\CursorInterface will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Aggregation\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -1117,32 +1093,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Persisters/CollectionPersister.php
 
 		-
-			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
 			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Collection and MongoDB\\Collection will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and MongoDB\\Driver\\CursorInterface will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
@@ -1233,12 +1185,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$array \(non\-empty\-list\) of array_values is already a list, call has no effect\.$#'
 			identifier: arrayValues.list
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Result of && is always true\.$#'
-			identifier: booleanAnd.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
