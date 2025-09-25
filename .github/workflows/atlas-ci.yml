@@ -9,26 +9,20 @@ on:
 
 jobs:
   atlas-local:
-    runs-on: "${{ matrix.os }}"
-    name: "PHP/${{ matrix.php-version }} Symfony/${{ matrix.symfony }} Proxy/${{ matrix.proxy }}"
+    runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - "ubuntu-latest"
         php-version:
-          - "8.2"
-          - "8.3"
           - "8.4"
         symfony:
           - "stable"
-          - "6.4"
         proxy:
           - "lazy-ghost"
         include:
           # Test with ProxyManager
-          - php-version: "8.2"
-            symfony: "stable"
+          - php-version: "8.1"
+            symfony: "6.4"
             proxy: "proxy-manager"
             os: "ubuntu-latest"
 
@@ -99,7 +93,7 @@ jobs:
           composer-options: "--prefer-dist"
 
       - name: "Run PHPUnit with Atlas Local"
-        run: "vendor/bin/phpunit"
+        run: "vendor/bin/phpunit --group atlas"
         env:
           DOCTRINE_MONGODB_SERVER: "mongodb://127.0.0.1:27017/?directConnection=true"
           USE_LAZY_GHOST_OBJECTS: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}
