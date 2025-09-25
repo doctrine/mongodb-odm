@@ -52,7 +52,7 @@ trait SupportsAllSearchOperatorsTrait
         return $this->addOperator(new Exists($this->getSearchStage(), $path));
     }
 
-    /** @param LineString|Point|Polygon|MultiPolygon|array|null $geometry */
+    /** @param LineString|Point|Polygon|MultiPolygon|array<string, mixed>|null $geometry */
     public function geoShape($geometry = null, string $relation = '', string ...$path): GeoShape
     {
         return $this->addOperator(new GeoShape($this->getSearchStage(), $geometry, $relation, ...$path));
@@ -70,8 +70,8 @@ trait SupportsAllSearchOperatorsTrait
     }
 
     /**
-     * @param int|float|UTCDateTime|array|Point|null $origin
-     * @param int|float|null                         $pivot
+     * @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin
+     * @param int|float|null                                        $pivot
      */
     public function near($origin = null, $pivot = null, string ...$path): Near
     {

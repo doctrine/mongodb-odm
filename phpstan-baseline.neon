@@ -223,44 +223,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedAutocomplete\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedAutocomplete.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedAutocomplete\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedAutocomplete.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedAutocomplete\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedAutocomplete.php
 
@@ -271,32 +235,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedEmbeddedDocument.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEmbeddedDocument\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedEmbeddedDocument.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEmbeddedDocument\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedEmbeddedDocument.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEquals\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedEquals.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEquals\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedEquals.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEquals\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedEquals.php
 
@@ -307,32 +247,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedExists.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedExists\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedExists.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedExists\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedExists.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoShape\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedGeoShape.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoShape\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedGeoShape.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoShape\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedGeoShape.php
 
@@ -343,32 +259,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedGeoWithin.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoWithin\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedGeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoWithin\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedGeoWithin.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedMoreLikeThis\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedMoreLikeThis.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedMoreLikeThis\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedMoreLikeThis.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedMoreLikeThis\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedMoreLikeThis.php
 
@@ -379,32 +271,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedNear.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedNear\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedNear.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedNear\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedNear.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedPhrase\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedPhrase.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedPhrase\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedPhrase.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedPhrase\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedPhrase.php
 
@@ -415,32 +283,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedQueryString.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedQueryString\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedQueryString.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedQueryString\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedQueryString.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRange\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedRange.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRange\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedRange.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRange\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedRange.php
 
@@ -451,32 +295,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedRegex.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRegex\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedRegex.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRegex\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedRegex.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedText\:\:__construct\(\) has parameter \$args with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedText.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedText\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedText.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedText\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedText.php
 
@@ -485,30 +305,6 @@ parameters:
 			identifier: missingType.parameter
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedWildcard.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedWildcard\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedWildcard.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedWildcard\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Compound/CompoundedWildcard.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\EmbeddedDocument\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/EmbeddedDocument.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\EmbeddedDocument\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/EmbeddedDocument.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoShape\:\:__construct\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
@@ -599,18 +395,6 @@ parameters:
 			identifier: property.onlyWritten
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Range.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\SupportsGeoShapeOperator\:\:geoShape\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/SupportsGeoShapeOperator.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\SupportsNearOperator\:\:near\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/SupportsNearOperator.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\SortByCount\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'

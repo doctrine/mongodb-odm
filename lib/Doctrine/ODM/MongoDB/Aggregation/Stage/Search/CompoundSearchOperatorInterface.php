@@ -30,7 +30,7 @@ interface CompoundSearchOperatorInterface extends SupportsCompoundableSearchOper
 
     public function exists(string $path): Exists&CompoundSearchOperatorInterface;
 
-    /** @param LineString|Point|Polygon|MultiPolygon|array|null $geometry */
+    /** @param LineString|Point|Polygon|MultiPolygon|array<string, mixed>|null $geometry */
     public function geoShape($geometry = null, string $relation = '', string ...$path): GeoShape&CompoundSearchOperatorInterface;
 
     public function geoWithin(string ...$path): GeoWithin&CompoundSearchOperatorInterface;
@@ -39,8 +39,8 @@ interface CompoundSearchOperatorInterface extends SupportsCompoundableSearchOper
     public function moreLikeThis(...$documents): MoreLikeThis&CompoundSearchOperatorInterface;
 
     /**
-     * @param int|float|UTCDateTime|array|Point|null $origin
-     * @param int|float|null                         $pivot
+     * @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin
+     * @param int|float|null                                        $pivot
      */
     public function near($origin = null, $pivot = null, string ...$path): Near&CompoundSearchOperatorInterface;
 
