@@ -2,15 +2,11 @@
 * text=auto eol=lf
 
 # Exclude non-essential files from dist
-/.github export-ignore
+/.* export-ignore
+/*.dist export-ignore
+/.neon export-ignore
 /docs export-ignore
+/benchmark export-ignore
+/phpbench.json export-ignore
 /tests export-ignore
 /tools export-ignore
-/.doctrine-project.json export-ignore
-/.gitattributes export-ignore
-/.gitignore export-ignore
-/.gitmodules export-ignore
-/.scrutinizer.yml export-ignore
-/phpcs.xml.dist export-ignore
-/phpstan.neon.dist export-ignore
-/phpunit.xml.dist export-ignore
