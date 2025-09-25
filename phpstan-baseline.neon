@@ -1,30 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method MongoDB\\Driver\\Monitoring\\CommandFailedEvent\|MongoDB\\Driver\\Monitoring\\CommandSucceededEvent\:\:getServer\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/APM/Command.php
-
-		-
-			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and MongoDB\\Driver\\CursorInterface will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Aggregation\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -1117,32 +1093,8 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Persisters/CollectionPersister.php
 
 		-
-			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
 			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Collection and MongoDB\\Collection will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and Iterator will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Instanceof between MongoDB\\Driver\\CursorInterface and MongoDB\\Driver\\CursorInterface will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
@@ -1233,12 +1185,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$array \(non\-empty\-list\) of array_values is already a list, call has no effect\.$#'
 			identifier: arrayValues.list
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Result of && is always true\.$#'
-			identifier: booleanAnd.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
@@ -1597,8 +1543,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/CollectionPersisterTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CustomDatabaseTest\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DatabasesTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CustomDatabaseTest\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DatabasesTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\DefaultDatabaseTest\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/DatabasesTest.php
 
@@ -1651,8 +1609,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/FunctionalTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildObject\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/LifecycleTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildObject\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/LifecycleTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ParentObject\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/LifecycleTest.php
 
@@ -1661,6 +1631,12 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/LifecycleTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Hierarchy\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/NestedDocumentsTest.php
 
 		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Hierarchy\:\:\$id is never written, only read\.$#'
@@ -1699,6 +1675,12 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/TargetDocumentTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH1058PersistDocument\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1058Test.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH1058PersistDocument\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
@@ -1717,10 +1699,22 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1058Test.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH1964Document\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1964Test.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH1964Document\:\:\$id is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1964Test.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH1990Document\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1990Test.php
 
 		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH1990Document\:\:\$id is never written, only read\.$#'
@@ -1735,8 +1729,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH1990Test.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH921Post\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH921Test.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH921Post\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH921Test.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH921User\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH921Test.php
 
@@ -1747,10 +1753,22 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH921Test.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH999Document\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH999Test.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\GH999Document\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/GH999Test.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\MODM116Parent\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM116Test.php
 
 		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\Ticket\\MODM116Parent\:\:\$id is never written, only read\.$#'
@@ -1759,14 +1777,32 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Functional/Ticket/MODM116Test.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\AnnotationDriverTestSuper\:\:\$private \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTestCase.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\AnnotationDriverTestSuper\:\:\$private is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/AbstractAnnotationDriverTestCase.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\DocumentSubClass2\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\DocumentSubClass2\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\DocumentSubClass2\:\:\$name \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
@@ -1777,8 +1813,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\DocumentSubClass\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\DocumentSubClass\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\DocumentSubClass\:\:\$name \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
@@ -1789,8 +1837,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\GridFSChildClass\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\GridFSChildClass\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\GridFSParentClass\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
@@ -1801,14 +1861,32 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassBase\:\:\$mapped1 \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassBase\:\:\$mapped1 is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassBase\:\:\$mapped2 \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassBase\:\:\$mapped2 is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassBase\:\:\$mappedRelated1 \(Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassRelated1\|null\) is never assigned Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassRelated1 so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
@@ -1825,8 +1903,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassRelated1\:\:\$id \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassRelated1\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\MappedSuperclassRelated1\:\:\$name \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/BasicInheritanceMappingTest.php
 
@@ -1855,8 +1945,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\LoadEventTestDocument\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\LoadEventTestDocument\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\LoadEventTestDocument\:\:\$name \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ClassMetadataLoadEventTest.php
 
@@ -1873,6 +1975,12 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
 
 		-
+			message: '#^Property DoctrineGlobal_User\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
+
+		-
 			message: '#^Property DoctrineGlobal_User\:\:\$id is unused\.$#'
 			identifier: property.unused
 			count: 1
@@ -1885,8 +1993,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ShardedCollectionPerClass1\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ShardedCollectionPerClass1\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ShardedSingleCollInheritance1\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
 
@@ -1897,8 +2017,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ShardedSubclass\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ShardedSubclass\:\:\$id is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ShardedSuperclass\:\:\$name \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Mapping/ShardKeyInheritanceMappingTest.php
 
@@ -2053,6 +2185,12 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\GH297\\User\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/GH297/User.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\GH297\\User\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
@@ -2065,8 +2203,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetDocument\:\:\$embedOne \(Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetInterface\|null\) is never assigned Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetInterface so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetDocument\:\:\$embedOne is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetDocument\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
 
@@ -2083,8 +2233,20 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetDocument\:\:\$refOne \(Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetInterface\|null\) is never assigned Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetInterface so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\ResolveTargetDocument\:\:\$refOne is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
+
+		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\Tools\\TargetDocument\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
 
@@ -2095,10 +2257,22 @@ parameters:
 			path: tests/Doctrine/ODM/MongoDB/Tests/Tools/ResolveTargetDocumentListenerTest.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\ArrayTest\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Doctrine/ODM/MongoDB/Tests/UnitOfWorkTest.php
+
+		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Tests\\ArrayTest\:\:\$id is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Doctrine/ODM/MongoDB/Tests/UnitOfWorkTest.php
+
+		-
+			message: '#^Property Documents\\Account\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Account.php
 
 		-
 			message: '#^Property Documents\\Account\:\:\$id is never written, only read\.$#'
@@ -2107,10 +2281,22 @@ parameters:
 			path: tests/Documents/Account.php
 
 		-
+			message: '#^Property Documents\\Address\:\:\$test \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Address.php
+
+		-
 			message: '#^Property Documents\\Address\:\:\$test is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Documents/Address.php
+
+		-
+			message: '#^Property Documents\\Album\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Album.php
 
 		-
 			message: '#^Property Documents\\Album\:\:\$id is never written, only read\.$#'
@@ -2119,10 +2305,22 @@ parameters:
 			path: tests/Documents/Album.php
 
 		-
+			message: '#^Property Documents\\Article\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Article.php
+
+		-
 			message: '#^Property Documents\\Article\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Article.php
+
+		-
+			message: '#^Property Documents\\Bars\\Bar\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Bars/Bar.php
 
 		-
 			message: '#^Property Documents\\Bars\\Bar\:\:\$id is never written, only read\.$#'
@@ -2131,10 +2329,22 @@ parameters:
 			path: tests/Documents/Bars/Bar.php
 
 		-
+			message: '#^Property Documents\\Category\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Category.php
+
+		-
 			message: '#^Property Documents\\Category\:\:\$id is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Documents/Category.php
+
+		-
+			message: '#^Property Documents\\Developer\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Developer.php
 
 		-
 			message: '#^Property Documents\\Developer\:\:\$id is never written, only read\.$#'
@@ -2149,6 +2359,12 @@ parameters:
 			path: tests/Documents/Developer.php
 
 		-
+			message: '#^Property Documents\\Ecommerce\\StockItem\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Ecommerce/StockItem.php
+
+		-
 			message: '#^Property Documents\\Ecommerce\\StockItem\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
@@ -2161,14 +2377,32 @@ parameters:
 			path: tests/Documents/Encryption/Client.php
 
 		-
+			message: '#^Property Documents\\Event\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Event.php
+
+		-
 			message: '#^Property Documents\\Event\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Event.php
 
 		-
+			message: '#^Property Documents\\File\:\:\$chunkSize \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/File.php
+
+		-
 			message: '#^Property Documents\\File\:\:\$chunkSize is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: '#^Property Documents\\File\:\:\$filename \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/File.php
 
@@ -2179,8 +2413,20 @@ parameters:
 			path: tests/Documents/File.php
 
 		-
+			message: '#^Property Documents\\File\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/File.php
+
+		-
 			message: '#^Property Documents\\File\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Documents/File.php
+
+		-
+			message: '#^Property Documents\\File\:\:\$length \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/File.php
 
@@ -2191,14 +2437,32 @@ parameters:
 			path: tests/Documents/File.php
 
 		-
+			message: '#^Property Documents\\File\:\:\$uploadDate \(DateTime\|null\) is never assigned DateTime so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/File.php
+
+		-
 			message: '#^Property Documents\\File\:\:\$uploadDate is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/File.php
 
 		-
+			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$chunkSize \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
 			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$chunkSize is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$filename \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/FileWithoutChunkSize.php
 
@@ -2209,8 +2473,20 @@ parameters:
 			path: tests/Documents/FileWithoutChunkSize.php
 
 		-
+			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
 			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
+			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$length \(int\|null\) is never assigned int so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/FileWithoutChunkSize.php
 
@@ -2221,14 +2497,32 @@ parameters:
 			path: tests/Documents/FileWithoutChunkSize.php
 
 		-
+			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$uploadDate \(DateTime\|null\) is never assigned DateTime so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/FileWithoutChunkSize.php
+
+		-
 			message: '#^Property Documents\\FileWithoutChunkSize\:\:\$uploadDate is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/FileWithoutChunkSize.php
 
 		-
+			message: '#^Property Documents\\FileWithoutMetadata\:\:\$filename \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/FileWithoutMetadata.php
+
+		-
 			message: '#^Property Documents\\FileWithoutMetadata\:\:\$filename is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Documents/FileWithoutMetadata.php
+
+		-
+			message: '#^Property Documents\\FileWithoutMetadata\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/FileWithoutMetadata.php
 
@@ -2239,10 +2533,22 @@ parameters:
 			path: tests/Documents/FileWithoutMetadata.php
 
 		-
+			message: '#^Property Documents\\Functional\\FavoritesUser\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Functional/FavoritesUser.php
+
+		-
 			message: '#^Property Documents\\Functional\\FavoritesUser\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Functional/FavoritesUser.php
+
+		-
+			message: '#^Property Documents\\Group\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Group.php
 
 		-
 			message: '#^Property Documents\\Group\:\:\$id is never written, only read\.$#'
@@ -2251,10 +2557,22 @@ parameters:
 			path: tests/Documents/Group.php
 
 		-
+			message: '#^Property Documents\\Message\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Message.php
+
+		-
 			message: '#^Property Documents\\Message\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Message.php
+
+		-
+			message: '#^Property Documents\\ProfileNotify\:\:\$profileId \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/ProfileNotify.php
 
 		-
 			message: '#^Property Documents\\ProfileNotify\:\:\$profileId is never written, only read\.$#'
@@ -2263,14 +2581,32 @@ parameters:
 			path: tests/Documents/ProfileNotify.php
 
 		-
+			message: '#^Property Documents\\Project\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Project.php
+
+		-
 			message: '#^Property Documents\\Project\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Project.php
 
 		-
+			message: '#^Property Documents\\SchemaValidated\:\:\$email \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
 			message: '#^Property Documents\\SchemaValidated\:\:\$email is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: '#^Property Documents\\SchemaValidated\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/SchemaValidated.php
 
@@ -2281,8 +2617,20 @@ parameters:
 			path: tests/Documents/SchemaValidated.php
 
 		-
+			message: '#^Property Documents\\SchemaValidated\:\:\$name \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
 			message: '#^Property Documents\\SchemaValidated\:\:\$name is unused\.$#'
 			identifier: property.unused
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: '#^Property Documents\\SchemaValidated\:\:\$phone \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/SchemaValidated.php
 
@@ -2293,10 +2641,22 @@ parameters:
 			path: tests/Documents/SchemaValidated.php
 
 		-
+			message: '#^Property Documents\\SchemaValidated\:\:\$status \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/SchemaValidated.php
+
+		-
 			message: '#^Property Documents\\SchemaValidated\:\:\$status is unused\.$#'
 			identifier: property.unused
 			count: 1
 			path: tests/Documents/SchemaValidated.php
+
+		-
+			message: '#^Property Documents\\Task\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Task.php
 
 		-
 			message: '#^Property Documents\\Task\:\:\$id is never written, only read\.$#'
@@ -2305,10 +2665,22 @@ parameters:
 			path: tests/Documents/Task.php
 
 		-
+			message: '#^Property Documents\\Tournament\\Participant\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Tournament/Participant.php
+
+		-
 			message: '#^Property Documents\\Tournament\\Participant\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/Tournament/Participant.php
+
+		-
+			message: '#^Property Documents\\Tournament\\Tournament\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/Tournament/Tournament.php
 
 		-
 			message: '#^Property Documents\\Tournament\\Tournament\:\:\$id is never written, only read\.$#'
@@ -2317,14 +2689,32 @@ parameters:
 			path: tests/Documents/Tournament/Tournament.php
 
 		-
+			message: '#^Property Documents\\UserName\:\:\$id \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/UserName.php
+
+		-
 			message: '#^Property Documents\\UserName\:\:\$id is never written, only read\.$#'
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Documents/UserName.php
 
 		-
+			message: '#^Property Documents\\UserName\:\:\$username \(string\|null\) is never assigned string so it can be removed from the property type\.$#'
+			identifier: property.unusedType
+			count: 1
+			path: tests/Documents/UserName.php
+
+		-
 			message: '#^Property Documents\\UserName\:\:\$username is never written, only read\.$#'
 			identifier: property.onlyRead
+			count: 1
+			path: tests/Documents/UserName.php
+
+		-
+			message: '#^Property Documents\\UserName\:\:\$viewReference \(Documents\\ViewReference\|null\) is never assigned Documents\\ViewReference so it can be removed from the property type\.$#'
+			identifier: property.unusedType
 			count: 1
 			path: tests/Documents/UserName.php
 
