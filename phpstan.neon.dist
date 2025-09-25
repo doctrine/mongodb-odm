@@ -38,6 +38,14 @@ parameters:
         identifier: property.unused
         path: tests/
 
+      - message: '#^Property (DoctrineGlobal_|Documents\\|Doctrine\\ODM\\MongoDB\\Tests\\)[^:]+(?<!Test)::\$[a-zA-Z0-9_]+ is never written, only read\.$#'
+        identifier: property.onlyRead
+        path: tests/
+
+      - message: '#^Property (DoctrineGlobal_|Documents\\|Doctrine\\ODM\\MongoDB\\Tests\\)[^:]+(?<!Test)::\$[a-zA-Z0-9_]+ is never read, only written\.$#'
+        identifier: property.onlyWritten
+        path: tests/
+
       - message: '#^Property (DoctrineGlobal_|Documents\\|Doctrine\\ODM\\MongoDB\\Tests\\)[^:]+(?<!Test)::\$[a-zA-Z0-9_]+ \(.*\) is never assigned .* so it can be removed from the property type\.$#'
         identifier: property.unusedType
         path: tests/
