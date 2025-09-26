@@ -232,11 +232,7 @@ final class SchemaManager
         return $indexes;
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     *
-     * @phpstan-return IndexMapping[]
-     */
+    /** @phpstan-return IndexMapping[] */
     private function prepareIndexes(ClassMetadata $class): array
     {
         $persister  = $this->dm->getUnitOfWork()->getDocumentPersister($class->name);
@@ -1026,14 +1022,12 @@ final class SchemaManager
         );
     }
 
-    /** @param ClassMetadata<object> $class */
     private function ensureGridFSIndexes(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $this->ensureChunksIndex($class, $maxTimeMs, $writeConcern, $background);
         $this->ensureFilesIndex($class, $maxTimeMs, $writeConcern, $background);
     }
 
-    /** @param ClassMetadata<object> $class */
     private function ensureChunksIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $chunksCollection = $this->dm->getDocumentBucket($class->getName())->getChunksCollection();
@@ -1049,7 +1043,6 @@ final class SchemaManager
         );
     }
 
-    /** @param ClassMetadata<object> $class */
     private function ensureFilesIndex(ClassMetadata $class, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $filesCollection = $this->dm->getDocumentCollection($class->getName());

@@ -136,7 +136,6 @@ final class ReferencePrimer
      * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
-     * @param ClassMetadata<object>             $class
      * @param array<object>|Traversable<object> $documents
      * @param FieldMapping|null                 $mapping
      *

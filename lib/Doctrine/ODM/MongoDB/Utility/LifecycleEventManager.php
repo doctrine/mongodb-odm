@@ -293,7 +293,6 @@ final class LifecycleEventManager
         }
     }
 
-    /** @param ClassMetadata<object> $class */
     private function dispatchEvent(ClassMetadata $class, string $eventName, ?EventArgs $eventArgs = null): void
     {
         if ($class->isView()) {

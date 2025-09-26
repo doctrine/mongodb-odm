@@ -157,7 +157,6 @@ final class HydratorFactory
         }
     }
 
-    /** @param ClassMetadata<object> $class */
     private function generateHydratorClass(ClassMetadata $class, string $hydratorClassName, ?string $fileName): void
     {
         $code = '';

@@ -86,10 +86,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
         }
     }
 
-    /**
-     * @param ClassMetadata<object> $classMetadata
-     * @phpstan-param AssociationFieldMapping $mapping
-     */
+    /** @phpstan-param AssociationFieldMapping $mapping */
     private function remapAssociation(ClassMetadata $classMetadata, array $mapping): void
     {
         $newMapping              = $this->resolveTargetDocuments[$mapping['targetDocument']];

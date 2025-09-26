@@ -1333,7 +1333,6 @@ EOT;
         ];
     }
 
-    /** @param ClassMetadata<object> $cm */
     private function getDatabaseName(ClassMetadata $cm): string
     {
         return ($cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB()) ?: 'doctrine';

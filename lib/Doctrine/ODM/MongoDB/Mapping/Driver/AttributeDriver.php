@@ -347,10 +347,7 @@ class AttributeDriver implements MappingDriver
         }
     }
 
-    /**
-     * @param ClassMetadata<object>     $class
-     * @param array<string, int|string> $keys
-     */
+    /** @param array<string, int|string> $keys */
     private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
     {
         $keys    = array_merge($keys, $index->keys);
@@ -372,7 +369,6 @@ class AttributeDriver implements MappingDriver
         $class->addIndex($keys, $options);
     }
 
-    /** @param ClassMetadata<object> $class */
     private function addSearchIndex(ClassMetadata $class, ODM\SearchIndex $index): void
     {
         $definition = [];
@@ -392,7 +388,6 @@ class AttributeDriver implements MappingDriver
         $class->addSearchIndex($definition, $index->name ?? null, 'search');
     }
 
-    /** @param ClassMetadata<object> $class */
     private function addVectorSearchIndex(ClassMetadata $class, ODM\VectorSearchIndex $index): void
     {
         $definition = [
@@ -402,11 +397,6 @@ class AttributeDriver implements MappingDriver
         $class->addSearchIndex($definition, $index->name ?? null, 'vectorSearch');
     }
 
-    /**
-     * @param ClassMetadata<object> $class
-     *
-     * @throws MappingException
-     */
     private function setShardKey(ClassMetadata $class, ODM\ShardKey $shardKey): void
     {
         $options = [];
