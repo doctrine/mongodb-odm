@@ -5,21 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
-use LogicException;
 use ReflectionProperty;
 
 use function ltrim;
 
-use const PHP_VERSION_ID;
-
-/**
- * This is a PHP 8.4 and up only class and replaces {@see ObjectCastPropertyAccessor}.
- *
- * It works based on the raw values of a property, which for a case of property hooks
- * is the backed value. If we kept using setValue/getValue, this would go through the hooks,
- * which potentially change the data.
- */
-class RawValuePropertyAccessor implements PropertyAccessor
+/** @internal */
+class ObjectCastPropertyAccessor implements PropertyAccessor
 {
     public static function fromReflectionProperty(ReflectionProperty $reflectionProperty): self
     {
@@ -31,22 +22,19 @@ class RawValuePropertyAccessor implements PropertyAccessor
 
     private function __construct(private ReflectionProperty $reflectionProperty, private string $key)
     {
-        if (PHP_VERSION_ID < 80400) {
-            throw new LogicException('This class requires PHP 8.4 or higher.');
-        }
     }
 
     public function setValue(object $object, mixed $value): void
     {
         if (! ($object instanceof InternalProxy && ! $object->__isInitialized())) {
-            $this->reflectionProperty->setRawValueWithoutLazyInitialization($object, $value);
+            $this->reflectionProperty->setValue($object, $value);
 
             return;
         }
 
         $object->__setInitialized(true);
 
-        $this->reflectionProperty->setRawValue($object, $value);
+        $this->reflectionProperty->setValue($object, $value);
 
         $object->__setInitialized(false);
     }
