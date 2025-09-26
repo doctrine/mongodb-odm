@@ -73,7 +73,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
 
     public function getOperatorParams(): object
     {
-        $params = (object) ['path' => $this->path];
+        $params = (object) ['path' => $this->prepareFieldPath($this->path)];
 
         if ($this->gt !== null) {
             $name          = $this->includeLowerBound ? 'gte' : 'gt';

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\LineString;
 use GeoJson\Geometry\MultiPolygon;
@@ -27,9 +28,9 @@ class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
     private LineString|Point|Polygon|MultiPolygon|array|null $geometry = null;
 
     /** @param LineString|Point|Polygon|MultiPolygon|array|null $geometry */
-    public function __construct(Search $search, $geometry = null, string $relation = '', string ...$path)
+    public function __construct(Search $search, DocumentPersister $persister, $geometry = null, string $relation = '', string ...$path)
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this
             ->geometry($geometry)
@@ -67,7 +68,7 @@ class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
     public function getOperatorParams(): object
     {
         $params = (object) [
-            'path' => $this->path,
+            'path' => $this->prepareFieldPath($this->path),
             'relation' => $this->relation,
             'geometry' => $this->geometry instanceof Geometry
                 ? $this->geometry->jsonSerialize()

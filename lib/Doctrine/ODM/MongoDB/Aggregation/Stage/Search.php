@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperatorsTrait;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 use function in_array;
 use function is_array;
@@ -70,7 +71,7 @@ class Search extends Stage implements SupportsAllSearchOperators
     /** @var array<string, -1|1|SortMeta> */
     private array $sort = [];
 
-    public function __construct(Builder $builder)
+    public function __construct(Builder $builder, private DocumentPersister $persister)
     {
         parent::__construct($builder);
     }
@@ -105,7 +106,7 @@ class Search extends Stage implements SupportsAllSearchOperators
         }
 
         if ($this->sort) {
-            $params->sort = (object) $this->sort;
+            $params->sort = (object) $this->persister->prepareSort($this->sort);
         }
 
         if ($this->operator !== null) {
@@ -213,5 +214,10 @@ class Search extends Stage implements SupportsAllSearchOperators
     protected function getSearchStage(): static
     {
         return $this;
+    }
+
+    protected function getDocumentPersister(): DocumentPersister
+    {
+        return $this->persister;
     }
 }

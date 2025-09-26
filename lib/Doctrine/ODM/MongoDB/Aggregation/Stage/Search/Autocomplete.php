@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 use function array_values;
 
@@ -23,9 +24,9 @@ class Autocomplete extends AbstractSearchOperator implements ScoredSearchOperato
     private string $tokenOrder = '';
     private ?object $fuzzy     = null;
 
-    public function __construct(Search $search, string $path, string ...$query)
+    public function __construct(Search $search, DocumentPersister $persister, string $path, string ...$query)
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this->query(...$query);
         $this->path($path);
@@ -79,7 +80,7 @@ class Autocomplete extends AbstractSearchOperator implements ScoredSearchOperato
     {
         $params = (object) [
             'query' => $this->query,
-            'path' => $this->path,
+            'path' => $this->prepareFieldPath($this->path),
         ];
 
         if ($this->tokenOrder) {

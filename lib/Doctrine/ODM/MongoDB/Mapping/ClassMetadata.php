@@ -263,6 +263,7 @@ use function trigger_deprecation;
  *      synonyms?: list<SearchIndexSynonym>,
  * }
  * @phpstan-type SearchIndexMapping array{
+ *      type: 'search'|'vectorSearch',
  *      name: string,
  *      definition: SearchIndexDefinition
  * }

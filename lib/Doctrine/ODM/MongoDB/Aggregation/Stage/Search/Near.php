@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
 use MongoDB\BSON\UTCDateTime;
@@ -29,9 +30,9 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
      * @param int|float|UTCDateTime|array|Point|null $origin
      * @param int|float|null                         $pivot
      */
-    public function __construct(Search $search, $origin = null, $pivot = null, string ...$path)
+    public function __construct(Search $search, DocumentPersister $persister, $origin = null, $pivot = null, string ...$path)
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this
             ->origin($origin)
@@ -74,7 +75,7 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
                 ? $this->origin->jsonSerialize()
                 : $this->origin,
             'pivot' => $this->pivot,
-            'path' => $this->path,
+            'path' => $this->prepareFieldPath($this->path),
         ];
 
         return $this->appendScore($params);

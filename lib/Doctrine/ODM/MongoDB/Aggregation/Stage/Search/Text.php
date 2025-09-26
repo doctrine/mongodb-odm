@@ -71,7 +71,7 @@ class Text extends AbstractSearchOperator implements ScoredSearchOperator
     {
         $params = (object) [
             'query' => $this->query,
-            'path' => $this->path,
+            'path' => $this->prepareFieldPath($this->path),
         ];
 
         if ($this->fuzzy) {

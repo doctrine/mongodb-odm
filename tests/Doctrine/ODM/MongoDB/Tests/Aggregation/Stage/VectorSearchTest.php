@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\VectorSearch;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Documents\User;
+use Documents\VectorEmbedding;
 use MongoDB\BSON\Binary;
 
 class VectorSearchTest extends BaseTestCase
@@ -15,63 +18,69 @@ class VectorSearchTest extends BaseTestCase
 
     public function testEmptyStage(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage] = $this->createVectorSearchStage();
         self::assertSame(['$vectorSearch' => []], $stage->getExpression());
     }
 
     public function testExact(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage, $builder] = $this->createVectorSearchStage();
         $stage->exact(true);
         self::assertSame(['$vectorSearch' => ['exact' => true]], $stage->getExpression());
     }
 
     public function testFilter(): void
     {
-        $builder = $this->getTestAggregationBuilder();
-        $stage   = new VectorSearch($builder);
+        [$stage, $builder] = $this->createVectorSearchStage();
         $stage->filter($builder->matchExpr()->field('status')->notEqual('inactive'));
         self::assertSame(['$vectorSearch' => ['filter' => ['status' => ['$ne' => 'inactive']]]], $stage->getExpression());
     }
 
     public function testIndex(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage] = $this->createVectorSearchStage();
         $stage->index('myIndex');
         self::assertSame(['$vectorSearch' => ['index' => 'myIndex']], $stage->getExpression());
     }
 
     public function testLimit(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage] = $this->createVectorSearchStage();
         $stage->limit(10);
         self::assertSame(['$vectorSearch' => ['limit' => 10]], $stage->getExpression());
     }
 
     public function testNumCandidates(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage] = $this->createVectorSearchStage();
         $stage->numCandidates(5);
         self::assertSame(['$vectorSearch' => ['numCandidates' => 5]], $stage->getExpression());
     }
 
     public function testPath(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage] = $this->createVectorSearchStage();
         $stage->path('vectorField');
         self::assertSame(['$vectorSearch' => ['path' => 'vectorField']], $stage->getExpression());
     }
 
+    public function testPathIsPrepared(): void
+    {
+        [$stage] = $this->createVectorSearchStage(VectorEmbedding::class);
+        $stage->path('vectorFloat');
+        self::assertSame(['$vectorSearch' => ['path' => 'db_vector_float']], $stage->getExpression());
+    }
+
     public function testQueryVector(): void
     {
-        $stage = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage] = $this->createVectorSearchStage();
         $stage->queryVector([1, 2, 3]);
         self::assertSame(['$vectorSearch' => ['queryVector' => [1, 2, 3]]], $stage->getExpression());
     }
 
     public function testQueryVectorAcceptsBinary(): void
     {
-        $stage        = new VectorSearch($this->getTestAggregationBuilder());
+        [$stage]      = $this->createVectorSearchStage();
         $binaryVector = new Binary("\x01\x02\x03", 9);
         $stage->queryVector($binaryVector);
         self::assertSame(['$vectorSearch' => ['queryVector' => $binaryVector]], $stage->getExpression());
@@ -79,8 +88,8 @@ class VectorSearchTest extends BaseTestCase
 
     public function testChainingAllOptions(): void
     {
-        $builder = $this->getTestAggregationBuilder();
-        $stage   = (new VectorSearch($builder))
+        [$stage, $builder] = $this->createVectorSearchStage();
+        $stage
             ->exact(false)
             ->filter($builder->matchExpr()->field('status')->notEqual('inactive'))
             ->index('idx')
@@ -99,5 +108,18 @@ class VectorSearchTest extends BaseTestCase
                 'queryVector' => [0.1, 0.2],
             ],
         ], $stage->getExpression());
+    }
+
+    /**
+     * @param class-string $className
+     *
+     * @return array{0: VectorSearch, 1: Builder}
+     */
+    private function createVectorSearchStage(string $className = User::class): array
+    {
+        return [
+            new VectorSearch($builder = $this->getTestAggregationBuilder($className), $this->dm->getUnitOfWork()->getDocumentPersister($className)),
+            $builder,
+        ];
     }
 }

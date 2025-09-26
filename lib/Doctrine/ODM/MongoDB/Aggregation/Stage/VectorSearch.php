@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
@@ -36,7 +37,7 @@ class VectorSearch extends Stage
     /** @phpstan-var Vector|null */
     private array|Binary|null $queryVector = null;
 
-    public function __construct(Builder $builder)
+    public function __construct(Builder $builder, private DocumentPersister $persister)
     {
         parent::__construct($builder);
     }
@@ -66,7 +67,7 @@ class VectorSearch extends Stage
         }
 
         if ($this->path !== null) {
-            $params['path'] = $this->path;
+            $params['path'] = $this->persister->prepareFieldName($this->path);
         }
 
         if ($this->queryVector !== null) {

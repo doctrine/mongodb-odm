@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Utility\EncryptedFieldsMapGenerator;
 use InvalidArgumentException;
@@ -490,7 +491,10 @@ final class SchemaManager
     /**
      * @param ClassMetadata<object> $class
      *
+     * @return list<array<string, mixed>>
      * @phpstan-return list<SearchIndexMapping>
+     *
+     * @throws MappingException
      */
     private function prepareSearchIndexes(ClassMetadata $class): array
     {

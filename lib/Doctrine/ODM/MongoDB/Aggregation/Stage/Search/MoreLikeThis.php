@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 use function array_values;
 
@@ -19,9 +20,9 @@ class MoreLikeThis extends AbstractSearchOperator
     private array $like = [];
 
     /** @param array<string, mixed>|object $documents */
-    public function __construct(Search $search, ...$documents)
+    public function __construct(Search $search, DocumentPersister $persister, ...$documents)
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this->like = array_values($documents);
     }
@@ -33,6 +34,7 @@ class MoreLikeThis extends AbstractSearchOperator
 
     public function getOperatorParams(): object
     {
+        // @todo map full object
         return (object) ['like' => $this->like];
     }
 }

@@ -8,8 +8,10 @@ use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\AbstractSearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\CompoundSearchOperatorInterface;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsEmbeddableSearchOperators;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Documents\User;
 use Generator;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
@@ -34,8 +36,7 @@ class SearchTest extends BaseTestCase
                     'path' => 'content',
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->autocomplete('content', 'MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content');
             },
@@ -49,8 +50,7 @@ class SearchTest extends BaseTestCase
                     'tokenOrder' => 'any',
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->autocomplete()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -68,8 +68,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->autocomplete()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -87,8 +86,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->autocomplete()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -108,8 +106,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->autocomplete()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -134,8 +131,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->compound()
                     ->must()
                         ->text()
@@ -166,8 +162,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->compound()
                     ->must()
                         ->text()
@@ -197,8 +192,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->compound()
                     ->must()
                         ->text()
@@ -226,8 +220,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->embeddedDocument('items')
                     ->text()
                         ->path('items.content')
@@ -270,8 +263,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search $stage) {
                 return $stage->embeddedDocument('items')
                     ->compound()
                         ->must()
@@ -295,8 +287,7 @@ class SearchTest extends BaseTestCase
                     'value' => 'MongoDB Aggregation Pipeline',
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->equals('content', 'MongoDB Aggregation Pipeline');
             },
         ];
@@ -311,8 +302,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->equals()
                     ->path('content')
                     ->value('MongoDB Aggregation Pipeline')
@@ -330,8 +320,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->equals()
                     ->path('content')
                     ->value('MongoDB Aggregation Pipeline')
@@ -346,8 +335,7 @@ class SearchTest extends BaseTestCase
             'expectedOperator' => [
                 'exists' => (object) ['path' => 'content'],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->exists('content');
             },
         ];
@@ -363,8 +351,7 @@ class SearchTest extends BaseTestCase
                     'geometry' => ['coordinates' => [12.345, 23.456], 'type' => 'Point'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoShape(
                     new Point([12.345, 23.456]),
                     'contains',
@@ -385,8 +372,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoShape()
                     ->path('location')
                     ->relation('contains')
@@ -406,8 +392,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoShape()
                     ->path('location')
                     ->relation('contains')
@@ -429,8 +414,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoWithin('location1', 'location2')
                     ->box(new Point([-12.345, -23.456]), new Point([12.345, 23.456]));
             },
@@ -446,8 +430,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoWithin()
                     ->path('location')
                     ->circle(new Point([12.345, 23.456]), 3.14);
@@ -467,8 +450,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoWithin()
                     ->path('location')
                     ->geometry(new Polygon([
@@ -491,8 +473,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoWithin()
                     ->path('location')
                     ->circle(new Point([12.345, 23.456]), 3.14)
@@ -513,8 +494,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->geoWithin()
                     ->path('location')
                     ->circle(new Point([12.345, 23.456]), 3.14)
@@ -529,8 +509,7 @@ class SearchTest extends BaseTestCase
             'expectedOperator' => [
                 'moreLikeThis' => (object) ['like' => [['title' => 'The Godfather']]],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->moreLikeThis(['title' => 'The Godfather']);
             },
         ];
@@ -544,8 +523,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->moreLikeThis(['title' => 'The Godfather'], ['title' => 'The Green Mile']);
             },
         ];
@@ -561,8 +539,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['value1', 'value2'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->near(5, 3, 'value1', 'value2');
             },
         ];
@@ -577,8 +554,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['createdAt'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) use ($date) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) use ($date) {
                 return $stage->near()
                     ->path('createdAt')
                     ->origin($date)
@@ -594,8 +570,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['createdAt'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->near()
                     ->path('createdAt')
                     ->origin(new Point([12.345, 23.456]))
@@ -613,8 +588,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['title', 'content'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->phrase()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content');
@@ -629,8 +603,7 @@ class SearchTest extends BaseTestCase
                     'slop' => 3,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->phrase()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -648,8 +621,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->phrase()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -667,8 +639,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->phrase()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -686,8 +657,7 @@ class SearchTest extends BaseTestCase
                     'defaultPath' => 'content',
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->queryString('MongoDB Aggregation Pipeline', 'content');
             },
         ];
@@ -702,8 +672,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->queryString()
                     ->query('content:pipeline OR title:pipeline')
                     ->defaultPath('content')
@@ -721,8 +690,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->queryString()
                     ->query('content:pipeline OR title:pipeline')
                     ->defaultPath('content')
@@ -740,8 +708,7 @@ class SearchTest extends BaseTestCase
                     'gt' => 5,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->gt(5);
@@ -755,8 +722,7 @@ class SearchTest extends BaseTestCase
                     'gte' => 5,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->gte(5);
@@ -770,8 +736,7 @@ class SearchTest extends BaseTestCase
                     'lt' => 5,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->lt(5);
@@ -785,8 +750,7 @@ class SearchTest extends BaseTestCase
                     'lte' => 5,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->lte(5);
@@ -801,8 +765,7 @@ class SearchTest extends BaseTestCase
                     'gte' => 5,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->lte(10)
@@ -821,8 +784,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->lte(10)
@@ -842,8 +804,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->range()
                     ->path('field1', 'field2')
                     ->lte(10)
@@ -862,8 +823,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['title', 'content'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->regex()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content');
@@ -878,8 +838,7 @@ class SearchTest extends BaseTestCase
                     'allowAnalyzedField' => true,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->regex()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -895,8 +854,7 @@ class SearchTest extends BaseTestCase
                     'allowAnalyzedField' => false,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->regex()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -914,8 +872,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->regex()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -933,8 +890,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->regex()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -952,8 +908,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['title', 'content'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->text()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content');
@@ -968,8 +923,7 @@ class SearchTest extends BaseTestCase
                     'synonyms' => 'mySynonyms',
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->text()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -987,8 +941,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->text()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -1006,8 +959,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->text()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -1027,8 +979,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->text()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('content')
@@ -1046,8 +997,7 @@ class SearchTest extends BaseTestCase
                     'path' => ['title', 'content'],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->wildcard()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content');
@@ -1062,8 +1012,7 @@ class SearchTest extends BaseTestCase
                     'allowAnalyzedField' => true,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->wildcard()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -1079,8 +1028,7 @@ class SearchTest extends BaseTestCase
                     'allowAnalyzedField' => false,
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->wildcard()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -1098,8 +1046,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->wildcard()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -1117,8 +1064,7 @@ class SearchTest extends BaseTestCase
                     ],
                 ],
             ],
-            /** @param Search|CompoundSearchOperatorInterface $stage */
-            'createOperator' => static function ($stage) {
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->wildcard()
                     ->query('MongoDB', 'Aggregation', 'Pipeline')
                     ->path('title', 'content')
@@ -1159,7 +1105,7 @@ class SearchTest extends BaseTestCase
             'returnStoredSource' => true,
         ];
 
-        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage = $this->createSearchStage();
         $searchStage
             ->index('my_search_index');
 
@@ -1207,7 +1153,7 @@ class SearchTest extends BaseTestCase
             ],
         ];
 
-        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage = $this->createSearchStage();
         $searchStage
             ->index('my_search_index');
 
@@ -1244,7 +1190,7 @@ class SearchTest extends BaseTestCase
     #[DataProvider('provideWildcardBuilders')]
     public function testSearchCompoundOperators(array $expectedOperator, Closure $createOperator): void
     {
-        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage = $this->createSearchStage();
         $compound    = $searchStage
             ->index('my_search_index')
             ->compound();
@@ -1293,7 +1239,7 @@ class SearchTest extends BaseTestCase
     #[DataProvider('provideWildcardBuilders')]
     public function testSearchEmbeddedDocumentOperators(array $expectedOperator, Closure $createOperator): void
     {
-        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage = $this->createSearchStage();
         $embedded    = $searchStage
             ->index('my_search_index')
             ->embeddedDocument('foo');
@@ -1332,7 +1278,7 @@ class SearchTest extends BaseTestCase
             'searchBefore' => 'marker',
         ];
 
-        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage = $this->createSearchStage();
         $searchStage
             ->index('my_search_index')
             ->searchBefore('marker');
@@ -1373,7 +1319,7 @@ class SearchTest extends BaseTestCase
             'searchAfter' => 'marker',
         ];
 
-        $searchStage = new Search($this->getTestAggregationBuilder());
+        $searchStage = $this->createSearchStage();
         $searchStage
             ->index('my_search_index')
             ->searchAfter('marker');
@@ -1394,5 +1340,10 @@ class SearchTest extends BaseTestCase
             ['$search' => (object) array_merge($baseExpected, $expectedOperator)],
             $searchStage->getExpression(),
         );
+    }
+
+    private function createSearchStage(string $className = User::class): Search
+    {
+        return new Search($this->getTestAggregationBuilder($className), $this->dm->getUnitOfWork()->getDocumentPersister($className));
     }
 }

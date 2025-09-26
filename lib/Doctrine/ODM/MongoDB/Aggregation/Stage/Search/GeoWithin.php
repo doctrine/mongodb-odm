@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\MultiPolygon;
 use GeoJson\Geometry\Point;
@@ -27,9 +28,9 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
 
     private array|MultiPolygon|Polygon|null $geometry = null;
 
-    public function __construct(Search $search, string ...$path)
+    public function __construct(Search $search, DocumentPersister $persister, string ...$path)
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this->path(...$path);
     }
@@ -84,7 +85,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
 
     public function getOperatorParams(): object
     {
-        $params = (object) ['path' => $this->path];
+        $params = (object) ['path' => $this->prepareFieldPath($this->path)];
 
         if ($this->box) {
             $params->box = $this->box;

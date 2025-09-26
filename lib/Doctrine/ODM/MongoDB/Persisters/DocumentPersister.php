@@ -71,7 +71,7 @@ use function trigger_deprecation;
  *
  * @internal
  *
- * @template T of object
+ * @template T of object = object
  *
  * @phpstan-type CommitOptions array{
  *      fsync?: bool,

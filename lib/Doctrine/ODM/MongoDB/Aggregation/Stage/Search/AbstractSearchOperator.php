@@ -7,6 +7,10 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+
+use function array_map;
+use function is_array;
 
 /**
  * @internal
@@ -18,7 +22,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
  */
 abstract class AbstractSearchOperator extends Stage implements SearchOperator
 {
-    public function __construct(private Search $search)
+    public function __construct(private Search $search, private DocumentPersister $persister)
     {
         parent::__construct($search->builder);
     }
@@ -63,5 +67,26 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
     protected function getSearchStage(): Search
     {
         return $this->search;
+    }
+
+    /**
+     * @param T $field
+     *
+     * @return T
+     *
+     * @template T of string|string[]
+     */
+    protected function prepareFieldPath(string|array $field): string|array
+    {
+        if (is_array($field)) {
+            return array_map($this->persister->prepareFieldName(...), $field);
+        }
+
+        return $this->persister->prepareFieldName($field);
+    }
+
+    protected function getDocumentPersister(): DocumentPersister
+    {
+        return $this->persister;
     }
 }

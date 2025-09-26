@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 /**
  * @internal
@@ -18,9 +19,9 @@ class QueryString extends AbstractSearchOperator implements ScoredSearchOperator
     private string $query;
     private string $defaultPath;
 
-    public function __construct(Search $search, string $query = '', string $defaultPath = '')
+    public function __construct(Search $search, DocumentPersister $persister, string $query = '', string $defaultPath = '')
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this
             ->query($query)
@@ -50,7 +51,7 @@ class QueryString extends AbstractSearchOperator implements ScoredSearchOperator
     {
         $params = (object) [
             'query' => $this->query,
-            'defaultPath' => $this->defaultPath,
+            'defaultPath' => $this->prepareFieldPath($this->defaultPath),
         ];
 
         return $this->appendScore($params);

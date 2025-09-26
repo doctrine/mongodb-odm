@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 /**
  * @internal
@@ -19,9 +20,9 @@ class EmbeddedDocument extends AbstractSearchOperator implements SupportsEmbedda
     private string $path;
     private ?SearchOperator $operator = null;
 
-    public function __construct(Search $search, string $path)
+    public function __construct(Search $search, DocumentPersister $persister, string $path)
     {
-        parent::__construct($search);
+        parent::__construct($search, $persister);
 
         $this->path($path);
     }
@@ -52,7 +53,7 @@ class EmbeddedDocument extends AbstractSearchOperator implements SupportsEmbedda
 
     public function getOperatorParams(): object
     {
-        $params = (object) ['path' => $this->path];
+        $params = (object) ['path' => $this->prepareFieldPath($this->path)];
 
         if ($this->operator) {
             $params->operator = (object) $this->operator->getExpression();

@@ -570,7 +570,7 @@ class Builder
      */
     public function search(): Stage\Search
     {
-        $stage = new Stage\Search($this);
+        $stage = new Stage\Search($this, $this->getDocumentPersister());
 
         return $this->addStage($stage);
     }
@@ -660,7 +660,7 @@ class Builder
      */
     public function vectorSearch(): Stage\VectorSearch
     {
-        $stage = new Stage\VectorSearch($this);
+        $stage = new Stage\VectorSearch($this, $this->getDocumentPersister());
 
         return $this->addStage($stage);
     }
