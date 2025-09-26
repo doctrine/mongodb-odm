@@ -53,7 +53,7 @@ class AtlasSearchTest extends BaseTestCase
         $results = $this->dm->createAggregationBuilder(CmsArticle::class)
             ->search()
                 ->index('search_articles')
-                ->text()
+                ->autocomplete()
                     ->query('Mongo')
                     ->path('title')
                     ->fuzzy(2, 2)

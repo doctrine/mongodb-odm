@@ -8,7 +8,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 #[ODM\Index(keys: ['topic' => 'asc'])]
-#[ODM\SearchIndex(name: 'search_articles', dynamic: true)]
+#[ODM\SearchIndex(
+    name: 'search_articles',
+    dynamic: true,
+    fields: [
+        'title' => ['type' => 'autocomplete'],
+        'text' => ['type' => 'string'],
+        'not_mapped_field' => ['type' => 'token'],
+    ],
+)]
 #[ODM\Document]
 class CmsArticle
 {
@@ -19,7 +27,7 @@ class CmsArticle
     #[ODM\Field(type: 'string')]
     public $topic;
     /** @var string|null */
-    #[ODM\Field(type: 'string')]
+    #[ODM\Field(type: 'string', name: 'article_title')]
     public $title;
     /** @var string|null */
     #[ODM\Field(type: 'string')]

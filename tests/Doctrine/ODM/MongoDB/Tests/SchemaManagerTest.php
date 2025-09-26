@@ -410,28 +410,98 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->createSearchIndexes();
     }
 
+    public function testCreateDocumentSearchIndexesNotCreatedError(): void
+    {
+        $this->documentCollections['CmsArticle']
+            ->expects($this->once())
+            ->method('createSearchIndexes')
+            ->with($this->anything())
+            ->willReturn(['foo']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The following search indexes for Documents\CmsArticle were not created: search_articles');
+
+        $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
+    }
+
     public function testCreateDocumentSearchIndexes(): void
     {
         $expectedCollectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
         foreach ($this->documentCollections as $collectionName => $collection) {
             if ($collectionName === $expectedCollectionName) {
-                $collection
+                $this->documentCollections['CmsArticle']
                     ->expects($this->once())
                     ->method('createSearchIndexes')
-                    ->with([
-                        [
-                            'definition' => ['mappings' => ['dynamic' => true]],
-                            'name' => 'search_articles',
-                            'type' => 'search',
-                        ],
-                    ])
-                    ->willReturn(['search_articles']);
+                    ->with($this->anything())
+                    ->willReturnCallback(function (array $indexes) {
+                        $this->assertSame([
+                            [
+                                'type' => 'search',
+                                'name' => 'search_articles',
+                                'definition' => [
+                                    'mappings' => [
+                                        'dynamic' => true,
+                                        'fields' => [
+                                            'article_title' => ['type' => 'autocomplete'],
+                                            'text' => ['type' => 'string'],
+                                            'not_mapped_field' => ['type' => 'token'],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ], $indexes);
+
+                        return ['search_articles'];
+                    });
             } else {
                 $collection->expects($this->never())->method('createSearchIndexes');
             }
         }
 
         $this->schemaManager->createDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testCreateVectorSearchIndex(): void
+    {
+        $expectedCollectionName = $this->dm->getClassMetadata(VectorEmbedding::class)->getCollection();
+        foreach ($this->documentCollections as $collectionName => $collection) {
+            if ($collectionName === $expectedCollectionName) {
+                $this->documentCollections['vector_embeddings']
+                    ->expects($this->once())
+                    ->method('createSearchIndexes')
+                    ->with($this->anything())
+                    ->willReturnCallback(function (array $indexes) {
+                        $this->assertSame([
+                            [
+                                'type' => 'vectorSearch',
+                                'name' => 'default',
+                                'definition' => [
+                                    'fields' => [
+                                        ['type' => 'vector', 'path' => 'db_vector_float', 'numDimensions' => 3, 'similarity' => 'dotProduct'],
+                                    ],
+                                ],
+                            ],
+                            [
+                                'type' => 'vectorSearch',
+                                'name' => 'vector_int',
+                                'definition' => [
+                                    'fields' => [
+                                        ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => 'cosine'],
+                                        ['type' => 'filter', 'path' => 'filterField'],
+                                        ['type' => 'filter', 'path' => 'not_mapped_filter'],
+                                    ],
+                                ],
+                            ],
+                        ], $indexes);
+
+                        return ['default', 'vector_int'];
+                    });
+            } else {
+                $collection->expects($this->never())->method('createSearchIndexes');
+            }
+        }
+
+        $this->schemaManager->createDocumentSearchIndexes(VectorEmbedding::class);
     }
 
     public function testCreateDocumentSearchIndexesNotSupported(): void

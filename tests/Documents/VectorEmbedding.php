@@ -22,6 +22,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
     fields: [
         ['type' => 'vector', 'path' => 'vectorInt', 'numDimensions' => 3, 'similarity' => ClassMetadata::VECTOR_SIMILARITY_COSINE],
         ['type' => 'filter', 'path' => 'filterField'],
+        ['type' => 'filter', 'path' => 'not_mapped_filter'],
     ],
 )]
 class VectorEmbedding
@@ -30,7 +31,7 @@ class VectorEmbedding
     public ?string $id = null;
 
     /** @var list<float> */
-    #[Field(type: Type::COLLECTION)]
+    #[Field(type: Type::COLLECTION, name: 'db_vector_float')]
     public array $vectorFloat = [];
 
     /** @var list<int> */

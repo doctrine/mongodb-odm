@@ -368,7 +368,7 @@ final class SchemaManager
 
         /* createSearchIndexes builds indexes asynchronously but still reports
          * the names of created indexes. Report an error if any defined names
-         * were not actually created. */
+         * were not created. */
         $unprocessedNames = array_diff($definedNames, $createdNames);
 
         if (! empty($unprocessedNames)) {
