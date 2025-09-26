@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Utility\EncryptedFieldsMapGenerator;
 use InvalidArgumentException;
@@ -491,10 +490,7 @@ final class SchemaManager
     /**
      * @param ClassMetadata<object> $class
      *
-     * @return list<array<string, mixed>>
      * @phpstan-return list<SearchIndexMapping>
-     *
-     * @throws MappingException
      */
     private function prepareSearchIndexes(ClassMetadata $class): array
     {
@@ -505,7 +501,7 @@ final class SchemaManager
         foreach ($indexes as $index) {
             $definition = $index['definition'];
             if (is_array($definition['fields'] ?? null)) {
-                // Vector Search Index
+                // Vector Search Index, field names in 'path' parameter
                 $fields = [];
                 foreach ($definition['fields'] as $field) {
                     $key = $persister->prepareFieldName($field['path']);
@@ -520,7 +516,7 @@ final class SchemaManager
 
                 $definition['fields'] = $fields;
             } elseif (is_array($definition['mappings']['fields'] ?? null)) {
-                // Search Index with fields mappings
+                // Search Index with fields mappings, field names as keys
                 $fields = [];
                 foreach ($definition['mappings']['fields'] as $name => $field) {
                     $key = $persister->prepareFieldName($name);

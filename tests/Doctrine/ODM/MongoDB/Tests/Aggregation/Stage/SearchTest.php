@@ -1342,6 +1342,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param class-string $className */
     private function createSearchStage(string $className = User::class): Search
     {
         return new Search($this->getTestAggregationBuilder($className), $this->dm->getUnitOfWork()->getDocumentPersister($className));
