@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
+use function array_map;
 use function array_values;
 
 /**
@@ -34,7 +35,8 @@ class MoreLikeThis extends AbstractSearchOperator
 
     public function getOperatorParams(): object
     {
-        // @todo map full object
-        return (object) ['like' => $this->like];
+        return (object) [
+            'like' => array_map($this->getDocumentPersister()->prepareQueryOrNewObj(...), $this->like),
+        ];
     }
 }

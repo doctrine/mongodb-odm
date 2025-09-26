@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Closure;
+use DateTime;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\AbstractSearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\CompoundSearchOperatorInterface;
@@ -525,6 +526,19 @@ class SearchTest extends BaseTestCase
             ],
             'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
                 return $stage->moreLikeThis(['title' => 'The Godfather'], ['title' => 'The Green Mile']);
+            },
+        ];
+
+        yield 'MoreLikeThis with field names mapping' => [
+            'expectedOperator' => [
+                'moreLikeThis' => (object) [
+                    'like' => [
+                        ['disable-at' => new UTCDateTime(new DateTime('2020-01-01T00:00:00Z'))],
+                    ],
+                ],
+            ],
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
+                return $stage->moreLikeThis(['disabledAt' => new DateTime('2020-01-01T00:00:00Z')]);
             },
         ];
     }
