@@ -211,12 +211,12 @@ final class DocumentPersister
             // Set the initial version for each insert
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-                $nextVersion    = $this->class->reflFields[$this->class->versionField]->getValue($document);
+                $nextVersion    = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
                 $type           = Type::getType($versionMapping['type']);
                 assert($type instanceof Versionable);
                 if ($nextVersion === null) {
                     $nextVersion = $type->getNextVersion(null);
-                    $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+                    $this->class->propertyAccessors[$this->class->versionField]->setValue($document, $nextVersion);
                 }
 
                 $data[$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
@@ -289,12 +289,12 @@ final class DocumentPersister
         // Set the initial version for each upsert
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-            $nextVersion    = $this->class->reflFields[$this->class->versionField]->getValue($document);
+            $nextVersion    = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
             $type           = Type::getType($versionMapping['type']);
             assert($type instanceof Versionable);
             if ($nextVersion === null) {
                 $nextVersion = $type->getNextVersion(null);
-                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+                $this->class->propertyAccessors[$this->class->versionField]->setValue($document, $nextVersion);
             }
 
             $data['$set'][$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
@@ -374,7 +374,7 @@ final class DocumentPersister
         $nextVersion = null;
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
-            $currentVersion = $this->class->reflFields[$this->class->versionField]->getValue($document);
+            $currentVersion = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
             $type           = Type::getType($versionMapping['type']);
             assert($type instanceof Versionable);
             $nextVersion                             = $type->getNextVersion($currentVersion);
@@ -386,7 +386,7 @@ final class DocumentPersister
             // Include locking logic so that if the document object in memory is currently
             // locked then it will remove it, otherwise it ensures the document is not locked.
             if ($this->class->isLockable) {
-                $isLocked    = $this->class->reflFields[$this->class->lockField]->getValue($document);
+                $isLocked    = $this->class->propertyAccessors[$this->class->lockField]->getValue($document);
                 $lockMapping = $this->class->fieldMappings[$this->class->lockField];
                 if ($isLocked) {
                     $update['$unset'] = [$lockMapping['name'] => true];
@@ -405,7 +405,7 @@ final class DocumentPersister
             }
 
             if ($this->class->isVersioned) {
-                $this->class->reflFields[$this->class->versionField]->setValue($document, $nextVersion);
+                $this->class->propertyAccessors[$this->class->versionField]->setValue($document, $nextVersion);
             }
         }
 
@@ -615,7 +615,7 @@ final class DocumentPersister
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$set' => [$lockMapping['name'] => $lockMode]]);
-        $this->class->reflFields[$this->class->lockField]->setValue($document, $lockMode);
+        $this->class->propertyAccessors[$this->class->lockField]->setValue($document, $lockMode);
     }
 
     /**
@@ -628,7 +628,7 @@ final class DocumentPersister
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         assert($this->collection instanceof Collection);
         $this->collection->updateOne($criteria, ['$unset' => [$lockMapping['name'] => true]]);
-        $this->class->reflFields[$this->class->lockField]->setValue($document, null);
+        $this->class->propertyAccessors[$this->class->lockField]->setValue($document, null);
     }
 
     /**

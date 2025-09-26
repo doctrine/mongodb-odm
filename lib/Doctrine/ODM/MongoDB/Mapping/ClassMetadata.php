@@ -15,6 +15,9 @@ use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -23,7 +26,6 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use InvalidArgumentException;
 use LogicException;
 use MongoDB\BSON\Decimal128;
@@ -638,9 +640,12 @@ use function trigger_deprecation;
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var ReflectionProperty[]
+     * @var LegacyReflectionFields|ReflectionProperty[]
      */
     public $reflFields = [];
+
+    /** @var array<string, PropertyAccessors\PropertyAccessor> */
+    public array $propertyAccessors = [];
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
@@ -1498,11 +1503,21 @@ use function trigger_deprecation;
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
-     * @return ReflectionProperty[]
+     * @return LegacyReflectionFields|ReflectionProperty[]
      */
-    public function getReflectionProperties(): array
+    public function getReflectionProperties(): array|LegacyReflectionFields
     {
         return $this->reflFields;
+    }
+
+    /**
+     * Gets the ReflectionProperties of the mapped class.
+     *
+     * @return PropertyAccessor[] An array of PropertyAccessor instances.
+     */
+    public function getPropertyAccessors(): array
+    {
+        return $this->propertyAccessors;
     }
 
     /**
@@ -1511,6 +1526,11 @@ use function trigger_deprecation;
     public function getReflectionProperty(string $name): ReflectionProperty
     {
         return $this->reflFields[$name];
+    }
+
+    public function getPropertyAccessor(string $name): PropertyAccessor|null
+    {
+        return $this->propertyAccessors[$name] ?? null;
     }
 
     /** @return class-string<T> */
@@ -1915,7 +1935,7 @@ use function trigger_deprecation;
     public function setIdentifierValue(object $document, $id): void
     {
         $id = $this->getPHPIdentifierValue($id);
-        $this->reflFields[$this->identifier]->setValue($document, $id);
+        $this->propertyAccessors[$this->identifier]->setValue($document, $id);
     }
 
     /**
@@ -1925,7 +1945,7 @@ use function trigger_deprecation;
      */
     public function getIdentifierValue(object $document)
     {
-        return $this->reflFields[$this->identifier]->getValue($document);
+        return $this->propertyAccessors[$this->identifier]->getValue($document);
     }
 
     /**
@@ -1965,7 +1985,7 @@ use function trigger_deprecation;
             $document->initializeProxy();
         }
 
-        $this->reflFields[$field]->setValue($document, $value);
+        $this->propertyAccessors[$field]->setValue($document, $value);
     }
 
     /**
@@ -1981,7 +2001,7 @@ use function trigger_deprecation;
             $document->initializeProxy();
         }
 
-        return $this->reflFields[$field]->getValue($document);
+        return $this->propertyAccessors[$field]->getValue($document);
     }
 
     /**
@@ -2567,8 +2587,7 @@ use function trigger_deprecation;
             $this->associationMappings[$mapping['fieldName']] = $mapping;
         }
 
-        $reflProp = $this->reflectionService->getAccessibleProperty($this->name, $mapping['fieldName']);
-        assert($reflProp instanceof ReflectionProperty);
+        $accessor = PropertyAccessorFactory::createPropertyAccessor($this->name, $mapping['fieldName']);
 
         if (isset($mapping['enumType'])) {
             if (! enum_exists($mapping['enumType'])) {
@@ -2580,10 +2599,10 @@ use function trigger_deprecation;
                 throw MappingException::nonBackedEnumMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
             }
 
-            $reflProp = new EnumReflectionProperty($reflProp, $mapping['enumType']);
+            $accessor = new EnumPropertyAccessor($accessor, $mapping['enumType']);
         }
 
-        $this->reflFields[$mapping['fieldName']] = $reflProp;
+        $this->propertyAccessors[$mapping['fieldName']] = $accessor;
 
         return $mapping;
     }
@@ -2598,6 +2617,7 @@ use function trigger_deprecation;
      * Parts that are also NOT serialized because they can not be properly unserialized:
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
+     *      - propertyAccessors (ReflectionProperty array)
      *
      * @return array The names of all the fields that should be serialized.
      */
@@ -2709,14 +2729,13 @@ use function trigger_deprecation;
         $this->instantiator      = new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
-            $prop = $this->reflectionService->getAccessibleProperty($mapping['declared'] ?? $this->name, $field);
-            assert($prop instanceof ReflectionProperty);
+            $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping['declared'] ?? $this->name, $field);
 
             if (isset($mapping['enumType'])) {
-                $prop = new EnumReflectionProperty($prop, $mapping['enumType']);
+                $accessor = new EnumPropertyAccessor($accessor, $mapping['enumType']);
             }
 
-            $this->reflFields[$field] = $prop;
+            $this->propertyAccessors[$field] = $accessor;
         }
     }
 

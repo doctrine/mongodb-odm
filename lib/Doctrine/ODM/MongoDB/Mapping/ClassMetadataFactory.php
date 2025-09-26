@@ -241,12 +241,12 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
                 $class->setIdGenerator(new ObjectIdGenerator());
                 break;
             case 'uuid':
-                $reflectionProperty = $class->getReflectionProperty($identifierMapping['fieldName']);
-                if (! $reflectionProperty->getType() instanceof ReflectionNamedType) {
+                $type = $class->propertyAccessors[$identifierMapping['fieldName']]->getUnderlyingReflector()->getType();
+                if (! $type instanceof ReflectionNamedType) {
                     throw MappingException::autoIdGeneratorNeedsType($class->name, $identifierMapping['fieldName']);
                 }
 
-                $class->setIdGenerator(new SymfonyUuidGenerator($reflectionProperty->getType()->getName()));
+                $class->setIdGenerator(new SymfonyUuidGenerator($type->getName()));
                 break;
             default:
                 throw MappingException::unsupportedTypeForAutoGenerator(
@@ -348,8 +348,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             $subClass->addInheritedFieldMapping($mapping);
         }
 
-        foreach ($parentClass->reflFields as $name => $field) {
-            $subClass->reflFields[$name] = $field;
+        foreach ($parentClass->propertyAccessors as $name => $field) {
+            $subClass->propertyAccessors[$name] = $field;
         }
     }
 

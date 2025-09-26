@@ -213,7 +213,7 @@ final class LifecycleEventManager
     private function cascadePreUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
-            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $value = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
             if ($value === null) {
                 continue;
             }
@@ -241,7 +241,7 @@ final class LifecycleEventManager
     private function cascadePostUpdate(ClassMetadata $class, object $document, ?Session $session = null): void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
-            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $value = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
             if ($value === null) {
                 continue;
             }
@@ -281,7 +281,7 @@ final class LifecycleEventManager
     private function cascadePostPersist(ClassMetadata $class, object $document, ?Session $session = null): void
     {
         foreach ($class->getEmbeddedFieldsMappings() as $mapping) {
-            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $value = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
             if ($value === null) {
                 continue;
             }

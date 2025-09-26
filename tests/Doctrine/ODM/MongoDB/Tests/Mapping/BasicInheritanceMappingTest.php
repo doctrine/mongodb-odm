@@ -67,9 +67,9 @@ class BasicInheritanceMappingTest extends BaseTestCase
 
         $class2 = unserialize(serialize($class));
 
-        self::assertTrue(isset($class2->reflFields['mapped1']));
-        self::assertTrue(isset($class2->reflFields['mapped2']));
-        self::assertTrue(isset($class2->reflFields['mappedRelated1']));
+        self::assertTrue(isset($class2->propertyAccessors['mapped1']));
+        self::assertTrue(isset($class2->propertyAccessors['mapped2']));
+        self::assertTrue(isset($class2->propertyAccessors['mappedRelated1']));
     }
 
     public function testReadPreferenceIsInherited(): void

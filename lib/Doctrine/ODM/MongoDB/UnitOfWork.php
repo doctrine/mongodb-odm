@@ -616,7 +616,7 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $class      = $this->dm->getClassMetadata($document::class);
         $actualData = [];
-        foreach ($class->reflFields as $name => $refProp) {
+        foreach ($class->propertyAccessors as $name => $refProp) {
             $mapping = $class->fieldMappings[$name];
             // skip not saved fields
             if (isset($mapping['notSaved']) && $mapping['notSaved'] === true) {
@@ -637,7 +637,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $coll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $mapping, $value);
                 $coll->setOwner($document, $mapping);
                 $coll->setDirty(! $value->isEmpty());
-                $class->reflFields[$name]->setValue($document, $coll);
+                $class->propertyAccessors[$name]->setValue($document, $coll);
                 $actualData[$name] = $coll;
             } else {
                 $actualData[$name] = $value;
@@ -863,7 +863,7 @@ final class UnitOfWork implements PropertyChangedListener
         );
 
         foreach ($associationMappings as $mapping) {
-            $value = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $value = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
 
             if ($value === null) {
                 continue;
@@ -1274,7 +1274,7 @@ final class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                $value = $class->reflFields[$fieldMapping['fieldName']]->getValue($document);
+                $value = $class->propertyAccessors[$fieldMapping['fieldName']]->getValue($document);
                 if (! ($value instanceof PersistentCollectionInterface)) {
                     continue;
                 }
@@ -1938,8 +1938,8 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             if ($class->isVersioned) {
-                $managedCopyVersion = $class->reflFields[$class->versionField]->getValue($managedCopy);
-                $documentVersion    = $class->reflFields[$class->versionField]->getValue($document);
+                $managedCopyVersion = $class->propertyAccessors[$class->versionField]->getValue($managedCopy);
+                $documentVersion    = $class->propertyAccessors[$class->versionField]->getValue($document);
 
                 // Throw exception if versions don't match
                 if ($managedCopyVersion !== $documentVersion) {
@@ -2054,12 +2054,12 @@ final class UnitOfWork implements PropertyChangedListener
             $prevClass  = $this->dm->getClassMetadata($prevManagedCopy::class);
 
             if ($assoc['type'] === ClassMetadata::ONE) {
-                $prevClass->reflFields[$assocField]->setValue($prevManagedCopy, $managedCopy);
+                $prevClass->propertyAccessors[$assocField]->setValue($prevManagedCopy, $managedCopy);
             } else {
-                $prevClass->reflFields[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
+                $prevClass->propertyAccessors[$assocField]->getValue($prevManagedCopy)->add($managedCopy);
 
                 if ($assoc['type'] === ClassMetadata::MANY && isset($assoc['mappedBy'])) {
-                    $class->reflFields[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
+                    $class->propertyAccessors[$assoc['mappedBy']]->setValue($managedCopy, $prevManagedCopy);
                 }
             }
         }
@@ -2180,7 +2180,7 @@ final class UnitOfWork implements PropertyChangedListener
         );
 
         foreach ($associationMappings as $mapping) {
-            $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $relatedDocuments = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollectionInterface) {
                     // Unwrap so that foreach() does not initialize
@@ -2209,7 +2209,7 @@ final class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $relatedDocuments = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollectionInterface) {
                     // Unwrap so that foreach() does not initialize
@@ -2240,10 +2240,10 @@ final class UnitOfWork implements PropertyChangedListener
         );
 
         foreach ($associationMappings as $assoc) {
-            $relatedDocuments = $class->reflFields[$assoc['fieldName']]->getValue($document);
+            $relatedDocuments = $class->propertyAccessors[$assoc['fieldName']]->getValue($document);
 
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
-                if ($relatedDocuments === $class->reflFields[$assoc['fieldName']]->getValue($managedCopy)) {
+                if ($relatedDocuments === $class->propertyAccessors[$assoc['fieldName']]->getValue($managedCopy)) {
                     // Collections are the same, so there is nothing to do
                     continue;
                 }
@@ -2272,7 +2272,7 @@ final class UnitOfWork implements PropertyChangedListener
         );
 
         foreach ($associationMappings as $fieldName => $mapping) {
-            $relatedDocuments = $class->reflFields[$fieldName]->getValue($document);
+            $relatedDocuments = $class->propertyAccessors[$fieldName]->getValue($document);
 
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 if ($relatedDocuments instanceof PersistentCollectionInterface) {
@@ -2330,7 +2330,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             $this->initializeObject($document);
 
-            $relatedDocuments = $class->reflFields[$mapping['fieldName']]->getValue($document);
+            $relatedDocuments = $class->propertyAccessors[$mapping['fieldName']]->getValue($document);
             if ($relatedDocuments instanceof Collection || is_array($relatedDocuments)) {
                 // If its a PersistentCollection initialization is intended! No unwrap!
                 foreach ($relatedDocuments as $relatedDocument) {
@@ -2365,7 +2365,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             if ($lockVersion !== null) {
-                $documentVersion = $class->reflFields[$class->versionField]->getValue($document);
+                $documentVersion = $class->propertyAccessors[$class->versionField]->getValue($document);
                 if ($documentVersion !== $lockVersion) {
                     throw LockException::lockFailedVersionMissmatch($document, $lockVersion, $documentVersion);
                 }
@@ -2483,7 +2483,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->initializeObject($coll); // we have to do this otherwise the cols share state
             $newValue = clone $coll;
             $newValue->setOwner($document, $class->fieldMappings[$propName]);
-            $class->reflFields[$propName]->setValue($document, $newValue);
+            $class->propertyAccessors[$propName]->setValue($document, $newValue);
             if ($this->isScheduledForUpdate($document)) {
                 // @todo following line should be superfluous once collections are stored in change sets
                 $this->setOriginalDocumentProperty(spl_object_id($document), $propName, $newValue);

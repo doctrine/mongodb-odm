@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DefaultGridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
@@ -18,7 +19,6 @@ use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use Documents\Card;
 use Documents\CustomCollection;
 use Documents\Suit;
@@ -699,12 +699,12 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         self::assertSame(Suit::class, $metadata->fieldMappings['suit']['enumType']);
         self::assertSame('string', $metadata->fieldMappings['suit']['type']);
         self::assertFalse($metadata->fieldMappings['suit']['nullable']);
-        self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['suit']);
+        self::assertInstanceOf(EnumPropertyAccessor::class, $metadata->propertyAccessors['suit']);
 
         self::assertSame(Suit::class, $metadata->fieldMappings['nullableSuit']['enumType']);
         self::assertSame('string', $metadata->fieldMappings['nullableSuit']['type']);
         self::assertTrue($metadata->fieldMappings['nullableSuit']['nullable']);
-        self::assertInstanceOf(EnumReflectionProperty::class, $metadata->reflFields['nullableSuit']);
+        self::assertInstanceOf(EnumPropertyAccessor::class, $metadata->propertyAccessors['nullableSuit']);
     }
 
     public function testTimeSeriesDocumentWithGranularity(): void

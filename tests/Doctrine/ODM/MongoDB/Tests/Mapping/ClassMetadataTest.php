@@ -9,13 +9,13 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use DoctrineGlobal_Article;
 use DoctrineGlobal_User;
 use Documents\Account;
@@ -203,17 +203,17 @@ class ClassMetadataTest extends BaseTestCase
         self::assertFalse($cm->isNullable('nullableSuit'));
     }
 
-    public function testEnumReflectionPropertySerialization(): void
+    public function testEnumPropertyAccessorSerialization(): void
     {
         $cm = new ClassMetadata(Card::class);
 
         $cm->mapField(['fieldName' => 'suit']);
-        self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
+        self::assertInstanceOf(EnumPropertyAccessor::class, $cm->propertyAccessors['suit']);
 
         $serialized = serialize($cm);
         $cm         = unserialize($serialized);
 
-        self::assertInstanceOf(EnumReflectionProperty::class, $cm->reflFields['suit']);
+        self::assertInstanceOf(EnumPropertyAccessor::class, $cm->propertyAccessors['suit']);
     }
 
     public function testEnumTypeFromReflectionMustBeBacked(): void

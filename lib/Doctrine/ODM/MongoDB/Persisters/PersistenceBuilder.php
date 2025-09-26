@@ -366,8 +366,7 @@ final class PersistenceBuilder
                 continue;
             }
 
-            // Inline ClassMetadata::getFieldValue()
-            $rawValue = $class->reflFields[$mapping['fieldName']]->getValue($embeddedDocument);
+            $rawValue = $class->propertyAccessors[$mapping['fieldName']]->getValue($embeddedDocument);
 
             $value = null;
 
