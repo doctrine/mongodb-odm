@@ -284,7 +284,7 @@ use function trigger_deprecation;
  *      options?: ShardOptions
  * }
  * @final
- * @template-covariant T of object
+ * @template-covariant T of object = object
  * @template-implements BaseClassMetadata<T>
  */
 /* final */ class ClassMetadata implements BaseClassMetadata

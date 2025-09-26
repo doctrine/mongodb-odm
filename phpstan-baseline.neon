@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Aggregation\:\:__construct\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Aggregation.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Aggregation\:\:execute\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
 			identifier: missingType.generics
 			count: 1
@@ -43,12 +37,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Builder.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Expr\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Expr.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Expr\:\:getDocumentPersister\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -61,22 +49,10 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\AbstractBucket\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/AbstractBucket.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\AbstractBucket\:\:getDocumentPersister\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/AbstractBucket.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\AbstractReplace\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/AbstractReplace.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\AbstractReplace\:\:getDocumentPersister\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister does not specify its types\: T$#'
@@ -133,18 +109,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Fill.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\GraphLookup\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\GraphLookup\:\:getDocumentPersister\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\GraphLookup\:\:getDocumentPersister\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -169,25 +133,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/GraphLookup.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Lookup\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Lookup\:\:getDocumentPersister\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Lookup\:\:getDocumentPersister\(\) return type with generic class Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Lookup\:\:prepareFieldName\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Lookup.php
@@ -209,12 +155,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Merge.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Out\:\:fromDocument\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Out.php
 
 		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
@@ -397,12 +337,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/Search/Range.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\SortByCount\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/SortByCount.php
-
-		-
 			message: '#^Class Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith has type alias PipelineParamType with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -541,19 +475,19 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:checkDuplicateMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object \= object\>\:\:checkDuplicateMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:setVersionMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\: string, fieldName\: string, name\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object \= object\>\:\:setVersionMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\: string, fieldName\: string, name\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:typeRequirementsAreMet\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object \= object\>\:\:typeRequirementsAreMet\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
@@ -587,120 +521,6 @@ parameters:
 			identifier: generics.variance
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:addInheritedFields\(\) has parameter \$parentClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:addInheritedFields\(\) has parameter \$subClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:addInheritedIndexes\(\) has parameter \$parentClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:addInheritedIndexes\(\) has parameter \$subClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:addInheritedRelations\(\) has parameter \$parentClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:addInheritedRelations\(\) has parameter \$subClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:completeIdGeneratorMapping\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:doLoadMetadata\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:doLoadMetadata\(\) has parameter \$parent with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:generateAutoIdGenerator\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:initializeReflection\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:isEntity\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:setInheritedShardKey\(\) has parameter \$parentClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:setInheritedShardKey\(\) has parameter \$subClass with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:validateIdentifier\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactory\:\:wakeupReflection\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactory.php
-
-		-
-			message: '#^PHPDoc tag @method for method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\:\:getAllMetadata\(\) return type contains generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactoryInterface.php
-
-		-
-			message: '#^PHPDoc tag @method for method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\:\:getLoadedMetadata\(\) return type contains generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactoryInterface.php
-
-		-
-			message: '#^PHPDoc tag @method for method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\:\:getMetadataFor\(\) return type contains generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadataFactoryInterface.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\AttributeDriver\:\:getClassAttributes\(\) has parameter \$class with generic class ReflectionClass but does not specify its types\: T$#'
@@ -907,12 +727,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister\:\:getClassDiscriminatorValues\(\) has parameter \$metadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister\:\:isInTransaction\(\) has parameter \$options with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -950,18 +764,6 @@ parameters:
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister\:\:loadReferenceManyWithRepositoryMethod\(\) has parameter \$collection with generic interface Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister\:\:prepareQueryElement\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister\:\:prepareQueryExpression\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
@@ -1009,43 +811,7 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:generateProxyClass\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:generateProxyClasses\(\) has parameter \$classes with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:generateSerializeImpl\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:generateUseLazyGhostTrait\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:getProxy\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Proxy\\InternalProxy does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:loadProxyClass\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:skipClass\(\) has parameter \$metadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/LazyGhostProxyFactory.php
@@ -1057,34 +823,10 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Proxy/Factory/StaticProxyFactory.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\Expr\:\:convertExpression\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\Expr\:\:convertExpressions\(\) has parameter \$classMetadata with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\Expr\:\:setClassMetadata\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
-
-		-
 			message: '#^Unsafe call to private method Doctrine\\ODM\\MongoDB\\Query\\Expr\:\:convertExpression\(\) through static\:\:\.$#'
 			identifier: staticClassAccess.privateMethod
 			count: 3
 			path: lib/Doctrine/ODM/MongoDB/Query/Expr.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\Query\:\:__construct\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Query/Query.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\Query\:\:getIterator\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
@@ -1109,12 +851,6 @@ parameters:
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Query/Query.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\ReferencePrimer\:\:defaultPrimer\(\) has parameter \$class with generic class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Query/ReferencePrimer.php
 
 		-
 			message: '#^Parameter &\$groupedIds by\-ref type of method Doctrine\\ODM\\MongoDB\\Query\\ReferencePrimer\:\:addManyReferences\(\) expects array\<class\-string, array\<string, mixed\>\>, array\<string, array\<string, mixed\>\> given\.$#'
