@@ -12,6 +12,16 @@ use function ltrim;
 /** @internal */
 class ObjectCastPropertyAccessor implements PropertyAccessor
 {
+    /** @param class-string $class */
+    public static function fromNames(string $class, string $name): self
+    {
+        $reflectionProperty = new ReflectionProperty($class, $name);
+
+        $key = $reflectionProperty->isPrivate() ? "\0" . ltrim($class, '\\') . "\0" . $name : ($reflectionProperty->isProtected() ? "\0*\0" . $name : $name);
+
+        return new self($reflectionProperty, $key);
+    }
+
     public static function fromReflectionProperty(ReflectionProperty $reflectionProperty): self
     {
         $name = $reflectionProperty->getName();

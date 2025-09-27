@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use ArrayAccess;
-use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use Generator;
@@ -19,6 +19,7 @@ use function assert;
 use function is_string;
 use function str_contains;
 use function str_replace;
+use function trigger_deprecation;
 
 /**
  * @template-implements ArrayAccess<string, ReflectionProperty|null>
@@ -36,11 +37,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
     /** @param string $offset */
     public function offsetExists($offset): bool // phpcs:ignore
     {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/11659',
-            'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.',
-        );
+        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
         return isset($this->classMetadata->propertyAccessors[$offset]);
     }
@@ -56,12 +53,9 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
             return $this->reflFields[$field];
         }
 
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/11659',
-            'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.',
-        );
+        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
+        // @todo originalField and originalClass does not exist in ODM
         if (isset($this->classMetadata->propertyAccessors[$field])) {
             $fieldName = str_contains($field, '.') ? $this->classMetadata->fieldMappings[$field]->originalField : $field;
             $className = $this->classMetadata->name;
@@ -155,11 +149,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
     /** @return Generator<string, ReflectionProperty> */
     public function getIterator(): Traversable
     {
-        Deprecation::trigger(
-            'doctrine/orm',
-            'https://github.com/doctrine/orm/pull/11659',
-            'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine MongoDB ODM 3.0.',
-        );
+        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
         $keys = array_keys($this->classMetadata->propertyAccessors);
 
