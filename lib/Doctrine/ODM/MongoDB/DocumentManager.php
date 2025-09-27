@@ -626,7 +626,6 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        /** @var T $document */
         $document = $this->proxyFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, []);
 

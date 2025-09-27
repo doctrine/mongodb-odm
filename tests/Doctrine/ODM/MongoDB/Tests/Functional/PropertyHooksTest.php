@@ -6,8 +6,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Documents\PropertyHooks\MappingVirtualProperty;
-use Documents\PropertyHooks\User;
+use Documents84\PropertyHooks\MappingVirtualProperty;
+use Documents84\PropertyHooks\User;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 
 #[RequiresPhp('>= 8.4.0')]

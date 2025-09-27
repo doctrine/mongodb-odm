@@ -20,6 +20,7 @@ use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
+use ReflectionClass;
 
 use function array_key_exists;
 use function array_map;
@@ -39,6 +40,7 @@ use function version_compare;
 
 use const DOCTRINE_MONGODB_DATABASE;
 use const DOCTRINE_MONGODB_SERVER;
+use const PHP_VERSION_ID;
 
 abstract class BaseTestCase extends TestCase
 {
@@ -135,7 +137,7 @@ abstract class BaseTestCase extends TestCase
 
     public static function isLazyObject(object $document): bool
     {
-        if (PHP_VERSION_ID >= 80400 && (new \ReflectionClass($document))->getLazyInitializer($document)) {
+        if (PHP_VERSION_ID >= 80400 && (new ReflectionClass($document))->getLazyInitializer($document)) {
             return true;
         }
 
