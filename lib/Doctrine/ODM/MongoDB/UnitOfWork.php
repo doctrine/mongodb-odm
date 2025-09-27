@@ -2783,12 +2783,14 @@ final class UnitOfWork implements PropertyChangedListener
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_id($document);
             if ($this->isUninitializedObject($document)) {
-                if ($document instanceof InternalProxy) {
+                if ($this->dm->getConfiguration()->isNativeLazyObjectsEnabled()) {
+                    $class->reflClass->markLazyObjectAsInitialized($document);
+                } elseif ($document instanceof InternalProxy) {
                     $document->__setInitialized(true);
                 } elseif ($document instanceof GhostObjectInterface) {
                     $document->setProxyInitializer(null);
                 } else {
-                    throw new \RuntimeException(sprintf('Expected uninitialized proxy or ghost object from class "%s"', $document::name));
+                    throw new \RuntimeException(sprintf('Expected uninitialized proxy or ghost object from class "%s"', $document::class));
                 }
 
                 $overrideLocalValues = true;
@@ -3090,6 +3092,7 @@ final class UnitOfWork implements PropertyChangedListener
             $obj instanceof InternalProxy => $obj->__isInitialized() === false,
             $obj instanceof GhostObjectInterface => $obj->isProxyInitialized() === false,
             $obj instanceof PersistentCollectionInterface => $obj->isInitialized() === false,
+            $this->dm->getConfiguration()->isNativeLazyObjectsEnabled() => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
             default => false
         };
     }

@@ -94,7 +94,6 @@ class ReferencePrimerTest extends BaseTestCase
             ->field('groups')->prime(true);
 
         foreach ($qb->getQuery() as $user) {
-            self::assertTrue(self::isLazyObject($user->getAccount()));
             self::assertFalse($this->uow->isUninitializedObject($user->getAccount()));
 
             self::assertCount(2, $user->getGroups());

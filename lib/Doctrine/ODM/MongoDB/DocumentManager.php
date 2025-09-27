@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Proxy\Factory\LazyGhostProxyFactory;
+use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\CachingClassNameResolver;
@@ -31,7 +32,6 @@ use MongoDB\Database;
 use MongoDB\Driver\ClientEncryption;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
-use ProxyManager\Proxy\GhostObjectInterface;
 use RuntimeException;
 use Throwable;
 
@@ -179,11 +179,13 @@ class DocumentManager implements ObjectManager
             $this->config->getAutoGenerateHydratorClasses(),
         );
 
-        $this->unitOfWork        = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
-        $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
-        $this->proxyFactory      = $this->config->isLazyGhostObjectEnabled()
-            ? new LazyGhostProxyFactory($this, $this->config->getProxyDir(), $this->config->getProxyNamespace(), $this->config->getAutoGenerateProxyClasses())
-            : new StaticProxyFactory($this);
+        $this->unitOfWork    = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
+        $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
+        $this->proxyFactory  = match (true) {
+            $this->config->isNativeLazyObjectsEnabled() => new NativeLazyObjectFactory($this->unitOfWork),
+            $this->config->isLazyGhostObjectEnabled() => new LazyGhostProxyFactory($this, $this->config->getProxyDir(), $this->config->getProxyNamespace(), $this->config->getAutoGenerateProxyClasses()),
+            default => new StaticProxyFactory($this),
+        };
         $this->repositoryFactory = $this->config->getRepositoryFactory();
     }
 
@@ -607,7 +609,7 @@ class DocumentManager implements ObjectManager
      * @param mixed           $identifier
      * @param class-string<T> $documentName
      *
-     * @return T|(T&GhostObjectInterface<T>)
+     * @return T
      *
      * @template T of object
      */
@@ -624,7 +626,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        /** @var T&GhostObjectInterface<T> $document */
+        /** @var T $document */
         $document = $this->proxyFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, []);
 

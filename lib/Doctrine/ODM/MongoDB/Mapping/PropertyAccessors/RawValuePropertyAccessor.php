@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use LogicException;
+use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 
 use function ltrim;
@@ -38,7 +39,10 @@ class RawValuePropertyAccessor implements PropertyAccessor
 
     public function setValue(object $object, mixed $value): void
     {
-        if (! ($object instanceof InternalProxy && ! $object->__isInitialized())) {
+        if (
+            ! ($object instanceof InternalProxy && ! $object->__isInitialized()) &&
+            ! ($object instanceof GhostObjectInterface && ! $object->isProxyInitialized())
+        ) {
             $this->reflectionProperty->setRawValueWithoutLazyInitialization($object, $value);
 
             return;

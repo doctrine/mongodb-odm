@@ -104,7 +104,8 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
-        $config->setUseLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
+        $config->setLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
+        $config->enableNativeLazyObjects((bool) $_ENV['USE_NATIVE_LAZY_OBJECTS']);
 
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
@@ -134,6 +135,10 @@ abstract class BaseTestCase extends TestCase
 
     public static function isLazyObject(object $document): bool
     {
+        if (PHP_VERSION_ID >= 80400 && (new \ReflectionClass($document))->getLazyInitializer($document)) {
+            return true;
+        }
+
         return $document instanceof InternalProxy || $document instanceof LazyLoadingInterface;
     }
 
