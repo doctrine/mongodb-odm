@@ -9,13 +9,17 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use LogicException;
 use ReflectionClass;
+use WeakMap;
 
 use function count;
 
 use const PHP_VERSION_ID;
 
+/** @internal */
 class NativeLazyObjectFactory implements ProxyFactory
 {
+    private static ?WeakMap $lazyObjects = null;
+
     public function __construct(
         private readonly UnitOfWork $unitOfWork,
     ) {
@@ -48,6 +52,30 @@ class NativeLazyObjectFactory implements ProxyFactory
 
         $metadata->propertyAccessors[$metadata->identifier]->setValue($proxy, $identifier);
 
+        if (isset(self::$lazyObjects)) {
+            self::$lazyObjects[$proxy] = true;
+        }
+
         return $proxy;
+    }
+
+    /** Only for internal tests */
+    public static function enableTracking(bool $enabled = true): void
+    {
+        if ($enabled) {
+            self::$lazyObjects ??= new WeakMap();
+        } else {
+            self::$lazyObjects = null;
+        }
+    }
+
+    /** Only for internal tests */
+    public static function isLazyObject(object $object): bool
+    {
+        if (! isset(self::$lazyObjects)) {
+            throw new LogicException('Lazy object tracking is not enabled.');
+        }
+
+        return self::$lazyObjects->offsetExists($object);
     }
 }

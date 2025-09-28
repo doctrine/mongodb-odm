@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\Binary;
 use PHPUnit\Framework\Attributes\DataProvider;
 
+/** @see https://github.com/doctrine/mongodb-odm/pull/852 */
 class GH852Test extends BaseTestCase
 {
     #[DataProvider('provideIdGenerators')]

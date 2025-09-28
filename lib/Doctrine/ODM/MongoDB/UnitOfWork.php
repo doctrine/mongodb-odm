@@ -3089,9 +3089,9 @@ final class UnitOfWork implements PropertyChangedListener
     public function isUninitializedObject(object $obj): bool
     {
         return match (true) {
-            $obj instanceof InternalProxy => $obj->__isInitialized() === false,
-            $obj instanceof GhostObjectInterface => $obj->isProxyInitialized() === false,
-            $obj instanceof PersistentCollectionInterface => $obj->isInitialized() === false,
+            $obj instanceof InternalProxy => ! $obj->__isInitialized(),
+            $obj instanceof GhostObjectInterface => ! $obj->isProxyInitialized(),
+            $obj instanceof PersistentCollectionInterface => ! $obj->isInitialized(),
             $this->dm->getConfiguration()->isNativeLazyObjectsEnabled() => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
             default => false
         };

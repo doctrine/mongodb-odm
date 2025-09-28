@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -109,6 +110,10 @@ abstract class BaseTestCase extends TestCase
         $config->setLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
         $config->enableNativeLazyObjects((bool) $_ENV['USE_NATIVE_LAZY_OBJECTS']);
 
+        if ($config->isNativeLazyObjectsEnabled()) {
+            NativeLazyObjectFactory::enableTracking();
+        }
+
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
 
@@ -137,8 +142,8 @@ abstract class BaseTestCase extends TestCase
 
     public static function isLazyObject(object $document): bool
     {
-        if (PHP_VERSION_ID >= 80400 && (new ReflectionClass($document))->getLazyInitializer($document)) {
-            return true;
+        if (PHP_VERSION_ID >= 80400 && $_ENV['USE_LAZY_GHOST_OBJECTS'] ?? false) {
+            return NativeLazyObjectFactory::isLazyObject($document);
         }
 
         return $document instanceof InternalProxy || $document instanceof LazyLoadingInterface;
