@@ -26,6 +26,9 @@ parameters:
       - identifier: staticMethod.alreadyNarrowedType
         path: tests/Doctrine/
 
+      - message: '#generic class Doctrine\\ODM\\MongoDB\\(Mapping\\ClassMetadata|Persisters\\DocumentPersister) (but )?does not specify its types\: T$#'
+        identifier: missingType.generics
+
       - message: '#^(Constant|Used constant) DOCTRINE_MONGODB_DATABASE not found\.$#'
         identifier: constant.notFound
         path: tests/

@@ -433,19 +433,19 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object \= object\>\:\:checkDuplicateMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:checkDuplicateMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object \= object\>\:\:setVersionMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\: string, fieldName\: string, name\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:setVersionMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\: string, fieldName\: string, name\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object \= object\>\:\:typeRequirementsAreMet\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:typeRequirementsAreMet\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
