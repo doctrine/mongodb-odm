@@ -1977,14 +1977,6 @@ use function trigger_deprecation;
      */
     public function setFieldValue(object $document, string $field, $value): void
     {
-        if ($document instanceof InternalProxy && ! $document->__isInitialized()) {
-            //property changes to an uninitialized proxy will not be tracked or persisted,
-            //so the proxy needs to be loaded first.
-            $document->__load();
-        } elseif ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-            $document->initializeProxy();
-        }
-
         $this->propertyAccessors[$field]->setValue($document, $value);
     }
 
@@ -1995,12 +1987,6 @@ use function trigger_deprecation;
      */
     public function getFieldValue(object $document, string $field)
     {
-        if ($document instanceof InternalProxy && $field !== $this->identifier && ! $document->__isInitialized()) {
-            $document->__load();
-        } elseif ($document instanceof GhostObjectInterface && $field !== $this->identifier && ! $document->isProxyInitialized()) {
-            $document->initializeProxy();
-        }
-
         return $this->propertyAccessors[$field]->getValue($document);
     }
 
