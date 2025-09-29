@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Closure;
-use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 
 use function array_map;
 
