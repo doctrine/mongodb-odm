@@ -31,11 +31,6 @@ class Compound extends AbstractSearchOperator implements CompoundSearchOperatorI
     private string $currentClause    = 'must';
     private ?int $minimumShouldMatch = null;
 
-    public function __construct(Search $search, private DocumentPersister $persister)
-    {
-        parent::__construct($search, $this->persister);
-    }
-
     /**
      * @param T $operator
      *
@@ -128,10 +123,5 @@ class Compound extends AbstractSearchOperator implements CompoundSearchOperatorI
     protected function getCompoundStage(): Compound
     {
         return $this;
-    }
-
-    protected function getDocumentPersister(): DocumentPersister
-    {
-        return $this->persister;
     }
 }
