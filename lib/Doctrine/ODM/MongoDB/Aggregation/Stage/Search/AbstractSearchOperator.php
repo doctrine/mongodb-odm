@@ -85,6 +85,16 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
         return $this->persister->prepareFieldName($field);
     }
 
+    /**
+     * @param list<array<string, mixed>|object> $documents
+     *
+     * @return list<array<string, mixed>|object>
+     */
+    protected function prepareDocuments(array $documents): array
+    {
+        return array_map($this->persister->prepareQueryOrNewObj(...), $documents);
+    }
+
     protected function getDocumentPersister(): DocumentPersister
     {
         return $this->persister;
