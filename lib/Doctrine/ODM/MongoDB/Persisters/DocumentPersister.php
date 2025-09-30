@@ -1259,30 +1259,6 @@ final class DocumentPersister
             return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($fieldNameParts[0], $value) : $value]];
         }
 
-        // Don't recurse for references. Instead, prepare the reference directly
-        if (! empty($mapping['reference'])) {
-            // First part is the name of the reference
-            // Second part is either a positional operator, index/key, or the name of a field
-            // Third part (if any) is the name of a field
-            // That means, we can implode all field parts except the first as the next field name
-            if ($fieldNameParts[1] === '$') {
-                assert($partCount >= 3);
-                $objectProperty  = $fieldNameParts[2];
-                $referencePrefix = $fieldNamePrefix . $mapping['name'] . '.$';
-            } else {
-                $objectProperty  = $fieldNameParts[1];
-                $referencePrefix = $fieldNamePrefix . $mapping['name'];
-            }
-
-            if ($targetClass->hasField($objectProperty) && $targetClass->isIdentifier($objectProperty)) {
-                $fieldName = ClassMetadata::getReferenceFieldName($mapping['storeAs'], $referencePrefix);
-
-                return [[$fieldName, $prepareValue ? $this->prepareQueryReference($value, $targetClass) : $value]];
-            }
-
-            return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($objectProperty, $value, $targetClass) : $value]];
-        }
-
         /*
          * 1 element: impossible (because of the dot)
          * 2 elements: fieldName.objectProperty, fieldName.<index>, or fieldName.$. For EmbedMany and ReferenceMany, treat the second element as index if $inNewObj is true and convert the value. Otherwise, recurse.
@@ -1292,9 +1268,20 @@ final class DocumentPersister
             if ($inNewObj || CollectionHelper::isHash($mapping['strategy'])) {
                 // When there are only two segments in a hash or when serialising a new object, we seem to be replacing an entire element. Don't recurse, just convert the value.
                 if ($partCount === 2) {
-                    $fieldName = $fieldNamePrefix . $mapping['name'] . '.' . $fieldNameParts[1];
+                    // In order to prepare the embedded document value, we need to recurse with the original field name, then append the second segment
+                    $prepared = $this->prepareQueryElement(
+                        $mapping['name'],
+                        $value,
+                        $targetClass,
+                        $prepareValue,
+                        $inNewObj,
+                        $fieldNamePrefix,
+                    );
 
-                    return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($fieldNameParts[0], $value, $targetClass) : $value]];
+                    $preparedFieldName = $prepared[0][0];
+                    $preparedValue     = $prepared[0][1];
+
+                    return [[$preparedFieldName . '.' . $fieldNameParts[1], $preparedValue]];
                 }
 
                 // When there are more than two segments, treat the second segment (index/key/positional operator) as part of the field name and recurse into the rest

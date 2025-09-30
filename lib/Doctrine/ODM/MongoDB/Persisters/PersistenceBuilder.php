@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -392,7 +394,12 @@ final class PersistenceBuilder
                             break;
                         }
 
-                        $value = $this->prepareAssociatedCollectionValue($rawValue, $includeNestedCollections);
+                        // Prepare persistent collection if it's not already one
+                        $collection = $rawValue instanceof PersistentCollectionInterface
+                            ? $rawValue
+                            : $this->preparePersistentCollection($mapping, $embeddedDocument, $rawValue);
+
+                        $value = $this->prepareAssociatedCollectionValue($collection, $includeNestedCollections);
                         break;
 
                     default:
@@ -506,5 +513,24 @@ final class PersistenceBuilder
         $this->uow->unscheduleCollectionUpdate($coll);
 
         return $setData;
+    }
+
+    private function preparePersistentCollection(array $mapping, object $owner, mixed $rawValue): PersistentCollectionInterface
+    {
+        if ($rawValue instanceof PersistentCollectionInterface) {
+            return $rawValue;
+        }
+
+        // If $actualData[$name] is not a Collection then use an ArrayCollection.
+        if (! $rawValue instanceof Collection) {
+            $rawValue = new ArrayCollection($rawValue);
+        }
+
+        // Inject PersistentCollection
+        $coll = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $mapping, $rawValue);
+        $coll->setOwner($owner, $mapping);
+        $coll->setDirty(! $rawValue->isEmpty());
+
+        return $coll;
     }
 }
