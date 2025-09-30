@@ -23,4 +23,10 @@ final class SchemaException extends RuntimeException
     {
         return new self(sprintf('The document class "%s" is missing the following search index(es): "%s"', $documentClass, implode('", "', $missingIndexes)));
     }
+
+    /** @internal */
+    public static function searchIndexNotFound(string $namespace, string $indexName): self
+    {
+        return new self(sprintf('The search index "%s" of the collection "%s" is not found.', $indexName, $namespace));
+    }
 }

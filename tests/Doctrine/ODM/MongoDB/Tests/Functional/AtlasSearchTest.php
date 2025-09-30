@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\SchemaException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use Documents\CmsUser;
@@ -54,6 +55,7 @@ class AtlasSearchTest extends BaseTestCase
         $schemaManager->waitForSearchIndexes([CmsArticle::class, CmsUser::class]);
 
         $results = $this->dm->createAggregationBuilder(CmsArticle::class)
+            ->rewindable(false)
             ->search()
                 ->index('search_articles')
                 ->autocomplete()
@@ -115,5 +117,36 @@ class AtlasSearchTest extends BaseTestCase
             ->getAggregation()->execute()->toArray();
 
         $this->assertNotEmpty($results, 'Count search should return results');
+    }
+
+    public function testIndexNotCreated(): void
+    {
+        $aggregation = $this->dm->createAggregationBuilder(CmsArticle::class)
+            ->search()
+                ->index('search_articles')
+                ->text()
+                ->query('Atlas Search')
+                ->path('text')
+            ->getAggregation();
+
+        $this->expectException(SchemaException::class);
+        $this->expectExceptionMessageMatches('#^The search index "search_articles" of the collection "[^."]+\.CmsArticle" is not found\.$#');
+
+        $aggregation->execute();
+    }
+
+    public function testIndexNotCreatedWithoutException(): void
+    {
+        $this->dm->getConfiguration()->setAssertSearchIndexExistsWhenAggregationResultsIsEmpty(false);
+
+        $results = $this->dm->createAggregationBuilder(CmsArticle::class)
+            ->search()
+                ->index('search_articles')
+                ->text()
+                ->query('Atlas Search')
+                ->path('text')
+            ->getAggregation()->execute();
+
+        $this->assertCount(0, $results->toArray());
     }
 }
