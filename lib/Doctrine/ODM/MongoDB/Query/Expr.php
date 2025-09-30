@@ -84,12 +84,8 @@ class Expr
      */
     public function addAnd($expression, ...$expressions): self
     {
-        if (! isset($this->query['$and'])) {
-            $this->query['$and'] = [];
-        }
-
         $this->query['$and'] = array_merge(
-            $this->query['$and'],
+            $this->query['$and'] ?? [],
             func_get_args(),
         );
 
@@ -107,12 +103,8 @@ class Expr
      */
     public function addNor($expression, ...$expressions): self
     {
-        if (! isset($this->query['$nor'])) {
-            $this->query['$nor'] = [];
-        }
-
         $this->query['$nor'] = array_merge(
-            $this->query['$nor'],
+            $this->query['$nor'] ?? [],
             func_get_args(),
         );
 
@@ -130,12 +122,8 @@ class Expr
      */
     public function addOr($expression, ...$expressions): self
     {
-        if (! isset($this->query['$or'])) {
-            $this->query['$or'] = [];
-        }
-
         $this->query['$or'] = array_merge(
-            $this->query['$or'],
+            $this->query['$or'] ?? [],
             func_get_args(),
         );
 

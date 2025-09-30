@@ -122,11 +122,10 @@ class Expr implements
      */
     public function addAnd($expression, ...$expressions): static
     {
-        if (! isset($this->expr['$and'])) {
-            $this->expr['$and'] = [];
-        }
-
-        $this->expr['$and'] = array_merge($this->expr['$and'], array_map([$this, 'prepareArgument'], func_get_args()));
+        $this->expr['$and'] = array_merge(
+            $this->expr['$and'] ?? [],
+            array_map([$this, 'prepareArgument'], func_get_args()),
+        );
 
         return $this;
     }
@@ -141,11 +140,10 @@ class Expr implements
      */
     public function addOr($expression, ...$expressions): static
     {
-        if (! isset($this->expr['$or'])) {
-            $this->expr['$or'] = [];
-        }
-
-        $this->expr['$or'] = array_merge($this->expr['$or'], array_map([$this, 'prepareArgument'], func_get_args()));
+        $this->expr['$or'] = array_merge(
+            $this->expr['$or'] ?? [],
+            array_map([$this, 'prepareArgument'], func_get_args()),
+        );
 
         return $this;
     }

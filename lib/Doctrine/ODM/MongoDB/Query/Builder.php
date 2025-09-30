@@ -457,11 +457,8 @@ class Builder
      */
     public function exclude($fieldName = null): self
     {
-        if (! isset($this->query['select'])) {
-            $this->query['select'] = [];
-        }
-
-        $fieldNames = is_array($fieldName) ? $fieldName : func_get_args();
+        $this->query['select'] ??= [];
+        $fieldNames              = is_array($fieldName) ? $fieldName : func_get_args();
 
         foreach ($fieldNames as $fieldName) {
             $this->query['select'][$fieldName] = 0;
@@ -1261,11 +1258,8 @@ class Builder
      */
     public function select($fieldName = null): self
     {
-        if (! isset($this->query['select'])) {
-            $this->query['select'] = [];
-        }
-
-        $fieldNames = is_array($fieldName) ? $fieldName : func_get_args();
+        $this->query['select'] ??= [];
+        $fieldNames              = is_array($fieldName) ? $fieldName : func_get_args();
 
         foreach ($fieldNames as $fieldName) {
             $this->query['select'][$fieldName] = 1;
@@ -1464,11 +1458,8 @@ class Builder
      */
     public function sort($fieldName, $order = 1): self
     {
-        if (! isset($this->query['sort'])) {
-            $this->query['sort'] = [];
-        }
-
-        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        $this->query['sort'] ??= [];
+        $fields                = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
         foreach ($fields as $fieldName => $order) {
             if (is_string($order)) {

@@ -1839,8 +1839,7 @@ use function trigger_deprecation;
      */
     public function isSingleValuedReference(string $fieldName): bool
     {
-        return isset($this->fieldMappings[$fieldName]['association']) &&
-            $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_ONE;
+        return ($this->fieldMappings[$fieldName]['association'] ?? null) === self::REFERENCE_ONE;
     }
 
     /**
@@ -1849,8 +1848,7 @@ use function trigger_deprecation;
      */
     public function isCollectionValuedReference(string $fieldName): bool
     {
-        return isset($this->fieldMappings[$fieldName]['association']) &&
-            $this->fieldMappings[$fieldName]['association'] === self::REFERENCE_MANY;
+        return ($this->fieldMappings[$fieldName]['association'] ?? null) === self::REFERENCE_MANY;
     }
 
     /**
@@ -1859,8 +1857,7 @@ use function trigger_deprecation;
      */
     public function isSingleValuedEmbed(string $fieldName): bool
     {
-        return isset($this->fieldMappings[$fieldName]['association']) &&
-            $this->fieldMappings[$fieldName]['association'] === self::EMBED_ONE;
+        return ($this->fieldMappings[$fieldName]['association'] ?? null) === self::EMBED_ONE;
     }
 
     /**
@@ -1869,8 +1866,7 @@ use function trigger_deprecation;
      */
     public function isCollectionValuedEmbed(string $fieldName): bool
     {
-        return isset($this->fieldMappings[$fieldName]['association']) &&
-            $this->fieldMappings[$fieldName]['association'] === self::EMBED_MANY;
+        return ($this->fieldMappings[$fieldName]['association'] ?? null) === self::EMBED_MANY;
     }
 
     /**
@@ -2279,8 +2275,7 @@ use function trigger_deprecation;
     /** @param string $fieldName */
     public function getTypeOfField($fieldName): ?string
     {
-        return isset($this->fieldMappings[$fieldName]) ?
-            $this->fieldMappings[$fieldName]['type'] : null;
+        return $this->fieldMappings[$fieldName]['type'] ?? null;
     }
 
     /**
