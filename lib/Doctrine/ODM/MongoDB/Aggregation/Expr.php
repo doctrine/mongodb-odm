@@ -124,7 +124,7 @@ class Expr implements
     {
         $this->expr['$and'] = array_merge(
             $this->expr['$and'] ?? [],
-            array_map([$this, 'prepareArgument'], func_get_args()),
+            array_map($this->prepareArgument(...), func_get_args()),
         );
 
         return $this;
@@ -142,7 +142,7 @@ class Expr implements
     {
         $this->expr['$or'] = array_merge(
             $this->expr['$or'] ?? [],
-            array_map([$this, 'prepareArgument'], func_get_args()),
+            array_map($this->prepareArgument(...), func_get_args()),
         );
 
         return $this;
@@ -1114,7 +1114,7 @@ class Expr implements
         }
 
         if (is_array($expression)) {
-            return array_map([$this, 'prepareArgument'], $expression);
+            return array_map($this->prepareArgument(...), $expression);
         }
 
         if ($expression instanceof self) {

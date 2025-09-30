@@ -257,7 +257,7 @@ class GraphLookup extends Stage
     private function convertExpression($expression)
     {
         if (is_array($expression)) {
-            return array_map([$this, 'convertExpression'], $expression);
+            return array_map($this->convertExpression(...), $expression);
         }
 
         if (is_string($expression) && substr($expression, 0, 1) === '$') {

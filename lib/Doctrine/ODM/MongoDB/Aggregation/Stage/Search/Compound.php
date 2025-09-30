@@ -115,7 +115,7 @@ class Compound extends AbstractSearchOperator implements CompoundSearchOperatorI
 
     protected function getAddOperatorClosure(): Closure
     {
-        return Closure::fromCallable([$this, 'addOperator']);
+        return $this->addOperator(...);
     }
 
     protected function getCompoundStage(): Compound
