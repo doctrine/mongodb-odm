@@ -1138,12 +1138,14 @@ final class DocumentPersister
 
     private function prepareQueryReference(mixed $value, ClassMetadata $class): mixed
     {
-        if (! is_array($value)) {
-            return $class->getDatabaseIdentifierValue($value);
-        }
-
-        // Objects without operators or with DBRef fields can be converted immediately
-        if (! $this->hasQueryOperators($value) || $this->hasDBRefFields($value)) {
+        if (
+            // Scalar values are prepared immediately
+            ! is_array($value)
+            // Objects without operators can be prepared immediately
+            || ! $this->hasQueryOperators($value)
+            // Objects with DBRef fields can be prepared immediately
+            || $this->hasDBRefFields($value)
+        ) {
             return $class->getDatabaseIdentifierValue($value);
         }
 
@@ -1159,7 +1161,7 @@ final class DocumentPersister
      *
      * @param mixed $value
      *
-     * @return array<array{string, mixed}>
+     * @return array<array{string, mixed}> Returns an array of tuples containing the prepared field name and value
      */
     private function prepareQueryElement(string $originalFieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false, string $fieldNamePrefix = ''): array
     {
@@ -1264,6 +1266,7 @@ final class DocumentPersister
             // Third part (if any) is the name of a field
             // That means, we can implode all field parts except the first as the next field name
             if ($fieldNameParts[1] === '$') {
+                assert($partCount >= 3);
                 $objectProperty  = $fieldNameParts[2];
                 $referencePrefix = $fieldNamePrefix . $mapping['name'] . '.$';
             } else {
@@ -1283,7 +1286,7 @@ final class DocumentPersister
         /*
          * 1 element: impossible (because of the dot)
          * 2 elements: fieldName.objectProperty, fieldName.<index>, or fieldName.$. For EmbedMany and ReferenceMany, treat the second element as index if $inNewObj is true and convert the value. Otherwise, recurse.
-         * 3+ elements: fieldname.foo.bar, fieldName.<index>.foo, or fieldName.$foo. For EmbedMany and ReferenceMany, treat the second element as index, and recurse into the third element. Otherwise, recurse with the second element as field name.
+         * 3+ elements: fieldname.foo.bar, fieldName.<index>.foo, or fieldName.$.foo. For EmbedMany and ReferenceMany, treat the second element as index, and recurse into the third element. Otherwise, recurse with the second element as field name.
          */
         if ($mapping['type'] === ClassMetadata::MANY) {
             if ($inNewObj || CollectionHelper::isHash($mapping['strategy'])) {
@@ -1298,7 +1301,7 @@ final class DocumentPersister
                 $newPrefix    = $fieldNamePrefix . $mapping['name'] . '.' . $fieldNameParts[1] . '.';
                 $newFieldName = implode('.', array_slice($fieldNameParts, 2));
             } else {
-                // When serialising a query, the second segment is a positional operator ($), a numeric index for collections, or anything else for a hash.
+                // When serializing a query, the second segment is a positional operator ($), a numeric index for collections, or anything else for a hash.
                 $newPrefix    = $fieldNamePrefix . $mapping['name'] . '.';
                 $newFieldName = implode('.', array_slice($fieldNameParts, 1));
             }
