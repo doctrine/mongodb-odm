@@ -322,20 +322,17 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentDatabase(string $className): Database
     {
-        $metadata = $this->metadataFactory->getMetadataFor($className);
-
-        $className = $metadata->getName();
-
         if (isset($this->documentDatabases[$className])) {
             return $this->documentDatabases[$className];
         }
 
-        $db                                  = $metadata->getDatabase();
-        $db                                  = $db ?: $this->config->getDefaultDB();
-        $db                                  = $db ?: 'doctrine';
-        $this->documentDatabases[$className] = $this->client->getDatabase($db);
+        $metadata  = $this->metadataFactory->getMetadataFor($className);
+        $className = $metadata->getName();
+        $db        = $metadata->getDatabase();
+        $db        = $db ?: $this->config->getDefaultDB();
+        $db        = $db ?: 'doctrine';
 
-        return $this->documentDatabases[$className];
+        return $this->documentDatabases[$className] = $this->client->getDatabase($db);
     }
 
     /**
@@ -355,30 +352,26 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentCollection(string $className): Collection
     {
-        $metadata = $this->metadataFactory->getMetadataFor($className);
+        if (isset($this->documentCollections[$className])) {
+            return $this->documentCollections[$className];
+        }
 
+        $metadata = $this->metadataFactory->getMetadataFor($className);
         if ($metadata->isFile) {
             return $this->getDocumentBucket($className)->getFilesCollection();
         }
 
         $collectionName = $metadata->getCollection();
-
         if (! $collectionName) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
-        if (! isset($this->documentCollections[$className])) {
-            $db = $this->getDocumentDatabase($className);
-
-            $options = ['typeMap' => self::CLIENT_TYPEMAP];
-            if ($metadata->readPreference !== null) {
-                $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
-            }
-
-            $this->documentCollections[$className] = $db->getCollection($collectionName, $options);
+        $options = ['typeMap' => self::CLIENT_TYPEMAP];
+        if ($metadata->readPreference !== null) {
+            $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
         }
 
-        return $this->documentCollections[$className];
+        return $this->documentCollections[$className] = $this->getDocumentDatabase($className)->getCollection($collectionName, $options);
     }
 
     /**
@@ -388,30 +381,26 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentBucket(string $className): Bucket
     {
-        $metadata = $this->metadataFactory->getMetadataFor($className);
+        if (isset($this->documentBuckets[$className])) {
+            return $this->documentBuckets[$className];
+        }
 
+        $metadata = $this->metadataFactory->getMetadataFor($className);
         if (! $metadata->isFile) {
             throw MongoDBException::documentBucketOnlyAvailableForGridFSFiles($className);
         }
 
         $bucketName = $metadata->getBucketName();
-
         if (! $bucketName) {
             throw MongoDBException::documentNotMappedToCollection($className);
         }
 
-        if (! isset($this->documentBuckets[$className])) {
-            $db = $this->getDocumentDatabase($className);
-
-            $options = ['bucketName' => $bucketName, 'typeMap' => self::CLIENT_TYPEMAP];
-            if ($metadata->readPreference !== null) {
-                $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
-            }
-
-            $this->documentBuckets[$className] = $db->selectGridFSBucket($options);
+        $options = ['bucketName' => $bucketName, 'typeMap' => self::CLIENT_TYPEMAP];
+        if ($metadata->readPreference !== null) {
+            $options['readPreference'] = new ReadPreference($metadata->readPreference, $metadata->readPreferenceTags);
         }
 
-        return $this->documentBuckets[$className];
+        return $this->documentBuckets[$className] = $this->getDocumentDatabase($className)->selectGridFSBucket($options);
     }
 
     /**
