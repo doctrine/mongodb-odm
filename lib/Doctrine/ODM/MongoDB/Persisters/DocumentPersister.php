@@ -1259,6 +1259,30 @@ final class DocumentPersister
             return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($fieldNameParts[0], $value) : $value]];
         }
 
+        // Don't recurse for references in queries. Instead, prepare them directly
+        if (! $inNewObj && ! empty($mapping['reference'])) {
+            // First part is the name of the reference
+            // Second part is either a positional operator, index/key, or the name of a field
+            // Third part (if any) is the name of a field
+            // That means, we can implode all field parts except the first as the next field name
+            if ($fieldNameParts[1] === '$') {
+                assert($partCount >= 3);
+                $objectProperty  = $fieldNameParts[2];
+                $referencePrefix = $fieldNamePrefix . $mapping['name'] . '.$';
+            } else {
+                $objectProperty  = $fieldNameParts[1];
+                $referencePrefix = $fieldNamePrefix . $mapping['name'];
+            }
+
+            if ($targetClass->hasField($objectProperty) && $targetClass->isIdentifier($objectProperty)) {
+                $fieldName = ClassMetadata::getReferenceFieldName($mapping['storeAs'], $referencePrefix);
+
+                return [[$fieldName, $prepareValue ? $this->prepareQueryReference($value, $targetClass) : $value]];
+            }
+
+            return [[$fieldName, $prepareValue ? $this->convertToDatabaseValue($objectProperty, $value, $targetClass) : $value]];
+        }
+
         /*
          * 1 element: impossible (because of the dot)
          * 2 elements: fieldName.objectProperty, fieldName.<index>, or fieldName.$. For EmbedMany and ReferenceMany, treat the second element as index if $inNewObj is true and convert the value. Otherwise, recurse.
