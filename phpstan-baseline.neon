@@ -739,6 +739,18 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Persisters/DocumentPersister.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\PersistenceBuilder\:\:preparePersistentCollection\(\) has parameter \$mapping with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Persisters/PersistenceBuilder.php
+
+		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\PersistenceBuilder\:\:preparePersistentCollection\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Persisters/PersistenceBuilder.php
+
+		-
 			message: '#^Call to an undefined static method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:createLazyGhost\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 1
