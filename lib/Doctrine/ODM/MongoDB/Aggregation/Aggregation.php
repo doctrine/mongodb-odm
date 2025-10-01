@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
@@ -15,8 +16,10 @@ use Doctrine\ODM\MongoDB\SchemaException;
 use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
 
-use function array_key_first;
 use function array_merge;
+use function current;
+use function in_array;
+use function key;
 
 /** @phpstan-import-type PipelineExpression from Builder */
 final class Aggregation implements IterableResult
@@ -68,7 +71,7 @@ final class Aggregation implements IterableResult
 
         $iterator = $this->rewindable ? new CachingIterator($cursor) : new UnrewindableIterator($cursor);
 
-        $this->assertSearchIndexExistsWhenAggregationResultsIsEmpty($iterator);
+        $this->assertSearchIndexExistsForEmptyResult($iterator);
 
         return $iterator;
     }
@@ -78,32 +81,30 @@ final class Aggregation implements IterableResult
      * this assertion can be removed.
      *
      * @see https://jira.mongodb.org/browse/SERVER-110974
+     * @see Configuration::setAssertSearchIndexExistsForEmptyResult()
      *
-     * @param Iterator<object> $iterator
+     * @param CachingIterator<mixed>|UnrewindableIterator<mixed> $iterator
      */
-    private function assertSearchIndexExistsWhenAggregationResultsIsEmpty(Iterator $iterator): void
+    private function assertSearchIndexExistsForEmptyResult(CachingIterator|UnrewindableIterator $iterator): void
     {
-        if ($iterator->current() !== false) {
+        // The iterator is always rewinded
+        if ($iterator->current()) {
             return; // Results not empty
         }
 
-        if (! $this->dm->getConfiguration()->assertSearchIndexExistsWhenAggregationResultsIsEmpty()) {
+        if (! $this->dm->getConfiguration()->assertSearchIndexExistsForEmptyResult()) {
             return; // Feature disabled
         }
 
         // Search stages must be the first stage in the pipeline
-        $indexName = match (array_key_first($this->pipeline[0])) {
-            '$search' => $this->pipeline[0]['$search']->index ?? null,
-            '$searchMeta' => $this->pipeline[0]['$searchMeta']->index ?? null,
-            '$vectorSearch' => $this->pipeline[0]['$vectorSearch']->index ?? null,
-            default => null,
-        };
-
-        if ($indexName === null) {
-            return; // Not a search aggregation or index not specified
+        $stage = $this->pipeline[0] ?? null;
+        if (! $stage || ! in_array(key($stage), ['$search', '$searchMeta', '$vectorSearch'], true)) {
+            return; // Not a search aggregation
         }
 
-        $index = $this->collection->listSearchIndexes(['filter' => ['name' => $indexName]])->current();
+        // @phpcs:ignore SlevomatCodingStandard.PHP.UselessParentheses
+        $indexName = ((object) current($stage))->index ?? 'default';
+        $index     = $this->collection->listSearchIndexes(['filter' => ['name' => $indexName]])->current();
         if ($index) {
             return; // Index exists
         }

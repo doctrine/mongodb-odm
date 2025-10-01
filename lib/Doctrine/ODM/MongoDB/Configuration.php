@@ -812,18 +812,19 @@ class Configuration
     /**
      * Pipelines using a search index that does not exist or is not queryable
      * will return zero documents. By enabling this feature, an additional query
-     * is made when the pipeline doesn't return any results to check if the
-     * search index exists and is queryable. If the index does not exist or is
-     * not queryable, an exception is thrown. This feature is enabled by default.
+     * is performed when the pipeline doesn't return any results to check if the
+     * search index exists. If the index does not exist, an exception is thrown.
+     * This feature is enabled by default.
+     * This applies to $search, $searchMeta and $vectorSearch pipelines.
      */
-    public function setAssertSearchIndexExistsWhenAggregationResultsIsEmpty(bool $enabled): void
+    public function setAssertSearchIndexExistsForEmptyResult(bool $enabled): void
     {
-        $this->attributes['assertSearchIndexExistsWhenAggregationResultsIsEmpty'] = $enabled;
+        $this->attributes['assertSearchIndexExistsForEmptyResult'] = $enabled;
     }
 
-    public function assertSearchIndexExistsWhenAggregationResultsIsEmpty(): bool
+    public function assertSearchIndexExistsForEmptyResult(): bool
     {
-        return $this->attributes['assertSearchIndexExistsWhenAggregationResultsIsEmpty'] ?? true;
+        return $this->attributes['assertSearchIndexExistsForEmptyResult'] ?? true;
     }
 }
 
