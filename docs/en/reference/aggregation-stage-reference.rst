@@ -694,6 +694,11 @@ number of available operators, please refer to the
 `MongoDB documentation <https://www.mongodb.com/docs/atlas/atlas-search/query-syntax/#-search>`_
 for a reference of all available operators.
 
+.. note::
+   A `Search index <https://www.mongodb.com/docs/atlas/atlas-search/>`_
+   is required for this stage. See the `#[SearchIndex] attribute </reference/attributes.html#search_index>`_
+   for details on how to define it.
+
 .. code-block:: php
 
     <?php
@@ -795,8 +800,12 @@ $vectorSearch
 
 The ``$vectorSearch`` stage performs a vector similarity search on the specified
 field or fields which must be covered by an Atlas Vector Search index.
-This stage is only available when using MongoDB Atlas. ``$vectorSearch`` must be
-the first stage in the aggregation pipeline.
+``$vectorSearch`` must be the first stage in the aggregation pipeline.
+
+.. note::
+   A `Search index <https://www.mongodb.com/docs/atlas/atlas-search/>`_
+   is required for this stage. See the `#[VectorSearchIndex] attribute </reference/attributes.html#vector_search_index>`_
+   for details on how to define it.
 
 .. code-block:: php
 
