@@ -40,6 +40,7 @@
 
         <!-- Allow short nullable syntax for non-union types -->
         <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat.DisallowedShortNullable" />
+        <exclude name="SlevomatCodingStandard.TypeHints.DNFTypeHintFormat.DisallowedShortNullable" />
     </rule>
 
     <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit">
@@ -52,7 +53,7 @@
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
     </rule>
 
-    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+    <rule ref="Squiz.Classes.ValidClassName.NotPascalCase">
         <exclude-pattern>tests/Doctrine/ODM/MongoDB/Tests/Mapping/Documents/GlobalNamespaceDocument.php</exclude-pattern>
     </rule>
 

@@ -40,7 +40,7 @@
     "require-dev": {
         "ext-bcmath": "*",
         "doctrine/annotations": "^1.12 || ^2.0",
-        "doctrine/coding-standard": "^12.0",
+        "doctrine/coding-standard": "^14.0",
         "doctrine/orm": "^3.2",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.0.0",
@@ -48,7 +48,7 @@
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^10.4",
-        "squizlabs/php_codesniffer": "^3.5",
+        "squizlabs/php_codesniffer": "^4",
         "symfony/cache": "^5.4 || ^6.0 || ^7.0",
         "symfony/uid": "^5.4 || ^6.0 || ^7.0"
     },
