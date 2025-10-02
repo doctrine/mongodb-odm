@@ -19,9 +19,9 @@ use InvalidArgumentException;
  * @phpstan-import-type PipelineExpression from Builder
  * @phpstan-type PipelineParamType Builder|Stage|PipelineExpression
  * @phpstan-type LookupStageExpression array{
- *     '$lookup': array{
+ *     "$lookup": array{
  *         from: string,
- *         'as'?: string,
+ *         "as"?: string,
  *         localField?: string,
  *         foreignField?: string,
  *         pipeline?: PipelineExpression,

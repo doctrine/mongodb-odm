@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 /**
  * @phpstan-import-type OperatorExpression from Expr
  * @phpstan-type ReplaceRootStageExpression array{
- *     '$replaceRoot': array{
+ *     "$replaceRoot": array{
  *         newRoot: OperatorExpression|string,
  *     }
  * }

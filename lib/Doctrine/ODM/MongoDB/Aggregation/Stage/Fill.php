@@ -22,7 +22,7 @@ use function strtolower;
  * @phpstan-type SortDirection int|SortDirectionKeywords
  * @phpstan-type SortShape array<string, SortDirection>
  * @phpstan-type FillStageExpression array{
- *     '$fill': array{
+ *     "$fill": array{
  *         partitionBy?: string|OperatorExpression,
  *         partitionByFields?: list<string>,
  *         sortBy?: SortShape,

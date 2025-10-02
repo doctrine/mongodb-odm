@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
  * Fluent interface for adding a $unwind stage to an aggregation pipeline.
  *
  * @phpstan-type UnwindStageExpression array{
- *     '$unwind': string|array{
+ *     "$unwind": string|array{
  *         path: string,
  *         includeArrayIndex?: string,
  *         preserveNullAndEmptyArrays?: bool,

@@ -16,7 +16,7 @@ use InvalidArgumentException;
  * @phpstan-import-type PipelineExpression from Builder
  * @phpstan-type PipelineParamType array|Builder|Stage|PipelineExpression
  * @phpstan-type UnionWithStageExpression array{
- *     '$unionWith': object{
+ *     "$unionWith": object{
  *         coll: string,
  *         pipeline?: PipelineExpression,
  *     }

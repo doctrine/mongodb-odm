@@ -329,7 +329,7 @@ final class CollectionPersister
     }
 
     /**
-     * Perform collections update for 'pushAll' strategy.
+     * Perform collection update for 'pushAll' strategy.
      *
      * @param object                                                          $parent       Parent object to which passed collections is belong.
      * @param string[]                                                        $collsPaths   Paths of collections that is passed.

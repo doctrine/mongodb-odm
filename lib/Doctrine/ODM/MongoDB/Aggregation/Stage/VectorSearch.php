@@ -15,7 +15,7 @@ use MongoDB\BSON\Int64;
 /**
  * @phpstan-type Vector list<int|Int64>|list<float|Decimal128>|list<bool|0|1>|Binary
  * @phpstan-type VectorSearchStageExpression array{
- *     '$vectorSearch': object{
+ *     "$vectorSearch": object{
  *         exact?: bool,
  *         filter?: object,
  *         index?: string,

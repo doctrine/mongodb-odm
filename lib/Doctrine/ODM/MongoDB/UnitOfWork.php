@@ -583,7 +583,7 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the changeset for a document.
      *
-     * @return array array('property' => array(0 => mixed, 1 => mixed))
+     * @return array{property: array{0: mixed, 1: mixed}}
      * @phpstan-return array<string, ChangeSet>
      */
     public function getDocumentChangeSet(object $document): array

@@ -263,12 +263,12 @@ use function trigger_deprecation;
  *      synonyms?: list<SearchIndexSynonym>,
  * }
  * @phpstan-type SearchIndexMapping array{
- *      type: 'search'|'vectorSearch',
+ *      type: "search"|"vectorSearch",
  *      name: string,
  *      definition: SearchIndexDefinition
  * }
  * @phpstan-type VectorSearchIndexField array{
- *     type: 'vector'|'filter',
+ *     type: "vector"|"filter",
  *     path: string,
  *     numDimensions?: int,
  *     similarity?: self::VECTOR_SIMILARITY_*,
@@ -1279,7 +1279,7 @@ use function trigger_deprecation;
      * Add a search index for this Document.
      *
      * @phpstan-param SearchIndexDefinition|VectorSearchIndexDefinition $definition
-     * @phpstan-param 'search'|'vectorSearch' $type
+     * @phpstan-param "search"|"vectorSearch" $type
      */
     public function addSearchIndex(array $definition, ?string $name = null, string $type = 'search'): void
     {

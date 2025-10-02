@@ -15,12 +15,12 @@ use function strtolower;
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
  *
- * @phpstan-type SortMetaKeywords 'textScore'|'indexKey'
- * @phpstan-type SortDirectionKeywords 'asc'|'desc'
- * @phpstan-type SortMeta array{'$meta': SortMetaKeywords}
+ * @phpstan-type SortMetaKeywords "textScore"|"indexKey"
+ * @phpstan-type SortDirectionKeywords "asc"|"desc"
+ * @phpstan-type SortMeta array{"$meta": SortMetaKeywords}
  * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords>
  * @phpstan-type SortStageExpression array{
- *     '$sort': array<string, int|SortMeta>
+ *     "$sort": array<string, int|SortMeta>
  * }
  */
 class Sort extends Stage
