@@ -696,7 +696,7 @@ for a reference of all available operators.
 
 .. note::
    A `Search index <https://www.mongodb.com/docs/atlas/atlas-search/>`_
-   is required for this stage. See the `#[SearchIndex] attribute </reference/attributes.html#search_index>`_
+   is required for this stage. See the :doc:`#[SearchIndex] attribute <../reference/attributes-reference#search_index>`
    for details on how to define it.
 
 .. code-block:: php
@@ -803,8 +803,8 @@ field or fields which must be covered by an Atlas Vector Search index.
 ``$vectorSearch`` must be the first stage in the aggregation pipeline.
 
 .. note::
-   A `Search index <https://www.mongodb.com/docs/atlas/atlas-search/>`_
-   is required for this stage. See the `#[VectorSearchIndex] attribute </reference/attributes.html#vector_search_index>`_
+   A `Vector Search index <https://www.mongodb.com/docs/atlas/atlas-vector-search/>`_
+   is required for this stage. See the :doc:`#[VectorSearchIndex] attribute <../reference/attributes-reference#vector_search_index>`
    for details on how to define it.
 
 .. code-block:: php
