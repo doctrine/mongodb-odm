@@ -163,7 +163,7 @@ class Country
 
     /** The field type is detected from the property type */
     #[ODM\Field(/* type: Language::class */)]
-    public Language $lang;
+    public ?Language $lang;
 }
 
 class Language

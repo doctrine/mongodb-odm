@@ -135,74 +135,43 @@ Example Implementation (using ``Ramsey\Uuid\Uuid``)::
 
     <?php
 
-    namespace My\Project\Types;
+    namespace App\MongoDB\Types;
 
     use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
     use Doctrine\ODM\MongoDB\Types\Type;
     use InvalidArgumentException;
-    use MongoDB\BSON\Binary;
-    use Ramsey\Uuid\Uuid;
-    use Ramsey\Uuid\UuidInterface;
+    use MongoDB\BSON\Binary as BsonBinary;
+    use Ramsey\Uuid\Uuid as RamseyUuid;
 
-    final class UuidType extends Type
+    final class RamseyUuidType extends Type
     {
         // This trait provides default closureToPHP used during data hydration
         use ClosureToPHP;
 
-        public function convertToPHPValue(mixed $value): ?Uuid
+        public function convertToPHPValue(mixed $value): ?RamseyUuid
         {
             if (null === $value) {
                 return null;
             }
 
-            if ($value instanceof Uuid) {
-                return $value;
+            if ($value instanceof BsonBinary && $value->getType() === BsonBinary::TYPE_UUID) {
+                return RamseyUuid::fromBytes($value->getData());
             }
 
-            if ($value instanceof Binary) {
-                return Uuid::fromBytes($value->getData());
-            }
-
-            if (is_string($value) && Uuid::isValid($value)) {
-                return Uuid::fromString($value);
-            }
-
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Could not convert database value "%s" from "%s" to %s',
-                    $value,
-                    get_debug_type($value),
-                    UuidInterface::class
-                )
-            );
+            throw new \InvalidArgumentException(\sprintf('Could not convert database value from "%s" to %s',get_debug_type($value),RamseyUuid::class));
         }
 
-        public function convertToDatabaseValue(mixed $value): ?Binary
+        public function convertToDatabaseValue(mixed $value): ?BsonBinary
         {
-            if (null === $value || [] === $value) {
+            if (null === $value) {
                 return null;
             }
 
-            if ($value instanceof Binary) {
-                return $value;
+            if ($value instanceof RamseyUuid) {
+                return new BsonBinary($value->getBytes(), BsonBinary::TYPE_UUID);
             }
 
-            if (is_string($value) && Uuid::isValid($value)) {
-                $value = Uuid::fromString($value)->getBytes();
-            }
-
-            if ($value instanceof Uuid) {
-                return new Binary($value->getBytes(), Binary::TYPE_UUID);
-            }
-
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Could not convert database value "%s" from "%s" to %s',
-                    $value,
-                    get_debug_type($value),
-                    Binary::class
-                )
-            );
+            throw new \InvalidArgumentException(\sprintf('Could not convert database value from "%s" to %s', get_debug_type($value), Binary::class));
         }
     }
 
@@ -210,14 +179,14 @@ Register the type in your bootstrap code::
 
 .. code-block:: php
 
-    Type::addType(Ramsey\Uuid\Uuid::class, My\Project\Types\UuidType::class);
+    Type::addType(Ramsey\Uuid\Uuid::class, App\MongoDB\Types\RamseyUuidType::class);
 
 Usage Example::
 
 .. code-block:: php
 
-    #[Field(type: Ramsey\Uuid\Uuid::class)]
-    public Ramsey\Uuid\Uuid $id;
+    #[Field(type: \Ramsey\Uuid\Uuid::class)]
+    public ?\Ramsey\Uuid\Uuid $id;
 
 By using the |FQCN| of the value object class as the type name, the type is
 automatically used when encountering a property of that class. This means you
@@ -226,7 +195,13 @@ can omit the ``type`` option when defining the field mapping::
 .. code-block:: php
 
     #[Field]
-    public Ramsey\Uuid\Uuid $id;
+    public ?\Ramsey\Uuid\Uuid $id;
+
+.. note::
+
+    This implementation of ``RamseyUuidType`` is volontary simple and does not
+    handle all edge cases, but it should give you a good starting point for
+    implementing your own custom types.
 
 .. _`ramsey/uuid library`: https://github.com/ramsey/uuid
 .. |FQCN| raw:: html
