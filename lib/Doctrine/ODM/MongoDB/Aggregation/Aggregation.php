@@ -88,7 +88,7 @@ final class Aggregation implements IterableResult
     private function assertSearchIndexExistsForEmptyResult(CachingIterator|UnrewindableIterator $iterator): void
     {
         // The iterator is always rewinded
-        if ($iterator->current()) {
+        if ($iterator->key() !== null) {
             return; // Results not empty
         }
 
@@ -104,8 +104,7 @@ final class Aggregation implements IterableResult
 
         // @phpcs:ignore SlevomatCodingStandard.PHP.UselessParentheses
         $indexName = ((object) current($stage))->index ?? 'default';
-        $index     = $this->collection->listSearchIndexes(['filter' => ['name' => $indexName]])->current();
-        if ($index) {
+        if ($this->collection->listSearchIndexes(['filter' => ['name' => $indexName]])->key() !== null) {
             return; // Index exists
         }
 
