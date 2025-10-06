@@ -515,7 +515,8 @@ final class PersistenceBuilder
         return $setData;
     }
 
-    private function preparePersistentCollection(array $mapping, object $owner, mixed $rawValue): PersistentCollectionInterface
+    /** @param array<array-key, mixed>|Collection<array-key, mixed> $rawValue */
+    private function preparePersistentCollection(array $mapping, object $owner, array|Collection $rawValue): PersistentCollectionInterface
     {
         if ($rawValue instanceof PersistentCollectionInterface) {
             return $rawValue;
