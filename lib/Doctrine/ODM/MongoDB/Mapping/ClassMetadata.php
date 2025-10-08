@@ -18,6 +18,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
+use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
@@ -30,6 +31,7 @@ use LogicException;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
+use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionEnum;
 use ReflectionNamedType;
@@ -60,6 +62,8 @@ use function sprintf;
 use function strtolower;
 use function strtoupper;
 use function trigger_deprecation;
+
+use const PHP_VERSION_ID;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -1975,6 +1979,16 @@ use function trigger_deprecation;
      */
     public function setFieldValue(object $document, string $field, $value): void
     {
+        if ($document instanceof InternalProxy && ! $document->__isInitialized()) {
+            //property changes to an uninitialized proxy will not be tracked or persisted,
+            //so the proxy needs to be loaded first.
+            $document->__load();
+        } elseif ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
+            $document->initializeProxy();
+        } elseif (PHP_VERSION_ID >= 80400 && $this->reflClass->isUninitializedLazyObject($document)) {
+            $this->reflClass->initializeLazyObject($document);
+        }
+
         $this->propertyAccessors[$field]->setValue($document, $value);
     }
 
@@ -1985,6 +1999,14 @@ use function trigger_deprecation;
      */
     public function getFieldValue(object $document, string $field)
     {
+        if ($document instanceof InternalProxy && $field !== $this->identifier && ! $document->__isInitialized()) {
+            $document->__load();
+        } elseif ($document instanceof GhostObjectInterface && $field !== $this->identifier && ! $document->isProxyInitialized()) {
+            $document->initializeProxy();
+        } elseif (PHP_VERSION_ID >= 80400 && $field !== $this->identifier && $this->reflClass->isUninitializedLazyObject($document)) {
+            $this->reflClass->initializeLazyObject($document);
+        }
+
         return $this->propertyAccessors[$field]->getValue($document);
     }
 
