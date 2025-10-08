@@ -52,6 +52,8 @@ use function spl_object_id;
 use function sprintf;
 use function trigger_deprecation;
 
+use const PHP_VERSION_ID;
+
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
  * "object-level" transaction and for writing out changes to the database
@@ -3078,8 +3080,8 @@ final class UnitOfWork implements PropertyChangedListener
             $obj->initializeProxy();
         } elseif ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
-        } elseif ($this->dm->getConfiguration()->isNativeLazyObjectsEnabled()) {
-            $this->dm->getClassMetadata($obj::class)->getReflectionClass()->initializeLazyObject($obj);
+        } elseif (PHP_VERSION_ID >= 80400) {
+            $this->dm->getClassMetadata($obj::class)->reflClass->initializeLazyObject($obj);
         }
     }
 

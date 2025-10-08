@@ -523,6 +523,9 @@ class DocumentWithArrayId
     /** @var array<string, int> */
     #[ODM\Id(strategy: 'none', options: ['type' => 'hash'])]
     public $id;
+
+    #[ODM\Field]
+    public string $name;
 }
 
 
@@ -544,6 +547,9 @@ class DocumentWithMongoBinDataId
     /** @var string|null */
     #[ODM\Id(strategy: 'none', options: ['type' => 'bin'])]
     public $id;
+
+    #[ODM\Field]
+    public string $name;
 }
 
 class DocumentNotFoundListener

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Proxy\Factory;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
+use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
+use Doctrine\Persistence\NotifyPropertyChanged;
 use LogicException;
 use ReflectionClass;
 use WeakMap;
@@ -21,12 +24,18 @@ class NativeLazyObjectFactory implements ProxyFactory
     /** @var WeakMap<object, bool>|null */
     private static ?WeakMap $lazyObjects = null;
 
+    private readonly UnitOfWork $unitOfWork;
+    private readonly LifecycleEventManager $lifecycleEventManager;
+
     public function __construct(
-        private readonly UnitOfWork $unitOfWork,
+        DocumentManager $documentManager,
     ) {
         if (PHP_VERSION_ID < 80400) {
             throw new LogicException('Native lazy objects require PHP 8.4 or higher.');
         }
+
+        $this->unitOfWork            = $documentManager->getUnitOfWork();
+        $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->unitOfWork, $documentManager->getEventManager());
     }
 
     public function generateProxyClasses(array $classes): int
@@ -38,15 +47,21 @@ class NativeLazyObjectFactory implements ProxyFactory
 
     public function getProxy(ClassMetadata $metadata, $identifier): object
     {
-        $documentPersister = $this->unitOfWork->getDocumentPersister($metadata->name);
-
-        $proxy = $metadata->reflClass->newLazyGhost(static function (object $object) use (
+        $proxy = $metadata->reflClass->newLazyGhost(function (object $object) use (
             $identifier,
-            $documentPersister,
             $metadata,
         ): void {
-            $original = $documentPersister->load([$metadata->identifier => $identifier], $object);
-            if ($original === null) {
+            $original = $this->unitOfWork->getDocumentPersister($metadata->name)->load([$metadata->identifier => $identifier], $object);
+
+            if ($object instanceof NotifyPropertyChanged) {
+                $object->addPropertyChangedListener($this->unitOfWork);
+            }
+
+            if ($original !== null) {
+                return;
+            }
+
+            if (! $this->lifecycleEventManager->documentNotFound($object, $identifier)) {
                 throw DocumentNotFoundException::documentNotFound($metadata->name, $identifier);
             }
         }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
