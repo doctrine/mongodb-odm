@@ -753,11 +753,6 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             foreach ($actualData as $propName => $actualValue) {
-                // skip identifier field
-                if ($propName === $class->identifier) {
-                    continue;
-                }
-
                 // skip not saved fields
                 if (
                     (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) ||
@@ -1995,7 +1990,7 @@ final class UnitOfWork implements PropertyChangedListener
                                         ->dm
                                         ->getProxyFactory()
                                         ->getProxy($targetClass, $relatedId);
-                                    $this->registerManaged($other, $relatedId, []);
+                                    $this->registerManaged($other, $relatedId, [$targetClass->identifier => $relatedId]);
                                 }
                             }
 
