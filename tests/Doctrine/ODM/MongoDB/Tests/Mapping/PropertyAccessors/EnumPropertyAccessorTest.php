@@ -53,6 +53,8 @@ class EnumPropertyAccessorTest extends BaseTestCase
 class EnumClass
 {
     public EnumType $enum;
+
+    /** @var EnumType[] */
     public array $enumList;
 }
 

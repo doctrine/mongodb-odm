@@ -39,5 +39,6 @@ class ReadOnlyAccessorTest extends BaseTestCase
 
 class ReadOnlyClass
 {
+    // @phpstan-ignore property.uninitializedReadonly
     public readonly int $property;
 }

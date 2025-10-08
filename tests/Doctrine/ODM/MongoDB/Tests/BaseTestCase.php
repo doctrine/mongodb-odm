@@ -40,7 +40,6 @@ use function version_compare;
 
 use const DOCTRINE_MONGODB_DATABASE;
 use const DOCTRINE_MONGODB_SERVER;
-use const PHP_VERSION_ID;
 
 abstract class BaseTestCase extends TestCase
 {
@@ -141,7 +140,7 @@ abstract class BaseTestCase extends TestCase
 
     public static function isLazyObject(object $document): bool
     {
-        if (PHP_VERSION_ID >= 80400 && $_ENV['USE_LAZY_GHOST_OBJECTS'] ?? false) {
+        if ($_ENV['USE_LAZY_GHOST_OBJECTS']) {
             return NativeLazyObjectFactory::isLazyObject($document);
         }
 

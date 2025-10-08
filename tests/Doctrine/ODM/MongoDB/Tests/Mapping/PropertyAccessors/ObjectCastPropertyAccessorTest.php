@@ -59,6 +59,7 @@ class ObjectClass
     }
 }
 
+/** @implements InternalProxy<object> */
 class ObjectClassInternalProxy implements InternalProxy
 {
     /** @var string */
