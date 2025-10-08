@@ -21,7 +21,6 @@ use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
-use ReflectionClass;
 
 use function array_key_exists;
 use function array_map;
