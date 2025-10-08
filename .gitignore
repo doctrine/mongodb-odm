@@ -1,3 +1,4 @@
+docs/output
 tools/sandbox/Proxies/*
 tools/sandbox/Hydrators/*
 tools/sandbox/PersistentCollections/*

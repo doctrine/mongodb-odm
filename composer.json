@@ -20,6 +20,9 @@
         { "name": "Ion Bazan", "email": "ion.bazan@gmail.com" },
         { "name": "Fran Moreno", "email": "franmomu@gmail.com" }
     ],
+    "scripts": {
+        "docs": "composer update -d docs && ./docs/vendor/bin/build-docs.sh @additional_args"
+    },
     "require": {
         "php": "^8.1",
         "ext-mongodb": "^1.21 || ^2.0",

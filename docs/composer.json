@@ -1,5 +1,5 @@
 {
     "require-dev": {
-        "phpdocumentor/guides-cli": "^1.2"
+        "doctrine/docs-builder": "^1.0.3"
     }
 }
