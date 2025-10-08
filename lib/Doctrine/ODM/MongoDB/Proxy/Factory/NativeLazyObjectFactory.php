@@ -18,6 +18,7 @@ use const PHP_VERSION_ID;
 /** @internal */
 class NativeLazyObjectFactory implements ProxyFactory
 {
+    /** @var WeakMap<object, bool>|null */
     private static ?WeakMap $lazyObjects = null;
 
     public function __construct(

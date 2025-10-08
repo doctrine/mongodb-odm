@@ -3078,6 +3078,8 @@ final class UnitOfWork implements PropertyChangedListener
             $obj->initializeProxy();
         } elseif ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
+        } elseif ($this->dm->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $this->dm->getClassMetadata($obj::class)->getReflectionClass()->initializeLazyObject($obj);
         }
     }
 

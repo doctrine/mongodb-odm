@@ -89,6 +89,8 @@ class ProxyFactoryTest extends BaseTestCase
             $proxy->__setInitialized(true);
         } elseif ($proxy instanceof GhostObjectInterface) {
             $proxy->setProxyInitializer(null);
+        } elseif ($this->dm->getConfiguration()->isNativeLazyObjectsEnabled()) {
+            $this->dm->getClassMetadata($proxy::class)->getReflectionClass()->markLazyObjectAsInitialized($proxy);
         }
 
         self::assertSame('bar', $proxy->foo);
