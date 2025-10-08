@@ -761,6 +761,11 @@ final class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
+                // skip identifier field
+                if (in_array($propName, $class->getIdentifierFieldNames(), true)) {
+                    continue;
+                }
+
                 $orgValue = $originalData[$propName] ?? null;
 
                 // skip if value has not changed

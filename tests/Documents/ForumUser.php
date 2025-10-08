@@ -22,6 +22,9 @@ class ForumUser
     #[ODM\ReferenceOne(targetDocument: ForumAvatar::class, cascade: ['persist'])]
     public $avatar;
 
+    #[ODM\ReferenceOne(targetDocument: ForumStar::class, cascade: ['persist'])]
+    public ?ForumStar $star;
+
     /** @return int|ObjectId|null */
     public function getId()
     {
@@ -41,5 +44,15 @@ class ForumUser
     public function setAvatar(ForumAvatar $avatar): void
     {
         $this->avatar = $avatar;
+    }
+
+    public function getStar(): ForumStar
+    {
+        return $this->star;
+    }
+
+    public function setStar(ForumStar $star): void
+    {
+        $this->star = $star;
     }
 }

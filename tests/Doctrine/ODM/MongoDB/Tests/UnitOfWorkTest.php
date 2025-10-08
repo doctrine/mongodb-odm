@@ -20,6 +20,7 @@ use Documents\Address;
 use Documents\File;
 use Documents\FileWithoutMetadata;
 use Documents\ForumAvatar;
+use Documents\ForumStar;
 use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
@@ -495,6 +496,34 @@ class UnitOfWorkTest extends BaseTestCase
         $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getAvatar());
 
         self::assertEquals([], $this->uow->getDocumentChangeSet($user->getAvatar()));
+    }
+
+    /**
+     * Native lazy ghosts objects are marked as initialized when the last property
+     * is set. It appends when the document class has only one property: the id.
+     */
+    public function testRecomputeChangesetForNativeLazyGhostWithOnlyIdDoesNotCreateChangeset(): void
+    {
+        $user           = new ForumUser();
+        $user->username = '12345';
+        $user->setStar(new ForumStar());
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $id = $user->getId();
+        $this->dm->clear();
+
+        $user = $this->dm->find(ForumUser::class, $id);
+        self::assertInstanceOf(ForumUser::class, $user);
+
+        self::assertTrue(self::isLazyObject($user->getStar()));
+
+        $classMetadata = $this->dm->getClassMetadata(ForumStar::class);
+
+        $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user->getStar());
+
+        self::assertEquals([], $this->uow->getDocumentChangeSet($user->getStar()));
     }
 
     public function testCommitsInProgressIsUpdatedOnException(): void
