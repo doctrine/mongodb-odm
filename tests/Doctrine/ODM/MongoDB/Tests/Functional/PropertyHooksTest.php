@@ -92,11 +92,8 @@ class PropertyHooksTest extends BaseTestCase
 
     public function testMappingVirtualPropertyIsNotSupported(): void
     {
-        // @todo remove if not relevant
-        self::markTestSkipped('Imported from ORM, but there is no virtual property support in MongoDB ODM.');
-
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('Mapping virtual property "fullName" on entity "Documents\PropertyHooks\MappingVirtualProperty" is not allowed.');
+        $this->expectExceptionMessage('Mapping virtual property "fullName" on document "Documents84\PropertyHooks\MappingVirtualProperty" is not allowed.');
 
         $this->dm->getClassMetadata(MappingVirtualProperty::class);
     }

@@ -337,4 +337,13 @@ final class MappingException extends BaseMappingException
             $identifierFieldName,
         ));
     }
+
+    public static function mappingVirtualPropertyNotAllowed(string $entityName, string $propertyName): self
+    {
+        return new self(sprintf(
+            'Mapping virtual property "%s" on document "%s" is not allowed.',
+            $propertyName,
+            $entityName,
+        ));
+    }
 }

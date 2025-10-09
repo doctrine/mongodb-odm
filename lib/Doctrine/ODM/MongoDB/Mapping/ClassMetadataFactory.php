@@ -17,7 +17,6 @@ use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\ObjectIdGenerator;
 use Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
-use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -31,6 +30,8 @@ use function in_array;
 use function interface_exists;
 use function trigger_deprecation;
 use function ucfirst;
+
+use const PHP_VERSION_ID;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -119,6 +120,18 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->wakeupReflection($reflService);
+
+        if (PHP_VERSION_ID < 80400) {
+            return;
+        }
+
+        foreach ($class->propertyAccessors as $propertyAccessor) {
+            $property = $propertyAccessor->getUnderlyingReflector();
+
+            if ($property->isVirtual()) {
+                throw MappingException::mappingVirtualPropertyNotAllowed($class->name, $property->getName());
+            }
+        }
     }
 
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
