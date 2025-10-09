@@ -140,7 +140,7 @@ abstract class BaseTestCase extends TestCase
 
     public static function isLazyObject(object $document): bool
     {
-        if ($_ENV['USE_LAZY_GHOST_OBJECTS']) {
+        if ($_ENV['USE_NATIVE_LAZY_OBJECTS']) {
             return NativeLazyObjectFactory::isLazyObject($document);
         }
 
