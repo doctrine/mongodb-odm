@@ -642,7 +642,9 @@ use const PHP_VERSION_ID;
     /**
      * The ReflectionProperty instances of the mapped class.
      *
-     * @var LegacyReflectionFields|ReflectionProperty[]
+     * @deprecated Since 2.13, use $propertyAccessors instead.
+     *
+     * @var LegacyReflectionFields|array<ReflectionProperty>
      */
     public $reflFields = [];
 
@@ -1505,6 +1507,8 @@ use const PHP_VERSION_ID;
     /**
      * Gets the ReflectionProperties of the mapped class.
      *
+     * @deprecated Since 2.13, use getPropertyAccessors() instead.
+     *
      * @return LegacyReflectionFields|ReflectionProperty[]
      */
     public function getReflectionProperties(): array|LegacyReflectionFields
@@ -1524,6 +1528,8 @@ use const PHP_VERSION_ID;
 
     /**
      * Gets a ReflectionProperty for a specific field of the mapped class.
+     *
+     * @deprecated Since 2.13, use getPropertyAccessor() instead.
      */
     public function getReflectionProperty(string $name): ReflectionProperty
     {
@@ -2620,7 +2626,7 @@ use const PHP_VERSION_ID;
      * That means any metadata properties that are not set or empty or simply have
      * their default value are NOT serialized.
      *
-     * Parts that are also NOT serialized because they can not be properly unserialized:
+     * Parts that are also NOT serialized because they cannot be properly unserialized:
      *      - reflClass (ReflectionClass)
      *      - reflFields (ReflectionProperty array)
      *      - propertyAccessors (ReflectionProperty array)
@@ -2724,15 +2730,14 @@ use const PHP_VERSION_ID;
         return $serialized;
     }
 
-    /**
-     * Restores some state that can not be serialized/unserialized.
-     */
-    public function __wakeup()
+    /** @internal */
+    public function wakeupReflection($reflectionService): void
     {
         // Restore ReflectionClass and properties
-        $this->reflectionService = new RuntimeReflectionService();
+        $this->reflectionService = $reflectionService;
         $this->reflClass         = new ReflectionClass($this->name);
         $this->instantiator      = new Instantiator();
+        $this->reflFields        = new LegacyReflectionFields($this, $reflectionService);
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping['declared'] ?? $this->name, $field);
@@ -2743,6 +2748,14 @@ use const PHP_VERSION_ID;
 
             $this->propertyAccessors[$field] = $accessor;
         }
+    }
+
+    /**
+     * Restores some state that can not be serialized/unserialized.
+     */
+    public function __wakeup()
+    {
+        $this->wakeupReflection(new RuntimeReflectionService());
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping;
 
 use ArrayAccess;
+use Countable;
 use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
@@ -16,16 +17,16 @@ use Traversable;
 
 use function array_keys;
 use function assert;
-use function is_string;
-use function str_contains;
-use function str_replace;
+use function count;
 use function trigger_deprecation;
 
 /**
+ * @internal
+ *
  * @template-implements ArrayAccess<string, ReflectionProperty|null>
  * @template-implements IteratorAggregate<string, ReflectionProperty|null>
  */
-class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
+class LegacyReflectionFields implements ArrayAccess, IteratorAggregate, Countable
 {
     /** @var array<string, ReflectionProperty|null> */
     private array $reflFields = [];
@@ -55,59 +56,27 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
 
         trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
-        // @todo originalField and originalClass does not exist in ODM
-        if (isset($this->classMetadata->propertyAccessors[$field])) {
-            $fieldName = str_contains($field, '.') ? $this->classMetadata->fieldMappings[$field]->originalField : $field;
-            $className = $this->classMetadata->name;
-
-            assert(is_string($fieldName));
-
-            if (isset($this->classMetadata->fieldMappings[$field]) && $this->classMetadata->fieldMappings[$field]->originalClass !== null) {
-                $className = $this->classMetadata->fieldMappings[$field]->originalClass;
-            } elseif (isset($this->classMetadata->fieldMappings[$field]) && $this->classMetadata->fieldMappings[$field]->declared !== null) {
-                $className = $this->classMetadata->fieldMappings[$field]->declared;
-            } elseif (isset($this->classMetadata->associationMappings[$field]) && $this->classMetadata->associationMappings[$field]->declared !== null) {
-                $className = $this->classMetadata->associationMappings[$field]->declared;
-            } elseif (isset($this->classMetadata->embeddedClasses[$field]) && $this->classMetadata->embeddedClasses[$field]->declared !== null) {
-                $className = $this->classMetadata->embeddedClasses[$field]->declared;
-            }
-
-            /** @psalm-suppress ArgumentTypeCoercion */
-            $this->reflFields[$field] = $this->getAccessibleProperty($className, $fieldName);
-
-            if (isset($this->classMetadata->fieldMappings[$field])) {
-                if ($this->classMetadata->fieldMappings[$field]->enumType !== null) {
-                    $this->reflFields[$field] = new EnumReflectionProperty(
-                        $this->reflFields[$field],
-                        $this->classMetadata->fieldMappings[$field]->enumType,
-                    );
-                }
-
-                if ($this->classMetadata->fieldMappings[$field]->originalField !== null) {
-                    $parentField   = str_replace('.' . $fieldName, '', $field);
-                    $originalClass = $this->classMetadata->fieldMappings[$field]->originalClass;
-
-                    if (! str_contains($parentField, '.')) {
-                        $parentClass = $this->classMetadata->name;
-                    } else {
-                        $parentClass = $this->classMetadata->fieldMappings[$parentField]->originalClass;
-                    }
-
-                    /** @psalm-var class-string $parentClass */
-                    /** @psalm-var class-string $originalClass */
-
-                    $this->reflFields[$field] = new ReflectionEmbeddedProperty(
-                        $this->getAccessibleProperty($parentClass, $parentField),
-                        $this->reflFields[$field],
-                        $originalClass,
-                    );
-                }
-            }
-
-            return $this->reflFields[$field];
+        if (! isset($this->classMetadata->propertyAccessors[$field])) {
+            throw new OutOfBoundsException('Unknown field: ' . $this->classMetadata->name . ' ::$' . $field);
         }
 
-        throw new OutOfBoundsException('Unknown field: ' . $this->classMetadata->name . ' ::$' . $field);
+        $className = $this->classMetadata->fieldMappings[$field]['inherited']
+            ?? $this->classMetadata->fieldMappings[$field]['declared']
+            ?? $this->classMetadata->associationMappings[$field]['declared']
+            ?? $this->classMetadata->name;
+
+        $this->reflFields[$field] = $this->getAccessibleProperty($className, $field);
+
+        if (isset($this->classMetadata->fieldMappings[$field])) {
+            if ($this->classMetadata->fieldMappings[$field]['enumType'] ?? null) {
+                $this->reflFields[$field] = new EnumReflectionProperty(
+                    $this->reflFields[$field],
+                    $this->classMetadata->fieldMappings[$field]['enumType'],
+                );
+            }
+        }
+
+        return $this->reflFields[$field];
     }
 
     /**
@@ -156,5 +125,12 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate
         foreach ($keys as $key) {
             yield $key => $this->offsetGet($key);
         }
+    }
+
+    public function count(): int
+    {
+        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
+
+        return count($this->classMetadata->propertyAccessors);
     }
 }

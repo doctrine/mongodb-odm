@@ -15,7 +15,7 @@ abstract class BaseDocument
 
     /** @var string|null */
     #[ODM\Field(type: 'string')]
-    protected $inheritedProperty;
+    private $inheritedProperty;
 
     public function setInheritedProperty(string $value): void
     {

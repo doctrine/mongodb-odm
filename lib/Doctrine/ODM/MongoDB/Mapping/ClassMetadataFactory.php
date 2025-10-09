@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\ObjectIdGenerator;
 use Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -117,6 +118,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
+        $class->wakeupReflection($reflService);
     }
 
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
