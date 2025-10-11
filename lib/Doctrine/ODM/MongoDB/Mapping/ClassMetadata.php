@@ -24,7 +24,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
-use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use InvalidArgumentException;
 use LogicException;
@@ -862,8 +861,6 @@ use const PHP_VERSION_ID;
 
     private InstantiatorInterface $instantiator;
 
-    private ReflectionService $reflectionService;
-
     /** @var class-string|null */
     private ?string $rootClass;
 
@@ -875,10 +872,9 @@ use const PHP_VERSION_ID;
      */
     public function __construct(string $documentName)
     {
-        $this->name              = $documentName;
-        $this->rootDocumentName  = $documentName;
-        $this->reflectionService = new RuntimeReflectionService();
-        $this->reflClass         = new ReflectionClass($documentName);
+        $this->name             = $documentName;
+        $this->rootDocumentName = $documentName;
+        $this->reflClass        = new ReflectionClass($documentName);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -2734,10 +2730,9 @@ use const PHP_VERSION_ID;
     public function wakeupReflection($reflectionService): void
     {
         // Restore ReflectionClass and properties
-        $this->reflectionService = $reflectionService;
-        $this->reflClass         = new ReflectionClass($this->name);
-        $this->instantiator      = new Instantiator();
-        $this->reflFields        = new LegacyReflectionFields($this, $reflectionService);
+        $this->reflClass    = new ReflectionClass($this->name);
+        $this->instantiator = new Instantiator();
+        $this->reflFields   = new LegacyReflectionFields($this, $reflectionService);
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping['declared'] ?? $this->name, $field);
