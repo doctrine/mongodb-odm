@@ -50,6 +50,10 @@ parameters:
         identifier: property.unusedType
         path: tests/
 
+      # Requires ext-mongodb 2.2+
+      - message: '#MongoDB\\BSON\\VectorType#'
+      - message: '#MongoDB\\BSON\\Binary\:\:(TYPE_VECTOR|getVectorType|toArray|fromVector)#'
+
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true

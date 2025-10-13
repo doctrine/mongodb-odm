@@ -152,6 +152,9 @@ Here is a quick overview of the built-in mapping types:
 -  ``string``
 -  ``timestamp``
 -  ``uuid``
+-  ``vector_float32``
+-  ``vector_int8``
+-  ``vector_packed_bit``
 
 You can read more about the available MongoDB types on `php.net <https://www.php.net/mongodb.bson>`_.
 
@@ -165,21 +168,24 @@ You can read more about the available MongoDB types on `php.net <https://www.php
 Generally, the name of each built-in mapping type hints as to how the value will be converted.
 This list explains some of the less obvious mapping types:
 
--  ``bin``: string to MongoDB\BSON\Binary instance with a "generic" type (default)
--  ``bin_bytearray``: string to MongoDB\BSON\Binary instance with a "byte array" type
--  ``bin_custom``: string to MongoDB\BSON\Binary instance with a "custom" type
--  ``bin_func``: string to MongoDB\BSON\Binary instance with a "function" type
--  ``bin_md5``: string to MongoDB\BSON\Binary instance with a "md5" type
--  ``bin_uuid``: string to MongoDB\BSON\Binary instance with a "uuid" type
+-  ``bin``: ``string`` to ``MongoDB\BSON\Binary`` instance with a "generic" type (default)
+-  ``bin_bytearray``: ``string`` to ``MongoDB\BSON\Binary`` instance with a "byte array" type
+-  ``bin_custom``: ``string`` to ``MongoDB\BSON\Binary`` instance with a "custom" type
+-  ``bin_func``: ``string`` to ``MongoDB\BSON\Binary`` instance with a "function" type
+-  ``bin_md5``: ``string`` to ``MongoDB\BSON\Binary`` instance with a "md5" type
+-  ``bin_uuid``: ``string`` to ``MongoDB\BSON\Binary`` instance with a "uuid" type
 -  ``collection``: numerically indexed array to MongoDB array
 -  ``date``: DateTime to ``MongoDB\BSON\UTCDateTime``
 -  ``date_immutable``: DateTimeImmutable to ``MongoDB\BSON\UTCDateTime``
--  ``decimal128``: string to ``MongoDB\BSON\Decimal128``, requires ``ext-bcmath``
+-  ``decimal128``: ``string`` to ``MongoDB\BSON\Decimal128``, requires ``ext-bcmath``
 -  ``hash``: associative array to MongoDB object
--  ``id``: string to ObjectId by default, but other formats are possible
--  ``timestamp``: string to ``MongoDB\BSON\Timestamp``
+-  ``id``: ``string`` to ObjectId by default, but other formats are possible
+-  ``timestamp``: ``string`` to ``MongoDB\BSON\Timestamp``
 -  ``raw``: any type
 -  ``uuid``: `Symfony UID <https://symfony.com/doc/current/components/uid.html>`_ to ``MongoDB\BSON\Binary`` instance with a "uuid" type
+-  ``vector_float32``: list of floats to ``MongoDB\BSON\Binary`` instance with vector type "Float32"
+-  ``vector_int8``: list of integers to ``MongoDB\BSON\Binary`` instance with vector type "Int8"
+-  ``vector_packed_bit``: list of booleans to ``MongoDB\BSON\Binary`` instance with vector type "PackedBit"
 
 .. note::
 
@@ -188,6 +194,10 @@ This list explains some of the less obvious mapping types:
     the Mongo driver should be used. If your hash contains values which are not
     suitable you should either use an embedded document or use formats provided
     by the MongoDB driver (e.g. ``\MongoDB\BSON\UTCDateTime`` instead of ``\DateTime``).
+
+.. note::
+
+    The vector types require the MongoDB PHP extension version 2.2.0 or higher.
 
 .. _reference-php-mapping-types:
 

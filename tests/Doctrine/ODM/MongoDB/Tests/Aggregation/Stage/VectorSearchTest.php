@@ -93,9 +93,7 @@ class VectorSearchTest extends BaseTestCase
     public function testQueryVectorAcceptsBinary(): void
     {
         [$stage] = $this->createVectorSearchStage();
-        // @phpstan-ignore class.notFound (requires ext-mongodb 2.2+)
         if (enum_exists(VectorType::class)) {
-            // @phpstan-ignore staticMethod.notFound (requires ext-mongodb 2.2+)
             $binaryVector = Binary::fromVector([1, 2, 3], VectorType::Int8);
             self::assertInstanceOf(Binary::class, $binaryVector);
         } else {

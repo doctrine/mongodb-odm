@@ -47,6 +47,9 @@ abstract class Type
     public const RAW                = 'raw';
     public const DECIMAL128         = 'decimal128';
     public const UUID               = 'uuid';
+    public const VECTOR_FLOAT32     = 'vector_float32';
+    public const VECTOR_INT8        = 'vector_int8';
+    public const VECTOR_PACKED_BIT  = 'vector_packed_bit';
 
     /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
     public const INTID = 'int_id';
@@ -89,6 +92,9 @@ abstract class Type
         self::RAW => Types\RawType::class,
         self::DECIMAL128 => Types\Decimal128Type::class,
         self::UUID => Types\BinaryUuidType::class,
+        self::VECTOR_FLOAT32 => Types\VectorFloat32Type::class,
+        self::VECTOR_INT8 => Types\VectorInt8Type::class,
+        self::VECTOR_PACKED_BIT => Types\VectorPackedBitType::class,
     ];
 
     /** Prevent instantiation and force use of the factory method. */
