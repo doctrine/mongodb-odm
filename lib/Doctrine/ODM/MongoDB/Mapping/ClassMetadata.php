@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
+use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use InvalidArgumentException;
 use LogicException;
@@ -861,6 +862,8 @@ use const PHP_VERSION_ID;
 
     private InstantiatorInterface $instantiator;
 
+    private ReflectionService $reflectionService;
+
     /** @var class-string|null */
     private ?string $rootClass;
 
@@ -872,9 +875,11 @@ use const PHP_VERSION_ID;
      */
     public function __construct(string $documentName)
     {
-        $this->name             = $documentName;
-        $this->rootDocumentName = $documentName;
-        $this->reflClass        = new ReflectionClass($documentName);
+        $this->name              = $documentName;
+        $this->rootDocumentName  = $documentName;
+        $this->reflectionService = new RuntimeReflectionService();
+        $this->reflClass         = new ReflectionClass($documentName);
+        $this->reflFields        = new LegacyReflectionFields($this, $this->reflectionService);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -1505,7 +1510,7 @@ use const PHP_VERSION_ID;
      *
      * @deprecated Since 2.13, use getPropertyAccessors() instead.
      *
-     * @return LegacyReflectionFields|ReflectionProperty[]
+     * @return array<ReflectionProperty>|LegacyReflectionFields
      */
     public function getReflectionProperties(): array|LegacyReflectionFields
     {
@@ -2597,6 +2602,10 @@ use const PHP_VERSION_ID;
 
         $accessor = PropertyAccessorFactory::createPropertyAccessor($this->name, $mapping['fieldName']);
 
+        if (PHP_VERSION_ID >= 80400 && $accessor->getUnderlyingReflector()->isVirtual()) {
+            throw MappingException::mappingVirtualPropertyNotAllowed($this->name, $mapping['fieldName']);
+        }
+
         if (isset($mapping['enumType'])) {
             if (! enum_exists($mapping['enumType'])) {
                 throw MappingException::nonEnumTypeMapped($this->name, $mapping['fieldName'], $mapping['enumType']);
@@ -2726,13 +2735,16 @@ use const PHP_VERSION_ID;
         return $serialized;
     }
 
-    /** @internal */
-    public function wakeupReflection($reflectionService): void
+    /**
+     * Restores some state that cannot be serialized/unserialized.
+     */
+    public function __wakeup(): void
     {
         // Restore ReflectionClass and properties
-        $this->reflClass    = new ReflectionClass($this->name);
-        $this->instantiator = new Instantiator();
-        $this->reflFields   = new LegacyReflectionFields($this, $reflectionService);
+        $this->reflClass         = new ReflectionClass($this->name);
+        $this->instantiator      = new Instantiator();
+        $this->reflectionService = new RuntimeReflectionService();
+        $this->reflFields        = new LegacyReflectionFields($this, $this->reflectionService);
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping['declared'] ?? $this->name, $field);
@@ -2743,14 +2755,6 @@ use const PHP_VERSION_ID;
 
             $this->propertyAccessors[$field] = $accessor;
         }
-    }
-
-    /**
-     * Restores some state that can not be serialized/unserialized.
-     */
-    public function __wakeup()
-    {
-        $this->wakeupReflection(new RuntimeReflectionService());
     }
 
     /**

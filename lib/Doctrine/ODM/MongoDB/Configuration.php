@@ -695,7 +695,7 @@ class Configuration
             throw new LogicException('Cannot enable or disable LazyGhostObject when native lazy objects are enabled.');
         }
 
-        if ($flag) {
+        if ($flag === false) {
             if (! class_exists(ProxyManagerConfiguration::class)) {
                 throw new LogicException('Package "friendsofphp/proxy-manager-lts" is required to disable LazyGhostObject.');
             }

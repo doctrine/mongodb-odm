@@ -119,8 +119,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        $class->wakeupReflection($reflService);
-
         if (PHP_VERSION_ID < 80400) {
             return;
         }
