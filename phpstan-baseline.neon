@@ -385,18 +385,6 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Annotations/SearchIndex.php
 
 		-
-			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Instanceof between Doctrine\\Persistence\\Reflection\\RuntimeReflectionProperty and ReflectionProperty will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: lib/Doctrine/ODM/MongoDB/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:addInheritedAssociationMapping\(\) has Doctrine\\ODM\\MongoDB\\Mapping\\MappingException in PHPDoc @throws tag but it''s not thrown\.$#'
 			identifier: throws.unusedType
 			count: 1
@@ -497,6 +485,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: lib/Doctrine/ODM/MongoDB/Mapping/Driver/XmlDriver.php
+
+		-
+			message: '#^Parameter \#1 \$initializer of method ProxyManager\\Proxy\\GhostObjectInterface\<object\>\:\:setProxyInitializer\(\) expects \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string\=, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null, \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/PropertyAccessors/ObjectCastPropertyAccessor.php
+
+		-
+			message: '#^Parameter \#1 \$initializer of method ProxyManager\\Proxy\\GhostObjectInterface\<object\>\:\:setProxyInitializer\(\) expects \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string\=, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null, \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Mapping/PropertyAccessors/RawValuePropertyAccessor.php
 
 		-
 			message: '#^Call to function is_object\(\) with Doctrine\\Common\\Collections\\Collection will always evaluate to true\.$#'
