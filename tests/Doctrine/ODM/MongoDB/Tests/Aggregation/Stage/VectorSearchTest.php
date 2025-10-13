@@ -11,6 +11,9 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use Documents\VectorEmbedding;
 use MongoDB\BSON\Binary;
+use MongoDB\BSON\VectorType;
+
+use function enum_exists;
 
 class VectorSearchTest extends BaseTestCase
 {
@@ -80,8 +83,16 @@ class VectorSearchTest extends BaseTestCase
 
     public function testQueryVectorAcceptsBinary(): void
     {
-        [$stage]      = $this->createVectorSearchStage();
-        $binaryVector = new Binary("\x01\x02\x03", 9);
+        [$stage] = $this->createVectorSearchStage();
+        // @phpstan-ignore class.notFound (requires ext-mongodb 2.2+)
+        if (enum_exists(VectorType::class)) {
+            // @phpstan-ignore staticMethod.notFound (requires ext-mongodb 2.2+)
+            $binaryVector = Binary::fromVector([1, 2, 3], VectorType::Int8);
+            self::assertInstanceOf(Binary::class, $binaryVector);
+        } else {
+            $binaryVector = new Binary("\x03\x00\x01\x02\x03", 9);
+        }
+
         $stage->queryVector($binaryVector);
         self::assertSame(['$vectorSearch' => ['queryVector' => $binaryVector]], $stage->getExpression());
     }
