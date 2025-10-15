@@ -8,9 +8,14 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr;
+use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
+
+use function array_is_list;
+use function is_array;
+use function sprintf;
 
 /**
  * @phpstan-type Vector list<int|Int64>|list<float|Decimal128>|list<bool|0|1>|Binary
@@ -28,12 +33,15 @@ use MongoDB\BSON\Int64;
  */
 class VectorSearch extends Stage
 {
-    private ?bool $exact        = null;
-    private ?Expr $filter       = null;
-    private ?string $index      = null;
-    private ?int $limit         = null;
-    private ?int $numCandidates = null;
-    private ?string $path       = null;
+    /** @see Binary::TYPE_VECTOR introduced in ext-mongodb 2.2 */
+    private const BINARY_TYPE_VECTOR = 9;
+
+    private ?bool $exact            = null;
+    private array|Expr|null $filter = null;
+    private ?string $index          = null;
+    private ?int $limit             = null;
+    private ?int $numCandidates     = null;
+    private ?string $path           = null;
     /** @phpstan-var Vector|null */
     private array|Binary|null $queryVector = null;
 
@@ -50,8 +58,10 @@ class VectorSearch extends Stage
             $params['exact'] = $this->exact;
         }
 
-        if ($this->filter !== null) {
+        if ($this->filter instanceof Expr) {
             $params['filter'] = $this->filter->getQuery();
+        } elseif (is_array($this->filter)) {
+            $params['filter'] = $this->filter;
         }
 
         if ($this->index !== null) {
@@ -84,7 +94,8 @@ class VectorSearch extends Stage
         return $this;
     }
 
-    public function filter(Expr $filter): static
+    /** @phpstan-param array<string, mixed>|Expr $filter */
+    public function filter(array|Expr $filter): static
     {
         $this->filter = $filter;
 
@@ -122,6 +133,18 @@ class VectorSearch extends Stage
     /** @phpstan-param Vector $queryVector */
     public function queryVector(array|Binary $queryVector): static
     {
+        if ($queryVector === []) {
+            throw new InvalidArgumentException('Query vector cannot be an empty array.');
+        }
+
+        if (is_array($queryVector) && ! array_is_list($queryVector)) {
+            throw new InvalidArgumentException('Query vector must be a list of numbers, got an associative array.');
+        }
+
+        if ($queryVector instanceof Binary && $queryVector->getType() !== self::BINARY_TYPE_VECTOR) {
+            throw new InvalidArgumentException(sprintf('Binary query vector must be of type 9 (Vector), got %d.', $queryVector->getType()));
+        }
+
         $this->queryVector = $queryVector;
 
         return $this;

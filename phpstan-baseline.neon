@@ -331,6 +331,12 @@ parameters:
 			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/UnionWith.php
 
 		-
+			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\VectorSearch\:\:\$filter type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: lib/Doctrine/ODM/MongoDB/Aggregation/Stage/VectorSearch.php
+
+		-
 			message: '#^Return type \(Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\) of method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManager\:\:getMetadataFactory\(\)$#'
 			identifier: method.childReturnType
 			count: 1

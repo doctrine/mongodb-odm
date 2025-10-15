@@ -10,8 +10,10 @@ use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\User;
 use Documents\VectorEmbedding;
+use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\VectorType;
+use PHPUnit\Framework\Attributes\TestWith;
 
 use function enum_exists;
 
@@ -27,12 +29,19 @@ class VectorSearchTest extends BaseTestCase
 
     public function testExact(): void
     {
-        [$stage, $builder] = $this->createVectorSearchStage();
+        [$stage] = $this->createVectorSearchStage();
         $stage->exact(true);
         self::assertSame(['$vectorSearch' => ['exact' => true]], $stage->getExpression());
     }
 
-    public function testFilter(): void
+    public function testFilterArray(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->filter(['status' => ['$ne' => 'inactive']]);
+        self::assertSame(['$vectorSearch' => ['filter' => ['status' => ['$ne' => 'inactive']]]], $stage->getExpression());
+    }
+
+    public function testFilterExpr(): void
     {
         [$stage, $builder] = $this->createVectorSearchStage();
         $stage->filter($builder->matchExpr()->field('status')->notEqual('inactive'));
@@ -95,6 +104,17 @@ class VectorSearchTest extends BaseTestCase
 
         $stage->queryVector($binaryVector);
         self::assertSame(['$vectorSearch' => ['queryVector' => $binaryVector]], $stage->getExpression());
+    }
+
+    #[TestWith([new Binary("\x03\x00\x01\x02\x03", Binary::TYPE_GENERIC), 'Binary query vector must be of type 9 (Vector), got 0.'])]
+    #[TestWith([[1 => 1, 2 => 3], 'Query vector must be a list of numbers, got an associative array.'])]
+    #[TestWith([[], 'Query vector cannot be an empty array.'])]
+    public function testQueryVectorInvalidType(mixed $queryVector, string $message): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($message);
+        $stage->queryVector($queryVector);
     }
 
     public function testChainingAllOptions(): void
