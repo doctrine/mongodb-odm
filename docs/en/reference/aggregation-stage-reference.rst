@@ -701,6 +701,27 @@ for a reference of all available operators.
                 ->fields('title', 'content')
     ;
 
+To combine multiple search operators, use the `compound operator <https://www.mongodb.com/docs/atlas/atlas-search/compound/>`_:
+
+.. code-block:: php
+
+    <?php
+
+    $builder = $dm->createAggregationBuilder(\Documents\Fruits::class);
+    $builder
+        ->compound()
+            ->must()
+                ->text()->query('varieties')->path('description')
+            ->should(minimumShouldMatch: 1)
+                ->text()->query('Fuji')->path('description')
+                ->text()->query('Golden Delicious')->path('description')
+    ;
+
+This aggregation will return `Fruits` documents from whose `description` field
+contains the word "varieties" (must), and should also contain either "Fuji" or
+"Golden Delicious" in the `description` field (at least one due to
+`minimumShouldMatch: 1`).
+
 $set
 ----
 
