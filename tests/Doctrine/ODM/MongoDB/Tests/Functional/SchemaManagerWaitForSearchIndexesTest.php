@@ -9,14 +9,27 @@ use Doctrine\ODM\MongoDB\SchemaException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
 use MongoDB\Driver\BulkWrite;
+use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\TestWith;
 
+use function bin2hex;
 use function hrtime;
+use function random_bytes;
 
 #[Group('atlas')]
 class SchemaManagerWaitForSearchIndexesTest extends BaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Randomize the collection name to avoid collisions when search indexes
+        // are created or dropped asynchronously
+        $this->dm->getClassMetadata(CmsArticle::class)
+            ->setCollection('articles_' . bin2hex(random_bytes(4)));
+    }
+
     #[TestWith([0])]
     #[TestWith([50_000])]
     public function testWait(int $nbDocuments): void
@@ -32,7 +45,11 @@ class SchemaManagerWaitForSearchIndexesTest extends BaseTestCase
                 $bulk->insert(['topic' => 'topic ' . $i, 'title' => 'title ' . $i, 'text' => 'text ' . $i]);
             }
 
-            $collection->getManager()->executeBulkWrite($collection->getNamespace(), $bulk);
+            $collection->getManager()->executeBulkWrite(
+                $collection->getNamespace(),
+                $bulk,
+                ['writeConcern' => new WriteConcern(WriteConcern::MAJORITY)],
+            );
         }
 
         // The index must be created after data insertion, so the index status is not immediately "READY"
