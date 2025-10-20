@@ -38,7 +38,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate, Countabl
     /** @param string $offset */
     public function offsetExists($offset): bool // phpcs:ignore
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
         return isset($this->classMetadata->propertyAccessors[$offset]);
     }
@@ -54,7 +54,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate, Countabl
             return $this->reflFields[$field];
         }
 
-        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
         if (! isset($this->classMetadata->propertyAccessors[$field])) {
             throw new OutOfBoundsException('Unknown field: ' . $this->classMetadata->name . ' ::$' . $field);
@@ -118,7 +118,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate, Countabl
     /** @return Generator<string, ReflectionProperty> */
     public function getIterator(): Traversable
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
         $keys = array_keys($this->classMetadata->propertyAccessors);
 
@@ -129,7 +129,7 @@ class LegacyReflectionFields implements ArrayAccess, IteratorAggregate, Countabl
 
     public function count(): int
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Access to ClassMetadata::$reflFields is deprecated and will be removed in Doctrine ODM 3.0.');
 
         return count($this->classMetadata->propertyAccessors);
     }

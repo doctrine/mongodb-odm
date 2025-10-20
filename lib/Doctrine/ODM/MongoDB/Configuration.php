@@ -704,7 +704,7 @@ class Configuration
         }
 
         if ($flag === true && PHP_VERSION_ID >= 80400) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Using "symfony/var-exporter" lazy ghost objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
+            trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Using "symfony/var-exporter" lazy ghost objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
         }
 
         $this->lazyGhostObject = $flag;
@@ -718,7 +718,7 @@ class Configuration
     public function enableNativeLazyObjects(bool $nativeLazyObjects): void
     {
         if (PHP_VERSION_ID >= 80400 && ! $nativeLazyObjects) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.13', 'Disabling native lazy objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
+            trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Disabling native lazy objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
         }
 
         if (PHP_VERSION_ID < 80400 && $nativeLazyObjects) {
