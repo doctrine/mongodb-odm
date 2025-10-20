@@ -45,5 +45,10 @@ class LegacyReflectionFieldsTest extends BaseTestCase
         self::assertEquals('Paris', $class->getReflectionProperty('address')->getValue($user)->getCity());
         $class->getReflectionProperty('address')->setValue($user, $newAddress = new Address());
         self::assertSame($newAddress, $class->getReflectionProperty('address')->getValue($user));
+
+        // ArrayAccess and Countable interfaces
+        self::assertCount(32, $class->reflFields);
+        self::assertArrayHasKey('username', $class->reflFields);
+        self::assertArrayNotHasKey('nonExistentField', $class->reflFields);
     }
 }
