@@ -97,6 +97,8 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
         $original         = $annotationDriver->getAllClassNames();
+
+        $annotationDriver = $this->loadDriverForCMSDocuments();
         $afterTestReset   = $annotationDriver->getAllClassNames();
 
         self::assertEquals($original, $afterTestReset);

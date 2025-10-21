@@ -2785,7 +2785,7 @@ final class UnitOfWork implements PropertyChangedListener
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_id($document);
             if ($this->isUninitializedObject($document)) {
-                if ($this->dm->getConfiguration()->isNativeLazyObjectsEnabled()) {
+                if ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
                     $class->reflClass->markLazyObjectAsInitialized($document);
                 } elseif ($document instanceof InternalProxy) {
                     $document->__setInitialized(true);
@@ -3096,7 +3096,7 @@ final class UnitOfWork implements PropertyChangedListener
             $obj instanceof InternalProxy => ! $obj->__isInitialized(),
             $obj instanceof GhostObjectInterface => ! $obj->isProxyInitialized(),
             $obj instanceof PersistentCollectionInterface => ! $obj->isInitialized(),
-            $this->dm->getConfiguration()->isNativeLazyObjectsEnabled() => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
+            $this->dm->getConfiguration()->isNativeLazyObjectEnabled() => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
             default => false
         };
     }

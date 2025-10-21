@@ -17,7 +17,7 @@ class PropertyHooksTest extends BaseTestCase
     {
         parent::setUp();
 
-        if ($this->dm->getConfiguration()->isNativeLazyObjectsEnabled()) {
+        if ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
             return;
         }
 

@@ -182,7 +182,7 @@ class DocumentManager implements ObjectManager
         $this->unitOfWork    = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
         $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
         $this->proxyFactory  = match (true) {
-            $this->config->isNativeLazyObjectsEnabled() => new NativeLazyObjectFactory($this),
+            $this->config->isNativeLazyObjectEnabled() => new NativeLazyObjectFactory($this),
             $this->config->isLazyGhostObjectEnabled() => new LazyGhostProxyFactory($this, $this->config->getProxyDir(), $this->config->getProxyNamespace(), $this->config->getAutoGenerateProxyClasses()),
             default => new StaticProxyFactory($this),
         };

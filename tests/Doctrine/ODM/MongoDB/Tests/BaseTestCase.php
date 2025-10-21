@@ -105,10 +105,10 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
-        $config->setLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
-        $config->enableNativeLazyObjects((bool) $_ENV['USE_NATIVE_LAZY_OBJECTS']);
+        $config->setUseLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
+        $config->setUseNativeLazyObject((bool) $_ENV['USE_NATIVE_LAZY_OBJECTS']);
 
-        if ($config->isNativeLazyObjectsEnabled()) {
+        if ($config->isNativeLazyObjectEnabled()) {
             NativeLazyObjectFactory::enableTracking();
         }
 

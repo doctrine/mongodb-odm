@@ -689,7 +689,7 @@ class Configuration
      * Generate proxy classes using Symfony VarExporter's LazyGhostTrait if true.
      * Otherwise, use ProxyManager's LazyLoadingGhostFactory (deprecated)
      */
-    public function setLazyGhostObject(bool $flag): void
+    public function setUseLazyGhostObject(bool $flag): void
     {
         if ($this->nativeLazyObjects) {
             throw new LogicException('Cannot enable or disable LazyGhostObject when native lazy objects are enabled.');
@@ -715,21 +715,21 @@ class Configuration
         return $this->lazyGhostObject;
     }
 
-    public function enableNativeLazyObjects(bool $nativeLazyObjects): void
+    public function setUseNativeLazyObject(bool $nativeLazyObject): void
     {
-        if (PHP_VERSION_ID >= 80400 && ! $nativeLazyObjects) {
+        if (PHP_VERSION_ID >= 80400 && ! $nativeLazyObject) {
             trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Disabling native lazy objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
         }
 
-        if (PHP_VERSION_ID < 80400 && $nativeLazyObjects) {
-            throw new LogicException('Lazy loading proxies require PHP 8.4 or higher.');
+        if (PHP_VERSION_ID < 80400 && $nativeLazyObject) {
+            throw new LogicException('Native lazy objects require PHP 8.4 or higher.');
         }
 
-        $this->nativeLazyObjects = $nativeLazyObjects;
-        $this->lazyGhostObject   = ! $nativeLazyObjects || $this->lazyGhostObject;
+        $this->nativeLazyObjects = $nativeLazyObject;
+        $this->lazyGhostObject   = ! $nativeLazyObject || $this->lazyGhostObject;
     }
 
-    public function isNativeLazyObjectsEnabled(): bool
+    public function isNativeLazyObjectEnabled(): bool
     {
         return $this->nativeLazyObjects;
     }

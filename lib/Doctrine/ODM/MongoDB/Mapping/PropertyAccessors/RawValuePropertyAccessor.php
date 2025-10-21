@@ -19,6 +19,8 @@ use const PHP_VERSION_ID;
  * It works based on the raw values of a property, which for a case of property hooks
  * is the backed value. If we kept using setValue/getValue, this would go through the hooks,
  * which potentially change the data.
+ *
+ * @internal
  */
 class RawValuePropertyAccessor implements PropertyAccessor
 {

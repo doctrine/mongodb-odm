@@ -75,7 +75,7 @@ class NativeLazyObjectFactory implements ProxyFactory
         return $proxy;
     }
 
-    /** Only for internal tests */
+    /** @internal Only for tests */
     public static function enableTracking(bool $enabled = true): void
     {
         if ($enabled) {
@@ -85,7 +85,7 @@ class NativeLazyObjectFactory implements ProxyFactory
         }
     }
 
-    /** Only for internal tests */
+    /** @internal Only for tests */
     public static function isLazyObject(object $object): bool
     {
         if (! isset(self::$lazyObjects)) {
