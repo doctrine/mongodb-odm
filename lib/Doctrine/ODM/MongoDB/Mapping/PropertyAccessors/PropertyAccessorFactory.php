@@ -8,6 +8,7 @@ use ReflectionProperty;
 
 use const PHP_VERSION_ID;
 
+/** @internal */
 class PropertyAccessorFactory
 {
     /** @phpstan-param class-string $className */
