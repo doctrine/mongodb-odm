@@ -8,7 +8,10 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
+use LogicException;
 use MongoDB\Driver\Manager;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -17,6 +20,49 @@ use function str_repeat;
 
 class ConfigurationTest extends TestCase
 {
+    #[RequiresPhp('< 8.4')]
+    public function testUseNativeLazyObjectBeforePHP84(): void
+    {
+        $c = new Configuration();
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Native lazy objects require PHP 8.4 or higher.');
+
+        $c->setUseNativeLazyObject(true);
+    }
+
+    public function testUseLazyGhostObject(): void
+    {
+        $c = new Configuration();
+
+        self::assertFalse($c->isLazyGhostObjectEnabled());
+        $c->setUseLazyGhostObject(true);
+        self::assertTrue($c->isLazyGhostObjectEnabled());
+        $c->setUseLazyGhostObject(false);
+        self::assertFalse($c->isLazyGhostObjectEnabled());
+    }
+
+    public function testNativeLazyObjectDeprecatedByDefault(): void
+    {
+        $c = new Configuration();
+
+        self::assertFalse($c->isNativeLazyObjectEnabled());
+    }
+
+    #[RequiresPhp('>= 8.4')]
+    #[TestWith([true])]
+    #[TestWith([false])]
+    public function testConflictingLazyObjectSettings(bool $flag): void
+    {
+        $c = new Configuration();
+        $c->setUseNativeLazyObject(true);
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Cannot enable or disable LazyGhostObject when native lazy objects are enabled.');
+
+        $c->setUseLazyGhostObject($flag);
+    }
+
     public function testDefaultPersistentCollectionFactory(): void
     {
         $c       = new Configuration();

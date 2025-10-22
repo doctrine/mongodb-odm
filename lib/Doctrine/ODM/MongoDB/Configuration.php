@@ -717,10 +717,6 @@ class Configuration
 
     public function setUseNativeLazyObject(bool $nativeLazyObject): void
     {
-        if (PHP_VERSION_ID >= 80400 && ! $nativeLazyObject) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Disabling native lazy objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
-        }
-
         if (PHP_VERSION_ID < 80400 && $nativeLazyObject) {
             throw new LogicException('Native lazy objects require PHP 8.4 or higher.');
         }
@@ -731,6 +727,10 @@ class Configuration
 
     public function isNativeLazyObjectEnabled(): bool
     {
+        if (PHP_VERSION_ID >= 80400 && ! $this->nativeLazyObject) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Not using native lazy objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
+        }
+
         return $this->nativeLazyObject;
     }
 
