@@ -267,7 +267,6 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /** @group DDC-115 */
     public function testMapAssocationInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -308,7 +307,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertNull($cm->getAssociationTargetClass('groups'));
     }
 
-    /** @group DDC-115 */
     public function testSetDiscriminatorMapInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
@@ -320,7 +318,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(DoctrineGlobal_User::class, $cm->discriminatorMap['foo']);
     }
 
-    /** @group DDC-115 */
     public function testSetSubClassesInGlobalNamespace(): void
     {
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';

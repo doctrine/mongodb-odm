@@ -60,7 +60,6 @@ class BasicInheritanceMappingTest extends BaseTestCase
         self::assertTrue(isset($class->fieldMappings['mappedRelated1']));
     }
 
-    /** @group DDC-388 */
     public function testSerializationWithPrivateFieldsFromMappedSuperclass(): void
     {
         $class = $this->factory->getMetadataFor(DocumentSubClass2::class);

@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Symfony;
 
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Persistence\Mapping\MappingException;
-use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -17,7 +16,6 @@ use function sys_get_temp_dir;
 use function touch;
 use function unlink;
 
-#[Group('DDC-1418')]
 abstract class AbstractDriverTestCase extends TestCase
 {
     protected string $dir;

@@ -71,7 +71,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         self::assertEquals(AnnotationDriverTestParent::class, $child->fieldMappings['foo']['declared'], 'Inherited public field from Document parent is declared in Document parent');
     }
 
-    /** @group DDC-268 */
     public function testLoadMetadataForNonDocumentThrowsException(): void
     {
         $cm               = new ClassMetadata('stdClass');
@@ -81,7 +80,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
     }
 
-    /** @group DDC-268 */
     public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm               = new ClassMetadata(ColumnWithoutType::class);
