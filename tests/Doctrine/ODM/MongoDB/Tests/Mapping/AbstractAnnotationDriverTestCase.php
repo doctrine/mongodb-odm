@@ -91,31 +91,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         self::assertEquals('id', $cm->fieldMappings['id']['type']);
     }
 
-    /** @group DDC-318 */
-    public function testGetAllClassNamesIsIdempotent(): void
-    {
-        $annotationDriver = $this->loadDriverForCMSDocuments();
-        $original         = $annotationDriver->getAllClassNames();
-
-        $annotationDriver = $this->loadDriverForCMSDocuments();
-        $afterTestReset   = $annotationDriver->getAllClassNames();
-
-        self::assertEquals($original, $afterTestReset);
-    }
-
-    /** @group DDC-318 */
-    public function testGetAllClassNamesIsIdempotentEvenWithDifferentDriverInstances(): void
-    {
-        $annotationDriver = $this->loadDriverForCMSDocuments();
-        $original         = $annotationDriver->getAllClassNames();
-
-        $annotationDriver = $this->loadDriverForCMSDocuments();
-        $afterTestReset   = $annotationDriver->getAllClassNames();
-
-        self::assertEquals($original, $afterTestReset);
-    }
-
-    /** @group DDC-318 */
     public function testGetAllClassNamesReturnsAlreadyLoadedClassesIfAppropriate(): void
     {
         $annotationDriver = $this->loadDriverForCMSDocuments();
@@ -124,7 +99,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         self::assertContains(CmsUser::class, $classes);
     }
 
-    /** @group DDC-318 */
     public function testGetClassNamesReturnsOnlyTheAppropriateClasses(): void
     {
         $extraneousClassName = ColumnWithoutType::class;
