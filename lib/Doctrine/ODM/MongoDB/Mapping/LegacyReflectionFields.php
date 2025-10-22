@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 
 use ArrayAccess;
 use Countable;
-use Doctrine\ORM\Mapping\ReflectionReadonlyProperty;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\ReflectionReadonlyProperty;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use Doctrine\Persistence\Reflection\EnumReflectionProperty;
 use Generator;

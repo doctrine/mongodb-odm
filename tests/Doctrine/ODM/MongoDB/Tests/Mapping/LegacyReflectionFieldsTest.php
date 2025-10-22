@@ -7,7 +7,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\LegacyReflectionFields;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Address;
+use Documents\Tag;
 use Documents\User;
+use LogicException;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 #[IgnoreDeprecations]
@@ -50,5 +52,24 @@ class LegacyReflectionFieldsTest extends BaseTestCase
         self::assertCount(32, $class->reflFields);
         self::assertArrayHasKey('username', $class->reflFields);
         self::assertArrayNotHasKey('nonExistentField', $class->reflFields);
+    }
+
+    public function testGetSetReadonly(): void
+    {
+        $class = $this->dm->getClassMetadata(Tag::class);
+        self::assertInstanceOf(LegacyReflectionFields::class, $class->reflFields);
+
+        $tag = new Tag('Important');
+        $this->dm->persist($tag);
+        $this->dm->flush();
+
+        $tag = $this->dm->find(Tag::class, $tag->id);
+
+        // Accessing the readonly property through reflection
+        self::assertEquals('Important', $class->getReflectionProperty('name')->getValue($tag));
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Attempting to change readonly property Documents\Tag::$name');
+        $class->getReflectionProperty('name')->setValue($tag, 'Very Important');
     }
 }

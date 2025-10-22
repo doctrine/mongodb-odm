@@ -10,13 +10,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 #[ODM\Document]
 class Tag
 {
-    /** @var string|null */
     #[ODM\Id]
-    public $id;
+    public ?string $id;
 
-    /** @var string */
-    #[ODM\Field(type: 'string')]
-    public $name;
+    #[ODM\Field]
+    public readonly string $name;
 
     /** @var Collection<int, BlogPost> */
     #[ODM\ReferenceMany(targetDocument: BlogPost::class, mappedBy: 'tags')]
