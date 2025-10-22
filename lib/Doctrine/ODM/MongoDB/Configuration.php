@@ -147,8 +147,8 @@ class Configuration
 
     private bool $useTransactionalFlush = false;
 
-    private bool $lazyGhostObject   = false;
-    private bool $nativeLazyObjects = false;
+    private bool $lazyGhostObject  = false;
+    private bool $nativeLazyObject = false;
 
     private static string $version;
 
@@ -691,7 +691,7 @@ class Configuration
      */
     public function setUseLazyGhostObject(bool $flag): void
     {
-        if ($this->nativeLazyObjects) {
+        if ($this->nativeLazyObject) {
             throw new LogicException('Cannot enable or disable LazyGhostObject when native lazy objects are enabled.');
         }
 
@@ -725,13 +725,13 @@ class Configuration
             throw new LogicException('Native lazy objects require PHP 8.4 or higher.');
         }
 
-        $this->nativeLazyObjects = $nativeLazyObject;
-        $this->lazyGhostObject   = ! $nativeLazyObject || $this->lazyGhostObject;
+        $this->nativeLazyObject = $nativeLazyObject;
+        $this->lazyGhostObject  = ! $nativeLazyObject || $this->lazyGhostObject;
     }
 
     public function isNativeLazyObjectEnabled(): bool
     {
-        return $this->nativeLazyObjects;
+        return $this->nativeLazyObject;
     }
 
     /**

@@ -1992,7 +1992,7 @@ use const PHP_VERSION_ID;
             $document->__load();
         } elseif ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
             $document->initializeProxy();
-        } elseif (PHP_VERSION_ID >= 80400 && $this->reflClass->isUninitializedLazyObject($document)) {
+        } elseif (PHP_VERSION_ID >= 80400) {
             $this->reflClass->initializeLazyObject($document);
         }
 
