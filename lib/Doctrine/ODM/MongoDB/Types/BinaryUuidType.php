@@ -60,18 +60,13 @@ PHP;
         return <<<'PHP'
         if ($value instanceof \Symfony\Component\Uid\Uuid) {
             $return = $value;
-            return;
-        }
-
-        if (! $value instanceof \MongoDB\BSON\Binary) {
+        } elseif (! $value instanceof \MongoDB\BSON\Binary) {
             throw new \InvalidArgumentException(sprintf('Invalid data of type "%s" received for Uuid', get_debug_type($value)));
-        }
-
-        if ($value->getType() !== \MongoDB\BSON\Binary::TYPE_UUID) {
+        } elseif ($value->getType() !== \MongoDB\BSON\Binary::TYPE_UUID) {
             throw new \InvalidArgumentException(sprintf('Invalid binary data of type %d received for Uuid', $value->getType()));
+        } else {
+            $return = \Symfony\Component\Uid\Uuid::fromBinary($value->getData());
         }
-
-        $return = \Symfony\Component\Uid\Uuid::fromBinary($value->getData());
 PHP;
     }
 }
