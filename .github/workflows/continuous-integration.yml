@@ -162,5 +162,5 @@ jobs:
         run: "vendor/bin/phpunit --exclude-group=atlas"
         env:
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
-          USE_LAZY_GHOST_OBJECTS: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}"
+          USE_LAZY_GHOST_OBJECT: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}"
           CRYPT_SHARED_LIB_PATH: ${{ steps.setup-mongodb.outputs.crypt-shared-lib-path }}

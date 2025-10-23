@@ -104,7 +104,7 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
-        $config->setUseLazyGhostObject((bool) $_ENV['USE_LAZY_GHOST_OBJECTS']);
+        $config->setUseLazyGhostObject((bool) getenv('USE_LAZY_GHOST_OBJECT'));
 
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
