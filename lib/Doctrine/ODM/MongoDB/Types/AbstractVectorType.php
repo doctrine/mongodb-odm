@@ -77,27 +77,17 @@ abstract class AbstractVectorType extends Type
         return str_replace('%%vectorType%%', $this->getVectorType()->name, <<<'PHP'
             if ($value === null) {
                 $return = null;
-                return;
-            }
-
-            if (\is_array($value)) {
+            } elseif (\is_array($value)) {
                 $return = \MongoDB\BSON\Binary::fromVector($value, \MongoDB\BSON\VectorType::%%vectorType%%);
-                return;
-            }
-
-            if (! $value instanceof \MongoDB\BSON\Binary) {
+            } elseif (! $value instanceof \MongoDB\BSON\Binary) {
                 throw new InvalidArgumentException(sprintf('Invalid data type %s received for vector field, expected null, array or MongoDB\BSON\Binary', get_debug_type($value)));
-            }
-
-            if ($value->getType() !== \MongoDB\BSON\Binary::TYPE_VECTOR) {
+            } elseif ($value->getType() !== \MongoDB\BSON\Binary::TYPE_VECTOR) {
                 throw new InvalidArgumentException(sprintf('Invalid binary data of type %d received for vector field, expected binary type %d', $value->getType(), \MongoDB\BSON\Binary::TYPE_VECTOR));
-            }
-
-            if ($value->getVectorType() !== \MongoDB\BSON\VectorType::%%vectorType%%) {
+            } elseif ($value->getVectorType() !== \MongoDB\BSON\VectorType::%%vectorType%%) {
                 throw new \InvalidArgumentException(sprintf('Invalid binary vector data of vector type %s received for vector field, expected vector type %%vectorType%%', $value->getVectorType()->name));
+            } else {
+                $return = $value;
             }
-
-            $return = $value;
 PHP);
     }
 
@@ -106,27 +96,17 @@ PHP);
         return str_replace('%%vectorType%%', $this->getVectorType()->name, <<<'PHP'
             if ($value === null) {
                 $return = null;
-                return;
-            }
-
-            if (\is_array($value)) {
+            } elseif (\is_array($value)) {
                 $return = $value;
-                return;
-            }
-
-            if (! $value instanceof \MongoDB\BSON\Binary) {
+            } elseif (! $value instanceof \MongoDB\BSON\Binary) {
                 throw new \InvalidArgumentException(sprintf('Invalid data of type "%s" received for vector field', get_debug_type($value)));
-            }
-
-            if ($value->getType() !== \MongoDB\BSON\Binary::TYPE_VECTOR) {
+            } elseif ($value->getType() !== \MongoDB\BSON\Binary::TYPE_VECTOR) {
                 throw new \InvalidArgumentException(sprintf('Invalid binary data of type %d received for vector field', $value->getType()));
-            }
-
-            if ($value->getVectorType() !== \MongoDB\BSON\VectorType::%%vectorType%%) {
+            } elseif ($value->getVectorType() !== \MongoDB\BSON\VectorType::%%vectorType%%) {
                 throw new \InvalidArgumentException(sprintf('Invalid binary vector data of vector type %s received for vector field, expected vector type %%vectorType%%', $value->getVectorType()->name));
+            } else {
+                $return = $value->toArray();
             }
-
-            $return = $value->toArray();
 PHP);
     }
 

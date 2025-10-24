@@ -12,13 +12,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\TestCase;
 
+use function get_debug_type;
+
 #[RequiresPhpExtension('mongodb', '>= 2.2')]
 class VectorTypeTest extends TestCase
 {
     #[DataProvider('providePhpVectors')]
     public function testConvertToDatabaseValue(string $name, mixed $value, mixed $expectedValue): void
     {
-        $this->assertEquals($expectedValue, Type::getType($name)->convertToDatabaseValue($value));
+        $this->assertSameTypeAndValue($expectedValue, Type::getType($name)->convertToDatabaseValue($value));
     }
 
     #[DataProvider('providePhpVectors')]
@@ -27,7 +29,7 @@ class VectorTypeTest extends TestCase
         $return = $this;
         eval(Type::getType($name)->closureToMongo());
 
-        $this->assertEquals($expectedValue, $return);
+        $this->assertSameTypeAndValue($expectedValue, $return);
     }
 
     /** @return iterable<array{0: Type::VECTOR_*, 1: mixed, 2: mixed}> */
@@ -148,5 +150,11 @@ class VectorTypeTest extends TestCase
         yield ['invalid', 'Invalid data of type "string" received for vector field'];
         yield [new Binary("\x03\x00\x01\x02\x03", Binary::TYPE_GENERIC), 'Invalid binary data of type 0 received for vector field'];
         yield [Binary::fromVector([1, 2, 3], VectorType::Int8), 'Invalid binary vector data of vector type Int8 received for vector field, expected vector type Float32'];
+    }
+
+    private function assertSameTypeAndValue(mixed $expected, mixed $actual): void
+    {
+        $this->assertSame(get_debug_type($expected), get_debug_type($actual));
+        $this->assertEquals($expected, $actual);
     }
 }

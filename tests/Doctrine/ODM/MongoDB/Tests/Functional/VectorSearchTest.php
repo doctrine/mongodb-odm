@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\VectorEmbedding;
+use MongoDB\BSON\Binary;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 
 #[Group('atlas')]
 class VectorSearchTest extends BaseTestCase
@@ -45,8 +48,20 @@ class VectorSearchTest extends BaseTestCase
         // Index must be created after data insertion, so the index status is not immediately "READY"
         $schemaManager->createDocumentSearchIndexes(VectorEmbedding::class);
 
-        // Wait for search index to be ready (Atlas Local needs time to build the index)
+        // Wait for the search index to be ready (Atlas Local needs time to build the index)
         $schemaManager->waitForSearchIndexes([VectorEmbedding::class]);
+
+        $results = $this->dm->createQueryBuilder(VectorEmbedding::class)->getQuery()->toArray();
+        $this->assertCount(3, $results, 'All documents should be present in the collection');
+
+        foreach ($results as $result) {
+            $this->assertInstanceOf(VectorEmbedding::class, $result);
+
+            $this->assertIsArray($result->vectorFloat);
+            $this->assertCount(3, $result->vectorFloat);
+            $this->assertIsArray($result->vectorInt);
+            $this->assertCount(3, $result->vectorInt);
+        }
 
         $results = $this->dm->createAggregationBuilder(VectorEmbedding::class)
             ->vectorSearch()
@@ -68,6 +83,7 @@ class VectorSearchTest extends BaseTestCase
 
         // Test with filter
         $results = ($builder = $this->dm->createAggregationBuilder(VectorEmbedding::class))
+            ->hydrate(VectorEmbedding::class)
             ->vectorSearch()
                 ->index('vector_int')
                 ->queryVector([1, 1, 3])
@@ -79,8 +95,28 @@ class VectorSearchTest extends BaseTestCase
 
         $this->assertCount(2, $results);
         foreach ($results as $result) {
-            $this->assertIsArray($result);
-            $this->assertEquals('active', $result['filterField'], 'Filtered results should only contain active documents');
+            $this->assertInstanceOf(VectorEmbedding::class, $result);
+            $this->assertEquals('active', $result->filterField, 'Filtered results should only contain active documents');
         }
+    }
+
+    #[RequiresPhpExtension('mongodb', '>= 2.2')]
+    public function testAtlasVectorSearchWithBinaryType(): void
+    {
+        $cm = $this->dm->getClassMetadata(VectorEmbedding::class);
+
+        $cm->fieldMappings['vectorFloat']['type'] = Type::VECTOR_FLOAT32;
+        $cm->fieldMappings['vectorInt']['type']   = Type::VECTOR_INT8;
+
+        // Change the collection name to avoid conflicts with asynchronous index building
+        $cm->collection .= '_binary_type';
+
+        $this->testAtlasVectorSearch();
+
+        // Ensure that the vectors are stored in as binary vectors
+        $doc = $this->dm->getDocumentCollection(VectorEmbedding::class)->findOne(['filterField' => 'active']);
+        $this->assertIsArray($doc);
+        $this->assertInstanceOf(Binary::class, $doc['vectorInt']);
+        $this->assertInstanceOf(Binary::class, $doc['db_vector_float']);
     }
 }
