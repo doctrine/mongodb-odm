@@ -8,6 +8,7 @@ use DateTime;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\LegacyReflectionFields;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
@@ -55,7 +56,8 @@ class ClassMetadataTest extends BaseTestCase
         $cm = new ClassMetadata(CmsUser::class);
 
         // Test initial state
-        self::assertEmpty($cm->getReflectionProperties());
+        self::assertInstanceOf(LegacyReflectionFields::class, $cm->getReflectionProperties());
+        self::assertEmpty($cm->getPropertyAccessors());
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
         self::assertEquals(CmsUser::class, $cm->rootDocumentName);
@@ -90,7 +92,8 @@ class ClassMetadataTest extends BaseTestCase
         $cm         = unserialize($serialized);
 
         // Check state
-        self::assertGreaterThan(0, $cm->getReflectionProperties());
+        self::assertInstanceOf(LegacyReflectionFields::class, $cm->getReflectionProperties());
+        self::assertNotEmpty($cm->getPropertyAccessors());
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
         self::assertEquals(stdClass::class, $cm->rootDocumentName);
