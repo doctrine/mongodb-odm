@@ -10,7 +10,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use MongoDB\BSON\Binary;
 use PHPUnit\Framework\Attributes\After;
-use PHPUnit\Framework\Attributes\Before;
 use ReflectionProperty;
 
 use function assert;
@@ -18,26 +17,17 @@ use function is_int;
 
 class GH2789Test extends BaseTestCase
 {
-    /** @var string[] */
-    private array $originalTypeMap = [];
-
-    #[Before]
-    public function backupTypeMap(): void
-    {
-        $this->originalTypeMap = (new ReflectionProperty(Type::class, 'typesMap'))->getValue();
-
-        Type::addType(GH2789CustomType::class, GH2789CustomType::class);
-    }
-
     #[After]
     public function restoreTypeMap(): void
     {
-        (new ReflectionProperty(Type::class, 'typesMap'))->setValue($this->originalTypeMap);
-        unset($this->originalTypeMap);
+        $r = new ReflectionProperty(Type::class, 'typesMap');
+        $r->setValue(null, $r->getDefaultValue());
     }
 
     public function testVersionWithCustomType(): void
     {
+        Type::addType(GH2789CustomType::class, GH2789CustomType::class);
+
         $doc = new GH2789VersionedUuid('original message');
 
         $this->dm->persist($doc);

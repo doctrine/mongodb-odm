@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
 use PHPUnit\Framework\Attributes\After;
-use PHPUnit\Framework\Attributes\Before;
 use ReflectionProperty;
 
 use function array_map;
@@ -21,13 +20,9 @@ use function is_array;
 
 class CustomTypeTest extends BaseTestCase
 {
-    /** @var string[] */
-    private array $originalTypeMap = [];
-
-    #[Before]
-    public function backupTypeMap(): void
+    public function setUp(): void
     {
-        $this->originalTypeMap = (new ReflectionProperty(Type::class, 'typesMap'))->getValue();
+        parent::setUp();
 
         Type::addType('date_collection', DateCollectionType::class);
         Type::addType(Language::class, LanguageType::class);
@@ -36,8 +31,8 @@ class CustomTypeTest extends BaseTestCase
     #[After]
     public function restoreTypeMap(): void
     {
-        (new ReflectionProperty(Type::class, 'typesMap'))->setValue($this->originalTypeMap);
-        unset($this->originalTypeMap);
+        $r = new ReflectionProperty(Type::class, 'typesMap');
+        $r->setValue(null, $r->getDefaultValue());
     }
 
     public function testCustomTypeValueConversions(): void

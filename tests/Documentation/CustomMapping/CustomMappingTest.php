@@ -8,9 +8,18 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
+use PHPUnit\Framework\Attributes\After;
+use ReflectionProperty;
 
 class CustomMappingTest extends BaseTestCase
 {
+    #[After]
+    public function restoreTypeMap(): void
+    {
+        $r = new ReflectionProperty(Type::class, 'typesMap');
+        $r->setValue(null, $r->getDefaultValue());
+    }
+
     public function testTest(): void
     {
         Type::addType('date_with_timezone', DateTimeWithTimezoneType::class);
