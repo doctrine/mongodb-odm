@@ -120,16 +120,16 @@ specify a unique name for the mapping type and map that to the corresponding
 
         <field field-name="field" type="date_with_timezone" />
 
-Custom Type Example: Mapping a UUID Class
------------------------------------------
+Custom Type Example: Mapping a Money Value Object
+-------------------------------------------------
 
 You can create a custom mapping type for your own value objects or classes. For
-example, to map a UUID value object using the `ramsey/uuid library`_, you can
-implement a type that converts between your class and the BSON Binary UUID format.
+example, to map a ``Money`` value object using the `moneyphp/money library`_, you can
+implement a type that converts between this class and a BSON embedded document format.
 
 This approach works for any custom class by adapting the conversion logic to your needs.
 
-Example Implementation (using ``Ramsey\Uuid\Uuid``)::
+Example Implementation (using ``Money\Money``)::
 
 .. code-block:: php
 
@@ -140,38 +140,41 @@ Example Implementation (using ``Ramsey\Uuid\Uuid``)::
     use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
     use Doctrine\ODM\MongoDB\Types\Type;
     use InvalidArgumentException;
-    use MongoDB\BSON\Binary as BsonBinary;
-    use Ramsey\Uuid\Uuid as RamseyUuid;
+    use Money\Money;
+    use Money\Currency;
 
-    final class RamseyUuidType extends Type
+    final class MoneyType extends Type
     {
-        // This trait provides default closureToPHP used during data hydration
+        // This trait provides a default closureToPHP used during data hydration
         use ClosureToPHP;
 
-        public function convertToPHPValue(mixed $value): ?RamseyUuid
+        public function convertToPHPValue(mixed $value): ?Money
         {
             if (null === $value) {
                 return null;
             }
 
-            if ($value instanceof BsonBinary && $value->getType() === BsonBinary::TYPE_UUID) {
-                return RamseyUuid::fromBytes($value->getData());
+            if (is_array($value) && isset($value['amount'], $value['currency'])) {
+                return new Money($value['amount'], new Currency($value['currency']));
             }
 
-            throw new \InvalidArgumentException(\sprintf('Could not convert database value from "%s" to %s',get_debug_type($value),RamseyUuid::class));
+            throw new InvalidArgumentException(sprintf('Could not convert database value from "%s" to %s', get_debug_type($value), Money::class));
         }
 
-        public function convertToDatabaseValue(mixed $value): ?BsonBinary
+        public function convertToDatabaseValue(mixed $value): ?array
         {
             if (null === $value) {
                 return null;
             }
 
-            if ($value instanceof RamseyUuid) {
-                return new BsonBinary($value->getBytes(), BsonBinary::TYPE_UUID);
+            if ($value instanceof Money) {
+                return [
+                    'amount' => $value->getAmount(),
+                    'currency' => $value->getCurrency()->getCode(),
+                ];
             }
 
-            throw new \InvalidArgumentException(\sprintf('Could not convert database value from "%s" to %s', get_debug_type($value), Binary::class));
+            throw new InvalidArgumentException(sprintf('Could not convert database value from "%s" to array', get_debug_type($value)));
         }
     }
 
@@ -179,14 +182,7 @@ Register the type in your bootstrap code::
 
 .. code-block:: php
 
-    Type::addType(Ramsey\Uuid\Uuid::class, App\MongoDB\Types\RamseyUuidType::class);
-
-Usage Example::
-
-.. code-block:: php
-
-    #[Field(type: \Ramsey\Uuid\Uuid::class)]
-    public ?\Ramsey\Uuid\Uuid $id;
+    Type::addType(Money::class, App\MongoDB\Types\MoneyType::class);
 
 By using the |FQCN| of the value object class as the type name, the type is
 automatically used when encountering a property of that class. This means you
@@ -195,14 +191,14 @@ can omit the ``type`` option when defining the field mapping::
 .. code-block:: php
 
     #[Field]
-    public ?\Ramsey\Uuid\Uuid $id;
+    public ?\Money\Money $price;
 
 .. note::
 
-    This implementation of ``RamseyUuidType`` is volontary simple and does not
-    handle all edge cases, but it should give you a good starting point for
-    implementing your own custom types.
+    This implementation of ``MoneyType`` is kept simple for illustration purposes
+    and does not handle all edge cases, but it should give you a good starting
+    point for implementing your own custom types.
 
-.. _`ramsey/uuid library`: https://github.com/ramsey/uuid
+.. _`moneyphp/money library`: https://github.com/moneyphp/money
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>
