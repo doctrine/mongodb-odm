@@ -703,10 +703,6 @@ class Configuration
             trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Using "friendsofphp/proxy-manager-lts" is deprecated. Use "symfony/var-exporter" LazyGhostObjects instead.');
         }
 
-        if ($flag === true && PHP_VERSION_ID >= 80400) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Using "symfony/var-exporter" lazy ghost objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
-        }
-
         $this->lazyGhostObject = $flag;
     }
 
