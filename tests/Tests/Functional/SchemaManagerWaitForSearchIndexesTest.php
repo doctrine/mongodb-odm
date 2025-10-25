@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\SchemaException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Documents\CmsAddress;
 use Documents\CmsArticle;
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\WriteConcern;
@@ -99,7 +100,7 @@ class SchemaManagerWaitForSearchIndexesTest extends BaseTestCase
 
         // Not specifying classes waits for all
         try {
-            $schemaManager->waitForSearchIndexes();
+            $schemaManager->waitForSearchIndexes([CmsArticle::class, CmsAddress::class]);
             $this->fail('Expected SchemaException not thrown');
         } catch (SchemaException $exception) {
             // The missing class varies depending on the test execution order,
