@@ -20,6 +20,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 use function array_merge;
 use function count;
+use function iterator_to_array;
 
 class GraphLookupTest extends BaseTestCase
 {
@@ -172,7 +173,7 @@ class GraphLookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = $builder->getAggregation();
 
         self::assertCount(6, $result);
         foreach ($result as $reportingHierarchy) {
@@ -245,7 +246,7 @@ class GraphLookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(3, $result);
     }

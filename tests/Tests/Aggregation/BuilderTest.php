@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Aggregation\Aggregation;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
@@ -18,6 +19,8 @@ use Documents\GuestServer;
 use Documents\Tag;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use PHPUnit\Framework\Attributes\TestWith;
 
 use function array_keys;
 
@@ -188,6 +191,7 @@ class BuilderTest extends BaseTestCase
                 ->field('numPosts')
                 ->sum(1)
             ->sort('numPosts', 'desc')
+            ->getAggregation()
             ->execute();
 
         self::assertInstanceOf(Iterator::class, $resultCursor);
@@ -437,7 +441,7 @@ class BuilderTest extends BaseTestCase
         $builder
             ->out('sampleCollection');
 
-        $result = $builder->execute()->toArray();
+        $result = $builder->getAggregation()->getIterator();
         self::assertEmpty($result);
     }
 
@@ -464,6 +468,20 @@ class BuilderTest extends BaseTestCase
         ], $builder->getPipeline());
     }
 
+    #[IgnoreDeprecations]
+    #[TestWith([false, UnrewindableIterator::class])]
+    #[TestWith([true, CachingIterator::class])]
+    public function testExecute(bool $rewindable, string $iteratorClass): void
+    {
+        $builder = $this->dm
+            ->createAggregationBuilder(BlogPost::class)
+            ->match()
+            ->rewindable($rewindable);
+
+        $iterator = $builder->getAggregation()->execute();
+        self::assertInstanceOf($iteratorClass, $iterator);
+    }
+
     public function testNonRewindableBuilder(): void
     {
         $builder = $this->dm
@@ -471,7 +489,7 @@ class BuilderTest extends BaseTestCase
             ->match()
             ->rewindable(false);
 
-        $iterator = $builder->execute();
+        $iterator = $builder->getAggregation()->execute();
         self::assertInstanceOf(UnrewindableIterator::class, $iterator);
     }
 

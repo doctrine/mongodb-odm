@@ -11,6 +11,8 @@ use Documents\SimpleReferenceUser;
 use Documents\User;
 use InvalidArgumentException;
 
+use function iterator_to_array;
+
 class LookupTest extends BaseTestCase
 {
     public function setUp(): void
@@ -40,7 +42,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['user']);
@@ -237,7 +239,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['user']);
@@ -266,7 +268,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertEmpty($result[0]['user']);
@@ -294,7 +296,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(2, $result);
         self::assertCount(1, $result[0]['users']);
@@ -325,7 +327,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(2, $result);
         self::assertCount(1, $result[0]['users']);
@@ -360,7 +362,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['simpleReferenceOneInverse']);
@@ -392,7 +394,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['simpleReferenceManyInverse']);
@@ -424,7 +426,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['embeddedReferenceOneInverse']);
@@ -456,7 +458,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
 
         self::assertCount(1, $result);
         self::assertCount(1, $result[0]['embeddedReferenceManyInverse']);
@@ -508,7 +510,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
         self::assertCount(1, $result[0]['simpleReferenceOneInverse']);
     }
 
@@ -532,7 +534,7 @@ class LookupTest extends BaseTestCase
 
         self::assertEquals($expectedPipeline, $builder->getPipeline());
 
-        $result = $builder->execute()->toArray();
+        $result = iterator_to_array($builder->getAggregation());
         self::assertCount(1, $result[0]['override']);
     }
 }

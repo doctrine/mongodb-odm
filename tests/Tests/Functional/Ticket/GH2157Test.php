@@ -31,10 +31,10 @@ class GH2157Test extends BaseTestCase
                     $this->dm->createAggregationBuilder(GH2157FirstType::class)
                         ->limit(2),
                 )
-            ->execute()->toArray();
+            ->getAggregation()->getSingleResult();
 
-        self::assertEquals(4, $result[0]['count'][0]['count']);
-        self::assertCount(2, $result[0]['limitedResults']);
+        self::assertEquals(4, $result['count'][0]['count']);
+        self::assertCount(2, $result['limitedResults']);
     }
 }
 
