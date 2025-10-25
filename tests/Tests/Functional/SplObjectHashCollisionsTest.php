@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionObject;
 
 class SplObjectHashCollisionsTest extends BaseTestCase
@@ -60,17 +61,22 @@ class SplObjectHashCollisionsTest extends BaseTestCase
             ],
             [
                 static function (DocumentManager $dm, $doc): void {
-                    $dm->clear($doc::class);
-                },
-                1,
-            ],
-            [
-                static function (DocumentManager $dm, $doc): void {
                     $dm->detach($doc);
                 },
                 1,
             ],
         ];
+    }
+
+    #[IgnoreDeprecations]
+    public function testParentAssociationsLeftoverPartialClear(): void
+    {
+        $this->testParentAssociationsLeftover(
+            static function (DocumentManager $dm): void {
+                $dm->clear(SplColDoc::class);
+            },
+            1,
+        );
     }
 
     private function expectCount(string $prop, int $expected): void

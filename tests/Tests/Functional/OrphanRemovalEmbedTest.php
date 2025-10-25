@@ -96,7 +96,7 @@ class OrphanRemovalEmbedTest extends BaseTestCase
         $user->profileMany->clear();
 
         $this->dm->flush();
-        $this->dm->clear(OrphanRemovalCascadeUser::class);
+        $this->dm->detach($user);
 
         self::assertNull($this->getAddressRepository()->find($address1->id), 'Should have removed address 1');
         self::assertNull($this->getAddressRepository()->find($address2->id), 'Should have removed address 2');
