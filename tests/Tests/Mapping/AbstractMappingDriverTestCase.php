@@ -734,7 +734,8 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
  * @ODM\DiscriminatorMap({"default"="Doctrine\ODM\MongoDB\Tests\Mapping\AbstractMappingDriverUser"})
  * @ODM\DefaultDiscriminatorValue("default")
  * @ODM\HasLifecycleCallbacks
- * @ODM\Indexes(@ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600),@ODM\Index(keys={"lock"="asc"},partialFilterExpression={"version"={"$gt"=1},"discr"={"$eq"="default"}}))
+ * @ODM\Index(keys={"createdAt"="asc"},expireAfterSeconds=3600)
+ * @ODM\Index(keys={"lock"="asc"},partialFilterExpression={"version"={"$gt"=1},"discr"={"$eq"="default"}})
  * @ODM\SearchIndex(dynamic=true, analyzer="lucene.standard", searchAnalyzer="lucene.standard", storedSource=true)
  * @ODM\SearchIndex(
  *   name="usernameAndPhoneNumbers",
