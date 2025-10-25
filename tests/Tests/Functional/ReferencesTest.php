@@ -22,8 +22,8 @@ use Documents\ProfileNotify;
 use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
-
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+
 use function assert;
 
 class ReferencesTest extends BaseTestCase

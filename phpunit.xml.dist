@@ -4,7 +4,14 @@
         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
         bootstrap="tests/bootstrap.php"
         cacheDirectory=".phpunit.cache"
+        displayDetailsOnPhpunitDeprecations="true"
+        displayDetailsOnTestsThatTriggerDeprecations="true"
+        failOnDeprecation="true"
+        failOnNotice="true"
+        failOnWarning="true"
+        failOnIncomplete="true"
         failOnRisky="true"
+        failOnEmptyTestSuite="true"
 >
     <testsuites>
         <testsuite name="Doctrine ODM MongoDB Test Suite">
