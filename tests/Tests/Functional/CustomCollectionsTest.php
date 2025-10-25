@@ -16,6 +16,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\File;
 use Documents\ProfileNotify;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use stdClass;
 
 use function assert;
@@ -148,6 +149,8 @@ class CustomCollectionsTest extends BaseTestCase
         self::assertEquals($e1, $d->coll[1]);
     }
 
+    /** @see ClassMetadata::CHANGETRACKING_NOTIFY */
+    #[IgnoreDeprecations]
     public function testModifyingCollectionInChangeTrackingNotifyDocument(): void
     {
         $repository = $this->dm->getRepository(File::class);
