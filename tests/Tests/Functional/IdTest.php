@@ -254,9 +254,9 @@ class IdTest extends BaseTestCase
 
         return [
             // boolean
-            ['boolean', 'none', true,  true, 'boolean'],
-            ['boolean', 'none', 1,  true, 'boolean'],
-            ['boolean', 'none', false, false, 'boolean'],
+            ['bool', 'none', true,  true, 'boolean'],
+            ['bool', 'none', 1,  true, 'boolean'],
+            ['bool', 'none', false, false, 'boolean'],
 
             // integer
             ['int', 'none', 0, 0, 'integer'],
