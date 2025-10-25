@@ -41,7 +41,7 @@ class GH593Test extends BaseTestCase
         $this->dm->persist($user2);
         $this->dm->persist($user3);
         $this->dm->flush();
-        $this->dm->clear($class);
+        $this->dm->clear();
 
         /* We cannot simply reinitialize the PersistentCollection, because its
          * $mongoData property has already been cleared and DocumentPersister
@@ -85,7 +85,7 @@ class GH593Test extends BaseTestCase
         $this->dm->persist($user2);
         $this->dm->persist($user3);
         $this->dm->flush();
-        $this->dm->clear($class);
+        $this->dm->clear();
 
         /* We cannot simply reinitialize the PersistentCollection, because its
          * $mongoData property has already been cleared and DocumentPersister

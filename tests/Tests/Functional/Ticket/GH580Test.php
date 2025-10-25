@@ -27,7 +27,7 @@ class GH580Test extends BaseTestCase
 
         $this->dm->persist($doc1);
         $this->dm->flush();
-        $this->dm->clear($class);
+        $this->dm->clear();
 
         // Create, persist and flush a second, duplicate object
         $doc2       = new GH580Document();
@@ -40,20 +40,20 @@ class GH580Test extends BaseTestCase
         } catch (BulkWriteException) {
         }
 
-        $this->dm->clear($class);
+        $this->dm->clear();
 
         // Remove initial object
         $doc1 = $repository->findOneBy(['name' => 'foo']);
         $this->dm->remove($doc1);
         $this->dm->flush();
-        $this->dm->clear($class);
+        $this->dm->clear();
 
         // Create a third object
         $doc3       = new GH580Document();
         $doc3->name = 'bar';
         $this->dm->persist($doc3);
         $this->dm->flush();
-        $this->dm->clear($class);
+        $this->dm->clear();
 
         /* Repository should contain one object, but may contain two if the
          * DocumentPersister was not cleaned up.
