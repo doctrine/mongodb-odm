@@ -23,6 +23,7 @@ use Documents\User;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use function assert;
 
 class ReferencesTest extends BaseTestCase
@@ -88,6 +89,7 @@ class ReferencesTest extends BaseTestCase
         self::assertEquals('Wage', $profile->getLastName());
     }
 
+    #[IgnoreDeprecations]
     public function testLazyLoadedWithNotifyPropertyChanged(): void
     {
         $user    = new User();

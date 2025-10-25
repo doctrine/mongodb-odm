@@ -43,6 +43,7 @@ use MongoDB\Model\IndexInfo;
 use MongoDB\Model\IndexInfoIterator;
 use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
@@ -60,6 +61,7 @@ use function interface_exists;
  * @phpstan-import-type IndexMapping from ClassMetadata
  * @phpstan-import-type IndexOptions from ClassMetadata
  */
+#[IgnoreDeprecations]
 class SchemaManagerTest extends BaseTestCase
 {
     /** @var list<class-string> */
