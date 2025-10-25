@@ -16,12 +16,15 @@ use Documents\ProfileNotify;
 use Documents\User;
 use Iterator;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 final class PrimingIteratorTest extends BaseTestCase
 {
     /** @var class-string[] */
     private array $callbackCalls = [];
 
+    /** This test uses the deprecated "NOTIFY" tracking policy */
+    #[IgnoreDeprecations]
     public function testPrimerIsCalledOnceForEveryField(): void
     {
         $primer   = new ReferencePrimer($this->dm, $this->uow);
