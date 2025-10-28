@@ -34,7 +34,7 @@ jobs:
         dependencies:
           - "highest"
         symfony-version:
-          - "stable"
+          - "locked"
         proxy:
           - "lazy-ghost"
         include:
@@ -44,7 +44,7 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "1.21.0"
             topology: "server"
-            symfony-version: "stable"
+            symfony-version: "locked"
             proxy: "lazy-ghost"
           # Test with Symfony 6.4
           - topology: "server"
@@ -60,7 +60,7 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: "locked"
             proxy: "lazy-ghost"
           # Test with a 8.0 replica set
           - topology: "replica_set"
@@ -68,21 +68,21 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: "locked"
             proxy: "lazy-ghost"
           # Test with ProxyManager
           - php-version: "8.2"
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: "locked"
             proxy: "proxy-manager"
           # Test with Native Lazy Objects
           - php-version: "8.4"
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: "locked"
             proxy: "native"
           # Test with extension 1.21
           - topology: "server"
@@ -90,9 +90,9 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "1.21.0"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: "locked"
             proxy: "lazy-ghost"
-          # Test with upcoming Symfony 7.4
+          # Test with Symfony 7.4 LTS
           - topology: "server"
             php-version: "8.2"
             mongodb-version: "8.0"
@@ -100,13 +100,13 @@ jobs:
             dependencies: "highest"
             symfony-version: "7.4"
             proxy: "lazy-ghost"
-          # Test with upcoming Symfony 8.0
+          # Test with Symfony 8
           - topology: "server"
             php-version: "8.4"
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "8.0"
+            symfony-version: false
             proxy: "native"
           # Test with a sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
@@ -115,7 +115,7 @@ jobs:
 #            mongodb-version: "6.0"
 #            driver-version: "stable"
 #            dependencies: "highest"
-#            symfony-version: "stable"
+#            symfony-version: "locked"
 #            proxy: "lazy-ghost"
 
     steps:
@@ -150,28 +150,17 @@ jobs:
       - name: "Show driver information"
         run: "php --ri mongodb"
 
-      # Not used, skip transient dependencies
+      # Not used for tests, skip transient dependencies
       - name: "Remove phpbench/phpbench"
         run: composer remove --no-update --dev phpbench/phpbench
-
-      - name: "Configure Symfony ${{ matrix.symfony-version }}"
-        if: "${{ matrix.symfony-version != 'stable' }}"
-        run: |
-          composer config minimum-stability dev
-          # update symfony deps
-          composer require --no-update symfony/console:^${{ matrix.symfony-version }}
-          composer require --no-update symfony/var-dumper:^${{ matrix.symfony-version }}
-          composer require --no-update --dev symfony/cache:^${{ matrix.symfony-version }}
-          if dpkg --compare-versions "${{ matrix.symfony-version }}" lt "8.0"; then
-            # LazyGhostTrait was removed from symfony/var-exporter >= 8.0
-            composer require --dev symfony/var-exporter:^${{ matrix.symfony-version }}
-          fi
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "--prefer-dist"
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
 
       - name: "Install latest Python version"
         uses: actions/setup-python@v6
