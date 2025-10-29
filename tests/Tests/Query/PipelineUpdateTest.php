@@ -194,7 +194,7 @@ class PipelineUpdateTest extends BaseTestCase
 
     public function testFindOneAndUpdateWithDriverPipeline(): void
     {
-        $this->markTestIncomplete('Collection::findAndUpdate does not support pipeline updates (PHPLIB-1699)');
+        $this->markTestSkipped('Collection::findAndUpdate does not support pipeline updates (PHPLIB-1699)');
 
         $pipeline = new Pipeline(
             Stage::set(
