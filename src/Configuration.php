@@ -36,6 +36,7 @@ use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use Psr\Cache\CacheItemPoolInterface;
 use ReflectionClass;
 use stdClass;
+use Symfony\Component\VarExporter\LazyGhostTrait;
 use Throwable;
 
 use function array_diff_key;
@@ -44,6 +45,7 @@ use function array_key_exists;
 use function class_exists;
 use function interface_exists;
 use function is_string;
+use function trait_exists;
 use function trigger_deprecation;
 use function trim;
 
@@ -695,12 +697,18 @@ class Configuration
             throw new LogicException('Cannot enable or disable LazyGhostObject when native lazy objects are enabled.');
         }
 
-        if ($flag === false) {
+        if ($flag && ! trait_exists(LazyGhostTrait::class)) {
+            throw new LogicException('Package "symfony/var-exporter" >= 8.0 does not provide lazy ghost objects, use native lazy objects instead.');
+        }
+
+        if (! $flag) {
             if (! class_exists(ProxyManagerConfiguration::class)) {
                 throw new LogicException('Package "friendsofphp/proxy-manager-lts" is required to disable LazyGhostObject.');
             }
 
-            trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Using "friendsofphp/proxy-manager-lts" is deprecated. Use "symfony/var-exporter" LazyGhostObjects instead.');
+            if (PHP_VERSION_ID < 80400) {
+                trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Using "friendsofphp/proxy-manager-lts" is deprecated. Use "symfony/var-exporter" LazyGhostObjects instead.');
+            }
         }
 
         $this->lazyGhostObject = $flag;

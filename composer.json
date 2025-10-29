@@ -40,7 +40,7 @@
         "symfony/console": "^5.4 || ^6.4 || ^7.0 || ^8.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",
         "symfony/var-dumper": "^5.4 || ^6.4 || ^7.0 || ^8.0",
-        "symfony/var-exporter": "^6.4 || ^7.0"
+        "symfony/var-exporter": "^6.4 || ^7.0 || ^8.0"
     },
     "require-dev": {
         "ext-bcmath": "*",

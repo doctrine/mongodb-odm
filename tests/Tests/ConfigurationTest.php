@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
+use Composer\InstalledVersions;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
@@ -17,6 +18,7 @@ use stdClass;
 
 use function base64_encode;
 use function str_repeat;
+use function version_compare;
 
 class ConfigurationTest extends TestCase
 {
@@ -33,6 +35,10 @@ class ConfigurationTest extends TestCase
 
     public function testUseLazyGhostObject(): void
     {
+        if (! version_compare(InstalledVersions::getVersion('symfony/var-exporter'), '8', '<')) {
+            $this->markTestSkipped('Symfony VarExporter 8 or higher is not installed.');
+        }
+
         $c = new Configuration();
 
         self::assertFalse($c->isLazyGhostObjectEnabled());
@@ -40,6 +46,21 @@ class ConfigurationTest extends TestCase
         self::assertTrue($c->isLazyGhostObjectEnabled());
         $c->setUseLazyGhostObject(false);
         self::assertFalse($c->isLazyGhostObjectEnabled());
+    }
+
+    #[RequiresPhp('>= 8.4')]
+    public function testUseLazyGhostObjectWithSymfony8(): void
+    {
+        if (version_compare(InstalledVersions::getVersion('symfony/var-exporter'), '8', '<')) {
+            $this->markTestSkipped('Symfony VarExporter 8 or higher is not installed.');
+        }
+
+        $c = new Configuration();
+
+        self::expectException(LogicException::class);
+        self::expectExceptionMessage('Package "symfony/var-exporter" >= 8.0 does not provide lazy ghost objects, use native lazy objects instead.');
+
+        $c->setUseLazyGhostObject(true);
     }
 
     public function testNativeLazyObjectDeprecatedByDefault(): void
