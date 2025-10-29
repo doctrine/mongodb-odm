@@ -188,6 +188,7 @@ class PipelineUpdateTest extends BaseTestCase
             ->getQuery()
             ->execute();
 
+        self::assertInstanceOf(User::class, $user);
         self::assertSame(2, $user->getHits());
     }
 
@@ -209,6 +210,7 @@ class PipelineUpdateTest extends BaseTestCase
             ->getQuery()
             ->execute();
 
+        self::assertInstanceOf(User::class, $user);
         self::assertSame(2, $user->getHits());
     }
 
@@ -222,6 +224,7 @@ class PipelineUpdateTest extends BaseTestCase
             ->getQuery()
             ->execute();
 
+        self::assertInstanceOf(User::class, $user);
         self::assertSame(2, $user->getHits());
     }
 }

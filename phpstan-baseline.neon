@@ -787,7 +787,7 @@ parameters:
 			path: src/Query/Query.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between array\<string, mixed\>\|bool\|int\|MongoDB\\Driver\\ReadPreference\|string and null will always evaluate to true\.$#'
+			message: '#^Strict comparison using \!\=\= between array\<int\<0, max\>\|string, mixed\>\|bool\|int\|MongoDB\\Builder\\Pipeline\|MongoDB\\Driver\\ReadPreference\|string and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: src/Query/Query.php
@@ -1099,13 +1099,19 @@ parameters:
 			path: tests/Tests/Query/BuilderTest.php
 
 		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: tests/Tests/Query/PipelineUpdateTest.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\QueryTest\:\:createCursorMock\(\) return type has no value type specified in iterable type Traversable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Tests/QueryTest.php
 
 		-
-			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, query\?\: array\<string, mixed\>, \.\.\.\}, array\{type\: \-1\} given\.$#'
+			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, pipeline\?\: list\<array\<string, mixed\>\>\|MongoDB\\Builder\\Pipeline, \.\.\.\}, array\{type\: \-1\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/QueryTest.php

@@ -1069,6 +1069,8 @@ class Builder
     /**
      * Specifies a pipeline to be used for updates. The pipeline can be an aggregation builder, MongoDB pipeline
      * instance, or an array of pipeline stages.
+     *
+     * @param AggregationBuilder|Pipeline|list<array<string, mixed>> $pipeline
      */
     public function pipeline(AggregationBuilder|array|Pipeline $pipeline): self
     {
