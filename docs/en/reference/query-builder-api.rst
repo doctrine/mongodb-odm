@@ -641,8 +641,7 @@ change document field values atomically. Additionally if you are modifying a fie
 that is a reference you can pass managed document to the Builder and let ODM build
 ``DBRef`` object for you.
 
-You have several modifier operations
-available to you that make it easy to update documents in Mongo:
+The following atomic update operators are available through the builder API:
 
 * ``set($name, $value, $atomic = true)``
 * ``setNewObj($newObj)``
@@ -654,6 +653,49 @@ available to you that make it easy to update documents in Mongo:
 * ``popLast($field)``
 * ``pull($field, $value)``
 * ``pullAll($field, array $valueArray)``
+
+You can also run `updates with Aggregation Pipeline <https://www.mongodb.com/docs/manual/tutorial/update-documents-with-aggregation-pipeline/>`_
+by using the ``pipeline()`` method. You can pass an aggregation builder instance, a ``Pipeline`` instance from the
+MongoDB PHP library, or an array of pipeline stages:
+
+.. code-block:: php
+
+    <?php
+
+    // The three following are equivalent ways to define the same update pipeline stage
+
+    $pipeline = $dm->createAggregationBuilder(User::class)
+        ->set()
+            ->field('totalScore')
+            ->add('$score1', '$score2'),
+        );
+
+    $pipeline = new Pipeline(
+        Stage::set(
+            totalScore: Expression::add(
+                Expression::fieldPath('score1'),
+                Expression::fieldPath('score2'),
+            ),
+        )
+    );
+
+    $pipeline = [
+        ['$set' => [
+            'totalScore' => ['$add' => ['$score1', '$score2']],
+        ]],
+    ]
+
+    $dm->createQueryBuilder(User::class)
+        ->updateOne()
+        ->field('username')->equals('jwage')
+        ->pipeline($pipeline)
+        ->getQuery()
+        ->execute();
+
+.. note::
+
+    Pipeline updates are only available for ``updateOne``, ``updateMany``, and ``findAndUpdate`` operations.
+
 
 Updating multiple documents
 ---------------------------
