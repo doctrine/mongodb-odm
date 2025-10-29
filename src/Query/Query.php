@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
+use MongoDB\Builder\Pipeline;
 use MongoDB\Collection;
 use MongoDB\DeleteResult;
 use MongoDB\Driver\ReadPreference;
@@ -51,6 +52,7 @@ use function is_string;
  *     multiple?: bool,
  *     new?: bool,
  *     newObj?: array<string, mixed>,
+ *     pipeline?: Pipeline|list<array<string, mixed>>,
  *     query?: array<string, mixed>,
  *     readPreference?: ReadPreference,
  *     select?: array<string, 0|1|array<string, mixed>>,
@@ -459,11 +461,17 @@ final class Query implements IterableResult
                 $queryOptions                   = $this->renameQueryOptions($queryOptions, ['select' => 'projection']);
                 $queryOptions['returnDocument'] = $this->query['new'] ?? false ? FindOneAndUpdate::RETURN_DOCUMENT_AFTER : FindOneAndUpdate::RETURN_DOCUMENT_BEFORE;
 
-                $operation = $this->isFirstKeyUpdateOperator() ? 'findOneAndUpdate' : 'findOneAndReplace';
+                if (isset($this->query['pipeline'])) {
+                    $operation = 'findOneAndUpdate';
+                    $update    = $this->query['pipeline'];
+                } else {
+                    $operation = $this->isFirstKeyUpdateOperator() ? 'findOneAndUpdate' : 'findOneAndReplace';
+                    $update    = $this->query['newObj'];
+                }
 
                 return $this->collection->{$operation}(
                     $this->query['query'],
-                    $this->query['newObj'],
+                    $update,
                     array_merge($options, $queryOptions)
                 );
 
@@ -480,29 +488,23 @@ final class Query implements IterableResult
                 return $this->collection->insertOne($this->query['newObj'], $options);
 
             case self::TYPE_UPDATE:
-                $multiple = $this->query['multiple'] ?? false;
+                $multiple  = $this->query['multiple'] ?? false;
+                $operation = $multiple ? 'updateMany' : 'updateOne';
+                $update    = $this->query['newObj'];
 
-                if ($this->isFirstKeyUpdateOperator()) {
-                    $operation = 'updateOne';
-                } else {
+                if (isset($this->query['pipeline'])) {
+                    $update = $this->query['pipeline'];
+                } elseif (! $this->isFirstKeyUpdateOperator()) {
                     if ($multiple) {
-                        throw new InvalidArgumentException('Combining the "multiple" option without using an update operator as first operation in a query is not supported.');
+                        throw new InvalidArgumentException('Replacing multiple documents is not supported.');
                     }
 
                     $operation = 'replaceOne';
                 }
 
-                if ($multiple) {
-                    return $this->collection->updateMany(
-                        $this->query['query'],
-                        $this->query['newObj'],
-                        array_merge($options, $this->getQueryOptions('upsert')),
-                    );
-                }
-
                 return $this->collection->{$operation}(
                     $this->query['query'],
-                    $this->query['newObj'],
+                    $update,
                     array_merge($options, $this->getQueryOptions('upsert'))
                 );
 

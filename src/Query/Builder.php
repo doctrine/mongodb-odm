@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Query;
 
 use BadMethodCallException;
+use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\IterableResult;
@@ -14,6 +15,7 @@ use GeoJson\Geometry\Point;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
+use MongoDB\Builder\Pipeline;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
 
@@ -1060,6 +1062,23 @@ class Builder
     public function notIn(array $values): self
     {
         $this->expr->notIn($values);
+
+        return $this;
+    }
+
+    /**
+     * Specifies a pipeline to be used for updates. The pipeline can be an aggregation builder, MongoDB pipeline
+     * instance, or an array of pipeline stages.
+     */
+    public function pipeline(AggregationBuilder|array|Pipeline $pipeline): self
+    {
+        if ($this->query['type'] !== Query::TYPE_UPDATE && $this->query['type'] !== Query::TYPE_FIND_AND_UPDATE) {
+            throw new BadMethodCallException('The pipeline() method can only be used with update or findAndUpdate queries.');
+        }
+
+        $this->query['pipeline'] = $pipeline instanceof AggregationBuilder
+            ? $pipeline->getPipeline()
+            : $pipeline;
 
         return $this;
     }
