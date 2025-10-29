@@ -496,7 +496,7 @@ final class Query implements IterableResult
                     $update = $this->query['pipeline'];
                 } elseif (! $this->isFirstKeyUpdateOperator()) {
                     if ($multiple) {
-                        throw new InvalidArgumentException('Replacing multiple documents is not supported.');
+                        throw new InvalidArgumentException('Combining the "multiple" option without using an update operator as first operation in a query is not supported.');
                     }
 
                     $operation = 'replaceOne';
