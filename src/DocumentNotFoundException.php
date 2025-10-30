@@ -12,7 +12,7 @@ use function sprintf;
 use const JSON_THROW_ON_ERROR;
 
 /**
- * Class for exception when encountering proxy object that has
+ * Class for exception when encountering a lazy object that has
  * an identifier that does not exist in the database.
  */
 final class DocumentNotFoundException extends MongoDBException

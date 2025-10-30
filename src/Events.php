@@ -130,7 +130,7 @@ final class Events
     public const onClear = 'onClear';
 
     /**
-     * The documentNotFound event occurs if a proxy object could not be found in
+     * The documentNotFound event occurs if a lazy object could not be found in
      * the database.
      */
     public const documentNotFound = 'documentNotFound';

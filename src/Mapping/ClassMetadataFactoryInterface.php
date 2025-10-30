@@ -35,6 +35,8 @@ interface ClassMetadataFactoryInterface extends ClassMetadataFactory
 
     /**
      * Sets a resolver for real class names of a proxy.
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine ODM 3.0.
      */
     public function setProxyClassNameResolver(ProxyClassNameResolver $resolver): void;
 }
