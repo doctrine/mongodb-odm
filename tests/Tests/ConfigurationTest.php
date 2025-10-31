@@ -31,6 +31,20 @@ class ConfigurationTest extends TestCase
         $c->setUseNativeLazyObject(true);
     }
 
+    #[RequiresPhp('>= 8.4')]
+    public function testUseNativeLazyObjectPriorityOverLazyGhost(): void
+    {
+        $c = new Configuration();
+
+        $c->setUseLazyGhostObject(true);
+        $c->setUseNativeLazyObject(true);
+
+        self::assertTrue($c->isNativeLazyObjectEnabled());
+        self::assertFalse($c->isLazyGhostObjectEnabled());
+
+        self::assertSame(Configuration::AUTOGENERATE_NEVER, $c->getAutoGenerateProxyClasses());
+    }
+
     public function testUseLazyGhostObject(): void
     {
         $c = new Configuration();
@@ -42,7 +56,7 @@ class ConfigurationTest extends TestCase
         self::assertFalse($c->isLazyGhostObjectEnabled());
     }
 
-    public function testNativeLazyObjectDeprecatedByDefault(): void
+    public function testNativeLazyObjectDisabledByDefault(): void
     {
         $c = new Configuration();
 

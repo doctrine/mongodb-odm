@@ -337,6 +337,10 @@ class Configuration
      */
     public function getAutoGenerateProxyClasses(): int
     {
+        if ($this->nativeLazyObject) {
+            return self::AUTOGENERATE_NEVER;
+        }
+
         return $this->attributes['autoGenerateProxyClasses'] ?? self::AUTOGENERATE_FILE_NOT_EXISTS;
     }
 
@@ -708,7 +712,7 @@ class Configuration
 
     public function isLazyGhostObjectEnabled(): bool
     {
-        return $this->lazyGhostObject;
+        return $this->lazyGhostObject && ! $this->nativeLazyObject;
     }
 
     public function setUseNativeLazyObject(bool $nativeLazyObject): void
@@ -718,7 +722,6 @@ class Configuration
         }
 
         $this->nativeLazyObject = $nativeLazyObject;
-        $this->lazyGhostObject  = ! $nativeLazyObject || $this->lazyGhostObject;
     }
 
     public function isNativeLazyObjectEnabled(): bool
