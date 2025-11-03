@@ -616,14 +616,9 @@ Define the ``EventTest`` class with a ``onClear()`` method:
     {
         public function onClear(\Doctrine\ODM\MongoDB\Event\OnClearEventArgs $eventArgs): void
         {
-            $class = $eventArgs->getDocumentClass();
             $dm = $eventArgs->getDocumentManager();
             $uow = $dm->getUnitOfWork();
 
-            // Check if event clears all documents.
-            if ($eventArgs->clearsAllDocuments()) {
-                // do something
-            }
             // do something
         }
     }

@@ -2399,41 +2399,26 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      */
-    public function clear(?string $documentName = null): void
+    public function clear(): void
     {
-        if ($documentName === null) {
-            $this->identityMap                  =
-            $this->documentIdentifiers          =
-            $this->originalDocumentData         =
-            $this->documentChangeSets           =
-            $this->documentStates               =
-            $this->scheduledForSynchronization  =
-            $this->scheduledDocumentInsertions  =
-            $this->scheduledDocumentUpserts     =
-            $this->scheduledDocumentUpdates     =
-            $this->scheduledDocumentDeletions   =
-            $this->scheduledCollectionUpdates   =
-            $this->scheduledCollectionDeletions =
-            $this->parentAssociations           =
-            $this->embeddedDocumentsRegistry    =
-            $this->orphanRemovals               =
-            $this->hasScheduledCollections      = [];
+        $this->identityMap                  =
+        $this->documentIdentifiers          =
+        $this->originalDocumentData         =
+        $this->documentChangeSets           =
+        $this->documentStates               =
+        $this->scheduledForSynchronization  =
+        $this->scheduledDocumentInsertions  =
+        $this->scheduledDocumentUpserts     =
+        $this->scheduledDocumentUpdates     =
+        $this->scheduledDocumentDeletions   =
+        $this->scheduledCollectionUpdates   =
+        $this->scheduledCollectionDeletions =
+        $this->parentAssociations           =
+        $this->embeddedDocumentsRegistry    =
+        $this->orphanRemovals               =
+        $this->hasScheduledCollections      = [];
 
-            $event = new Event\OnClearEventArgs($this->dm);
-        } else {
-            $visited = [];
-            foreach ($this->identityMap as $className => $documents) {
-                if ($className !== $documentName) {
-                    continue;
-                }
-
-                foreach ($documents as $document) {
-                    $this->doDetach($document, $visited);
-                }
-            }
-
-            $event = new Event\OnClearEventArgs($this->dm, $documentName);
-        }
+        $event = new Event\OnClearEventArgs($this->dm);
 
         $this->evm->dispatchEvent(Events::onClear, $event);
     }

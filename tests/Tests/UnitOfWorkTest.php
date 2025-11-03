@@ -29,7 +29,6 @@ use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionProperty;
 use Throwable;
 
@@ -39,20 +38,6 @@ use function sprintf;
 
 class UnitOfWorkTest extends BaseTestCase
 {
-    /** Clear by class name is deprecated */
-    #[IgnoreDeprecations]
-    public function testPartialClear(): void
-    {
-        $user   = new ForumUser();
-        $avatar = new ForumAvatar();
-        $this->uow->persist($avatar);
-        $this->uow->persist($user);
-
-        $this->uow->clear(ForumUser::class);
-        self::assertFalse($this->uow->isScheduledForInsert($user));
-        self::assertTrue($this->uow->isScheduledForInsert($avatar));
-    }
-
     public function testIsDocumentScheduled(): void
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
