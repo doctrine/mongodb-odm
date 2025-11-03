@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools\GH297;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
+#[ODM\Document]
 class User
 {
     use AddressTrait;
@@ -16,6 +17,7 @@ class User
      *
      * @var string|null
      */
+    #[ODM\Id]
     private $id;
 
     /**
@@ -23,6 +25,7 @@ class User
      *
      * @var string|null
      */
+    #[ODM\Field(type: 'string')]
     private $name;
 
     public function getId(): ?string

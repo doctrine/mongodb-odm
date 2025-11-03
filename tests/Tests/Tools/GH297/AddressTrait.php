@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools\GH297;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+
 trait AddressTrait
 {
     /**
@@ -11,6 +13,7 @@ trait AddressTrait
      *
      * @var Address|null
      */
+    #[ODM\EmbedOne]
     private $address;
 
     public function getAddress(): ?Address

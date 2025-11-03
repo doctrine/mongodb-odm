@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
+#[ODM\Document]
 class DoctrineGlobal_Article
 {
     /**
@@ -13,6 +14,7 @@ class DoctrineGlobal_Article
      *
      * @var string|null
      */
+    #[ODM\Id]
     protected $id;
 
     /**
@@ -20,6 +22,7 @@ class DoctrineGlobal_Article
      *
      * @var string|null
      */
+    #[ODM\Field(type: 'string')]
     protected $headline;
 
     /**
@@ -27,6 +30,7 @@ class DoctrineGlobal_Article
      *
      * @var string|null
      */
+    #[ODM\Field(type: 'string')]
     protected $text;
 
     /**
@@ -34,6 +38,7 @@ class DoctrineGlobal_Article
      *
      * @var DoctrineGlobal_User|null
      */
+    #[ODM\ReferenceMany(targetDocument: DoctrineGlobal_User::class)]
     protected $author;
 
     /**
@@ -41,10 +46,12 @@ class DoctrineGlobal_Article
      *
      * @var Collection<int, DoctrineGlobal_User>
      */
+    #[ODM\ReferenceMany(targetDocument: DoctrineGlobal_User::class)]
     protected $editor;
 }
 
 /** @ODM\Document */
+#[ODM\Document]
 class DoctrineGlobal_User
 {
     /**
@@ -52,6 +59,7 @@ class DoctrineGlobal_User
      *
      * @var string|null
      */
+    #[ODM\Id]
     private $id;
 
     /**
@@ -59,6 +67,7 @@ class DoctrineGlobal_User
      *
      * @var string
      */
+    #[ODM\Field(type: 'string')]
     private $username;
 
     /**
@@ -66,5 +75,6 @@ class DoctrineGlobal_User
      *
      * @var string
      */
+    #[ODM\Field(type: 'string')]
     private $email;
 }

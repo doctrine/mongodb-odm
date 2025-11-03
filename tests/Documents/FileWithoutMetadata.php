@@ -18,6 +18,7 @@ class FileWithoutMetadata
      *
      * @var string|null
      */
+    #[ODM\File\Filename]
     private $filename;
 
     public function getId(): ?string

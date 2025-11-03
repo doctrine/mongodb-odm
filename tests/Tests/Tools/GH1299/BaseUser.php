@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools\GH1299;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document */
+#[ODM\Document]
 class BaseUser
 {
     /**
@@ -14,6 +15,7 @@ class BaseUser
      *
      * @var string|null
      */
+    #[ODM\Id]
     protected $id;
 
     /**
@@ -21,6 +23,7 @@ class BaseUser
      *
      * @var string|null
      */
+    #[ODM\Field(type: 'string')]
     protected $name;
 
     public function getId(): ?string

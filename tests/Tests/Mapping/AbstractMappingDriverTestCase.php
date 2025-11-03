@@ -1254,7 +1254,7 @@ class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMapping
      *
      * @var string|null
      */
-    #[ODM\Field(type: 'int', name: 'baz')]
+    #[ODM\Field(type: 'string', name: 'baz')]
     public $foo;
 
     /**
@@ -1262,7 +1262,7 @@ class AbstractMappingDriverDuplicateDatabaseNameNotSaved extends AbstractMapping
      *
      * @var string|null
      */
-    #[ODM\Field(type: 'int', name: 'baz', notSaved: true)]
+    #[ODM\Field(type: 'string', name: 'baz', notSaved: true)]
     public $bar;
 }
 

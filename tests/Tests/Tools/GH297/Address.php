@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools\GH297;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\EmbeddedDocument */
+#[ODM\EmbeddedDocument]
 class Address
 {
     /**
@@ -14,6 +15,7 @@ class Address
      *
      * @var string|null
      */
+    #[ODM\Field(type: 'string')]
     private $street;
 
     public function getStreet(): ?string
