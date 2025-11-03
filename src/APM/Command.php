@@ -8,10 +8,7 @@ use LogicException;
 use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
-use MongoDB\Driver\Server;
 use Throwable;
-
-use function method_exists;
 
 final class Command
 {
@@ -70,16 +67,6 @@ final class Command
     public function getRequestId(): string
     {
         return $this->startedEvent->getRequestId();
-    }
-
-    /** @deprecated This method is failing with MongoDB Extension v2.0+, use getHost and getPort instead. */
-    public function getServer(): Server
-    {
-        if (! method_exists($this->finishedEvent, 'getServer')) {
-            throw new LogicException('getServer() is not available in MongoDB Extension v2.0+');
-        }
-
-        return $this->finishedEvent->getServer();
     }
 
     public function getPort(): int
