@@ -6,9 +6,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+
+use function bin2hex;
+use function random_bytes;
 
 class GH1525Test extends BaseTestCase
 {
@@ -46,12 +48,11 @@ class GH1525Test extends BaseTestCase
 
     public function testEmbedCloneWithIdStrategyNoneOnParentAndEarlyPersist(): void
     {
-        $uuidGen  = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
 
         $count = 2;
         for ($i = 0; $i < $count; ++$i) {
-            $parent = new GH1525DocumentIdStrategyNone($uuidGen->generateV4(), 'test' . $i);
+            $parent = new GH1525DocumentIdStrategyNone(bin2hex(random_bytes(6)), 'test' . $i);
             $this->dm->persist($parent);
             $parent->embedded = $embedded;
             $this->dm->flush();
@@ -71,12 +72,11 @@ class GH1525Test extends BaseTestCase
 
     public function testEmbedCloneWithIdStrategyNoneOnParentAndLatePersist(): void
     {
-        $uuidGen  = new UuidGenerator();
         $embedded = new GH1525Embedded('embedded');
 
         $count = 2;
         for ($i = 0; $i < $count; ++$i) {
-            $parent           = new GH1525DocumentIdStrategyNone($uuidGen->generateV4(), 'test' . $i);
+            $parent           = new GH1525DocumentIdStrategyNone(bin2hex(random_bytes(6)), 'test' . $i);
             $parent->embedded = $embedded;
             $this->dm->persist($parent);
             $this->dm->flush();
