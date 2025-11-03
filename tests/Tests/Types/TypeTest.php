@@ -46,12 +46,9 @@ class TypeTest extends BaseTestCase
     {
         return [
             'id' => [Type::ID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')],
-            'intId' => [Type::INTID, 1],
             'customId' => [Type::CUSTOMID, (object) ['foo' => 'bar']],
             'bool' => [Type::BOOL, true],
-            'boolean' => [Type::BOOLEAN, false],
             'int' => [Type::INT, 69],
-            'integer' => [Type::INTEGER, 42],
             'int64' => [Type::INT64, 100, new Int64(100)],
             'float' => [Type::FLOAT, 3.14],
             'string' => [Type::STRING, 'ohai'],

@@ -49,27 +49,15 @@ abstract class Type
     public const VECTOR_INT8        = 'vector_int8';
     public const VECTOR_PACKED_BIT  = 'vector_packed_bit';
 
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
-    public const INTID = 'int_id';
-
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
-    public const INTEGER = 'integer';
-
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::BOOL instead */
-    public const BOOLEAN = 'boolean';
-
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static array $typeObjects = [];
 
     /** @var array<string, class-string> The map of supported doctrine mapping types. */
     private static array $typesMap = [
         self::ID => Types\IdType::class,
-        self::INTID => Types\IntIdType::class,
         self::CUSTOMID => Types\CustomIdType::class,
         self::BOOL => Types\BooleanType::class,
-        self::BOOLEAN => Types\BooleanType::class,
         self::INT => Types\IntType::class,
-        self::INTEGER => Types\IntType::class,
         self::INT64 => Types\Int64Type::class,
         self::FLOAT => Types\FloatType::class,
         self::STRING => Types\StringType::class,
