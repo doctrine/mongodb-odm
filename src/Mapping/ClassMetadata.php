@@ -2162,14 +2162,6 @@ use const PHP_VERSION_ID;
     }
 
     /**
-     * Checks whether the class will generate a uuid id.
-     */
-    public function isIdGeneratorUuid(): bool
-    {
-        return $this->generatorType === self::GENERATOR_TYPE_UUID;
-    }
-
-    /**
      * Checks whether the class uses no id generator.
      */
     public function isIdGeneratorNone(): bool
