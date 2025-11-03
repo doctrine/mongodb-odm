@@ -18,14 +18,7 @@ jobs:
         symfony:
           - "stable"
         proxy:
-          - "lazy-ghost"
-        include:
-          # Test with ProxyManager
-          - php-version: "8.1"
-            symfony: "6.4"
-            proxy: "proxy-manager"
-            os: "ubuntu-latest"
-
+          - "native"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v5"

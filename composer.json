@@ -24,7 +24,7 @@
         "docs": "composer update -d docs && ./docs/vendor/bin/build-docs.sh @additional_args"
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.4",
         "ext-mongodb": "^2.0",
         "composer-runtime-api": "^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
