@@ -111,18 +111,7 @@ class AttributeDriver implements MappingDriver
                 $this->addVectorSearchIndex($metadata, $attribute);
             }
 
-            if ($attribute instanceof ODM\Indexes) {
-                trigger_deprecation(
-                    'doctrine/mongodb-odm',
-                    '2.2',
-                    'The "@Indexes" attribute used in class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.',
-                    $className,
-                );
-                $value = $attribute->value;
-                foreach (is_array($value) ? $value : [$value] as $index) {
-                    $this->addIndex($metadata, $index);
-                }
-            } elseif ($attribute instanceof ODM\InheritanceType) {
+            if ($attribute instanceof ODM\InheritanceType) {
                 $metadata->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $attribute->value));
             } elseif ($attribute instanceof ODM\DiscriminatorField) {
                 $metadata->setDiscriminatorField($attribute->value);
@@ -255,20 +244,7 @@ class AttributeDriver implements MappingDriver
                     $indexes[] = $propertyAttribute;
                 }
 
-                if ($propertyAttribute instanceof ODM\Indexes) {
-                    trigger_deprecation(
-                        'doctrine/mongodb-odm',
-                        '2.2',
-                        'The "@Indexes" attribute used in property "%s" of class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.',
-                        $property->getName(),
-                        $className,
-                    );
-
-                    $value = $propertyAttribute->value;
-                    foreach (is_array($value) ? $value : [$value] as $index) {
-                        $indexes[] = $index;
-                    }
-                } elseif ($propertyAttribute instanceof ODM\AlsoLoad) {
+                if ($propertyAttribute instanceof ODM\AlsoLoad) {
                     $mapping['alsoLoadFields'] = (array) $propertyAttribute->value;
                 } elseif ($propertyAttribute instanceof ODM\Version) {
                     $mapping['version'] = true;

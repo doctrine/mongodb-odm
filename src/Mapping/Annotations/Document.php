@@ -22,9 +22,6 @@ final class Document extends AbstractDocument
     /** @var string|null */
     public $repositoryClass;
 
-    /** @var Index[] */
-    public $indexes;
-
     /** @var bool */
     public $readOnly;
 
@@ -33,21 +30,18 @@ final class Document extends AbstractDocument
 
     /**
      * @param string|array{name: string, capped?: bool, size?: int, max?: int}|null $collection
-     * @param Index[]                                                               $indexes
      * @param int|string|null                                                       $writeConcern
      */
     public function __construct(
         ?string $db = null,
         public $collection = null,
         ?string $repositoryClass = null,
-        array $indexes = [],
         bool $readOnly = false,
         ?string $shardKey = null,
         public $writeConcern = null,
     ) {
         $this->db              = $db;
         $this->repositoryClass = $repositoryClass;
-        $this->indexes         = $indexes;
         $this->readOnly        = $readOnly;
         $this->shardKey        = $shardKey;
     }
