@@ -7,7 +7,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\IterableResult;
-use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
@@ -24,7 +23,6 @@ use function gettype;
 use function is_array;
 use function is_bool;
 use function sprintf;
-use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
@@ -168,26 +166,6 @@ class Builder
         $stage = new Stage\Densify($this, $fieldName);
 
         return $this->addStage($stage);
-    }
-
-    /**
-     * Executes the aggregation pipeline
-     *
-     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
-     *
-     * @param array<string, mixed> $options
-     */
-    public function execute(array $options = []): Iterator
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.2',
-            'Using "%s" is deprecated. Please use "%s::getAggregation()" instead.',
-            __METHOD__,
-            self::class,
-        );
-
-        return $this->getAggregation($options)->getIterator();
     }
 
     public function expr(): Expr
