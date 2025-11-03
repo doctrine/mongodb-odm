@@ -17,7 +17,7 @@ use function in_array;
 use function sprintf;
 
 /** @internal */
-final class SymfonyUuidGenerator extends AbstractIdGenerator
+final class SymfonyUuidGenerator implements IdGenerator
 {
     private const SUPPORTED_TYPES = [
         1 => UuidV1::class,

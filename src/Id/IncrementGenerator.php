@@ -18,7 +18,7 @@ use MongoDB\Operation\FindOneAndUpdate;
  * collection. If not specified it defaults to the name of the collection for the
  * document.
  */
-class IncrementGenerator extends AbstractIdGenerator
+class IncrementGenerator implements IdGenerator
 {
     /** @var string|null */
     protected $collection = null;

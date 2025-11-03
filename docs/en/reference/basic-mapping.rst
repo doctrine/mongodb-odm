@@ -286,18 +286,11 @@ object ID. The available strategies are:
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
 - ``CUSTOM`` - Defers generation to an implementation of ``IdGenerator`` specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
-- ``UUID`` - Generates a UUID identifier (deprecated).
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
 
 When using the ``AUTO`` strategy in combination with a UUID identifier, the generator can create UUIDs of type 1, type 4,
 and type 7 automatically. For all other UUID types, assign the identifier manually in combination with the ``NONE``
 strategy.
-
-.. note::
-
-    The ``UUID`` generator is deprecated, as it stores UUIDs as strings. It is recommended to use the ``AUTO`` strategy
-    with a ``uuid`` type identifier field instead. If you need to keep generating string UUIDs, you can use the
-    ``CUSTOM`` strategy with your own generator.
 
 Here is an example how to manually set a string identifier for your documents:
 
@@ -315,7 +308,7 @@ Here is an example how to manually set a string identifier for your documents:
         #[Document]
         class MyPersistentClass
         {
-            #[Id(strategy: 'NONE', type: 'string')]
+            #[Id(strategy: 'NONE')]
             public string $id;
 
             //...

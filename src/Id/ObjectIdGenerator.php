@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MongoDB\BSON\ObjectId;
 
 /** @internal */
-final class ObjectIdGenerator extends AbstractIdGenerator
+final class ObjectIdGenerator implements IdGenerator
 {
     public function generate(DocumentManager $dm, object $document): ObjectId
     {

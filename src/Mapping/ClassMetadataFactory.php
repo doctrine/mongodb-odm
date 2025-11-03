@@ -16,7 +16,6 @@ use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\ObjectIdGenerator;
 use Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator;
-use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -291,14 +290,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
                 }
 
                 $class->setIdGenerator($incrementGenerator);
-                break;
-            case ClassMetadata::GENERATOR_TYPE_UUID:
-                $uuidGenerator = new UuidGenerator();
-                if (isset($idGenOptions['salt'])) {
-                    $uuidGenerator->setSalt((string) $idGenOptions['salt']);
-                }
-
-                $class->setIdGenerator($uuidGenerator);
                 break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
                 $alnumGenerator = new AlnumGenerator();

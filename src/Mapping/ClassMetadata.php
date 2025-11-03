@@ -307,13 +307,6 @@ use const PHP_VERSION_ID;
     public const GENERATOR_TYPE_INCREMENT = 2;
 
     /**
-     * UUID means Doctrine will generate a uuid for us.
-     *
-     * @deprecated without replacement. Use a custom generator or switch to binary UUIDs.
-     */
-    public const GENERATOR_TYPE_UUID = 3;
-
-    /**
      * ALNUM means Doctrine will generate Alpha-numeric string identifiers, using the INCREMENT
      * generator to ensure identifier uniqueness
      */
