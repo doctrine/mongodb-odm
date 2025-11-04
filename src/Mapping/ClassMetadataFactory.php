@@ -31,8 +31,6 @@ use function interface_exists;
 use function trigger_deprecation;
 use function ucfirst;
 
-use const PHP_VERSION_ID;
-
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping informations of a class which describes how a class should be mapped
@@ -119,10 +117,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        if (PHP_VERSION_ID < 80400) {
-            return;
-        }
-
         foreach ($class->propertyAccessors as $propertyAccessor) {
             $property = $propertyAccessor->getUnderlyingReflector();
 

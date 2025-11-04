@@ -33,7 +33,6 @@ use function substr;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_VERSION_ID;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -451,9 +450,7 @@ EOF
             }
         }
 
-        if (PHP_VERSION_ID >= 80400) {
-            $metadata->reflClass->markLazyObjectAsInitialized($document);
-        }
+        $metadata->reflClass->markLazyObjectAsInitialized($document);
 
         if ($document instanceof InternalProxy) {
             // Skip initialization to not load any object data

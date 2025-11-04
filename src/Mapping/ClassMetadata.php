@@ -63,8 +63,6 @@ use function strtolower;
 use function strtoupper;
 use function trigger_deprecation;
 
-use const PHP_VERSION_ID;
-
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
  * of a document and it's references.
@@ -1992,7 +1990,7 @@ use const PHP_VERSION_ID;
             $document->__load();
         } elseif ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
             $document->initializeProxy();
-        } elseif (PHP_VERSION_ID >= 80400) {
+        } else {
             $this->reflClass->initializeLazyObject($document);
         }
 
@@ -2010,7 +2008,7 @@ use const PHP_VERSION_ID;
             $document->__load();
         } elseif ($document instanceof GhostObjectInterface && $field !== $this->identifier && ! $document->isProxyInitialized()) {
             $document->initializeProxy();
-        } elseif (PHP_VERSION_ID >= 80400 && $field !== $this->identifier && $this->reflClass->isUninitializedLazyObject($document)) {
+        } elseif ($field !== $this->identifier && $this->reflClass->isUninitializedLazyObject($document)) {
             $this->reflClass->initializeLazyObject($document);
         }
 
@@ -2587,7 +2585,7 @@ use const PHP_VERSION_ID;
 
         $accessor = PropertyAccessorFactory::createPropertyAccessor($this->name, $mapping['fieldName']);
 
-        if (PHP_VERSION_ID >= 80400 && $accessor->getUnderlyingReflector()->isVirtual()) {
+        if ($accessor->getUnderlyingReflector()->isVirtual()) {
             throw MappingException::mappingVirtualPropertyNotAllowed($this->name, $mapping['fieldName']);
         }
 

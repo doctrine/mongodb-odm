@@ -47,8 +47,6 @@ use function is_string;
 use function trigger_deprecation;
 use function trim;
 
-use const PHP_VERSION_ID;
-
 /**
  * Configuration class for the DocumentManager. When setting up your DocumentManager
  * you can optionally specify an instance of this class as the second argument.
@@ -713,17 +711,13 @@ class Configuration
 
     public function setUseNativeLazyObject(bool $nativeLazyObject): void
     {
-        if (PHP_VERSION_ID < 80400 && $nativeLazyObject) {
-            throw new LogicException('Native lazy objects require PHP 8.4 or higher.');
-        }
-
         $this->nativeLazyObject = $nativeLazyObject;
         $this->lazyGhostObject  = ! $nativeLazyObject || $this->lazyGhostObject;
     }
 
     public function isNativeLazyObjectEnabled(): bool
     {
-        if (PHP_VERSION_ID >= 80400 && ! $this->nativeLazyObject) {
+        if (! $this->nativeLazyObject) {
             trigger_deprecation('doctrine/mongodb-odm', '2.14', 'Not using native lazy objects is deprecated and will be impossible in Doctrine MongoDB ODM 3.0.');
         }
 
