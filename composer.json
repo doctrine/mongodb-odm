@@ -25,7 +25,7 @@
     },
     "require": {
         "php": "^8.4",
-        "ext-mongodb": "^2.0",
+        "ext-mongodb": "^2.1",
         "composer-runtime-api": "^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
         "doctrine/collections": "^1.5 || ^2.0",
