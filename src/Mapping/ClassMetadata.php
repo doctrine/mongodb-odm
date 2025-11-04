@@ -2170,9 +2170,13 @@ use const PHP_VERSION_ID;
 
     /**
      * Checks whether the class will generate a uuid id.
+     *
+     * @deprecated Since 2.15, the UUID id generator is deprecated. Use GENERATOR_TYPE_AUTO with the UUID type instead.
      */
     public function isIdGeneratorUuid(): bool
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.15', 'The method %s() is deprecated. Use GENERATOR_TYPE_AUTO with the UUID type instead.', __FUNCTION__);
+
         return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
 
