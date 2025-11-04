@@ -41,12 +41,16 @@ To create the collections for all the document classes, you can use the
 For a specific document class, you can use the `createDocumentCollection()`
 method with the class name as an argument:
 
+.. code-block:: php
+
     <?php
 
     $schemaManager->createDocumentCollection(Person::class);
 
 Once the collection is created, you can also set up indexes with ``ensureIndexes``,
 and search indexes with ``createSearchIndexes``:
+
+.. code-block:: php
 
     <?php
 
