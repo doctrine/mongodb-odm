@@ -42,7 +42,7 @@ jobs:
           - dependencies: "lowest"
             php-version: "8.1"
             mongodb-version: "6.0"
-            driver-version: "1.21.0"
+            driver-version: "2.1.0"
             topology: "server"
             symfony-version: "stable"
             proxy: "lazy-ghost"
@@ -84,14 +84,6 @@ jobs:
             dependencies: "highest"
             symfony-version: "stable"
             proxy: "native"
-          # Test with extension 1.21
-          - topology: "server"
-            php-version: "8.2"
-            mongodb-version: "8.0"
-            driver-version: "1.21.0"
-            dependencies: "highest"
-            symfony-version: "stable"
-            proxy: "lazy-ghost"
           # Test with a sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
 #          - topology: "sharded_cluster"

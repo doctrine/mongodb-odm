@@ -37,11 +37,7 @@ use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\CollectionInfo;
-use MongoDB\Model\CollectionInfoCommandIterator;
-use MongoDB\Model\CollectionInfoIterator;
 use MongoDB\Model\IndexInfo;
-use MongoDB\Model\IndexInfoIterator;
-use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
@@ -55,7 +51,6 @@ use function array_key_exists;
 use function array_map;
 use function assert;
 use function in_array;
-use function interface_exists;
 
 /**
  * @phpstan-import-type IndexMapping from ClassMetadata
@@ -1483,10 +1478,6 @@ EOT;
 
     private function createIndexIterator(array $indexes = []): Iterator
     {
-        if (interface_exists(IndexInfoIterator::class)) {
-            return new IndexInfoIteratorIterator(new ArrayIterator($indexes));
-        }
-
         return new ArrayIterator(array_map(
             static fn (array $indexInfo) => new IndexInfo($indexInfo),
             $indexes,
@@ -1495,10 +1486,6 @@ EOT;
 
     private function createCollectionIterator(array $collections = []): Iterator
     {
-        if (interface_exists(CollectionInfoIterator::class)) {
-            return new CollectionInfoCommandIterator(new ArrayIterator($collections));
-        }
-
         return new ArrayIterator(array_map(
             static fn (array $collectionInfo) => new CollectionInfo($collectionInfo),
             $collections,

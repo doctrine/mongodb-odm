@@ -25,7 +25,7 @@
     },
     "require": {
         "php": "^8.1",
-        "ext-mongodb": "^1.21 || ^2.0",
+        "ext-mongodb": "^2.0",
         "composer-runtime-api": "^2.0",
         "doctrine/cache": "^1.11 || ^2.0",
         "doctrine/collections": "^1.5 || ^2.0",
@@ -33,7 +33,7 @@
         "doctrine/instantiator": "^1.1 || ^2",
         "doctrine/persistence": "^3.2 || ^4",
         "friendsofphp/proxy-manager-lts": "^1.0",
-        "mongodb/mongodb": "^1.21.2 || ^2.1.1",
+        "mongodb/mongodb": "^2.1.1",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/console": "^5.4 || ^6.0 || ^7.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",

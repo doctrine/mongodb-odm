@@ -1111,18 +1111,6 @@ parameters:
 			path: tests/Tests/QueryTest.php
 
 		-
-			message: '#^Instantiated class MongoDB\\Model\\CollectionInfoCommandIterator not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
-			message: '#^Instantiated class MongoDB\\Model\\IndexInfoIteratorIterator not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createCollectionIterator\(\) has parameter \$collections with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
