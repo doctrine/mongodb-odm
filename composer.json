@@ -37,7 +37,6 @@
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/console": "^5.4 || ^6.0 || ^7.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",
-        "symfony/var-dumper": "^5.4 || ^6.0 || ^7.0",
         "symfony/var-exporter": "^6.2 || ^7.0"
     },
     "require-dev": {
@@ -53,14 +52,16 @@
         "phpunit/phpunit": "^10.5.58",
         "squizlabs/php_codesniffer": "^4",
         "symfony/cache": "^5.4 || ^6.0 || ^7.0",
-        "symfony/uid": "^5.4 || ^6.0 || ^7.0"
+        "symfony/uid": "^5.4 || ^6.0 || ^7.0",
+        "symfony/var-dumper": "^5.4 || ^6.0 || ^7.0"
     },
     "conflict": {
         "doctrine/annotations": "<1.12 || >=3.0"
     },
     "suggest": {
         "doctrine/annotations": "For annotation mapping support",
-        "ext-bcmath": "Decimal128 type support"
+        "ext-bcmath": "Decimal128 type support",
+        "symfony/var-dumper": "To enable the odm:query command"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ODM\\MongoDB\\": "src" }
