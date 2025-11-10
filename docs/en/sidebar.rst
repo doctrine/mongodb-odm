@@ -5,7 +5,7 @@
    :depth: 3
    :glob:
 
-   tutorials/*
+   tutorials/getting-started
 
 .. toctree::
    :caption: Reference
@@ -53,4 +53,14 @@
    :depth: 3
    :glob:
 
-   cookbook/*
+   cookbook/blending-orm-and-mongodb-odm
+   cookbook/implementing-array-access-for-domain-objects
+   cookbook/implementing-the-notify-changetracking-policy
+   cookbook/lookup-reference
+   cookbook/mapping-classes-to-orm-and-odm
+   cookbook/queryable-encryption
+   cookbook/resolve-target-document-listener
+   cookbook/simple-search-engine
+   cookbook/time-series-data
+   cookbook/validation-of-documents
+   cookbook/vector-search
