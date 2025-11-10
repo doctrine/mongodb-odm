@@ -35,7 +35,9 @@ class ShardKeyTest extends BaseTestCase
 
     public function tearDown(): void
     {
-        $this->logger->unregister();
+        if (isset($this->logger)) {
+            $this->logger->unregister();
+        }
 
         parent::tearDown();
     }

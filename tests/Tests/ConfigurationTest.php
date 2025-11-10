@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use LogicException;
 use MongoDB\Driver\Manager;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -37,6 +38,7 @@ class ConfigurationTest extends TestCase
         $c->setUseNativeLazyObject(true);
     }
 
+    #[IgnoreDeprecations]
     public function testUseLazyGhostObject(): void
     {
         $c = new Configuration();
@@ -74,6 +76,7 @@ class ConfigurationTest extends TestCase
         $c->setUseLazyGhostObject(true);
     }
 
+    #[IgnoreDeprecations]
     public function testNativeLazyObjectDeprecatedByDefault(): void
     {
         $c = new Configuration();

@@ -508,7 +508,7 @@ class QueryTest extends BaseTestCase
         $collection->expects($this->once())
             ->method('find')
             ->with(['foo' => 'bar'], ['hint' => 'foo'])
-            ->will($this->returnValue($cursor));
+            ->willReturn($cursor);
 
         // Using QueryBuilder->find adds hint to the query array
         $queryArray = [
