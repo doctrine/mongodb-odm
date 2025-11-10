@@ -22,7 +22,7 @@ class FilterCollectionTest extends BaseTestCase
 
         $enabledFilters = $filterCollection->getEnabledFilters();
         self::assertCount(1, $enabledFilters);
-        self::assertContainsOnly(BsonFilter::class, $enabledFilters);
+        self::assertContainsOnlyInstancesOf(BsonFilter::class, $enabledFilters);
 
         $filterCollection->disable('testFilter');
         self::assertEmpty($filterCollection->getEnabledFilters());

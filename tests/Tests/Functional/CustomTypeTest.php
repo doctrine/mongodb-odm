@@ -47,7 +47,7 @@ class CustomTypeTest extends BaseTestCase
 
         $country = $this->dm->find(Country::class, $country->id);
 
-        self::assertContainsOnly('DateTime', $country->nationalHolidays);
+        self::assertContainsOnlyInstancesOf(DateTime::class, $country->nationalHolidays);
     }
 
     public function testConvertToDatabaseValueExpectsArray(): void
