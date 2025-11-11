@@ -28,10 +28,8 @@ use function dirname;
 use function file_exists;
 use function file_put_contents;
 use function filemtime;
-use function get_debug_type;
 use function is_dir;
 use function is_int;
-use function is_scalar;
 use function is_writable;
 use function ltrim;
 use function mkdir;
@@ -115,7 +113,7 @@ EOPHP;
         }
 
         if (is_int($autoGenerate) && ($autoGenerate < 0 || $autoGenerate > 4)) {
-            throw new InvalidArgumentException(sprintf('Invalid auto generate mode "%s" given.', is_scalar($autoGenerate) ? (string) $autoGenerate : get_debug_type($autoGenerate)));
+            throw new InvalidArgumentException(sprintf('Invalid auto generate mode "%d" given.', $autoGenerate));
         }
 
         $this->uow                   = $dm->getUnitOfWork();
