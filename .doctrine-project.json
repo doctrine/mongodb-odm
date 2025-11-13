@@ -6,16 +6,21 @@
     "docsSlug": "doctrine-mongodb-odm",
     "versions": [
         {
-            "name": "2.15",
-            "branchName": "2.15.x",
+            "name": "2.16",
+            "branchName": "2.16.x",
             "slug": "latest",
             "upcoming": true
         },
         {
-            "name": "2.14",
-            "branchName": "2.14.x",
-            "slug": "2.14",
+            "name": "2.15",
+            "branchName": "2.15.x",
+            "slug": "2.15",
             "current": true
+        },
+        {
+            "name": "2.14",
+            "slug": "2.14",
+            "maintained": false
         },
         {
             "name": "2.13",
