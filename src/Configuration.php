@@ -316,6 +316,8 @@ class Configuration
 
     /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
+     *
+     * @deprecated Since 2.16, proxy directory is no longer used when native lazy objects are enabled.
      */
     public function setProxyDir(string $dir): void
     {
@@ -325,9 +327,15 @@ class Configuration
 
     /**
      * Gets the directory where Doctrine generates any necessary proxy class files.
+     *
+     * @deprecated Since 2.16, proxy directory is no longer used when native lazy objects are enabled.
      */
     public function getProxyDir(): ?string
     {
+        if ($this->isNativeLazyObjectEnabled()) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using "%s" is deprecated when native lazy objects are enabled.', __METHOD__);
+        }
+
         return $this->attributes['proxyDir'] ?? null;
     }
 
