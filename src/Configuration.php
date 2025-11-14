@@ -276,8 +276,13 @@ class Configuration
         return $this->attributes['metadataDriverImpl'] ?? null;
     }
 
+    /** @deprecated Since 2.2, use {@see getMetadataCache()} instead. */
     public function getMetadataCacheImpl(): ?Cache
     {
+        if (! class_exists(DoctrineProvider::class)) {
+            throw new LogicException('The "doctrine/cache" package is deprecated and no longer required by "doctrine/mongodb-odm". Use "getMetadataCache" instead.');
+        }
+
         trigger_deprecation(
             'doctrine/mongodb-odm',
             '2.2',
@@ -289,6 +294,7 @@ class Configuration
         return $this->attributes['metadataCacheImpl'] ?? null;
     }
 
+    /** @deprecated Since 2.2, use {@see setMetadataCache()} instead. */
     public function setMetadataCacheImpl(Cache $cacheImpl): void
     {
         trigger_deprecation(
@@ -310,7 +316,12 @@ class Configuration
 
     public function setMetadataCache(CacheItemPoolInterface $cache): void
     {
-        $this->metadataCache                   = $cache;
+        $this->metadataCache = $cache;
+
+        if (! class_exists(DoctrineProvider::class)) {
+            return;
+        }
+
         $this->attributes['metadataCacheImpl'] = DoctrineProvider::wrap($cache);
     }
 
