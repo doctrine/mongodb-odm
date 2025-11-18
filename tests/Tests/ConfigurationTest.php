@@ -4,86 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests;
 
-use Composer\InstalledVersions;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
-use LogicException;
 use MongoDB\Driver\Manager;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
-use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use ProxyManager\Configuration as ProxyManagerConfiguration;
 use stdClass;
-use Symfony\Component\VarExporter\LazyGhostTrait;
 
 use function base64_encode;
-use function class_exists;
 use function str_repeat;
-use function trait_exists;
-use function version_compare;
 
 class ConfigurationTest extends TestCase
 {
-    #[IgnoreDeprecations]
-    public function testUseLazyGhostObject(): void
-    {
-        $c = new Configuration();
-
-        if (! trait_exists(LazyGhostTrait::class)) {
-            $this->expectException(LogicException::class);
-            $this->expectExceptionMessage('Package "symfony/var-exporter" >= 8.0 does not provide lazy ghost objects, use native lazy objects instead.');
-        }
-
-        self::assertFalse($c->isLazyGhostObjectEnabled());
-        $c->setUseLazyGhostObject(true);
-        self::assertTrue($c->isLazyGhostObjectEnabled());
-
-        if (! class_exists(ProxyManagerConfiguration::class)) {
-            $this->expectException(LogicException::class);
-            $this->expectExceptionMessage('Package "friendsofphp/proxy-manager-lts" is required to disable LazyGhostObject.');
-        }
-
-        $c->setUseLazyGhostObject(false);
-        self::assertFalse($c->isLazyGhostObjectEnabled());
-    }
-
-    public function testUseLazyGhostObjectWithSymfony8(): void
-    {
-        if (InstalledVersions::isInstalled('symfony/var-exporter') && version_compare(InstalledVersions::getVersion('symfony/var-exporter'), '8', '<')) {
-            $this->markTestSkipped('Symfony VarExporter 8 or higher is not installed.');
-        }
-
-        $c = new Configuration();
-
-        self::expectException(LogicException::class);
-        self::expectExceptionMessage('Package "symfony/var-exporter" >= 8.0 does not provide lazy ghost objects, use native lazy objects instead.');
-
-        $c->setUseLazyGhostObject(true);
-    }
-
-    #[IgnoreDeprecations]
-    public function testNativeLazyObjectDeprecatedByDefault(): void
-    {
-        $c = new Configuration();
-
-        self::assertFalse($c->isNativeLazyObjectEnabled());
-    }
-
-    #[TestWith([true])]
-    #[TestWith([false])]
-    public function testConflictingLazyObjectSettings(bool $flag): void
-    {
-        $c = new Configuration();
-        $c->setUseNativeLazyObject(true);
-
-        self::expectException(LogicException::class);
-        self::expectExceptionMessage('Cannot enable or disable LazyGhostObject when native lazy objects are enabled.');
-
-        $c->setUseLazyGhostObject($flag);
-    }
-
     public function testDefaultPersistentCollectionFactory(): void
     {
         $c       = new Configuration();

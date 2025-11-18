@@ -147,8 +147,6 @@ to ``<database>.datakeys`` by default, but you can change it using the
     ]);
 
     // Other configuration
-    $config->setProxyDir(__DIR__ . '/Proxies');
-    $config->setProxyNamespace('Proxies');
     $config->setHydratorDir(__DIR__ . '/Hydrators');
     $config->setHydratorNamespace('Hydrators');
     $config->setPersistentCollectionDir(__DIR__ . '/PersistentCollections');

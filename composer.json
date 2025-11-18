@@ -34,12 +34,10 @@
         "doctrine/event-manager": "^1.0 || ^2.0",
         "doctrine/instantiator": "^1.1 || ^2",
         "doctrine/persistence": "^3.2 || ^4",
-        "friendsofphp/proxy-manager-lts": "^1.0",
         "mongodb/mongodb": "^2.1.1",
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/console": "^5.4 || ^6.4 || ^7.0 || ^8.0",
-        "symfony/deprecation-contracts": "^2.2 || ^3.0",
-        "symfony/var-exporter": "^6.4.1 || ^7.0 || ^8.0"
+        "symfony/deprecation-contracts": "^2.2 || ^3.0"
     },
     "require-dev": {
         "ext-bcmath": "*",

@@ -9,20 +9,12 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Proxy\Factory\LazyGhostProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
-use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\CachingClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
@@ -40,7 +32,6 @@ use function assert;
 use function is_object;
 use function ltrim;
 use function sprintf;
-use function trigger_deprecation;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -91,9 +82,9 @@ class DocumentManager implements ObjectManager
     private HydratorFactory $hydratorFactory;
 
     /**
-     * The Proxy factory instance.
+     * The Lazy object factory instance.
      */
-    private ProxyFactory $proxyFactory;
+    private NativeLazyObjectFactory $lazyObjectFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
@@ -136,9 +127,6 @@ class DocumentManager implements ObjectManager
      */
     private ?FilterCollection $filterCollection = null;
 
-    /** @var ProxyClassNameResolver&ClassNameResolver  */
-    private ProxyClassNameResolver $classNameResolver;
-
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -153,31 +141,10 @@ class DocumentManager implements ObjectManager
             $this->config->getDriverOptions(),
         );
 
-        if ($this->config->isNativeLazyObjectEnabled()) {
-            $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
-                public function getRealClass(string $class): string
-                {
-                    return $class;
-                }
-
-                public function resolveClassName(string $className): string
-                {
-                    return $className;
-                }
-            };
-        } elseif ($this->config->isLazyGhostObjectEnabled()) {
-            $this->classNameResolver = new CachingClassNameResolver(new LazyGhostProxyClassNameResolver());
-        } else {
-            $this->classNameResolver = new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
-        }
-
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
-        if (! $this->config->isNativeLazyObjectEnabled()) {
-            $this->metadataFactory->setProxyClassNameResolver($this->classNameResolver);
-        }
 
         $cacheDriver = $this->config->getMetadataCache();
         if ($cacheDriver) {
@@ -194,22 +161,20 @@ class DocumentManager implements ObjectManager
             $this->config->getAutoGenerateHydratorClasses(),
         );
 
-        $this->unitOfWork    = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
-        $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
-        $this->proxyFactory  = match (true) {
-            $this->config->isNativeLazyObjectEnabled() => new NativeLazyObjectFactory($this),
-            $this->config->isLazyGhostObjectEnabled() => new LazyGhostProxyFactory($this, $this->config->getProxyDir(), $this->config->getProxyNamespace(), $this->config->getAutoGenerateProxyClasses()),
-            default => new StaticProxyFactory($this),
-        };
+        $this->unitOfWork        = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
+        $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
+        $this->lazyObjectFactory = new NativeLazyObjectFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
     }
 
     /**
-     * Gets the proxy factory used by the DocumentManager to create document proxies.
+     * Gets the lazy object factory used by the DocumentManager to create document proxies.
+     *
+     * @internal
      */
-    public function getProxyFactory(): ProxyFactory
+    public function getProxyFactory(): NativeLazyObjectFactory
     {
-        return $this->proxyFactory;
+        return $this->lazyObjectFactory;
     }
 
     /**
@@ -260,7 +225,7 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Helper method to initialize a lazy loading proxy or persistent collection.
+     * Helper method to initialize a lazy object or persistent collection.
      *
      * This method is a no-op for other objects.
      */
@@ -270,7 +235,7 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     * Helper method to check whether a lazy object or persistent collection has been initialized.
      */
     public function isUninitializedObject(mixed $obj): bool
     {
@@ -304,20 +269,6 @@ class DocumentManager implements ObjectManager
     public function getSchemaManager(): SchemaManager
     {
         return $this->schemaManager;
-    }
-
-    /**
-     * Returns the class name resolver which is used to resolve real class names for proxy objects.
-     *
-     * @deprecated Since 2.15, the use of proxy classes is deprecated and will be removed in Doctrine ODM 3.0.
-     */
-    public function getClassNameResolver(): ClassNameResolver
-    {
-        if ($this->getConfiguration()->isNativeLazyObjectEnabled()) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.15', 'The %s() method is deprecated and will be removed in Doctrine ODM 3.0. There are no proxy classes when using native lazy objects', __METHOD__);
-        }
-
-        return $this->classNameResolver;
     }
 
     /**
@@ -600,7 +551,7 @@ class DocumentManager implements ObjectManager
      * without actually loading it.
      *
      * If partial objects are allowed, this method will return a partial object that only
-     * has its identifier populated. Otherwise a proxy is returned that automatically
+     * has its identifier populated. Otherwise a lazy object is returned that automatically
      * loads itself on first access.
      *
      * @param class-string<T> $documentName
@@ -622,7 +573,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        $document = $this->proxyFactory->getProxy($class, $identifier);
+        $document = $this->lazyObjectFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, [$class->identifier => $identifier]);
 
         return $document;

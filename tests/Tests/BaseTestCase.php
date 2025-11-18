@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
@@ -20,7 +19,6 @@ use MongoDB\Driver\Manager;
 use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
-use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function array_key_exists;
 use function array_map;
@@ -97,8 +95,6 @@ abstract class BaseTestCase extends TestCase
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/../Proxies');
-        $config->setProxyNamespace('Proxies');
         $config->setHydratorDir(__DIR__ . '/../Hydrators');
         $config->setHydratorNamespace('Hydrators');
         $config->setPersistentCollectionDir(__DIR__ . '/../PersistentCollections');
@@ -106,15 +102,7 @@ abstract class BaseTestCase extends TestCase
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
 
-        if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
-            $config->setUseNativeLazyObject(true);
-        } elseif ($_ENV['USE_LAZY_GHOST_OBJECT']) {
-            $config->setUseLazyGhostObject(true);
-        }
-
-        if ($config->isNativeLazyObjectEnabled()) {
-            NativeLazyObjectFactory::enableTracking();
-        }
+        NativeLazyObjectFactory::enableTracking();
 
         $config->addFilter('testFilter', Filter::class);
         $config->addFilter('testFilter2', Filter::class);
@@ -144,11 +132,7 @@ abstract class BaseTestCase extends TestCase
 
     public static function isLazyObject(object $document): bool
     {
-        if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
-            return NativeLazyObjectFactory::isLazyObject($document);
-        }
-
-        return $document instanceof InternalProxy || $document instanceof LazyLoadingInterface;
+        return NativeLazyObjectFactory::isLazyObject($document);
     }
 
     protected static function createMetadataDriverImpl(): MappingDriver

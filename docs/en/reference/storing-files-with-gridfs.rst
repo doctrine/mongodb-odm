@@ -166,7 +166,7 @@ can also open an upload stream and write contents yourself.
     $file = $repository->uploadFromFile('/tmp/path/to/image', 'image.jpg');
 
 When using the default GridFS repository implementation, the ``uploadFromFile``
-and ``uploadFromStream`` methods return a proxy object of the file you just
+and ``uploadFromStream`` methods return a lazy object of the file you just
 uploaded.
 
 If you want to pass options, such as a metadata object to the uploaded file, you

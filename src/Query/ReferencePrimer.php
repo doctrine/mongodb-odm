@@ -30,7 +30,7 @@ use function sprintf;
  *
  * Priming a field mapped as either reference-one or reference-many will load
  * the referenced document(s) eagerly and avoid individual lazy loading through
- * proxy object initialization.
+ * lazy object initialization.
  *
  * Priming can only be used for the owning side side of a relationship, since
  * the referenced identifiers are not immediately available on an inverse side.
@@ -93,7 +93,7 @@ final readonly class ReferencePrimer
         foreach ($documents as $document) {
             $fieldValue = $class->getFieldValue($document, $fieldName);
 
-            /* The field will need to be either a Proxy (reference-one) or
+            /* The field will need to be either a lazy object (reference-one) or
              * PersistentCollection (reference-many) in order to prime anything.
              */
             if (! is_object($fieldValue)) {

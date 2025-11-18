@@ -120,17 +120,4 @@ class CreateCommand extends AbstractCommand
     {
         $sm->createSearchIndexes();
     }
-
-    protected function processDocumentProxy(SchemaManager $sm, string $document): void
-    {
-        $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
-
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
-    }
-
-    protected function processProxy(SchemaManager $sm): void
-    {
-        $metadatas = $this->getMetadataFactory()->getAllMetadata();
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);
-    }
 }

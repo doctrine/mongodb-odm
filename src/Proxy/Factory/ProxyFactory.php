@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Proxy\Factory;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/** @internal */
 interface ProxyFactory
 {
     /** @param ClassMetadata<object>[] $classes */

@@ -111,7 +111,6 @@ jobs:
       - name: "Remove optional dependencies"
         if: "${{ matrix.remove-optional-dependencies }}"
         run: |
-          composer remove --no-update friendsofphp/proxy-manager-lts symfony/var-exporter
           composer remove --no-update --dev symfony/cache doctrine/orm doctrine/annotations
           composer remove --no-update --dev doctrine/coding-standard phpstan/phpstan phpstan/phpstan-deprecation-rule phpstan/phpstan-phpunit
 
@@ -138,6 +137,4 @@ jobs:
         run: "vendor/bin/phpunit --exclude-group=atlas ${{ matrix.dependencies == 'lowest' && '--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice' || '' }}"
         env:
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
-          USE_LAZY_GHOST_OBJECT: 0
-          USE_NATIVE_LAZY_OBJECT: 1
           CRYPT_SHARED_LIB_PATH: ${{ steps.setup-mongodb.outputs.crypt-shared-lib-path }}

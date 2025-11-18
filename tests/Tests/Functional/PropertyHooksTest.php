@@ -13,17 +13,6 @@ use Documents\PropertyHooks\User;
 
 class PropertyHooksTest extends BaseTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        if ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
-            return;
-        }
-
-        $this->markTestSkipped('Property hooks require native lazy objects to be enabled.');
-    }
-
     public function testMapPropertyHooks(): void
     {
         $user           = new User();

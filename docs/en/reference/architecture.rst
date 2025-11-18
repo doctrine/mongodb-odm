@@ -72,18 +72,10 @@ subsequent access must be through the interface type.
 Serializing documents
 ~~~~~~~~~~~~~~~~~~~~~
 
-Serializing documents can be problematic and is not really
-recommended, at least not as long as a document instance still holds
-references to proxy objects or is still managed by an
-DocumentManager. If you intend to serialize (and unserialize) document
-instances that still hold references to proxy objects you may run
-into problems with private properties because of technical
-limitations. Proxy objects implement ``__sleep`` and it is not
-possible for ``__sleep`` to return names of private properties in
-parent classes. On the other hand it is not a solution for proxy
-objects to implement ``Serializable`` because Serializable does not
-work well with any potential cyclic object references (at least we
-did not find a way yet, if you did, please contact us).
+Calling `serialize` for serializing documents does not trigger initialization
+of lazy objects in relations. Instead, only the identifier fields are serialized.
+When unserializing, the objects that were not initialized before serialization
+will not contain any data except for the identifier fields. They cannot be used.
 
 The DocumentManager
 -------------------

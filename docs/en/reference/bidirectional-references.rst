@@ -170,8 +170,8 @@ you must null it out on the ``Cart.customer`` side:
 .. note::
 
     When specifying inverse one-to-one relationships the referenced document is
-    loaded directly when the owning document is hydrated instead of using a
-    proxy. In the example above, loading a ``Customer`` object from the database
+    loaded directly when the owning document is hydrated instead of using a lazy
+    object. In the example above, loading a ``Customer`` object from the database
     would also cause the corresponding ``Cart`` to be loaded. This can cause
     performance issues when loading many ``Customer`` objects at once.
 

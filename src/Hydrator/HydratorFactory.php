@@ -11,10 +11,8 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 use function array_key_exists;
 use function chmod;
@@ -451,15 +449,6 @@ EOF
         }
 
         $metadata->reflClass->markLazyObjectAsInitialized($document);
-
-        if ($document instanceof InternalProxy) {
-            $document->__setInitialized(true);
-        }
-
-        // Support for legacy proxy-manager-lts
-        if ($document instanceof GhostObjectInterface) {
-            $document->setProxyInitializer(null);
-        }
 
         $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
 

@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -28,7 +27,6 @@ use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
-use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use Throwable;
 use UnexpectedValueException;
@@ -937,7 +935,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             foreach ($documentsToProcess as $document) {
-                // Ignore uninitialized proxy objects
+                // Ignore uninitialized lazy object
                 if ($this->isUninitializedObject($document)) {
                     continue;
                 }
@@ -971,14 +969,6 @@ final class UnitOfWork implements PropertyChangedListener
         $isNewParentDocument   = isset($this->scheduledDocumentInsertions[spl_object_id($parentDocument)]);
         $class                 = $this->dm->getClassMetadata($parentDocument::class);
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
-
-        if ($value instanceof InternalProxy && ! $value->__isInitialized()) {
-            return;
-        }
-
-        if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
-            return;
-        }
 
         if ($value instanceof PersistentCollectionInterface && $value->isDirty() && $value->getOwner() !== null && ($assoc['isOwningSide'] || isset($assoc['embedded']))) {
             if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
@@ -1097,7 +1087,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document): void
     {
-        // Ignore uninitialized proxy objects
+        // Ignore uninitialized lazy objects
         if ($this->isUninitializedObject($document)) {
             return;
         }
@@ -1835,7 +1825,7 @@ final class UnitOfWork implements PropertyChangedListener
         $visited[$oid] = $document; // mark visited
 
         /* Cascade first, because scheduleForDelete() removes the entity from
-         * the identity map, which can cause problems when a lazy Proxy has to
+         * the identity map, which can cause problems when a lazy object has to
          * be initialized for the cascade operation.
          */
         $this->cascadeRemove($document, $visited);
@@ -2766,15 +2756,7 @@ final class UnitOfWork implements PropertyChangedListener
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_id($document);
             if ($this->isUninitializedObject($document)) {
-                if ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
-                    $class->reflClass->markLazyObjectAsInitialized($document);
-                } elseif ($document instanceof InternalProxy) {
-                    $document->__setInitialized(true);
-                } elseif ($document instanceof GhostObjectInterface) {
-                    $document->setProxyInitializer(null);
-                } else {
-                    throw new \RuntimeException(sprintf('Expected uninitialized proxy or ghost object from class "%s"', $document::class));
-                }
+                $class->reflClass->markLazyObjectAsInitialized($document);
 
                 $overrideLocalValues = true;
                 if ($document instanceof NotifyPropertyChanged) {
@@ -3047,17 +3029,13 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Helper method to initialize a lazy loading proxy or persistent collection.
+     * Helper method to initialize a lazy object or persistent collection.
      *
      * @internal
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof InternalProxy && $obj->__isInitialized() === false) {
-            $obj->__load();
-        } elseif ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
-            $obj->initializeProxy();
-        } elseif ($obj instanceof PersistentCollectionInterface) {
+        if ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
         } else {
             $this->dm->getClassMetadata($obj::class)->reflClass->initializeLazyObject($obj);
@@ -3065,18 +3043,15 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     * Helper method to check whether a lazy object or persistent collection has been initialized.
      *
      * @internal
      */
     public function isUninitializedObject(object $obj): bool
     {
         return match (true) {
-            $obj instanceof InternalProxy => ! $obj->__isInitialized(),
-            $obj instanceof GhostObjectInterface => ! $obj->isProxyInitialized(),
             $obj instanceof PersistentCollectionInterface => ! $obj->isInitialized(),
-            $this->dm->getConfiguration()->isNativeLazyObjectEnabled() => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
-            default => false
+            default => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
         };
     }
 

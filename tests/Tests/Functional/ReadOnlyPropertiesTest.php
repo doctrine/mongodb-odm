@@ -14,11 +14,6 @@ class ReadOnlyPropertiesTest extends BaseTestCase
 {
     public function testReadOnlyDocument(): void
     {
-        $configuration = $this->dm->getConfiguration();
-        if (! $configuration->isNativeLazyObjectEnabled() && ! $configuration->isLazyGhostObjectEnabled()) {
-            $this->markTestSkipped('Read-only properties are not supported by the legacy Proxy Manager. https://github.com/FriendsOfPHP/proxy-manager-lts/issues/26');
-        }
-
         $document           = new ReadOnlyProperties('Test Name');
         $document->onlyRead = new ReadOnlyProperties('Nested Name');
         $this->dm->persist($document);

@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\SchemaManager;
@@ -34,7 +33,6 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionProperty;
 use RuntimeException;
 use stdClass;
@@ -269,13 +267,6 @@ class DocumentManagerTest extends BaseTestCase
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         self::assertEquals(User::class, $this->dm->getClassNameForAssociation($mapping, null));
-    }
-
-    #[IgnoreDeprecations]
-    public function testGetClassNameResolver(): void
-    {
-        $resolver = $this->dm->getClassNameResolver();
-        self::assertInstanceOf(ClassNameResolver::class, $resolver);
     }
 }
 

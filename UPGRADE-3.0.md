@@ -47,14 +47,28 @@ no longer implements the `PropertyChangedListener` interface.
 `AnnotationDriver` class defined in `doctrine/persistence` (or in ODM's 
 compatibility layer)
 
-## Proxy Class Name Resolution
+## Proxy Classes replaced by Native Lazy Objects
+
+The proxy system based on generated proxy classes has been replaced by
+native PHP lazy objects. The proxy classes don't exist anymore and don't
+need to be generated.
+
+The following methods have been removed from `Doctrine\ODM\MongoDB\Configuration`:
+- `setUseLazyGhostObject` and `isLazyGhostObjectEnabled`,
+- `setUseNativeLazyObject` and `isNativeLazyObjectEnabled`,
+- `setProxyDir` and `getProxyDir`,
+- `setProxyNamespace` and `getProxyNamespace`,
+- `setAutoGenerateProxyClasses` and `getAutoGenerateProxyClasses`,
+- `getProxyManagerConfiguration`
+- `getProxyFactory`
+- `buildGhostObjectFactory`
 
 The `Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver` interface has been
 dropped in favor of the `Doctrine\Persistence\Mapping\ProxyClassNameResolver`
 interface.
 
 The `getClassNameResolver` method in `DocumentManager` has been removed. To
-retrieve the mapped class name for any object or class string,  fetch metadata
+retrieve the mapped class name for any object or class string, fetch metadata
 for the class and read the class using `$metadata->getName()`. The metadata
 layer is aware of these proxy namespace changes and how to resolve them, so
 users should always go through the metadata layer to retrieve mapped class

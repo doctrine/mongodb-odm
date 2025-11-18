@@ -1080,8 +1080,8 @@ class Builder
      *
      * If $primer is true or a callable is provided, referenced documents for
      * this field will loaded into UnitOfWork immediately after the query is
-     * executed. This will avoid multiple queries due to lazy initialization of
-     * Proxy objects.
+     * executed. This will avoid multiple queries due to initialization of
+     * lazy objects.
      *
      * If $primer is false, no priming will take place. That is also the default
      * behavior.

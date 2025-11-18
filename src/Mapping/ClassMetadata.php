@@ -18,7 +18,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
@@ -31,7 +30,6 @@ use LogicException;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
-use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionEnum;
 use ReflectionNamedType;
@@ -957,8 +955,7 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @param mixed[]|null $arguments
      *
-     * @throws InvalidArgumentException If document class is not this class or
-     *                                   a Proxy of this class.
+     * @throws InvalidArgumentException If the document class is not this class.
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
@@ -1895,15 +1892,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function setFieldValue(object $document, string $field, mixed $value): void
     {
-        if ($document instanceof InternalProxy && ! $document->__isInitialized()) {
-            //property changes to an uninitialized proxy will not be tracked or persisted,
-            //so the proxy needs to be loaded first.
-            $document->__load();
-        } elseif ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-            $document->initializeProxy();
-        } else {
-            $this->reflClass->initializeLazyObject($document);
-        }
+        $this->reflClass->initializeLazyObject($document);
 
         $this->propertyAccessors[$field]->setValue($document, $value);
     }
@@ -1913,11 +1902,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function getFieldValue(object $document, string $field): mixed
     {
-        if ($document instanceof InternalProxy && $field !== $this->identifier && ! $document->__isInitialized()) {
-            $document->__load();
-        } elseif ($document instanceof GhostObjectInterface && $field !== $this->identifier && ! $document->isProxyInitialized()) {
-            $document->initializeProxy();
-        } elseif ($field !== $this->identifier && $this->reflClass->isUninitializedLazyObject($document)) {
+        if ($field !== $this->identifier) {
             $this->reflClass->initializeLazyObject($document);
         }
 
