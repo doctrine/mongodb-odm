@@ -706,7 +706,7 @@ final class DocumentPersister
             $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
             $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
-            $id   = $data[$embeddedMetadata->identifier] ?? null;
+            $id   = $data[$embeddedMetadata->identifier ?? ''] ?? null;
 
             if (empty($collection->getHints()[Query::HINT_READ_ONLY])) {
                 $this->uow->registerManaged($embeddedDocumentObject, $id, $data);
@@ -994,7 +994,7 @@ final class DocumentPersister
      */
     public function addDiscriminatorToPreparedQuery(array $preparedQuery): array
     {
-        if (isset($preparedQuery[$this->class->discriminatorField]) || $this->class->discriminatorField === null) {
+        if (isset($preparedQuery[$this->class->discriminatorField ?? '']) || $this->class->discriminatorField === null) {
             return $preparedQuery;
         }
 
