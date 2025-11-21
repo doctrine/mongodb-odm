@@ -12,8 +12,10 @@ use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use LogicException;
 use ReflectionClass;
+use ReflectionProperty;
 use WeakMap;
 
+use function array_key_exists;
 use function count;
 
 use const PHP_VERSION_ID;
@@ -26,6 +28,9 @@ class NativeLazyObjectFactory implements ProxyFactory
 
     private readonly UnitOfWork $unitOfWork;
     private readonly LifecycleEventManager $lifecycleEventManager;
+
+    /** @var array<class-string, ReflectionProperty[]> */
+    private array $skippedProperties = [];
 
     public function __construct(
         DocumentManager $documentManager,
@@ -68,11 +73,38 @@ class NativeLazyObjectFactory implements ProxyFactory
 
         $metadata->propertyAccessors[$metadata->identifier]->setValue($proxy, $identifier);
 
+        foreach ($this->getSkippedProperties($metadata) as $property) {
+            $property->skipLazyInitialization($proxy);
+        }
+
         if (isset(self::$lazyObjects)) {
             self::$lazyObjects[$proxy] = true;
         }
 
         return $proxy;
+    }
+
+    /** @return ReflectionProperty[] */
+    private function getSkippedProperties(ClassMetadata $metadata): array
+    {
+        if (isset($this->skippedProperties[$metadata->name])) {
+            return $this->skippedProperties[$metadata->name];
+        }
+
+        $skippedProperties = [];
+        foreach ($metadata->reflClass->getProperties() as $property) {
+            if (array_key_exists($property->name, $metadata->propertyAccessors)) {
+                continue;
+            }
+
+            if ($property->isVirtual()) {
+                continue;
+            }
+
+            $skippedProperties[] = $property;
+        }
+
+        return $this->skippedProperties[$metadata->name] = $skippedProperties;
     }
 
     /** @internal Only for tests */
