@@ -14,6 +14,12 @@ need the referenced documents, you can use the ``$lookup`` stage in MongoDB's
 aggregation pipeline. It's similar to a SQL join, without duplication of data in
 the result set when there is many references to load.
 
+.. note::
+
+    Lazy loading of references only occurs when accessing an uninitialized mapped property.
+    If you access a property that is not mapped in Doctrine, that will not trigger
+    loading of the referenced document.
+
 Example setup
 -------------
 

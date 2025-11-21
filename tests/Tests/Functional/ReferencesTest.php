@@ -34,8 +34,8 @@ class ReferencesTest extends BaseTestCase
         $loadedDocument = $this->dm->getReference(DocumentWithUnmappedProperties::class, '123');
         $this->assertInstanceOf(DocumentWithUnmappedProperties::class, $loadedDocument);
 
-        // Accessing unmapped property should not initialize the document
         self::assertSame('bar', $loadedDocument->foo);
+        self::assertTrue($this->dm->isUninitializedObject($loadedDocument));
     }
 
     public function testManyDeleteReference(): void
