@@ -994,7 +994,7 @@ final class DocumentPersister
      */
     public function addDiscriminatorToPreparedQuery(array $preparedQuery): array
     {
-        if (isset($preparedQuery[$this->class->discriminatorField ?? '']) || $this->class->discriminatorField === null) {
+        if ($this->class->discriminatorField === null || isset($preparedQuery[$this->class->discriminatorField])) {
             return $preparedQuery;
         }
 
