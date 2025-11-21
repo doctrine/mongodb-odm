@@ -12,12 +12,12 @@ use Documents\Group;
 use Documents\Phonenumber;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
-use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
-use PhpBench\Benchmark\Metadata\Annotations\Warmup;
+use PhpBench\Attributes\BeforeMethods;
+use PhpBench\Attributes\Warmup;
 
 use function assert;
 
-/** @BeforeMethods({"init"}, extend=true) */
+#[BeforeMethods(['init'])]
 final class LoadDocumentBench extends BaseBench
 {
     /** @var ObjectId */
@@ -53,19 +53,19 @@ final class LoadDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchLoadDocument(): void
     {
         $this->loadDocument();
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchLoadEmbedOne(): void
     {
         $this->loadDocument()->getAddress()->getCity();
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchLoadEmbedMany(): void
     {
         $this->loadDocument()->getPhonenumbers()->forAll(static function (int $key, Phonenumber $element) {
@@ -73,13 +73,13 @@ final class LoadDocumentBench extends BaseBench
         });
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchLoadReferenceOne(): void
     {
         $this->loadDocument()->getAccount()->getName();
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchLoadReferenceMany(): void
     {
         $this->loadDocument()->getGroups()->forAll(static function (int $key, Group $group) {

@@ -9,10 +9,10 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
-use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
-use PhpBench\Benchmark\Metadata\Annotations\Warmup;
+use PhpBench\Attributes\BeforeMethods;
+use PhpBench\Attributes\Warmup;
 
-/** @BeforeMethods({"init"}, extend=true) */
+#[BeforeMethods(['init'])]
 final class HydrateDocumentBench extends BaseBench
 {
     /** @var array<string, mixed> */
@@ -78,31 +78,31 @@ final class HydrateDocumentBench extends BaseBench
             ->getHydratorFor(User::class);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocument(): void
     {
         self::$hydrator->hydrate(new User(), self::$data);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithEmbedOne(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$embedOneData);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithEmbedMany(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$embedManyData);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithReferenceOne(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$referenceOneData);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithReferenceMany(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$referenceManyData);

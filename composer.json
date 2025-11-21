@@ -48,7 +48,7 @@
         "doctrine/coding-standard": "^14.0",
         "doctrine/orm": "^3.2",
         "jmikola/geojson": "^1.0",
-        "phpbench/phpbench": "^1.0.0",
+        "phpbench/phpbench": "^1.4.0",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
