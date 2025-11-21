@@ -159,6 +159,13 @@ the life-time of their registered documents.
    document has been loaded into the current DocumentManager from the
    database or after the refresh operation has been applied to it.
 -
+   ``onReference`` - The onReference event occurs when a lazy document reference
+   is created. The data of the document are not loaded yet at this point; if
+   you access any mapped field of the document, a database query will be
+   triggered to load the document data. Which defeats the purpose of using
+   lazy references in the first place.
+   This can be used to inject dependencies into unmapped properties.
+-
    ``loadClassMetadata`` - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
    (attributes/xml).

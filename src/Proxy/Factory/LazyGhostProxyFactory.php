@@ -230,18 +230,20 @@ EOPHP;
             $reflector = $reflector->getParentClass();
         }
 
-        $className       = $class->getName(); // aliases and case sensitivity
-        $entityPersister = $this->uow->getDocumentPersister($className);
-        $initializer     = $this->createLazyInitializer($class, $entityPersister);
-        $proxyClassName  = $this->loadProxyClass($class);
+        $className             = $class->getName(); // aliases and case sensitivity
+        $entityPersister       = $this->uow->getDocumentPersister($className);
+        $initializer           = $this->createLazyInitializer($class, $entityPersister);
+        $proxyClassName        = $this->loadProxyClass($class);
+        $lifecycleEventManager = $this->lifecycleEventManager;
 
-        $proxyFactory = Closure::bind(static function (mixed $identifier) use ($initializer, $skippedProperties, $class): InternalProxy {
+        $proxyFactory = Closure::bind(static function (mixed $identifier) use ($initializer, $skippedProperties, $class, $lifecycleEventManager): InternalProxy {
             /** @see LazyGhostTrait::createLazyGhost() */
             $proxy = static::createLazyGhost(static function (InternalProxy $object) use ($initializer, $identifier): void {
                 $initializer($object, $identifier);
             }, $skippedProperties);
 
             $class->setIdentifierValue($proxy, $identifier);
+            $lifecycleEventManager->onReference($proxy);
 
             return $proxy;
         }, null, $proxyClassName);

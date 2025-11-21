@@ -134,6 +134,11 @@ final class LifecycleEventManager
         $this->cascadePostUpdate($class, $document, $session);
     }
 
+    public function onReference(object $document): void
+    {
+        $this->evm->dispatchEvent(Events::onReference, new LifecycleEventArgs($document, $this->dm));
+    }
+
     /**
      * Invokes prePersist callbacks and events for given document.
      *

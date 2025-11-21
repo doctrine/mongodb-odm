@@ -61,6 +61,7 @@ final class StaticProxyFactory implements ProxyFactory
             );
 
         $metadata->setIdentifierValue($ghostObject, $identifier);
+        $this->lifecycleEventManager->onReference($ghostObject);
 
         return $ghostObject;
     }

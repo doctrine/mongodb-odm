@@ -87,6 +87,18 @@ final class Events
     public const postLoad = 'postLoad';
 
     /**
+     * The onReference event occurs when a lazy document reference is created.
+     *
+     * Note that the data of the document are not loaded yet at this point; if
+     * you access any mapped field of the document, a database query will be
+     * triggered to load the document data. Which defeats the purpose of using
+     * lazy references in the first place.
+     *
+     * This is a document lifecycle event.
+     */
+    public const onReference = 'onReference';
+
+    /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
      * has been loaded from a mapping source (annotations/xml).
      */

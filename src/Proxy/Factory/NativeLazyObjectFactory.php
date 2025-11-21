@@ -72,6 +72,8 @@ class NativeLazyObjectFactory implements ProxyFactory
             self::$lazyObjects[$proxy] = true;
         }
 
+        $this->lifecycleEventManager->onReference($proxy);
+
         return $proxy;
     }
 
