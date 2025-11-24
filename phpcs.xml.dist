@@ -20,6 +20,9 @@
     <exclude-pattern>tests/Hydrators*</exclude-pattern>
     <exclude-pattern>tests/PersistentCollections*</exclude-pattern>
 
+    <!-- Property Hooks aren't supported yet -->
+    <exclude-pattern>tests/**/PropertyHooks*</exclude-pattern>
+
     <rule ref="Doctrine">
         <!-- Traversable type hints often end up as mixed[], so we skip them for now -->
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />

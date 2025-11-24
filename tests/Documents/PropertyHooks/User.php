@@ -1,6 +1,7 @@
-<?php // phpcs:ignoreFile
+<?php
 
 namespace Documents\PropertyHooks;
+
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
