@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 /**
  * Special field mapping to map document identifiers
- *
- * @Annotation
- * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Id extends AbstractField

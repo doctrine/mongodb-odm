@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -13,8 +12,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @phpstan-import-type VectorSearchIndexField from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]

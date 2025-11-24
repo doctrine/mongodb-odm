@@ -5,14 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations\File;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/**
- * @Annotation
- * @NamedArgumentConstructor
- */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Metadata extends AbstractField
 {

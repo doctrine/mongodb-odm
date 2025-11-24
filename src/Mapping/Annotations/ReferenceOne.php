@@ -5,14 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * Specifies a one-to-one relationship to a different document
- *
- * @Annotation
- * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class ReferenceOne extends AbstractField

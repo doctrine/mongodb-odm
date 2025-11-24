@@ -8,8 +8,6 @@ use Attribute;
 
 /**
  * Specifies a field to use for pessimistic locking
- *
- * @Annotation
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class Lock implements Annotation
