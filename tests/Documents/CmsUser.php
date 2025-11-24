@@ -8,71 +8,38 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-/** @ODM\Document */
 #[ODM\Document]
 class CmsUser
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     public $status;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     public $username;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     public $name;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=CmsPhonenumber::class, mappedBy="user", cascade={"persist", "remove", "merge"})
-     *
-     * @var Collection<int, CmsPhonenumber>
-     */
+    /** @var Collection<int, CmsPhonenumber> */
     #[ODM\ReferenceMany(targetDocument: CmsPhonenumber::class, mappedBy: 'user', cascade: ['persist', 'remove', 'merge'])]
     public $phonenumbers;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=CmsArticle::class)
-     *
-     * @var Collection<int, CmsArticle>
-     */
+    /** @var Collection<int, CmsArticle> */
     #[ODM\ReferenceMany(targetDocument: CmsArticle::class)]
     public $articles;
 
-    /**
-     * @ODM\ReferenceOne(targetDocument=CmsAddress::class, cascade={"persist"})
-     *
-     * @var CmsAddress
-     */
+    /** @var CmsAddress */
     #[ODM\ReferenceOne(targetDocument: CmsAddress::class, cascade: ['persist'])]
     public $address;
 
-    /**
-     * @ODM\ReferenceMany(targetDocument=CmsGroup::class, cascade={"persist", "merge"})
-     *
-     * @var Collection<int, CmsGroup>
-     */
+    /** @var Collection<int, CmsGroup> */
     #[ODM\ReferenceMany(targetDocument: CmsGroup::class, cascade: ['persist', 'merge'])]
     public $groups;
 

@@ -143,10 +143,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     public static function provideClassCanBeMappedByOneAbstractDocument(): ?Generator
     {
         yield [
-            /**
-             * @ODM\Document()
-             * @ODM\EmbeddedDocument
-             */
             new #[ODM\Document]
                 #[ODM\EmbeddedDocument]
             class () {
@@ -155,10 +151,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         ];
 
         yield [
-            /**
-             * @ODM\Document()
-             * @ODM\File
-             */
             new #[ODM\Document]
                 #[ODM\File]
             class () {
@@ -167,10 +159,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         ];
 
         yield [
-            /**
-             * @ODM\Document()
-             * @ODM\QueryResultDocument
-             */
             new #[ODM\Document]
                 #[ODM\QueryResultDocument]
             class () {
@@ -179,10 +167,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         ];
 
         yield [
-            /**
-             * @ODM\Document()
-             * @ODM\View
-             */
             new #[ODM\Document]
                 #[ODM\View]
             class () {
@@ -191,10 +175,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         ];
 
         yield [
-            /**
-             * @ODM\Document()
-             * @ODM\MappedSuperclass
-             */
             new #[ODM\Document]
                 #[ODM\MappedSuperclass]
             class () {
@@ -203,10 +183,6 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
         ];
 
         yield [
-            /**
-             * @ODM\MappedSuperclass()
-             * @ODM\Document
-             */
             new #[ODM\MappedSuperclass]
                 #[ODM\Document]
             class () {
@@ -233,126 +209,82 @@ abstract class AbstractAnnotationDriverTestCase extends AbstractMappingDriverTes
     }
 }
 
-/** @ODM\Document */
+
 #[ODM\Document]
 class ColumnWithoutType
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Id]
     public $id;
 }
 
-/** @ODM\MappedSuperclass */
+
 #[ODM\MappedSuperclass]
 class AnnotationDriverTestSuper
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Id]
     public $id;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     protected $protected;
 
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     private $private;
 }
 
-/** @ODM\Document */
+
 #[ODM\Document]
 class AnnotationDriverTestParent extends AnnotationDriverTestSuper
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     public $foo;
 }
 
-/** @ODM\Document */
+
 #[ODM\Document]
 class AnnotationDriverTestChild extends AnnotationDriverTestParent
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     public $bar;
 }
 
-/**
- * @ODM\EmbeddedDocument
- * @ODM\ShardKey(keys={"foo"="asc"})
- */
 #[ODM\EmbeddedDocument]
 #[ODM\ShardKey(keys: ['foo' => 'asc'])]
 class AnnotationDriverEmbeddedWithShardKey
 {
-    /**
-     * @ODM\Field(type="string")
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Field(type: 'string')]
     public $foo;
 }
 
-/** @ODM\Document(writeConcern="majority") */
+
 #[ODM\Document(writeConcern: 'majority')]
 class AnnotationDriverTestWriteConcernMajority
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Document(writeConcern=0) */
+
 #[ODM\Document(writeConcern: 0)]
 class AnnotationDriverTestWriteConcernUnacknowledged
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Id]
     public $id;
 }
 
-/** @ODM\Validation(validator="wrong") */
+
 #[ODM\Validation(validator: 'wrong')]
 class WrongValueForValidationValidator
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\Id]
     public $id;
 }

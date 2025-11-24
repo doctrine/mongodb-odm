@@ -196,7 +196,6 @@ abstract class BaseEventDocument
 
     public int $postRemove = 0;
 
-    /** @ODM\PreUpdate */
     #[ODM\PreUpdate]
     public function preUpdate(Event\PreUpdateEventArgs $e): void
     {

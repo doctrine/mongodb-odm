@@ -8,11 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 trait AddressTrait
 {
-    /**
-     * @ODM\EmbedOne
-     *
-     * @var Address|null
-     */
+    /** @var Address|null */
     #[ODM\EmbedOne]
     private $address;
 

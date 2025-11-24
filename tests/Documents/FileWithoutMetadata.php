@@ -13,11 +13,7 @@ class FileWithoutMetadata
     #[ODM\Id]
     private $id;
 
-    /**
-     * @ODM\File\Filename
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     #[ODM\File\Filename]
     private $filename;
 

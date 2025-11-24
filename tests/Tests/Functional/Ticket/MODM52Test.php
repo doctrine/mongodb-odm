@@ -36,7 +36,7 @@ class MODM52Test extends BaseTestCase
     }
 }
 
-/** @ODM\MappedSuperClass */
+
 class MODM52Container
 {
     /** @var string|null */
