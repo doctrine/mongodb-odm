@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\RawValuePropertyAccessor;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Documents84\PropertyHooks\User;
+use Documents\PropertyHooks\User;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use ReflectionObject;
 
