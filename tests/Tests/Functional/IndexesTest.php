@@ -81,9 +81,9 @@ class IndexesTest extends BaseTestCase
         self::assertEquals(1, $indexes[0]['keys']['type']);
     }
 
-    public function testMultipleIndexAnnotations(): void
+    public function testMultipleIndexAttributes(): void
     {
-        $class   = $this->dm->getClassMetadata(DocumentWithMultipleIndexAnnotations::class);
+        $class   = $this->dm->getClassMetadata(DocumentWithMultipleIndexAttributes::class);
         $sm      = $this->dm->getSchemaManager();
         $indexes = $sm->getDocumentIndexes($class->name);
 
@@ -460,7 +460,7 @@ class DocumentWithDiscriminatorIndex
 #[ODM\Index(keys: ['name' => 'asc'])]
 #[ODM\Index(keys: ['name' => 'desc'])]
 #[ODM\UniqueIndex(keys: ['name' => 'asc'], options: ['sparse' => true])]
-class DocumentWithMultipleIndexAnnotations
+class DocumentWithMultipleIndexAttributes
 {
     /** @var string|null */
     #[ODM\Id]

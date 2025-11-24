@@ -607,7 +607,7 @@ class EmbeddedTest extends BaseTestCase
 
     public function testEmbeddedDocumentWithDifferentFieldNameAnnotation(): void
     {
-        $test1 = new ChangeEmbeddedWithNameAnnotationTest();
+        $test1 = new ChangeEmbeddedWithNameAttributeTest();
 
         $embedded     = new EmbeddedDocumentWithId();
         $embedded->id = (string) new ObjectId();
@@ -624,7 +624,7 @@ class EmbeddedTest extends BaseTestCase
 
         $this->dm->flush();
 
-        $test1Data = $this->dm->createQueryBuilder(ChangeEmbeddedWithNameAnnotationTest::class)
+        $test1Data = $this->dm->createQueryBuilder(ChangeEmbeddedWithNameAttributeTest::class)
             ->hydrate(false)
             ->field('id')
             ->equals($test1->id)
@@ -667,7 +667,7 @@ class EmbeddedDocumentWithId
 }
 
 #[ODM\Document]
-class ChangeEmbeddedWithNameAnnotationTest
+class ChangeEmbeddedWithNameAttributeTest
 {
     /** @var string|null */
     #[ODM\Id]

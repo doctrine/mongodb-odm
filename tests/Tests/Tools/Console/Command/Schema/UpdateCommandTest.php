@@ -72,8 +72,8 @@ class UpdateCommandTest extends AbstractCommandTestCase
     public function testProcessValidators(): void
     {
         // Only load a subset of documents with legit annotations
-        $annotationDriver = $this->createDriver();
-        $this->dm->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $attributeDriver = $this->createDriver();
+        $this->dm->getConfiguration()->setMetadataDriverImpl($attributeDriver);
         $this->commandTester->execute([]);
         $output = $this->commandTester->getDisplay();
         self::assertStringContainsString('Updated validation for all classes', $output);
@@ -82,8 +82,8 @@ class UpdateCommandTest extends AbstractCommandTestCase
     public function testDisabledValidatorsProcessing(): void
     {
         // Only load a subset of documents with legit annotations
-        $annotationDriver = $this->createDriver();
-        $this->dm->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+        $attributeDriver = $this->createDriver();
+        $this->dm->getConfiguration()->setMetadataDriverImpl($attributeDriver);
         $this->commandTester->execute(['--disable-validators' => true]);
         $output = $this->commandTester->getDisplay();
         self::assertStringNotContainsString('Updated validation for all classes', $output);
