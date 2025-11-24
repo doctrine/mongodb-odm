@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
@@ -38,26 +37,12 @@ class AttributeDriver implements MappingDriver
 {
     use ColocatedMappingDriver;
 
-    /**
-     * @internal this property will be private in 3.0
-     *
-     * @var Reader|AttributeReader
-     */
-    protected $reader;
+    private AttributeReader $reader;
 
     /** @param string|string[]|ClassLocator|null $paths */
-    public function __construct($paths = null, ?Reader $reader = null)
+    public function __construct($paths = null)
     {
-        if ($reader !== null) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.7',
-                'Passing a $reader parameter to %s is deprecated',
-                __METHOD__,
-            );
-        }
-
-        $this->reader = $reader ?? new AttributeReader();
+        $this->reader = new AttributeReader();
 
         if ($paths instanceof ClassLocator) {
             $this->classLocator = $paths;
@@ -388,58 +373,33 @@ class AttributeDriver implements MappingDriver
         $class->setShardKey($shardKey->keys, $options);
     }
 
-    /** @return Reader|AttributeReader */
-    public function getReader()
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.4',
-            '%s is deprecated with no replacement',
-            __METHOD__,
-        );
-
-        return $this->reader;
-    }
-
     /**
      * Factory method for the Attribute Driver
      *
      * @param string|string[]|ClassLocator $paths
      *
-     * @return AttributeDriver
+     * @return self
      */
-    public static function create($paths = [], ?Reader $reader = null)
+    public static function create($paths = [])
     {
-        return new self($paths, $reader);
+        return new self($paths);
     }
 
     /** @return object[] */
     private function getClassAttributes(ReflectionClass $class): array
     {
-        if ($this->reader instanceof AttributeReader) {
-            return $this->reader->getClassAttributes($class);
-        }
-
-        return $this->reader->getClassAnnotations($class);
+        return $this->reader->getClassAttributes($class);
     }
 
     /** @return object[] */
     private function getMethodAttributes(ReflectionMethod $method): array
     {
-        if ($this->reader instanceof AttributeReader) {
-            return $this->reader->getMethodAttributes($method);
-        }
-
-        return $this->reader->getMethodAnnotations($method);
+        return $this->reader->getMethodAttributes($method);
     }
 
     /** @return object[] */
     private function getPropertyAttributes(ReflectionProperty $property): array
     {
-        if ($this->reader instanceof AttributeReader) {
-            return $this->reader->getPropertyAttributes($property);
-        }
-
-        return $this->reader->getPropertyAnnotations($property);
+        return $this->reader->getPropertyAttributes($property);
     }
 }

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB;
 
 use Composer\InstalledVersions;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\Psr6\CacheAdapter;
 use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
@@ -252,18 +250,6 @@ class Configuration
     public function setMetadataDriverImpl(MappingDriver $driverImpl): void
     {
         $this->attributes['metadataDriverImpl'] = $driverImpl;
-    }
-
-    /**
-     * Add a new default annotation driver with a correctly configured annotation reader.
-     *
-     * @param string[] $paths
-     */
-    public function newDefaultAnnotationDriver(array $paths = []): AnnotationDriver
-    {
-        $reader = new AnnotationReader();
-
-        return new AnnotationDriver($reader, $paths);
     }
 
     /**
