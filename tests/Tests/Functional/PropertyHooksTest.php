@@ -8,9 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\PropertyHooks\MappingVirtualProperty;
 use Documents\PropertyHooks\User;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 
-#[RequiresPhp('>= 8.4.0')]
 class PropertyHooksTest extends BaseTestCase
 {
     protected function setUp(): void

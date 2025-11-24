@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use LogicException;
 use MongoDB\Driver\Manager;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
@@ -27,17 +26,6 @@ use function version_compare;
 
 class ConfigurationTest extends TestCase
 {
-    #[RequiresPhp('< 8.4')]
-    public function testUseNativeLazyObjectBeforePHP84(): void
-    {
-        $c = new Configuration();
-
-        self::expectException(LogicException::class);
-        self::expectExceptionMessage('Native lazy objects require PHP 8.4 or higher.');
-
-        $c->setUseNativeLazyObject(true);
-    }
-
     #[IgnoreDeprecations]
     public function testUseLazyGhostObject(): void
     {
@@ -61,7 +49,6 @@ class ConfigurationTest extends TestCase
         self::assertFalse($c->isLazyGhostObjectEnabled());
     }
 
-    #[RequiresPhp('>= 8.4')]
     public function testUseLazyGhostObjectWithSymfony8(): void
     {
         if (InstalledVersions::isInstalled('symfony/var-exporter') && version_compare(InstalledVersions::getVersion('symfony/var-exporter'), '8', '<')) {
@@ -84,7 +71,6 @@ class ConfigurationTest extends TestCase
         self::assertFalse($c->isNativeLazyObjectEnabled());
     }
 
-    #[RequiresPhp('>= 8.4')]
     #[TestWith([true])]
     #[TestWith([false])]
     public function testConflictingLazyObjectSettings(bool $flag): void

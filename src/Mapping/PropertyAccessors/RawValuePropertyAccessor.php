@@ -11,8 +11,6 @@ use ReflectionProperty;
 use function ltrim;
 
 /**
- * This is a PHP 8.4 and up only class and replaces {@see ObjectCastPropertyAccessor}.
- *
  * It works based on the raw values of a property, which for a case of property hooks
  * is the backed value. If we kept using setValue/getValue, this would go through the hooks,
  * which potentially change the data.
