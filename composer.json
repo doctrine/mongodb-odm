@@ -43,7 +43,6 @@
     },
     "require-dev": {
         "ext-bcmath": "*",
-        "doctrine/annotations": "^1.12 || ^2.0",
         "doctrine/coding-standard": "^14.0",
         "doctrine/orm": "^3.2",
         "jmikola/geojson": "^1.0",
@@ -57,11 +56,7 @@
         "symfony/uid": "^5.4 || ^6.0 || ^7.0 || ^8.0",
         "symfony/var-dumper": "^5.4 || ^6.0 || ^7.0 || ^8.0"
     },
-    "conflict": {
-        "doctrine/annotations": "<1.12 || >=3.0"
-    },
     "suggest": {
-        "doctrine/annotations": "For annotation mapping support",
         "ext-bcmath": "Decimal128 type support",
         "symfony/var-dumper": "To enable the odm:query command"
     },
