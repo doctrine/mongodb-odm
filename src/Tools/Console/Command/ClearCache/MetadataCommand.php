@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\ClearCache;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use InvalidArgumentException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,11 +18,10 @@ use const PHP_EOL;
 /**
  * Command to clear the metadata cache of the various cache drivers.
  */
+#[AsCommand('odm:clear-cache:metadata')]
 class MetadataCommand extends Command
 {
-    use CommandCompatibility;
-
-    private function doConfigure(): void
+    protected function configure(): void
     {
         $this
         ->setName('odm:clear-cache:metadata')
@@ -34,7 +33,7 @@ EOT
         );
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dm = $this->getHelper('documentManager')->getDocumentManager();
         assert($dm instanceof DocumentManager);
