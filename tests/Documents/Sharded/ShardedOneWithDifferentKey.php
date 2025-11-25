@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Documents\Sharded;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
 /**
  * Note: this document intentially collides with ShardedOne to test shard key changes

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Documentation\MappingOrmAndOdm;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrmBlogPostRepository::class)]

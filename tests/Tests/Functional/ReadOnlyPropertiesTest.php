@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ReferenceOne;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class ReadOnlyPropertiesTest extends BaseTestCase

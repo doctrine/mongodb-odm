@@ -1,5 +1,28 @@
 # UPGRADE FROM 2.15 to 2.16
 
+## Attribute namespaces
+
+Doctrine annotations are already deprecated in favor of PHP attributes.
+As of MongoDB ODM 2.16, the attribute namespaces have been changed from
+`Doctrine\ODM\MongoDB\Mapping\Annotations` to `Doctrine\ODM\MongoDB\Mapping\Attribute`.
+The old annotation namespaces continue to work for the time being, but they are
+deprecated and will be removed in 3.0.
+
+```diff
+- use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
++ use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+
+  #[ODM\Document]
+  class User
+  {
+      #[ODM\Id]
+      private string $id;
+
+      #[ODM\Field]
+      public string $name;
+  }
+```
+
 ## Package `doctrine/cache` no longer required
 
 If you use `Doctrine\ODM\MongoDB\Configuration::getMetadataCacheImpl()`,

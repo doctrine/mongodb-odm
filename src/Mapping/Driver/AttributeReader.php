@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Annotation;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Annotation;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;

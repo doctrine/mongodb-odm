@@ -6,12 +6,12 @@ namespace Documentation\Validation;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\HasLifecycleCallbacks;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\PreFlush;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedMany;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\HasLifecycleCallbacks;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PreFlush;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ReferenceOne;
 
 #[Document]
 #[HasLifecycleCallbacks]

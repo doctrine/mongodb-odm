@@ -6,7 +6,7 @@ namespace Documents;
 
 use DateTime;
 use DateTimeInterface;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
 #[ODM\File]
 class FileWithoutChunkSize

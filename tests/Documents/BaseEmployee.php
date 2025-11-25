@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
 #[ODM\MappedSuperclass]
 abstract class BaseEmployee

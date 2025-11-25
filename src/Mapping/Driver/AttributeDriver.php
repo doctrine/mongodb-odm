@@ -6,10 +6,10 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractIndex;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractIndex;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ShardKey;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
