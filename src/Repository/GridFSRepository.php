@@ -19,7 +19,7 @@ interface GridFSRepository extends ObjectRepository
      *
      * @return resource
      */
-    public function openDownloadStream($id);
+    public function openDownloadStream(mixed $id);
 
     /**
      * Writes the contents of a GridFS file to a writable stream.
@@ -27,7 +27,7 @@ interface GridFSRepository extends ObjectRepository
      * @param mixed    $id          File ID
      * @param resource $destination Writable Stream
      */
-    public function downloadToStream($id, $destination): void;
+    public function downloadToStream(mixed $id, $destination): void;
 
     /**
      * Opens a writable stream for writing a GridFS file.

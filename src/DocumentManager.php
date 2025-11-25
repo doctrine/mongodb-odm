@@ -37,7 +37,6 @@ use Throwable;
 
 use function array_search;
 use function assert;
-use function gettype;
 use function is_object;
 use function ltrim;
 use function sprintf;
@@ -57,7 +56,7 @@ use function trigger_deprecation;
  */
 class DocumentManager implements ObjectManager
 {
-    public const CLIENT_TYPEMAP = ['root' => 'array', 'document' => 'array'];
+    public const array CLIENT_TYPEMAP = ['root' => 'array', 'document' => 'array'];
 
     /**
      * The Doctrine MongoDB connection instance.
@@ -451,7 +450,7 @@ class DocumentManager implements ObjectManager
      *
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
-    public function createQueryBuilder($documentName = null): Query\Builder
+    public function createQueryBuilder(array|string|null $documentName = null): Query\Builder
     {
         return new Query\Builder($this, $documentName);
     }
@@ -477,12 +476,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function persist($object): void
+    public function persist(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
         $this->unitOfWork->persist($object);
     }
@@ -497,12 +492,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function remove($object): void
+    public function remove(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
         $this->unitOfWork->remove($object);
     }
@@ -515,12 +506,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function refresh($object): void
+    public function refresh(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
         $this->unitOfWork->refresh($object);
     }
@@ -536,12 +523,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function detach($object): void
+    public function detach(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->unitOfWork->detach($object);
     }
 
@@ -557,12 +540,8 @@ class DocumentManager implements ObjectManager
      * @throws LockException
      * @throws InvalidArgumentException If the $object param is not an object.
      */
-    public function merge($object)
+    public function merge(object $object)
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
 
         return $this->unitOfWork->merge($object);
@@ -596,7 +575,7 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function getRepository($className): ObjectRepository
+    public function getRepository(string $className): ObjectRepository
     {
         return $this->repositoryFactory->getRepository($this, $className);
     }
@@ -633,7 +612,7 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function getReference(string $documentName, $identifier): object
+    public function getReference(string $documentName, mixed $identifier): object
     {
         /** @var ClassMetadata<T> $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
@@ -669,7 +648,7 @@ class DocumentManager implements ObjectManager
      *
      * @param mixed $identifier The document identifier.
      */
-    public function getPartialReference(string $documentName, $identifier): object
+    public function getPartialReference(string $documentName, mixed $identifier): object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
@@ -729,7 +708,7 @@ class DocumentManager implements ObjectManager
      *
      * @return void
      */
-    public function close()
+    public function close(): void
     {
         $this->clear();
         $this->closed = true;
@@ -744,12 +723,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function contains($object): bool
+    public function contains(object $object): bool
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         return $this->unitOfWork->isScheduledForInsert($object) ||
             $this->unitOfWork->isInIdentityMap($object) &&
             ! $this->unitOfWork->isScheduledForDelete($object);
@@ -773,7 +748,7 @@ class DocumentManager implements ObjectManager
      * @throws MappingException
      * @throws RuntimeException
      */
-    public function createReference(object $document, array $referenceMapping)
+    public function createReference(object $document, array $referenceMapping): mixed
     {
         $class = $this->getClassMetadata($document::class);
         $id    = $this->unitOfWork->getDocumentIdentifier($document);
@@ -914,7 +889,7 @@ class DocumentManager implements ObjectManager
      *
      * @return class-string
      */
-    public function getClassNameForAssociation(array $mapping, $data): string
+    public function getClassNameForAssociation(array $mapping, mixed $data): string
     {
         $discriminatorField = $mapping['discriminatorField'] ?? null;
 

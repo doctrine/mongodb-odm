@@ -15,7 +15,7 @@ class GH2158Test extends BaseTestCase
         $this->dm->persist($obj);
         $this->dm->flush();
 
-        self::assertEquals($this->dm->find(GH2158Abstract::class, $obj->getId()), $obj);
+        self::assertSame($obj, $this->dm->find(GH2158Abstract::class, $obj->getId()));
     }
 }
 

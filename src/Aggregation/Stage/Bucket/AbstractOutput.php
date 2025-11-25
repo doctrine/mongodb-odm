@@ -19,16 +19,12 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
 {
     use ProvidesGroupAccumulatorOperators;
 
-    /** @var Stage\AbstractBucket */
-    protected $bucket;
-
     private Expr $expr;
 
-    public function __construct(Builder $builder, Stage\AbstractBucket $bucket)
+    public function __construct(Builder $builder, protected Stage\AbstractBucket $bucket)
     {
         parent::__construct($builder);
 
-        $this->bucket = $bucket;
         $this->expr   = $builder->expr();
     }
 
@@ -47,7 +43,7 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
      *
      * @return $this
      */
-    public function expression($value): static
+    public function expression(mixed $value): static
     {
         $this->expr->expression($value);
 
@@ -63,7 +59,7 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
      *
      * @return $this
      */
-    public function field($fieldName): static
+    public function field(string $fieldName): static
     {
         $this->expr->field($fieldName);
 

@@ -17,19 +17,15 @@ use function array_key_exists;
  */
 abstract class BsonFilter
 {
-    /** @var DocumentManager */
-    protected $dm;
-
     /**
      * Parameters for the filter.
      *
      * @var array<string, mixed>
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
-    final public function __construct(DocumentManager $dm)
+    final public function __construct(protected DocumentManager $dm)
     {
-        $this->dm = $dm;
     }
 
     /**
@@ -37,7 +33,7 @@ abstract class BsonFilter
      *
      * @param mixed $value Value of the parameter.
      */
-    final public function setParameter(string $name, $value): self
+    final public function setParameter(string $name, mixed $value): self
     {
         $this->parameters[$name] = $value;
 
@@ -53,7 +49,7 @@ abstract class BsonFilter
      *
      * @return mixed The parameter.
      */
-    final public function getParameter(string $name)
+    final public function getParameter(string $name): mixed
     {
         if (! array_key_exists($name, $this->parameters)) {
             throw new InvalidArgumentException("Filter parameter '" . $name . "' is not set.");

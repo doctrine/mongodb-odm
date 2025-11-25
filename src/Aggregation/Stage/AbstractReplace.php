@@ -19,7 +19,7 @@ use function substr;
 abstract class AbstractReplace extends Operator
 {
     /** @param string|mixed[]|Expr|null $expression */
-    final public function __construct(Builder $builder, protected DocumentManager $dm, protected ClassMetadata $class, protected $expression = null)
+    final public function __construct(Builder $builder, protected DocumentManager $dm, protected ClassMetadata $class, protected string|array|Expr|null $expression = null)
     {
         Operator::__construct($builder);
     }
@@ -30,7 +30,7 @@ abstract class AbstractReplace extends Operator
     }
 
     /** @return array<string, mixed>|string */
-    protected function getReplaceExpression()
+    protected function getReplaceExpression(): array|string
     {
         return $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();
     }
@@ -40,7 +40,7 @@ abstract class AbstractReplace extends Operator
      *
      * @return mixed[]|string|mixed
      */
-    private function convertExpression($expression)
+    private function convertExpression(mixed $expression): mixed
     {
         if (is_array($expression)) {
             return array_map($this->convertExpression(...), $expression);

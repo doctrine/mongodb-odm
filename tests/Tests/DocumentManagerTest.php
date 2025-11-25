@@ -31,13 +31,13 @@ use Documents\ForumUser;
 use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
-use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use RuntimeException;
 use stdClass;
+use TypeError;
 
 class DocumentManagerTest extends BaseTestCase
 {
@@ -136,7 +136,7 @@ class DocumentManagerTest extends BaseTestCase
     #[DataProvider('dataMethodsAffectedByNoObjectArguments')]
     public function testThrowsExceptionOnNonObjectValues(string $methodName): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
         $this->dm->$methodName(null);
     }
 

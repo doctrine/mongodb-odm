@@ -61,7 +61,7 @@ final class AlnumGenerator extends IncrementGenerator
         $this->chars = $chars;
     }
 
-    public function generate(DocumentManager $dm, object $document)
+    public function generate(DocumentManager $dm, object $document): string
     {
         $id    = (string) parent::generate($dm, $document);
         $index = $this->awkwardSafeMode ? $this->awkwardSafeChars : $this->chars;

@@ -17,10 +17,8 @@ class BinDataType extends Type
      * Data type for binary data
      *
      * @see http://bsonspec.org/#/specification
-     *
-     * @var int
      */
-    protected $binDataType = Binary::TYPE_GENERIC;
+    protected int $binDataType = Binary::TYPE_GENERIC;
 
     public function convertToDatabaseValue($value)
     {

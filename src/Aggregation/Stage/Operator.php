@@ -47,8 +47,7 @@ abstract class Operator extends Stage implements
     TrigonometryOperators,
     TypeOperators
 {
-    /** @var Expr */
-    protected $expr;
+    protected Expr $expr;
 
     public function __construct(Builder $builder)
     {
@@ -94,7 +93,7 @@ abstract class Operator extends Stage implements
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): static
+    public function addAnd(array|Expr $expression, array|Expr ...$expressions): static
     {
         $this->expr->addAnd(...func_get_args());
 
@@ -110,7 +109,7 @@ abstract class Operator extends Stage implements
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): static
+    public function addOr(array|Expr $expression, array|Expr ...$expressions): static
     {
         $this->expr->addOr(...func_get_args());
 

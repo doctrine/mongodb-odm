@@ -24,7 +24,7 @@ use const PATHINFO_BASENAME;
 class DefaultGridFSRepository extends DocumentRepository implements GridFSRepository
 {
     /** @see Bucket::openDownloadStream() */
-    public function openDownloadStream($id)
+    public function openDownloadStream(mixed $id)
     {
         try {
             return $this->getDocumentBucket()->openDownloadStream($this->class->getDatabaseIdentifierValue($id));
@@ -34,7 +34,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     }
 
     /** @see Bucket::downloadToStream */
-    public function downloadToStream($id, $destination): void
+    public function downloadToStream(mixed $id, $destination): void
     {
         try {
             $this->getDocumentBucket()->downloadToStream($this->class->getDatabaseIdentifierValue($id), $destination);

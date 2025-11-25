@@ -109,10 +109,8 @@ final class QueryExpressionVisitor extends ExpressionVisitor
      * Converts a value expression into the target query language part.
      *
      * @see ExpressionVisitor::walkValue()
-     *
-     * @return mixed
      */
-    public function walkValue(Value $value)
+    public function walkValue(Value $value): mixed
     {
         return $value->getValue();
     }

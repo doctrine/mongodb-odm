@@ -18,12 +18,8 @@ use function trigger_deprecation;
  */
 abstract class Stage
 {
-    /** @var Builder */
-    protected $builder;
-
-    public function __construct(Builder $builder)
+    public function __construct(protected Builder $builder)
     {
-        $this->builder = $builder;
     }
 
     /**

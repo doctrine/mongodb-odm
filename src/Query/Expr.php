@@ -59,18 +59,12 @@ class Expr
     private ?string $currentField = null;
 
     /**
-     * The DocumentManager instance for this query
-     */
-    private DocumentManager $dm;
-
-    /**
      * The ClassMetadata instance for the document being queried
      */
     private ?ClassMetadata $class = null;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(private readonly DocumentManager $dm)
     {
-        $this->dm = $dm;
     }
 
     /**
@@ -82,7 +76,7 @@ class Expr
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd(array|Expr $expression, array|Expr ...$expressions): self
     {
         $this->query['$and'] = array_merge(
             $this->query['$and'] ?? [],
@@ -101,7 +95,7 @@ class Expr
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addNor($expression, ...$expressions): self
+    public function addNor(array|Expr $expression, array|Expr ...$expressions): self
     {
         $this->query['$nor'] = array_merge(
             $this->query['$nor'] ?? [],
@@ -120,7 +114,7 @@ class Expr
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr(array|Expr $expression, array|Expr ...$expressions): self
     {
         $this->query['$or'] = array_merge(
             $this->query['$or'] ?? [],
@@ -147,7 +141,7 @@ class Expr
      *
      * @param mixed|Expr $valueOrExpression
      */
-    public function addToSet($valueOrExpression): self
+    public function addToSet(mixed $valueOrExpression): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$addToSet'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
@@ -212,7 +206,7 @@ class Expr
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAllClear($value): self
+    public function bitsAllClear(int|array|Binary $value): self
     {
         $this->requiresCurrentField(__METHOD__);
 
@@ -228,7 +222,7 @@ class Expr
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAllSet($value): self
+    public function bitsAllSet(int|array|Binary $value): self
     {
         $this->requiresCurrentField(__METHOD__);
 
@@ -244,7 +238,7 @@ class Expr
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAnyClear($value): self
+    public function bitsAnyClear(int|array|Binary $value): self
     {
         $this->requiresCurrentField(__METHOD__);
 
@@ -260,7 +254,7 @@ class Expr
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAnySet($value): self
+    public function bitsAnySet(int|array|Binary $value): self
     {
         $this->requiresCurrentField(__METHOD__);
 
@@ -386,7 +380,7 @@ class Expr
      *
      * @param array<string, mixed>|Expr $expression
      */
-    public function elemMatch($expression): self
+    public function elemMatch(array|Expr $expression): self
     {
         return $this->operator('$elemMatch', $expression);
     }
@@ -398,7 +392,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function equals($value): self
+    public function equals(mixed $value): self
     {
         if ($this->currentField) {
             $this->query[$this->currentField] = $value;
@@ -443,7 +437,7 @@ class Expr
      *
      * @param array<string, mixed>|Geometry $geometry
      */
-    public function geoIntersects($geometry): self
+    public function geoIntersects(array|Geometry $geometry): self
     {
         if ($geometry instanceof Geometry) {
             $geometry = $geometry->jsonSerialize();
@@ -463,7 +457,7 @@ class Expr
      *
      * @param array<string, mixed>|Geometry $geometry
      */
-    public function geoWithin($geometry): self
+    public function geoWithin(array|Geometry $geometry): self
     {
         if ($geometry instanceof Geometry) {
             $geometry = $geometry->jsonSerialize();
@@ -543,7 +537,7 @@ class Expr
      *
      * @throws InvalidArgumentException If less than three points are given.
      */
-    public function geoWithinPolygon($point1, $point2, $point3, ...$points): self
+    public function geoWithinPolygon(array $point1, array $point2, array $point3, array ...$points): self
     {
         $shape = ['$polygon' => func_get_args()];
 
@@ -590,7 +584,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function gt($value): self
+    public function gt(mixed $value): self
     {
         return $this->operator('$gt', $value);
     }
@@ -603,7 +597,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function gte($value): self
+    public function gte(mixed $value): self
     {
         return $this->operator('$gte', $value);
     }
@@ -631,7 +625,7 @@ class Expr
      *
      * @param float|int $value
      */
-    public function inc($value): self
+    public function inc(float|int $value): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$inc'][$this->currentField] = $value;
@@ -714,7 +708,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function lt($value): self
+    public function lt(mixed $value): self
     {
         return $this->operator('$lt', $value);
     }
@@ -727,7 +721,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function lte($value): self
+    public function lte(mixed $value): self
     {
         return $this->operator('$lte', $value);
     }
@@ -740,7 +734,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function max($value): self
+    public function max(mixed $value): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$max'][$this->currentField] = $value;
@@ -756,7 +750,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function min($value): self
+    public function min(mixed $value): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$min'][$this->currentField] = $value;
@@ -773,7 +767,7 @@ class Expr
      * @param float|int $divisor
      * @param float|int $remainder
      */
-    public function mod($divisor, $remainder = 0): self
+    public function mod(float|int $divisor, float|int $remainder = 0): self
     {
         return $this->operator('$mod', [$divisor, $remainder]);
     }
@@ -788,7 +782,7 @@ class Expr
      *
      * @param float|int $value
      */
-    public function mul($value): self
+    public function mul(float|int $value): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$mul'][$this->currentField] = $value;
@@ -807,9 +801,9 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
+     * @param float|null                       $y
      */
-    public function near($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
+    public function near(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();
@@ -850,9 +844,9 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
+     * @param float|null                       $y
      */
-    public function nearSphere($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
+    public function nearSphere(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();
@@ -890,7 +884,7 @@ class Expr
      *
      * @param array|Expr|mixed $expression
      */
-    public function not($expression): self
+    public function not(mixed $expression): self
     {
         return $this->operator('$not', $expression);
     }
@@ -903,7 +897,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function notEqual($value): self
+    public function notEqual(mixed $value): self
     {
         return $this->operator('$ne', $value);
     }
@@ -929,7 +923,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function operator(string $operator, $value): self
+    public function operator(string $operator, mixed $value): self
     {
         $this->wrapEqualityCriteria();
 
@@ -992,7 +986,7 @@ class Expr
      *
      * @param mixed|Expr $valueOrExpression
      */
-    public function pull($valueOrExpression): self
+    public function pull(mixed $valueOrExpression): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$pull'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
@@ -1036,7 +1030,7 @@ class Expr
      *
      * @param mixed|Expr $valueOrExpression
      */
-    public function push($valueOrExpression): self
+    public function push(mixed $valueOrExpression): self
     {
         if ($valueOrExpression instanceof Expr) {
             $valueOrExpression = array_merge(
@@ -1062,7 +1056,7 @@ class Expr
      * @param mixed $start
      * @param mixed $end
      */
-    public function range($start, $end): self
+    public function range(mixed $start, mixed $end): self
     {
         return $this->operator('$gte', $start)->operator('$lt', $end);
     }
@@ -1139,7 +1133,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function set($value, bool $atomic = true): self
+    public function set(mixed $value, bool $atomic = true): self
     {
         $this->requiresCurrentField(__METHOD__);
         assert($this->currentField !== null);
@@ -1203,7 +1197,7 @@ class Expr
      *
      * @param mixed $value
      */
-    public function setOnInsert($value): self
+    public function setOnInsert(mixed $value): self
     {
         $this->requiresCurrentField(__METHOD__);
         $this->newObj['$setOnInsert'][$this->currentField] = $value;
@@ -1263,9 +1257,9 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
      *
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param int|string|null                  $order     Field order (if one field is specified)
      */
-    public function sort($fieldName, $order = null): self
+    public function sort(array|string $fieldName, int|string|null $order = null): self
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
@@ -1295,7 +1289,7 @@ class Expr
      *
      * @param int|string $type
      */
-    public function type($type): self
+    public function type(int|string $type): self
     {
         return $this->operator('$type', $type);
     }
@@ -1321,10 +1315,8 @@ class Expr
      *
      * @see Builder::where()
      * @see https://docs.mongodb.com/manual/reference/operator/where/
-     *
-     * @param string|Javascript $javascript
      */
-    public function where($javascript): self
+    public function where(string|Javascript $javascript): self
     {
         $this->query['$where'] = $javascript;
 
@@ -1477,7 +1469,7 @@ class Expr
      *
      * @return array<string, mixed>|mixed
      */
-    private static function convertExpression($expression, ClassMetadata $classMetadata)
+    private static function convertExpression(mixed $expression, ClassMetadata $classMetadata)
     {
         if (! $expression instanceof Expr) {
             return $expression;

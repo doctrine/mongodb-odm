@@ -483,52 +483,38 @@ use function trigger_deprecation;
 
     /**
      * READ-ONLY: The name of the mongo database the document is mapped to.
-     *
-     * @var string|null
      */
-    public $db;
+    public ?string $db = null;
 
     /**
      * READ-ONLY: The name of the mongo collection the document is mapped to.
-     *
-     * @var string
      */
-    public $collection;
+    public string $collection;
 
     /**
      * READ-ONLY: The name of the GridFS bucket the document is mapped to.
-     *
-     * @var string
      */
-    public $bucketName = 'fs';
+    public string $bucketName = 'fs';
 
     /**
      * READ-ONLY: If the collection should be a fixed size.
-     *
-     * @var bool
      */
-    public $collectionCapped = false;
+    public bool $collectionCapped = false;
 
     /**
      * READ-ONLY: If the collection is fixed size, its size in bytes.
-     *
-     * @var int|null
      */
-    public $collectionSize;
+    public ?int $collectionSize = null;
 
     /**
      * READ-ONLY: If the collection is fixed size, the maximum number of elements to store in the collection.
-     *
-     * @var int|null
      */
-    public $collectionMax;
+    public ?int $collectionMax = null;
 
     /**
      * READ-ONLY Describes how MongoDB clients route read operations to the members of a replica set.
-     *
-     * @var string|null
      */
-    public $readPreference;
+    public ?string $readPreference = null;
 
     /**
      * READ-ONLY Associated with readPreference Allows to specify criteria so that your application can target read
@@ -536,21 +522,17 @@ use function trigger_deprecation;
      *
      * @var array<array<string, string>>
      */
-    public $readPreferenceTags = [];
+    public array $readPreferenceTags = [];
 
     /**
      * READ-ONLY: Describes the level of acknowledgement requested from MongoDB for write operations.
-     *
-     * @var string|int|null
      */
-    public $writeConcern;
+    public string|int|null $writeConcern = null;
 
     /**
      * READ-ONLY: The field name of the document identifier.
-     *
-     * @var string|null
      */
-    public $identifier;
+    public ?string $identifier = null;
 
     /**
      * READ-ONLY: The array of indexes for the document collection.
@@ -558,14 +540,14 @@ use function trigger_deprecation;
      * @var array<array<string, mixed>>
      * @phpstan-var array<IndexMapping>
      */
-    public $indexes = [];
+    public array $indexes = [];
 
     /**
      * READ-ONLY: The array of search indexes for the document collection.
      *
      * @var list<SearchIndexMapping>
      */
-    public $searchIndexes = [];
+    public array $searchIndexes = [];
 
     /**
      * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
@@ -573,7 +555,7 @@ use function trigger_deprecation;
      * @var array<string, array>
      * @phpstan-var ShardKey
      */
-    public $shardKey = [];
+    public array $shardKey = [];
 
     /**
      * Allows users to specify a validation schema for the collection.
@@ -597,7 +579,7 @@ use function trigger_deprecation;
      *
      * @var class-string<T>
      */
-    public $name;
+    public string $name;
 
     /**
      * READ-ONLY: The name of the document class that is at the root of the mapped document inheritance
@@ -606,7 +588,7 @@ use function trigger_deprecation;
      *
      * @var class-string
      */
-    public $rootDocumentName;
+    public string $rootDocumentName;
 
     /**
      * The name of the custom repository class used for the document class.
@@ -614,21 +596,21 @@ use function trigger_deprecation;
      *
      * @var class-string|null
      */
-    public $customRepositoryClassName;
+    public ?string $customRepositoryClassName = null;
 
     /**
      * READ-ONLY: The names of the parent classes (ancestors).
      *
      * @var list<class-string>
      */
-    public $parentClasses = [];
+    public array $parentClasses = [];
 
     /**
      * READ-ONLY: The names of all subclasses (descendants).
      *
      * @var list<class-string>
      */
-    public $subClasses = [];
+    public array $subClasses = [];
 
     /**
      * The ReflectionProperty instances of the mapped class.
@@ -637,38 +619,32 @@ use function trigger_deprecation;
      *
      * @var LegacyReflectionFields|array<ReflectionProperty>
      */
-    public $reflFields = [];
+    public LegacyReflectionFields|array $reflFields = [];
 
     /** @var array<string, PropertyAccessors\PropertyAccessor> */
     public array $propertyAccessors = [];
 
     /**
      * READ-ONLY: The inheritance mapping type used by the class.
-     *
-     * @var int
      */
-    public $inheritanceType = self::INHERITANCE_TYPE_NONE;
+    public int $inheritanceType = self::INHERITANCE_TYPE_NONE;
 
     /**
      * READ-ONLY: The Id generator type used by the class.
-     *
-     * @var int
      */
-    public $generatorType = self::GENERATOR_TYPE_AUTO;
+    public int $generatorType = self::GENERATOR_TYPE_AUTO;
 
     /**
      * READ-ONLY: The Id generator options.
      *
      * @var array<string, mixed>
      */
-    public $generatorOptions = [];
+    public array $generatorOptions = [];
 
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
-     *
-     * @var IdGenerator|null
      */
-    public $idGenerator;
+    public ?IdGenerator $idGenerator = null;
 
     /**
      * READ-ONLY: The field mappings of the class.
@@ -686,7 +662,7 @@ use function trigger_deprecation;
      * @var array<string, mixed>
      * @phpstan-var array<string, FieldMapping>
      */
-    public $fieldMappings = [];
+    public array $fieldMappings = [];
 
     /**
      * READ-ONLY: The association mappings of the class.
@@ -695,21 +671,21 @@ use function trigger_deprecation;
      * @var array<string, mixed>
      * @phpstan-var array<string, AssociationFieldMapping>
      */
-    public $associationMappings = [];
+    public array $associationMappings = [];
 
     /**
      * READ-ONLY: Array of fields to also load with a given method.
      *
      * @var array<string, mixed[]>
      */
-    public $alsoLoadMethods = [];
+    public array $alsoLoadMethods = [];
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for documents of this class.
      *
      * @var array<string, list<string>>
      */
-    public $lifecycleCallbacks = [];
+    public array $lifecycleCallbacks = [];
 
     /**
      * READ-ONLY: The discriminator value of this class.
@@ -718,10 +694,8 @@ use function trigger_deprecation;
      * where a discriminator field is used.</b>
      *
      * @see discriminatorField
-     *
-     * @var class-string|null
      */
-    public $discriminatorValue;
+    public string|int|null $discriminatorValue = null;
 
     /**
      * READ-ONLY: The discriminator map of all mapped classes in the hierarchy.
@@ -731,47 +705,37 @@ use function trigger_deprecation;
      *
      * @see discriminatorField
      *
-     * @var array<string, class-string>
+     * @var array<string|int, class-string>
      */
-    public $discriminatorMap = [];
+    public array $discriminatorMap = [];
 
     /**
      * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
      * inheritance mapping.
-     *
-     * @var string|null
      */
-    public $discriminatorField;
+    public ?string $discriminatorField = null;
 
     /**
      * READ-ONLY: The default value for discriminatorField in case it's not set in the document
      *
      * @see discriminatorField
-     *
-     * @var string|null
      */
-    public $defaultDiscriminatorValue;
+    public string|int|null $defaultDiscriminatorValue = null;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
-     *
-     * @var bool
      */
-    public $isMappedSuperclass = false;
+    public bool $isMappedSuperclass = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a embedded document.
-     *
-     * @var bool
      */
-    public $isEmbeddedDocument = false;
+    public bool $isEmbeddedDocument = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of an aggregation result document.
-     *
-     * @var bool
      */
-    public $isQueryResultDocument = false;
+    public bool $isQueryResultDocument = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a database view.
@@ -780,68 +744,52 @@ use function trigger_deprecation;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a gridFS file
-     *
-     * @var bool
      */
-    public $isFile = false;
+    public bool $isFile = false;
 
     /**
      * READ-ONLY: The default chunk size in bytes for the file
-     *
-     * @var int|null
      */
-    public $chunkSizeBytes;
+    public ?int $chunkSizeBytes = null;
 
     /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
-     *
-     * @var int
      */
-    public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
+    public int $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
 
     /**
      * READ-ONLY: A flag for whether or not instances of this class are to be versioned
      * with optimistic locking.
-     *
-     * @var bool $isVersioned
      */
-    public $isVersioned = false;
+    public bool $isVersioned = false;
 
     /**
      * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
-     *
-     * @var string|null $versionField
      */
-    public $versionField;
+    public ?string $versionField = null;
 
     /**
      * READ-ONLY: A flag for whether or not instances of this class are to allow pessimistic
      * locking.
-     *
-     * @var bool $isLockable
      */
-    public $isLockable = false;
+    public bool $isLockable = false;
 
     /**
      * READ-ONLY: The name of the field which is used for locking a document.
-     *
-     * @var mixed $lockField
      */
-    public $lockField;
+    public mixed $lockField;
 
     /**
      * The ReflectionClass instance of the mapped class.
      *
      * @var ReflectionClass<T>
      */
-    public $reflClass;
+    public ReflectionClass $reflClass;
 
     /**
      * READ_ONLY: A flag for whether or not this document is read-only.
-     *
-     * @var bool
      */
-    public $isReadOnly;
+    public bool $isReadOnly = false;
 
     /**
      * READ-ONLY: A flag for whether or not this document has encrypted fields.
@@ -879,12 +827,8 @@ use function trigger_deprecation;
      * Helper method to get reference id of ref* type references
      *
      * @internal
-     *
-     * @param mixed $reference
-     *
-     * @return mixed
      */
-    public static function getReferenceId($reference, string $storeAs)
+    public static function getReferenceId(mixed $reference, string $storeAs): mixed
     {
         return $storeAs === self::REFERENCE_STORE_AS_ID ? $reference : $reference[self::getReferencePrefix($storeAs) . 'id'];
     }
@@ -970,8 +914,7 @@ use function trigger_deprecation;
         return [$this->identifier];
     }
 
-    /** @param string $fieldName */
-    public function hasField($fieldName): bool
+    public function hasField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
     }
@@ -1119,7 +1062,7 @@ use function trigger_deprecation;
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
      */
-    public function setDiscriminatorField($discriminatorField): void
+    public function setDiscriminatorField(array|string|null $discriminatorField): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -1395,13 +1338,13 @@ use function trigger_deprecation;
     }
 
     /** @return array<string, mixed>|object|null */
-    public function getValidator()
+    public function getValidator(): array|object|null
     {
         return $this->validator;
     }
 
     /** @param array<string, mixed>|object|null $validator */
-    public function setValidator($validator): void
+    public function setValidator(array|object|null $validator): void
     {
         $this->validator = $validator;
     }
@@ -1439,16 +1382,13 @@ use function trigger_deprecation;
 
     /**
      * Sets the write concern used by this class.
-     *
-     * @param string|int|null $writeConcern
      */
-    public function setWriteConcern($writeConcern): void
+    public function setWriteConcern(string|int|null $writeConcern): void
     {
         $this->writeConcern = $writeConcern;
     }
 
-    /** @return int|string|null */
-    public function getWriteConcern()
+    public function getWriteConcern(): string|int|null
     {
         return $this->writeConcern;
     }
@@ -1570,7 +1510,7 @@ use function trigger_deprecation;
      *
      * @throws InvalidArgumentException
      */
-    public function setCollection($name): void
+    public function setCollection(array|string $name): void
     {
         if (is_array($name)) {
             if (! isset($name['name'])) {
@@ -1823,10 +1763,8 @@ use function trigger_deprecation;
 
     /**
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
-     *
-     * @param string $fieldName
      */
-    public function hasAssociation($fieldName): bool
+    public function hasAssociation(string $fieldName): bool
     {
         return $this->hasReference($fieldName) || $this->hasEmbed($fieldName);
     }
@@ -1834,10 +1772,8 @@ use function trigger_deprecation;
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
-     *
-     * @param string $fieldName
      */
-    public function isSingleValuedAssociation($fieldName): bool
+    public function isSingleValuedAssociation(string $fieldName): bool
     {
         return $this->isSingleValuedReference($fieldName) || $this->isSingleValuedEmbed($fieldName);
     }
@@ -1845,10 +1781,8 @@ use function trigger_deprecation;
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
-     *
-     * @param string $fieldName
      */
-    public function isCollectionValuedAssociation($fieldName): bool
+    public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return $this->isCollectionValuedReference($fieldName) || $this->isCollectionValuedEmbed($fieldName);
     }
@@ -1899,12 +1833,8 @@ use function trigger_deprecation;
 
     /**
      * Casts the identifier to its portable PHP type.
-     *
-     * @param mixed $id
-     *
-     * @return mixed $id
      */
-    public function getPHPIdentifierValue($id)
+    public function getPHPIdentifierValue(mixed $id): mixed
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
@@ -1913,12 +1843,8 @@ use function trigger_deprecation;
 
     /**
      * Casts the identifier to its database type.
-     *
-     * @param mixed $id
-     *
-     * @return mixed $id
      */
-    public function getDatabaseIdentifierValue($id)
+    public function getDatabaseIdentifierValue(mixed $id): mixed
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
@@ -1929,10 +1855,8 @@ use function trigger_deprecation;
      * Sets the document identifier of a document.
      *
      * The value will be converted to a PHP type before being set.
-     *
-     * @param mixed $id
      */
-    public function setIdentifierValue(object $document, $id): void
+    public function setIdentifierValue(object $document, mixed $id): void
     {
         $id = $this->getPHPIdentifierValue($id);
         $this->propertyAccessors[$this->identifier]->setValue($document, $id);
@@ -1940,10 +1864,8 @@ use function trigger_deprecation;
 
     /**
      * Gets the document identifier as a PHP type.
-     *
-     * @return mixed $id
      */
-    public function getIdentifierValue(object $document)
+    public function getIdentifierValue(object $document): mixed
     {
         return $this->propertyAccessors[$this->identifier]->getValue($document);
     }
@@ -1952,30 +1874,24 @@ use function trigger_deprecation;
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
-     *
-     * @param object $object
      */
-    public function getIdentifierValues($object): array
+    public function getIdentifierValues(object $object): array
     {
         return [$this->identifier => $this->getIdentifierValue($object)];
     }
 
     /**
      * Get the document identifier object as a database type.
-     *
-     * @return mixed $id
      */
-    public function getIdentifierObject(object $document)
+    public function getIdentifierObject(object $document): mixed
     {
         return $this->getDatabaseIdentifierValue($this->getIdentifierValue($document));
     }
 
     /**
      * Sets the specified field to the specified value on the given document.
-     *
-     * @param mixed $value
      */
-    public function setFieldValue(object $document, string $field, $value): void
+    public function setFieldValue(object $document, string $field, mixed $value): void
     {
         if ($document instanceof InternalProxy && ! $document->__isInitialized()) {
             //property changes to an uninitialized proxy will not be tracked or persisted,
@@ -1992,10 +1908,8 @@ use function trigger_deprecation;
 
     /**
      * Gets the specified field's value off the given document.
-     *
-     * @return mixed
      */
-    public function getFieldValue(object $document, string $field)
+    public function getFieldValue(object $document, string $field): mixed
     {
         if ($document instanceof InternalProxy && $field !== $this->identifier && ! $document->__isInitialized()) {
             $document->__load();
@@ -2288,18 +2202,15 @@ use function trigger_deprecation;
         return array_keys($this->associationMappings);
     }
 
-    /** @param string $fieldName */
-    public function getTypeOfField($fieldName): ?string
+    public function getTypeOfField(string $fieldName): ?string
     {
         return $this->fieldMappings[$fieldName]['type'] ?? null;
     }
 
     /**
-     * @param string $assocName
-     *
      * @return class-string|null
      */
-    public function getAssociationTargetClass($assocName): ?string
+    public function getAssociationTargetClass(string $assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -2326,14 +2237,12 @@ use function trigger_deprecation;
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /** @param string $assocName */
-    public function isAssociationInverseSide($assocName): bool
+    public function isAssociationInverseSide(string $assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /** @param string $assocName */
-    public function getAssociationMappedByTargetField($assocName): string
+    public function getAssociationMappedByTargetField(string $assocName): string
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -2606,7 +2515,7 @@ use function trigger_deprecation;
      *
      * @return array The names of all the fields that should be serialized.
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         // This metadata is always serialized/cached.
         $serialized = [

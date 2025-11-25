@@ -24,11 +24,10 @@ use function substr;
  */
 abstract class AbstractBucket extends Stage
 {
-    /** @var Bucket\AbstractOutput|null */
-    protected $output;
+    protected ?Bucket\AbstractOutput $output = null;
 
     /** @var Expr|array<string, mixed>|string */
-    protected $groupBy;
+    protected Expr|array|string $groupBy;
 
     public function __construct(Builder $builder, private DocumentManager $dm, private ClassMetadata $class)
     {
@@ -41,7 +40,7 @@ abstract class AbstractBucket extends Stage
      *
      * @param array<string, mixed>|Expr|string $expression
      */
-    public function groupBy($expression): static
+    public function groupBy(array|Expr|string $expression): static
     {
         $this->groupBy = $expression;
 
@@ -71,12 +70,7 @@ abstract class AbstractBucket extends Stage
      */
     abstract protected function getStageName(): string;
 
-    /**
-     * @param array|mixed|string $expression
-     *
-     * @return array|mixed|string
-     */
-    private function convertExpression($expression)
+    private function convertExpression(mixed $expression): mixed
     {
         if (is_array($expression)) {
             return array_map($this->convertExpression(...), $expression);
