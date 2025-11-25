@@ -2,11 +2,7 @@
 Attributes Reference
 =====================
 
-Doctrine Annotations are deprecated and replaced by native PHP attributes.
-All the attributes listed on :doc:`Attributes Reference <attributes-reference>`
-can be used as annotations.
-
-Support for annotations will be removed in Doctrine MongoDB ODM 3.0.
+Doctrine Annotations replaced by native PHP attributes, see :doc:`Attributes Reference <attributes-reference>`.
 
 If you are still using annotations, you can migrate your code to attributes by
 following the guide below:
