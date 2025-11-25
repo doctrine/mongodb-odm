@@ -11,7 +11,7 @@ Mapping Drivers
 Doctrine provides several different ways for specifying object
 document mapping metadata:
 
--  `Attributes <annotations-reference>`_
+-  `Attributes <attributes-reference>`_
 -  `XML <xml-mapping>`_
 -  Raw PHP Code
 

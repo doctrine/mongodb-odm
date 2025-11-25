@@ -2,7 +2,7 @@ Loading references with Lookup
 ==============================
 
 Doctrine ODM provides a way to load reference documents from other collections
-using the ``#[ReferenceOne]`` and ``#[ReferenceMany]`` annotations. This is
+using the ``#[ReferenceOne]`` and ``#[ReferenceMany]`` attributes. This is
 perfect to keep independent document updates and avoid data duplication. But
 sometimes you need to load the referenced documents with the main document in a
 single query. This is where MongoDB's aggregation pipeline and the ``$lookup``

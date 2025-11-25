@@ -176,7 +176,7 @@ Notes
 - Vector embeddings should be generated using a reliable embedding system
 - The vector field must be of type ``float[]``, ``int[]`` or ``bool[]``, it
   must match with the embedding vector type and dimensions.
-- The ``#[VectorSearchIndex]`` annotation configures the index for vector search
+- The ``#[VectorSearchIndex]`` attribute configures the index for vector search
 - Use the aggregation builder's ``vectorSearch`` stage to query for similar vectors.
 - Doctrine ODM 2.13+ is required for vector search support.
 
