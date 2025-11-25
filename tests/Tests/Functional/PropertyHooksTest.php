@@ -102,6 +102,7 @@ class PropertyHooksTest extends BaseTestCase
 #[Document(collection: 'property_hooks_user')]
 class MappingVirtualProperty
 {
+    // phpcs:disable
     #[Id]
     public ?string $id;
 
@@ -118,4 +119,5 @@ class MappingVirtualProperty
             [$this->first, $this->last] = explode(' ', $value, 2);
         }
     }
+    // phpcs:enable
 }

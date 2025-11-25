@@ -1,7 +1,8 @@
 <?php
 
-namespace Documents\PropertyHooks;
+declare(strict_types=1);
 
+namespace Documents\PropertyHooks;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
@@ -11,6 +12,7 @@ use ValueError;
 #[Document(collection: 'property_hooks_user')]
 class User
 {
+    // phpcs:disable
     #[Id]
     public ?string $id;
 
@@ -51,4 +53,5 @@ class User
             $this->language = strtolower($value);
         }
     }
+    // phpcs:enable
 }
