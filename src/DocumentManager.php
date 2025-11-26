@@ -263,10 +263,8 @@ class DocumentManager implements ObjectManager
      * Helper method to initialize a lazy loading proxy or persistent collection.
      *
      * This method is a no-op for other objects.
-     *
-     * @param object $obj
      */
-    public function initializeObject($obj): void
+    public function initializeObject(object $obj): void
     {
         $this->unitOfWork->initializeObject($obj);
     }
@@ -331,7 +329,7 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function getClassMetadata($className): ClassMetadata
+    public function getClassMetadata(string $className): ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
