@@ -124,8 +124,6 @@ class MatchStage extends Stage
      * Specify an equality match for the current field.
      *
      * @see Expr::equals()
-     *
-     * @param mixed $value
      */
     public function equals(mixed $value): static
     {
@@ -294,8 +292,6 @@ class MatchStage extends Stage
      *
      * @see Expr::gt()
      * @see https://docs.mongodb.com/manual/reference/operator/gt/
-     *
-     * @param mixed $value
      */
     public function gt(mixed $value): static
     {
@@ -309,8 +305,6 @@ class MatchStage extends Stage
      *
      * @see Expr::gte()
      * @see https://docs.mongodb.com/manual/reference/operator/gte/
-     *
-     * @param mixed $value
      */
     public function gte(mixed $value): static
     {
@@ -361,8 +355,6 @@ class MatchStage extends Stage
      *
      * @see Expr::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
     public function lt(mixed $value): static
     {
@@ -376,8 +368,6 @@ class MatchStage extends Stage
      *
      * @see Expr::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
     public function lte(mixed $value): static
     {
@@ -391,9 +381,6 @@ class MatchStage extends Stage
      *
      * @see Expr::mod()
      * @see https://docs.mongodb.com/manual/reference/operator/mod/
-     *
-     * @param float|int $divisor
-     * @param float|int $remainder
      */
     public function mod(float|int $divisor, float|int $remainder = 0): static
     {
@@ -425,8 +412,6 @@ class MatchStage extends Stage
      *
      * @see Expr::notEqual()
      * @see https://docs.mongodb.com/manual/reference/operator/ne/
-     *
-     * @param mixed $value
      */
     public function notEqual(mixed $value): static
     {
@@ -457,9 +442,6 @@ class MatchStage extends Stage
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Expr::range()
-     *
-     * @param mixed $start
-     * @param mixed $end
      */
     public function range(mixed $start, mixed $end): static
     {
@@ -510,8 +492,6 @@ class MatchStage extends Stage
      *
      * @see Expr::type()
      * @see https://docs.mongodb.com/manual/reference/operator/type/
-     *
-     * @param int|string $type
      */
     public function type(int|string $type): static
     {

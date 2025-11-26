@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Repository;
 
 final class UploadOptions
 {
-    public mixed $id = null;
+    public mixed $id            = null;
     public ?int $chunkSizeBytes = null;
-    public ?object $metadata = null;
+    public ?object $metadata    = null;
 }

@@ -605,7 +605,6 @@ class DocumentManager implements ObjectManager
      * has its identifier populated. Otherwise a proxy is returned that automatically
      * loads itself on first access.
      *
-     * @param mixed           $identifier
      * @param class-string<T> $documentName
      *
      * @return T
@@ -705,8 +704,6 @@ class DocumentManager implements ObjectManager
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
-     *
-     * @return void
      */
     public function close(): void
     {
@@ -716,8 +713,6 @@ class DocumentManager implements ObjectManager
 
     /**
      * Determines whether a document instance is managed in this DocumentManager.
-     *
-     * @param object $object
      *
      * @return bool TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      *

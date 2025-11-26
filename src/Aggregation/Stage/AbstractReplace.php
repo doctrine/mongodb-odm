@@ -35,11 +35,6 @@ abstract class AbstractReplace extends Operator
         return $this->expression !== null ? $this->convertExpression($this->expression) : $this->expr->getExpression();
     }
 
-    /**
-     * @param mixed[]|string|mixed $expression
-     *
-     * @return mixed[]|string|mixed
-     */
     private function convertExpression(mixed $expression): mixed
     {
         if (is_array($expression)) {

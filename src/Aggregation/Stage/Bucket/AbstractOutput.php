@@ -25,7 +25,7 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
     {
         parent::__construct($builder);
 
-        $this->expr   = $builder->expr();
+        $this->expr = $builder->expr();
     }
 
     public function getExpression(): array
@@ -38,8 +38,6 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
      *
      * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
      * @see Expr::expression
-     *
-     * @param mixed|Expr $value
      *
      * @return $this
      */
@@ -54,8 +52,6 @@ abstract class AbstractOutput extends Stage implements GroupAccumulatorOperators
      * Set the current field for building the expression.
      *
      * @see Expr::field
-     *
-     * @param string $fieldName
      *
      * @return $this
      */

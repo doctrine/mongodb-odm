@@ -48,7 +48,6 @@ use function array_map;
 use function array_merge;
 use function array_search;
 use function array_slice;
-use function array_values;
 use function assert;
 use function count;
 use function explode;
@@ -767,7 +766,7 @@ final class DocumentPersister
             $class           = $this->dm->getClassMetadata($className);
             $mongoCollection = $this->dm->getDocumentCollection($className);
             $criteria        = $this->cm->merge(
-                ['_id' => ['$in' => array_values($ids)]],
+                ['_id' => ['$in' => $ids]],
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 $mapping['criteria'] ?? [],
             );

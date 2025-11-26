@@ -489,7 +489,7 @@ use function trigger_deprecation;
     /**
      * READ-ONLY: The name of the mongo collection the document is mapped to.
      */
-    public string $collection;
+    public ?string $collection = null;
 
     /**
      * READ-ONLY: The name of the GridFS bucket the document is mapped to.
@@ -2207,9 +2207,7 @@ use function trigger_deprecation;
         return $this->fieldMappings[$fieldName]['type'] ?? null;
     }
 
-    /**
-     * @return class-string|null
-     */
+    /** @return class-string|null */
     public function getAssociationTargetClass(string $assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {

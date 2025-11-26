@@ -53,11 +53,11 @@ final readonly class ReferencePrimer
      * the default primer defined in the constructor. If $primer is not
      * callable, the default primer will be used.
      *
-     * @param ClassMetadata<object>             $class     Class metadata for the document
-     * @param iterable<object>                  $documents Documents containing references to prime
-     * @param string                            $fieldName Field name containing references to prime
-     * @param array                             $hints     UnitOfWork hints for priming queries
-     * @param callable|null                     $primer    Optional primer callable
+     * @param ClassMetadata<object> $class     Class metadata for the document
+     * @param iterable<object>      $documents Documents containing references to prime
+     * @param string                $fieldName Field name containing references to prime
+     * @param array                 $hints     UnitOfWork hints for priming queries
+     * @param callable|null         $primer    Optional primer callable
      * @phpstan-param Hints $hints
      *
      * @throws InvalidArgumentException If the mapped field is not the owning

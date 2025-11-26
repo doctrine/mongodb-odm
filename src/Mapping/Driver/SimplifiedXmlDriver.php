@@ -13,6 +13,7 @@ class SimplifiedXmlDriver extends XmlDriver
 {
     public const string DEFAULT_FILE_EXTENSION = '.mongodb-odm.xml';
 
+    /** @param string[]|string $prefixes */
     public function __construct(array|string $prefixes, ?string $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);

@@ -138,8 +138,6 @@ class Expr
      * @see Builder::addToSet()
      * @see https://docs.mongodb.com/manual/reference/operator/addToSet/
      * @see https://docs.mongodb.com/manual/reference/operator/each/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
     public function addToSet(mixed $valueOrExpression): self
     {
@@ -389,8 +387,6 @@ class Expr
      * Specify an equality match for the current field.
      *
      * @see Builder::equals()
-     *
-     * @param mixed $value
      */
     public function equals(mixed $value): self
     {
@@ -581,8 +577,6 @@ class Expr
      *
      * @see Builder::gt()
      * @see https://docs.mongodb.com/manual/reference/operator/gt/
-     *
-     * @param mixed $value
      */
     public function gt(mixed $value): self
     {
@@ -594,8 +588,6 @@ class Expr
      *
      * @see Builder::gte()
      * @see https://docs.mongodb.com/manual/reference/operator/gte/
-     *
-     * @param mixed $value
      */
     public function gte(mixed $value): self
     {
@@ -622,8 +614,6 @@ class Expr
      *
      * @see Builder::inc()
      * @see https://docs.mongodb.com/manual/reference/operator/inc/
-     *
-     * @param float|int $value
      */
     public function inc(float|int $value): self
     {
@@ -705,8 +695,6 @@ class Expr
      *
      * @see Builder::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
     public function lt(mixed $value): self
     {
@@ -718,8 +706,6 @@ class Expr
      *
      * @see Builder::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
     public function lte(mixed $value): self
     {
@@ -731,8 +717,6 @@ class Expr
      *
      * @see Builder::max()
      * @see https://docs.mongodb.com/manual/reference/operator/update/max/
-     *
-     * @param mixed $value
      */
     public function max(mixed $value): self
     {
@@ -747,8 +731,6 @@ class Expr
      *
      * @see Builder::min()
      * @see https://docs.mongodb.com/manual/reference/operator/update/min/
-     *
-     * @param mixed $value
      */
     public function min(mixed $value): self
     {
@@ -763,9 +745,6 @@ class Expr
      *
      * @see Builder::mod()
      * @see https://docs.mongodb.com/manual/reference/operator/mod/
-     *
-     * @param float|int $divisor
-     * @param float|int $remainder
      */
     public function mod(float|int $divisor, float|int $remainder = 0): self
     {
@@ -779,8 +758,6 @@ class Expr
      *
      * @see Builder::mul()
      * @see https://docs.mongodb.com/manual/reference/operator/update/mul/
-     *
-     * @param float|int $value
      */
     public function mul(float|int $value): self
     {
@@ -801,7 +778,6 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float|null                       $y
      */
     public function near(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
@@ -844,7 +820,6 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float|null                       $y
      */
     public function nearSphere(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
@@ -881,8 +856,6 @@ class Expr
      *
      * @see Builder::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
-     *
-     * @param array|Expr|mixed $expression
      */
     public function not(mixed $expression): self
     {
@@ -894,8 +867,6 @@ class Expr
      *
      * @see Builder::notEqual()
      * @see https://docs.mongodb.com/manual/reference/operator/ne/
-     *
-     * @param mixed $value
      */
     public function notEqual(mixed $value): self
     {
@@ -920,8 +891,6 @@ class Expr
      *
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
-     *
-     * @param mixed $value
      */
     public function operator(string $operator, mixed $value): self
     {
@@ -983,8 +952,6 @@ class Expr
      *
      * @see Builder::pull()
      * @see https://docs.mongodb.com/manual/reference/operator/pull/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
     public function pull(mixed $valueOrExpression): self
     {
@@ -1027,8 +994,6 @@ class Expr
      * @see https://docs.mongodb.com/manual/reference/operator/each/
      * @see https://docs.mongodb.com/manual/reference/operator/slice/
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
     public function push(mixed $valueOrExpression): self
     {
@@ -1052,9 +1017,6 @@ class Expr
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Builder::range()
-     *
-     * @param mixed $start
-     * @param mixed $end
      */
     public function range(mixed $start, mixed $end): self
     {
@@ -1130,8 +1092,6 @@ class Expr
      *
      * @see Builder::set()
      * @see https://docs.mongodb.com/manual/reference/operator/set/
-     *
-     * @param mixed $value
      */
     public function set(mixed $value, bool $atomic = true): self
     {
@@ -1194,8 +1154,6 @@ class Expr
      *
      * @see Builder::setOnInsert()
      * @see https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/
-     *
-     * @param mixed $value
      */
     public function setOnInsert(mixed $value): self
     {
@@ -1286,8 +1244,6 @@ class Expr
      *
      * @see Builder::type()
      * @see https://docs.mongodb.com/manual/reference/operator/type/
-     *
-     * @param int|string $type
      */
     public function type(int|string $type): self
     {
@@ -1464,8 +1420,6 @@ class Expr
     /**
      * Converts expression objects to query arrays. Non-expression values are
      * returned unmodified.
-     *
-     * @param Expr|mixed $expression
      *
      * @return array<string, mixed>|mixed
      */

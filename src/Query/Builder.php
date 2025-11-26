@@ -25,8 +25,6 @@ use function count;
 use function func_get_args;
 use function in_array;
 use function is_array;
-use function is_bool;
-use function is_callable;
 use function is_string;
 use function strtolower;
 
@@ -186,8 +184,6 @@ class Builder
      * @see Expr::addToSet()
      * @see https://docs.mongodb.com/manual/reference/operator/addToSet/
      * @see https://docs.mongodb.com/manual/reference/operator/each/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
     public function addToSet(mixed $valueOrExpression): self
     {
@@ -811,8 +807,6 @@ class Builder
      *
      * @see Expr::inc()
      * @see https://docs.mongodb.com/manual/reference/operator/inc/
-     *
-     * @param float|int $value
      */
     public function inc(float|int $value): self
     {
@@ -932,9 +926,6 @@ class Builder
      *
      * @see Expr::mod()
      * @see https://docs.mongodb.com/manual/reference/operator/mod/
-     *
-     * @param float|int $divisor
-     * @param float|int $remainder
      */
     public function mod(float|int $divisor, float|int $remainder = 0): self
     {
@@ -950,8 +941,6 @@ class Builder
      *
      * @see Expr::mul()
      * @see https://docs.mongodb.com/manual/reference/operator/update/mul/
-     *
-     * @param float|int $value
      */
     public function mul(float|int $value): self
     {
@@ -971,7 +960,6 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float|null                       $y
      */
     public function near(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
@@ -991,7 +979,6 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float|null                       $y
      */
     public function nearSphere(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
@@ -1007,8 +994,6 @@ class Builder
      *
      * @see Expr::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
-     *
-     * @param array|Expr|mixed $valueOrExpression
      */
     public function not(mixed $valueOrExpression): self
     {
@@ -1123,8 +1108,6 @@ class Builder
      *
      * @see Expr::pull()
      * @see https://docs.mongodb.com/manual/reference/operator/pull/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
     public function pull(mixed $valueOrExpression): self
     {
@@ -1165,8 +1148,6 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/each/
      * @see https://docs.mongodb.com/manual/reference/operator/slice/
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
     public function push(mixed $valueOrExpression): self
     {
