@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command;
 
 use LogicException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +25,10 @@ use const JSON_THROW_ON_ERROR;
 /**
  * Command to query mongodb and inspect the outputted results from your document classes.
  */
+#[AsCommand('odm:query')]
 class QueryCommand extends Command
 {
-    use CommandCompatibility;
-
-    private function doConfigure(): void
+    protected function configure(): void
     {
         $this
         ->setName('odm:query')
@@ -69,7 +69,7 @@ EOT
         );
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $query = $input->getArgument('query');
         assert(is_string($query));

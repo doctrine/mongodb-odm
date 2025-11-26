@@ -19,12 +19,15 @@ use function is_string;
 
 abstract class AbstractCommand extends Command
 {
-    use AbstractCommandCompatibility;
+    public const string DB           = 'db';
+    public const string COLLECTION   = 'collection';
+    public const string INDEX        = 'index';
+    public const string SEARCH_INDEX = 'search-index';
 
-    public const DB           = 'db';
-    public const COLLECTION   = 'collection';
-    public const INDEX        = 'index';
-    public const SEARCH_INDEX = 'search-index';
+    protected function configure(): void
+    {
+        $this->configureCommonOptions();
+    }
 
     private function configureCommonOptions(): void
     {

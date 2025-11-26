@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,11 +15,10 @@ use Throwable;
 use function is_string;
 use function sprintf;
 
+#[AsCommand('odm:schema:update')]
 class UpdateCommand extends AbstractCommand
 {
-    use CommandCompatibility;
-
-    private function doConfigure(): void
+    protected function configure(): void
     {
         parent::configure();
 
@@ -31,7 +30,7 @@ class UpdateCommand extends AbstractCommand
             ->setDescription('Update indexes and validation rules for your documents');
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $class               = $input->getOption('class');
         $updateValidators    = ! $input->getOption('disable-validators');

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,22 +16,21 @@ use function array_filter;
 use function is_string;
 use function sprintf;
 
+#[AsCommand('odm:schema:drop')]
 class DropCommand extends AbstractCommand
 {
-    use CommandCompatibility;
-
     /** @var string[] */
     private array $dropOrder = [self::SEARCH_INDEX, self::INDEX, self::COLLECTION, self::DB];
 
     /* @var array<string, list<string>> */
-    private const INFLECTIONS = [
+    private const array INFLECTIONS = [
         self::DB => ['database', 'databases'],
         self::COLLECTION => ['collection', 'collections'],
         self::INDEX => ['index(es)', 'indexes'],
         self::SEARCH_INDEX => ['search index(es)', 'search indexes'],
     ];
 
-    protected function doConfigure(): void
+    protected function configure(): void
     {
         parent::configure();
 
@@ -46,7 +45,7 @@ class DropCommand extends AbstractCommand
             ->setDescription('Drop databases, collections and indexes for your documents');
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $drop = array_filter($this->dropOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 
