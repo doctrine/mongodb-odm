@@ -1322,8 +1322,7 @@ class Expr
         }
     }
 
-    /** @param int|string $order */
-    private function normalizeSortOrder($order): int
+    private function normalizeSortOrder(int|string $order): int
     {
         if (is_string($order)) {
             $order = strtolower($order) === 'asc' ? 1 : -1;
@@ -1420,10 +1419,8 @@ class Expr
     /**
      * Converts expression objects to query arrays. Non-expression values are
      * returned unmodified.
-     *
-     * @return array<string, mixed>|mixed
      */
-    private static function convertExpression(mixed $expression, ClassMetadata $classMetadata)
+    private static function convertExpression(mixed $expression, ClassMetadata $classMetadata): mixed
     {
         if (! $expression instanceof Expr) {
             return $expression;

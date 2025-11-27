@@ -966,7 +966,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @throws InvalidArgumentException
      */
-    private function computeAssociationChanges(object $parentDocument, array $assoc, $value): void
+    private function computeAssociationChanges(object $parentDocument, array $assoc, mixed $value): void
     {
         $isNewParentDocument   = isset($this->scheduledDocumentInsertions[spl_object_id($parentDocument)]);
         $class                 = $this->dm->getClassMetadata($parentDocument::class);
@@ -1647,7 +1647,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
      *
-     * @return mixed The found document or FALSE.
+     * @return object|false The found document or FALSE.
      * @phpstan-return T|false
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
@@ -1656,7 +1656,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @ phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
-    public function tryGetById(mixed $id, ClassMetadata $class)
+    public function tryGetById(mixed $id, ClassMetadata $class): object|false
     {
         if (! $class->identifier) {
             throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
@@ -2869,10 +2869,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Sets a property value of the original data array of a document.
      *
      * @internal
-     *
-     * @param mixed $value
      */
-    public function setOriginalDocumentProperty(int $oid, string $property, $value): void
+    public function setOriginalDocumentProperty(int $oid, string $property, mixed $value): void
     {
         $this->originalDocumentData[$oid][$property] = $value;
     }
@@ -2882,7 +2880,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @return mixed The identifier value
      */
-    public function getDocumentIdentifier(object $document)
+    public function getDocumentIdentifier(object $document): mixed
     {
         return $this->documentIdentifiers[spl_object_id($document)] ?? null;
     }

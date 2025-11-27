@@ -41,8 +41,7 @@ final class Command
         return $instance;
     }
 
-    /** @param CommandSucceededEvent|CommandFailedEvent $finishedEvent */
-    private static function checkRequestIds(CommandStartedEvent $startedEvent, $finishedEvent): void
+    private static function checkRequestIds(CommandStartedEvent $startedEvent, CommandSucceededEvent|CommandFailedEvent $finishedEvent): void
     {
         if ($startedEvent->getRequestId() !== $finishedEvent->getRequestId()) {
             throw new LogicException('Cannot create APM command for events with different request IDs');

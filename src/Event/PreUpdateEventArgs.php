@@ -27,8 +27,6 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
         ?Session $session = null,
     ) {
         parent::__construct($document, $dm, $session);
-
-        $this->changeSet = $changeSet;
     }
 
     /** @return array<string, ChangeSet> */
@@ -44,10 +42,8 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Gets the old value of the changeset of the changed field.
-     *
-     * @return mixed
      */
-    public function getOldValue(string $field)
+    public function getOldValue(string $field): mixed
     {
         $this->assertValidField($field);
 
@@ -56,10 +52,8 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Gets the new value of the changeset of the changed field.
-     *
-     * @return mixed
      */
-    public function getNewValue(string $field)
+    public function getNewValue(string $field): mixed
     {
         $this->assertValidField($field);
 
@@ -68,10 +62,8 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
 
     /**
      * Sets the new value of this field.
-     *
-     * @param mixed $value
      */
-    public function setNewValue(string $field, $value): void
+    public function setNewValue(string $field, mixed $value): void
     {
         $this->assertValidField($field);
 

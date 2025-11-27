@@ -91,22 +91,22 @@ class CreateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->createDocumentCollection($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->createCollections($maxTimeMs, $writeConcern);
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $sm->ensureDocumentIndexes($document, $maxTimeMs, $writeConcern, $background);
     }
 
-    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
@@ -121,16 +121,14 @@ class CreateCommand extends AbstractCommand
         $sm->createSearchIndexes();
     }
 
-    /** @return void */
-    protected function processDocumentProxy(SchemaManager $sm, string $document)
+    protected function processDocumentProxy(SchemaManager $sm, string $document): void
     {
         $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
 
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
     }
 
-    /** @return void */
-    protected function processProxy(SchemaManager $sm)
+    protected function processProxy(SchemaManager $sm): void
     {
         $metadatas = $this->getMetadataFactory()->getAllMetadata();
         $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);

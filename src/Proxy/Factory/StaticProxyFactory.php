@@ -39,14 +39,13 @@ final class StaticProxyFactory implements ProxyFactory
     }
 
     /**
-     * @param mixed $identifier
      * @phpstan-param ClassMetadata<T> $metadata
      *
      * @return T&GhostObjectInterface<T>
      *
      * @template T of object
      */
-    public function getProxy(ClassMetadata $metadata, $identifier): GhostObjectInterface
+    public function getProxy(ClassMetadata $metadata, mixed $identifier): GhostObjectInterface
     {
         $documentPersister = $this->uow->getDocumentPersister($metadata->getName());
 

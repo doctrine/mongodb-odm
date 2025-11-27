@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Iterator;
 use IteratorIterator;
-use ReturnTypeWillChange;
 use RuntimeException;
 use Traversable;
 
@@ -44,15 +43,12 @@ final class HydratingIterator implements Iterator
     }
 
     /** @return TDocument|null */
-    #[ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->hydrate($this->getIterator()->current());
     }
 
-    /** @return mixed */
-    #[ReturnTypeWillChange]
-    public function key()
+    public function key(): mixed
     {
         return $this->getIterator()->key();
     }

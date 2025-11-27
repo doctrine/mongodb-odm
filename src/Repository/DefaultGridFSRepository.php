@@ -52,7 +52,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
     }
 
     /** @see Bucket::uploadFromStream */
-    public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null)
+    public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null): object
     {
         $options = $this->prepareOptions($uploadOptions);
 
@@ -62,7 +62,7 @@ class DefaultGridFSRepository extends DocumentRepository implements GridFSReposi
         return $this->dm->getReference($this->getClassName(), $documentIdentifier);
     }
 
-    public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null)
+    public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null): object
     {
         $resource = fopen($source, 'r');
         if ($resource === false) {

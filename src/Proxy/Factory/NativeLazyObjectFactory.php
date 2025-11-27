@@ -39,7 +39,7 @@ class NativeLazyObjectFactory implements ProxyFactory
         return count($classes);
     }
 
-    public function getProxy(ClassMetadata $metadata, $identifier): object
+    public function getProxy(ClassMetadata $metadata, mixed $identifier): object
     {
         $proxy = $metadata->reflClass->newLazyGhost(function (object $object) use (
             $identifier,

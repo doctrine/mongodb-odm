@@ -29,7 +29,7 @@ class MetadataFilter extends FilterIterator implements Countable
      *
      * @return ClassMetadata<object>[]
      */
-    public static function filter(array $metadatas, $filter): array
+    public static function filter(array $metadatas, array|string $filter): array
     {
         $metadatas = new MetadataFilter(new ArrayIterator($metadatas), $filter);
 
@@ -43,7 +43,7 @@ class MetadataFilter extends FilterIterator implements Countable
      * @param string[]|string                                 $filter
      * @param ArrayIterator<array-key, ClassMetadata<object>> $metadata
      */
-    public function __construct(ArrayIterator $metadata, $filter)
+    public function __construct(ArrayIterator $metadata, array|string $filter)
     {
         $this->_filter = (array) $filter;
 

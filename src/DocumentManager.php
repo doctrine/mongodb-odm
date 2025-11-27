@@ -538,7 +538,7 @@ class DocumentManager implements ObjectManager
      * @throws LockException
      * @throws InvalidArgumentException If the $object param is not an object.
      */
-    public function merge(object $object)
+    public function merge(object $object): object
     {
         $this->errorIfClosed();
 
@@ -669,15 +669,12 @@ class DocumentManager implements ObjectManager
      * This is just a convenient shortcut for getRepository($documentName)->find($id).
      *
      * @param class-string<T> $className
-     * @param mixed           $id
-     * @param int             $lockMode
-     * @param int             $lockVersion
      *
      * @return T|null
      *
      * @template T of object
      */
-    public function find($className, $id, $lockMode = LockMode::NONE, $lockVersion = null): ?object
+    public function find(string $className, mixed $id, int $lockMode = LockMode::NONE, ?int $lockVersion = null): ?object
     {
         $repository = $this->getRepository($className);
         if ($repository instanceof DocumentRepository) {

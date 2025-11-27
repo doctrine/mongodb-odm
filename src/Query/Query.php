@@ -157,10 +157,8 @@ final class Query implements IterableResult
      * The $name parameter may be used to return a specific key from the
      * internal $query array property. If omitted, the entire array will be
      * returned.
-     *
-     * @return array<string, mixed>|mixed
      */
-    public function debug(?string $name = null)
+    public function debug(?string $name = null): mixed
     {
         return $name !== null ? $this->query[$name] : $this->query;
     }
@@ -410,7 +408,7 @@ final class Query implements IterableResult
      *
      * @return Iterator|UpdateResult|InsertOneResult|DeleteResult|array<string, mixed>|object|int|null
      */
-    private function runQuery()
+    private function runQuery(): array|object|int|null
     {
         $options = $this->options;
 

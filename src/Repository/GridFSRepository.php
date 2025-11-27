@@ -43,7 +43,7 @@ interface GridFSRepository extends ObjectRepository
      *
      * @return object The newly created GridFS file
      */
-    public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null);
+    public function uploadFromStream(string $filename, $source, ?UploadOptions $uploadOptions = null): object;
 
     /**
      * Writes the contents of a file to a GridFS file.
@@ -52,5 +52,5 @@ interface GridFSRepository extends ObjectRepository
      *
      * @return object The newly created GridFS file
      */
-    public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null);
+    public function uploadFromFile(string $source, ?string $filename = null, ?UploadOptions $uploadOptions = null): object;
 }
