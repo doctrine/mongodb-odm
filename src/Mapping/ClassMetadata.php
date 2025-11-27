@@ -694,8 +694,10 @@ use function trigger_deprecation;
      * where a discriminator field is used.</b>
      *
      * @see discriminatorField
+     *
+     * @var class-string|null
      */
-    public string|int|null $discriminatorValue = null;
+    public ?string $discriminatorValue = null;
 
     /**
      * READ-ONLY: The discriminator map of all mapped classes in the hierarchy.
