@@ -779,7 +779,7 @@ use function trigger_deprecation;
     /**
      * READ-ONLY: The name of the field which is used for locking a document.
      */
-    public mixed $lockField;
+    public mixed $lockField = null;
 
     /**
      * The ReflectionClass instance of the mapped class.
