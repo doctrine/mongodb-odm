@@ -132,9 +132,7 @@ class AttributeDriver implements MappingDriver
                     $metadata->setValidationLevel($attribute->level);
                 }
             } elseif ($attribute instanceof ODM\Encrypt) {
-                $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEncrypted');
-                $reflectionProp->setAccessible(true);
-                $reflectionProp->setValue($metadata, true);
+                $metadata->markAsEncrypted();
             }
         }
 
@@ -143,17 +141,11 @@ class AttributeDriver implements MappingDriver
         }
 
         if ($documentAttribute instanceof ODM\MappedSuperclass) {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isMappedSuperclass');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsMappedSuperclass();
         } elseif ($documentAttribute instanceof ODM\EmbeddedDocument) {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsEmbeddedDocument();
         } elseif ($documentAttribute instanceof ODM\QueryResultDocument) {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isQueryResultDocument');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsQueryResultDocument();
         } elseif ($documentAttribute instanceof ODM\View) {
             if (! $documentAttribute->rootClass) {
                 throw MappingException::viewWithoutRootClass($className);
@@ -165,9 +157,7 @@ class AttributeDriver implements MappingDriver
 
             $metadata->markViewOf($documentAttribute->rootClass);
         } elseif ($documentAttribute instanceof ODM\File) {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isFile');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsFile();
 
             if ($documentAttribute->chunkSizeBytes !== null) {
                 $metadata->setChunkSizeBytes($documentAttribute->chunkSizeBytes);

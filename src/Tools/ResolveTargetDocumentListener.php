@@ -9,9 +9,7 @@ use Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use ReflectionProperty;
 
-use function array_filter;
 use function array_key_exists;
 use function array_replace_recursive;
 use function assert;
@@ -96,12 +94,8 @@ class ResolveTargetDocumentListener implements EventSubscriber
         $newMapping['fieldName'] = $mapping['fieldName'];
 
         // clear reference case of duplicate exception
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'fieldMappings');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($classMetadata, array_filter($classMetadata->fieldMappings, static fn ($key) => $key !== $mapping['fieldName']));
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'associationMappings');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($classMetadata, array_filter($classMetadata->associationMappings, static fn ($key) => $key !== $mapping['fieldName']));
+        $classMetadata->unsetFieldMapping($mapping['fieldName']);
+        $classMetadata->unsetAssociationMapping($mapping['fieldName']);
 
         switch ($mapping['association']) {
             case ClassMetadata::REFERENCE_ONE:

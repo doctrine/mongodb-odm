@@ -16,7 +16,6 @@ use InvalidArgumentException;
 use LibXMLError;
 use MongoDB\BSON\Document;
 use MongoDB\Driver\Exception\UnexpectedValueException;
-use ReflectionProperty;
 use SimpleXMLElement;
 
 use function array_is_list;
@@ -98,22 +97,14 @@ class XmlDriver extends FileDriver
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null,
             );
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isMappedSuperclass');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsMappedSuperclass();
         } elseif ($xmlRoot->getName() === 'embedded-document') {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsEmbeddedDocument();
             if (isset($xmlRoot->encrypt)) {
-                $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEncrypted');
-                $reflectionProp->setAccessible(true);
-                $reflectionProp->setValue($metadata, true);
+                $metadata->markAsEncrypted();
             }
         } elseif ($xmlRoot->getName() === 'query-result-document') {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isQueryResultDocument');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsQueryResultDocument();
         } elseif ($xmlRoot->getName() === 'view') {
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
@@ -130,9 +121,7 @@ class XmlDriver extends FileDriver
 
             $metadata->markViewOf($rootClass);
         } elseif ($xmlRoot->getName() === 'gridfs-file') {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isFile');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($metadata, true);
+            $metadata->markAsFile();
 
             if (isset($xmlRoot['chunk-size-bytes'])) {
                 $metadata->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);

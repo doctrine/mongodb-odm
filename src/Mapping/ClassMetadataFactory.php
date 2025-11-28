@@ -22,9 +22,7 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
 use ReflectionNamedType;
-use ReflectionProperty;
 
-use function array_merge;
 use function assert;
 use function get_class_methods;
 use function in_array;
@@ -166,9 +164,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             }
 
             if ($parent->isFile) {
-                $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isFile');
-                $reflectionProp->setAccessible(true);
-                $reflectionProp->setValue($class, true);
+                $class->markAsFile();
 
                 $class->setBucketName($parent->bucketName);
 
@@ -352,9 +348,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
 
         foreach ($parentClass->propertyAccessors as $name => $field) {
-            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'propertyAccessors');
-            $reflectionProp->setAccessible(true);
-            $reflectionProp->setValue($subClass, array_merge($subClass->propertyAccessors, [$name => $field]));
+            $subClass->setPropertyAccessor($name, $field);
         }
     }
 

@@ -2189,6 +2189,21 @@ use function trigger_deprecation;
         $this->lockField = $lockField;
     }
 
+    public function setPropertyAccessor(string $name, PropertyAccessors\PropertyAccessor $accessor): void
+    {
+        $this->propertyAccessors[$name] = $accessor;
+    }
+
+    public function unsetFieldMapping(string $fieldName): void
+    {
+        unset($this->fieldMappings[$fieldName]);
+    }
+
+    public function unsetAssociationMapping(string $fieldName): void
+    {
+        unset($this->associationMappings[$fieldName]);
+    }
+
     /**
      * Marks this class as read only, no change tracking is applied to it.
      */
@@ -2228,6 +2243,31 @@ use function trigger_deprecation;
         $this->validateTimeSeriesOptions($options);
 
         $this->timeSeriesOptions = $options;
+    }
+
+    public function markAsFile(): void
+    {
+        $this->isFile = true;
+    }
+
+    public function markAsEncrypted(): void
+    {
+        $this->isEncrypted = true;
+    }
+
+    public function markAsMappedSuperclass(): void
+    {
+        $this->isMappedSuperclass = true;
+    }
+
+    public function markAsEmbeddedDocument(): void
+    {
+        $this->isEmbeddedDocument = true;
+    }
+
+    public function markAsQueryResultDocument(): void
+    {
+        $this->isQueryResultDocument = true;
     }
 
     public function getFieldNames(): array

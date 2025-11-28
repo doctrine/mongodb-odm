@@ -406,14 +406,10 @@ class ClassMetadataTest extends BaseTestCase
         $document = new ClassMetadata(CmsUser::class);
 
         $embeddedDocument = new ClassMetadata(CmsUser::class);
-        $reflectionProp   = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($embeddedDocument, true);
+        $embeddedDocument->markAsEmbeddedDocument();
 
         $mappedSuperclass = new ClassMetadata(CmsUser::class);
-        $reflectionProp   = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($embeddedDocument, true);
+        $mappedSuperclass->markAsMappedSuperclass();
 
         return [
             'document' => [$document],
@@ -711,10 +707,8 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm             = new ClassMetadata($object::class);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, true);
+        $cm = new ClassMetadata($object::class);
+        $cm->markAsEmbeddedDocument();
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('atomicSet collection strategy can be used only in top level document, used in');
@@ -887,10 +881,8 @@ class ClassMetadataTest extends BaseTestCase
 
     public function testEmbeddedDocumentCantHaveShardKey(): void
     {
-        $cm             = new ClassMetadata('stdClass');
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, true);
+        $cm = new ClassMetadata('stdClass');
+        $cm->markAsEmbeddedDocument();
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Embedded document can\'t have shard key: stdClass');
         $cm->setShardKey(['id' => 'asc']);
@@ -966,10 +958,8 @@ class ClassMetadataTest extends BaseTestCase
             public $contentType;
         };
 
-        $cm             = new ClassMetadata($object::class);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isFile');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, true);
+        $cm = new ClassMetadata($object::class);
+        $cm->markAsFile();
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessageMatches("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
