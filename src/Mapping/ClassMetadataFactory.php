@@ -22,7 +22,9 @@ use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\Mapping\ReflectionService;
 use ReflectionException;
 use ReflectionNamedType;
+use ReflectionProperty;
 
+use function array_merge;
 use function assert;
 use function get_class_methods;
 use function in_array;
@@ -164,7 +166,10 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             }
 
             if ($parent->isFile) {
-                $class->isFile = true;
+                $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isFile');
+                $reflectionProp->setAccessible(true);
+                $reflectionProp->setValue($class, true);
+
                 $class->setBucketName($parent->bucketName);
 
                 if ($parent->chunkSizeBytes !== null) {
@@ -334,7 +339,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
-        foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
+        foreach ($parentClass->fieldMappings as $mapping) {
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
@@ -347,7 +352,9 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
 
         foreach ($parentClass->propertyAccessors as $name => $field) {
-            $subClass->propertyAccessors[$name] = $field;
+            $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'propertyAccessors');
+            $reflectionProp->setAccessible(true);
+            $reflectionProp->setValue($subClass, array_merge($subClass->propertyAccessors, [$name => $field]));
         }
     }
 

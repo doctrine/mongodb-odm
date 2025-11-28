@@ -45,6 +45,7 @@ use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
+use ReflectionProperty;
 
 use function array_count_values;
 use function array_key_exists;
@@ -749,10 +750,16 @@ EOT;
     #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
-        $cm                   = $this->dm->getClassMetadata(CmsArticle::class);
-        $cm->collectionCapped = true;
-        $cm->collectionSize   = 1048576;
-        $cm->collectionMax    = 32;
+        $cm             = $this->dm->getClassMetadata(CmsArticle::class);
+        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'collectionCapped');
+        $reflectionProp->setAccessible(true);
+        $reflectionProp->setValue($cm, true);
+        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'collectionSize');
+        $reflectionProp->setAccessible(true);
+        $reflectionProp->setValue($cm, 1048576);
+        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'collectionMax');
+        $reflectionProp->setAccessible(true);
+        $reflectionProp->setValue($cm, 32);
 
         $options = [
             'capped' => true,
