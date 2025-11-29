@@ -26,50 +26,42 @@ interface PersistentCollectionInterface extends Collection
 {
     /**
      * Sets the document manager and unit of work (used during merge operations).
-     *
-     * @return void
      */
-    public function setDocumentManager(DocumentManager $dm);
+    public function setDocumentManager(DocumentManager $dm): void;
 
     /**
      * Sets the array of raw mongo data that will be used to initialize this collection.
      *
      * @param mixed[] $mongoData
-     *
-     * @return void
      */
-    public function setMongoData(array $mongoData);
+    public function setMongoData(array $mongoData): void;
 
     /**
      * Gets the array of raw mongo data that will be used to initialize this collection.
      *
      * @return mixed[] $mongoData
      */
-    public function getMongoData();
+    public function getMongoData(): array;
 
     /**
      * Set hints to account for during reconstitution/lookup of the documents.
      *
      * @param Hints $hints
-     *
-     * @return void
      */
-    public function setHints(array $hints);
+    public function setHints(array $hints): void;
 
     /**
      * Get hints to account for during reconstitution/lookup of the documents.
      *
      * @return Hints $hints
      */
-    public function getHints();
+    public function getHints(): array;
 
     /**
      * Initializes the collection by loading its contents from the database
      * if the collection is not yet initialized.
-     *
-     * @return void
      */
-    public function initialize();
+    public function initialize(): void;
 
     /**
      * Gets a boolean flag indicating whether this collection is dirty which means
@@ -77,111 +69,93 @@ interface PersistentCollectionInterface extends Collection
      *
      * @return bool TRUE if the collection is dirty, FALSE otherwise.
      */
-    public function isDirty();
+    public function isDirty(): bool;
 
     /**
      * Sets a boolean flag, indicating whether this collection is dirty.
      *
      * @param bool $dirty Whether the collection should be marked dirty or not.
-     *
-     * @return void
      */
-    public function setDirty($dirty);
+    public function setDirty(bool $dirty): void;
 
     /**
      * Sets the collection's owning document together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      *
      * @phpstan-param FieldMapping $mapping
-     *
-     * @return void
      */
-    public function setOwner(object $document, array $mapping);
+    public function setOwner(object $document, array $mapping): void;
 
     /**
      * Tells this collection to take a snapshot of its current state reindexing
      * itself numerically if using save strategy that is enforcing BSON array.
      * Reindexing is safe as snapshot is taken only after synchronizing collection
      * with database or clearing it.
-     *
-     * @return void
      */
-    public function takeSnapshot();
+    public function takeSnapshot(): void;
 
     /**
      * Clears the internal snapshot information and sets isDirty to true if the collection
      * has elements.
-     *
-     * @return void
      */
-    public function clearSnapshot();
+    public function clearSnapshot(): void;
 
     /**
      * Returns the last snapshot of the elements in the collection.
      *
      * @return object[] The last snapshot of the elements.
      */
-    public function getSnapshot();
+    public function getSnapshot(): array;
 
     /** @return array<string, object> */
-    public function getDeleteDiff();
+    public function getDeleteDiff(): array;
 
     /**
      * Get objects that were removed, unlike getDeleteDiff this doesn't care about indices.
      *
      * @return list<object>
      */
-    public function getDeletedDocuments();
+    public function getDeletedDocuments(): array;
 
     /** @return array<string, object> */
-    public function getInsertDiff();
+    public function getInsertDiff(): array;
 
     /**
      * Get objects that were added, unlike getInsertDiff this doesn't care about indices.
      *
      * @return list<object>
      */
-    public function getInsertedDocuments();
+    public function getInsertedDocuments(): array;
 
     /**
      * Gets the collection owner.
      */
     public function getOwner(): ?object;
 
-    /**
-     * @return array
-     * @phpstan-return FieldMapping
-     */
-    public function getMapping();
+    /** @phpstan-return FieldMapping */
+    public function getMapping(): array;
 
     /**
-     * @return ClassMetadata
      * @phpstan-return ClassMetadata<T>
      *
      * @throws MongoDBException
      */
-    public function getTypeClass();
+    public function getTypeClass(): ClassMetadata;
 
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
-     *
-     * @param bool $bool
-     *
-     * @return void
      */
-    public function setInitialized($bool);
+    public function setInitialized(bool $bool): void;
 
     /**
      * Checks whether this collection has been initialized.
-     *
-     * @return bool
      */
-    public function isInitialized();
+    public function isInitialized(): bool;
 
     /**
      * Returns the wrapped Collection instance.
      *
      * @return Collection<TKey, T>
      */
-    public function unwrap();
+    public function unwrap(): Collection;
 }
