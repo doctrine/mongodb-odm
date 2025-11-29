@@ -1235,3 +1235,8 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: tests/Documents/Encryption/Client.php
+		-
+			message: '#^Call to an undefined static method Symfony\\Component\\VarExporter\\ProxyHelper\:\:generateLazyGhost\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: src\Proxy\Factory\LazyGhostProxyFactory.php

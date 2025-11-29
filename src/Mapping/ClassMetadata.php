@@ -286,11 +286,10 @@ use function trigger_deprecation;
  *      keys?: ShardKeys,
  *      options?: ShardOptions
  * }
- * @final
  * @template-covariant T of object
  * @template-implements BaseClassMetadata<T>
  */
-/* final */ class ClassMetadata implements BaseClassMetadata
+final class ClassMetadata implements BaseClassMetadata
 {
     /* The Id generator types. */
     /**
