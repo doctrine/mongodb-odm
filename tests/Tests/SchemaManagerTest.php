@@ -750,16 +750,10 @@ EOT;
     #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
-        $cm             = $this->dm->getClassMetadata(CmsArticle::class);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'collectionCapped');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, true);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'collectionSize');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, 1048576);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'collectionMax');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, 32);
+        $cm = $this->dm->getClassMetadata(CmsArticle::class);
+        new ReflectionProperty(ClassMetadata::class, 'collectionCapped')->setValue($cm, true);
+        new ReflectionProperty(ClassMetadata::class, 'collectionSize')->setValue($cm, 1048576);
+        new ReflectionProperty(ClassMetadata::class, 'collectionMax')->setValue($cm, 32);
 
         $options = [
             'capped' => true,

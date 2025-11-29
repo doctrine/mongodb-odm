@@ -252,12 +252,14 @@ class DocumentManagerTest extends BaseTestCase
         $data    = ['type' => 'forum_user'];
 
         $userClassMetadata = new ClassMetadata(ForumUser::class);
-        $reflectionProp    = new ReflectionProperty(ClassMetadata::class, 'discriminatorField');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($userClassMetadata, 'type');
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'discriminatorMap');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($userClassMetadata, ['forum_user' => ForumUser::class]);
+        new ReflectionProperty(ClassMetadata::class, 'discriminatorField')->setValue(
+            $userClassMetadata,
+            'type',
+        );
+        new ReflectionProperty(ClassMetadata::class, 'discriminatorMap')->setValue(
+            $userClassMetadata,
+            ['forum_user' => ForumUser::class],
+        );
         $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
 
         self::assertEquals(ForumUser::class, $this->dm->getClassNameForAssociation($mapping, $data));

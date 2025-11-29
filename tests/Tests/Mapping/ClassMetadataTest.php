@@ -727,10 +727,8 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm             = new ClassMetadata($object::class);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, true);
+        $cm = new ClassMetadata($object::class);
+        new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument')->setValue($cm, true);
 
         $mapping = $cm->mapField([
             'fieldName' => 'many',
@@ -750,10 +748,8 @@ class ClassMetadataTest extends BaseTestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
         ]);
 
-        $cm             = new ClassMetadata('stdClass');
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, true);
+        $cm = new ClassMetadata('stdClass');
+        new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument')->setValue($cm, true);
         $this->expectException(MappingException::class);
         $cm->mapField($config);
     }
@@ -827,10 +823,11 @@ class ClassMetadataTest extends BaseTestCase
 
     public function testSetShardKeyForClassWithSingleCollectionInheritance(): void
     {
-        $cm             = new ClassMetadata('stdClass');
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'inheritanceType');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
+        $cm = new ClassMetadata('stdClass');
+        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
+            $cm,
+            ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION,
+        );
         $cm->setShardKey(['id' => 'asc']);
 
         $shardKey = $cm->getShardKey();
@@ -842,9 +839,10 @@ class ClassMetadataTest extends BaseTestCase
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'inheritanceType');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION);
+        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
+            $cm,
+            ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION,
+        );
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Shard key overriding in subclass is forbidden for single collection inheritance');
@@ -853,10 +851,11 @@ class ClassMetadataTest extends BaseTestCase
 
     public function testSetShardKeyForClassWithCollPerClassInheritance(): void
     {
-        $cm             = new ClassMetadata('stdClass');
-        $reflectionProp = new ReflectionProperty(ClassMetadata::class, 'inheritanceType');
-        $reflectionProp->setAccessible(true);
-        $reflectionProp->setValue($cm, ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS);
+        $cm = new ClassMetadata('stdClass');
+        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
+            $cm,
+            ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS,
+        );
         $cm->setShardKey(['id' => 'asc']);
 
         $shardKey = $cm->getShardKey();
