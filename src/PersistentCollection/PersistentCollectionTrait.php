@@ -334,11 +334,7 @@ trait PersistentCollectionTrait
         return $this->coll->last();
     }
 
-    /**
-     * @param mixed $key
-     *
-     * @return bool|T|null
-     */
+    /** @return bool|T|null */
     public function remove(mixed $key): bool|object|null
     {
         return $this->doRemove($key, false);
@@ -588,11 +584,7 @@ trait PersistentCollectionTrait
         $this->doSet($offset, $value, true);
     }
 
-    /**
-     * @param mixed $offset
-     *
-     * @return void
-     */
+    /** @return void */
     #[ReturnTypeWillChange]
     public function offsetUnset(mixed $offset)
     {
@@ -656,7 +648,6 @@ trait PersistentCollectionTrait
      * Actual logic for adding an element to the collection.
      *
      * @param mixed $value
-     * @param bool  $arrayAccess
      *
      * @return true
      */
@@ -682,8 +673,6 @@ trait PersistentCollectionTrait
 
     /**
      * Actual logic for removing element by its key.
-     *
-     * @param mixed $offset
      *
      * @return bool|T|null
      * @phpstan-return (
