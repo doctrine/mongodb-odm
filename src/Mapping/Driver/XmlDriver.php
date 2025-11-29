@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\Driver\FileLocator;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
@@ -76,7 +77,7 @@ class XmlDriver extends FileDriver
         ],
     ];
 
-    public function __construct($locator, ?string $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    public function __construct(string|array|FileLocator $locator, ?string $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
     }
