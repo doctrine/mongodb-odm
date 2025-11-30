@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use ReturnTypeWillChange;
 use Traversable;
 
 use function array_combine;
@@ -384,6 +383,7 @@ trait PersistentCollectionTrait
 
     /**
      * @param T $element
+     *
      * @phpstan-return (TMaybeContained is T ? TKey|false : false)
      *
      * @template TMaybeContained
@@ -563,7 +563,6 @@ trait PersistentCollectionTrait
      *
      * @phpstan-return T|null
      */
-    #[ReturnTypeWillChange]
     public function offsetGet(mixed $offset): ?object
     {
         $this->initialize();
