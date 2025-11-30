@@ -147,6 +147,7 @@ jobs:
           extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
           coverage: "none"
           ini-values: "zend.assertions=1"
+          tools: "flex"
 
       - name: "Show driver information"
         run: "php --ri mongodb"
