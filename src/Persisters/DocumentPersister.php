@@ -1354,7 +1354,7 @@ final class DocumentPersister
             // Process query operators whose argument arrays need type conversion
             if (in_array($k, ['$in', '$nin', '$all']) && is_array($v)) {
                 foreach ($v as $k2 => $v2) {
-                    if ($v2 instanceof $class->name) {
+                    if ($class->name !== null && $v2 instanceof $class->name) {
                         // If a value in a query is a target document, e.g. ['referenceField' => $targetDocument],
                         // retreive id from target document and convert this id using it's type
                         $expression[$k][$k2] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v2));
@@ -1381,7 +1381,7 @@ final class DocumentPersister
                 continue;
             }
 
-            if ($v instanceof $class->name) {
+            if ($class->name !== null && $v instanceof $class->name) {
                 $expression[$k] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v));
             } else {
                 $expression[$k] = $class->getDatabaseIdentifierValue($v);

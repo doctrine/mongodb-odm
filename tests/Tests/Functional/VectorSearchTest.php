@@ -11,6 +11,7 @@ use MongoDB\BSON\Binary;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
+use ReflectionProperty;
 
 #[Group('atlas')]
 class VectorSearchTest extends BaseTestCase
@@ -105,8 +106,11 @@ class VectorSearchTest extends BaseTestCase
     {
         $cm = $this->dm->getClassMetadata(VectorEmbedding::class);
 
-        $cm->fieldMappings['vectorFloat']['type'] = Type::VECTOR_FLOAT32;
-        $cm->fieldMappings['vectorInt']['type']   = Type::VECTOR_INT8;
+        $fieldMappings                        = $cm->fieldMappings;
+        $fieldMappings['vectorFloat']['type'] = Type::VECTOR_FLOAT32;
+        $fieldMappings['vectorInt']['type']   = Type::VECTOR_INT8;
+
+        new ReflectionProperty($cm, 'fieldMappings')->setValue($cm, $fieldMappings);
 
         // Change the collection name to avoid conflicts with asynchronous index building
         $cm->collection .= '_binary_type';

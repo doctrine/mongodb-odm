@@ -487,8 +487,8 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * The name of the mongo collection the document is mapped to.
-     *     */
-    public private(set) string $collection = '';
+     */
+    public private(set) ?string $collection = null;
 
     /**
      * The name of the GridFS bucket the document is mapped to.
@@ -576,18 +576,18 @@ final class ClassMetadata implements BaseClassMetadata
     /**
      * The name of the document class.
      *
-     * @var class-string<T>
+     * @var class-string<T>|null
      */
-    public private(set) string $name = '';
+    public private(set) ?string $name = null;
 
     /**
      * The name of the document class that is at the root of the mapped document inheritance
      * hierarchy. If the document is not part of a mapped inheritance hierarchy this is the same
      * as {@link $documentName}.
      *
-     * @var class-string
+     * @var class-string|null
      */
-    public private(set) string $rootDocumentName = '';
+    public private(set) ?string $rootDocumentName = null;
 
     /**
      * The name of the custom repository class used for the document class.
@@ -972,7 +972,7 @@ final class ClassMetadata implements BaseClassMetadata
             return;
         }
 
-        if (! $document instanceof $this->name) {
+        if ($this->name !== null && ! $document instanceof $this->name) {
             throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, $document::class));
         }
 
