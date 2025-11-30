@@ -23,7 +23,7 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
 
         self::assertNull($args->getFoundMetadata());
 
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = new ClassMetadata(stdClass::class);
 
         $args->setFoundMetadata($metadata);
 

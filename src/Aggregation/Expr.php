@@ -78,8 +78,8 @@ class Expr implements
     /** @var array{case: mixed|self, then?: mixed|self}|null */
     private ?array $switchBranch = null;
 
-    /** @final This constructor is used in {@see self::expr()} */
-    public function __construct(private DocumentManager $dm, private ClassMetadata $class)
+    /** This constructor is used in {@see self::expr()} */
+    final public function __construct(private DocumentManager $dm, private ClassMetadata $class)
     {
     }
 
