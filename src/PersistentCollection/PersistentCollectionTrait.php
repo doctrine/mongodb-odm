@@ -386,7 +386,7 @@ trait PersistentCollectionTrait
      * @param T $element
      * @phpstan-return (TMaybeContained is T ? TKey|false : false)
      *
-     * @phpstan-template TMaybeContained
+     * @template TMaybeContained
      */
     public function indexOf(mixed $element): string|int|false
     {
