@@ -44,7 +44,7 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "1.21.0"
             topology: "server"
-            symfony-version: false
+            symfony-version: ""
             proxy: "lazy-ghost"
           # Test with Symfony 6.4
           - topology: "server"
@@ -60,7 +60,7 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "lazy-ghost"
           # Test with a 8.0 replica set
           - topology: "replica_set"
@@ -68,21 +68,21 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "lazy-ghost"
           # Test with ProxyManager
           - php-version: "8.2"
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "proxy-manager"
           # Test with Native Lazy Objects
           - php-version: "8.4"
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "native"
           # Test with extension 1.21
           - topology: "server"
@@ -90,7 +90,7 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "1.21.0"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "lazy-ghost"
           # Test with Symfony 8
           - topology: "server"
@@ -98,7 +98,7 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "native"
           # Test removing optional dependencies
           - topology: "server"
@@ -106,7 +106,7 @@ jobs:
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: false
+            symfony-version: ""
             proxy: "native"
             remove-optional-dependencies: true
           # Test with a sharded cluster
@@ -116,7 +116,7 @@ jobs:
 #            mongodb-version: "6.0"
 #            driver-version: "stable"
 #            dependencies: "highest"
-#            symfony-version: false
+#            symfony-version: "
 #            proxy: "lazy-ghost"
 
     steps:
