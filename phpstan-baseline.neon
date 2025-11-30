@@ -355,12 +355,6 @@ parameters:
 			path: src/Event/OnClearEventArgs.php
 
 		-
-			message: '#^Parameter \#1 \$initializer of method ProxyManager\\Proxy\\GhostObjectInterface\<object\>\:\:setProxyInitializer\(\) expects \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string\=, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null, Closure\(ProxyManager\\Proxy\\GhostObjectInterface, string, array, mixed, array\)\: true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Hydrator/HydratorFactory.php
-
-		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Hydrator\\HydratorFactory\:\:\$hydratorNamespace \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
@@ -733,8 +727,8 @@ parameters:
 			path: src/Proxy/Factory/LazyGhostProxyFactory.php
 
 		-
-			message: '#^Call to function is_scalar\(\) with int\<min, \-1\>\|int\<5, max\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
+			message: '#^Call to an undefined static method Symfony\\Component\\VarExporter\\ProxyHelper\:\:generateLazyGhost\(\)\.$#'
+			identifier: staticMethod.notFound
 			count: 1
 			path: src/Proxy/Factory/LazyGhostProxyFactory.php
 
@@ -899,6 +893,12 @@ parameters:
 			identifier: argument.templateType
 			count: 3
 			path: src/Utility/LifecycleEventManager.php
+
+		-
+			message: '#^Method Documents\\Encryption\\Client\:\:__construct\(\) has parameter \$clientCards with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/Documents/Encryption/Client.php
 
 		-
 			message: '#^Parameter \#1 \$builder of method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Facet\:\:pipeline\(\) expects Doctrine\\ODM\\MongoDB\\Aggregation\\Builder\|Doctrine\\ODM\\MongoDB\\Aggregation\\Stage, stdClass given\.$#'
@@ -1241,9 +1241,3 @@ parameters:
 			identifier: staticMethod.impossibleType
 			count: 1
 			path: tests/Tests/Types/BinaryUuidTypeTest.php
-
-		-
-			message: '#^Method Documents\\Encryption\\Client\:\:__construct\(\) has parameter \$clientCards with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Documents/Encryption/Client.php
