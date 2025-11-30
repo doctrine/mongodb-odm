@@ -363,7 +363,7 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @param T $element
+     * @param TMaybeContained $element
      *
      * @template TMaybeContained
      */
@@ -382,7 +382,7 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @param T $element
+     * @param TMaybeContained $element
      *
      * @phpstan-return (TMaybeContained is T ? TKey|false : false)
      *
@@ -459,7 +459,13 @@ trait PersistentCollectionTrait
         return $this->coll->getIterator();
     }
 
-    /** @phpstan-return BaseCollection<TKey, T> */
+    /**
+     * @phpstan-param Closure(T):U $func
+     *
+     * @phpstan-return BaseCollection<TKey, U>
+     *
+     * @template U
+     */
     public function map(Closure $func): BaseCollection
     {
         $this->initialize();
@@ -570,10 +576,6 @@ trait PersistentCollectionTrait
         return $this->coll->offsetGet($offset);
     }
 
-    /**
-     * @param TKey   $offset
-     * @param T|null $value
-     */
     public function offsetSet(mixed $offset, mixed $value): void
     {
         if (! isset($offset)) {
@@ -647,9 +649,9 @@ trait PersistentCollectionTrait
     /**
      * Actual logic for adding an element to the collection.
      *
-     * @param T $value
+     * @param T|null $value
      */
-    private function doAdd(object $value, bool $arrayAccess): true
+    private function doAdd(?object $value, bool $arrayAccess): true
     {
         /* Initialize the collection before calling add() so this append operation
          * uses the appropriate key. Otherwise, we risk overwriting original data
