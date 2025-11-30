@@ -340,7 +340,8 @@ trait PersistentCollectionTrait
         return $this->doRemove($key, false);
     }
 
-    public function removeElement($element): bool
+    /** @param T $element */
+    public function removeElement(mixed $element): bool
     {
         $this->initialize();
         $removed = $this->coll->removeElement($element);
@@ -362,7 +363,11 @@ trait PersistentCollectionTrait
         return $this->coll->containsKey($key);
     }
 
-    /** @template TMaybeContained */
+    /**
+     * @param T $element
+     *
+     * @template TMaybeContained
+     */
     public function contains(mixed $element): bool
     {
         $this->initialize();
@@ -377,7 +382,12 @@ trait PersistentCollectionTrait
         return $this->coll->exists($p);
     }
 
-    /** @return TKey|false */
+    /**
+     * @param T $element
+     * @phpstan-return (TMaybeContained is T ? TKey|false : false)
+     *
+     * @phpstan-template TMaybeContained
+     */
     public function indexOf(mixed $element): string|int|false
     {
         $this->initialize();
@@ -390,7 +400,7 @@ trait PersistentCollectionTrait
      *
      * @return T|null
      */
-    public function get(string|int $key): mixed
+    public function get(string|int $key): ?object
     {
         $this->initialize();
 
@@ -413,9 +423,7 @@ trait PersistentCollectionTrait
         return $this->coll->getValues();
     }
 
-    /** @return int */
-    #[ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         // Workaround around not being able to directly count inverse collections anymore
         $this->initialize();
@@ -423,12 +431,17 @@ trait PersistentCollectionTrait
         return $this->coll->count();
     }
 
-    public function set($key, $value): void
+    /**
+     * @param TKey   $key
+     * @param T|null $value
+     */
+    public function set(string|int $key, mixed $value): void
     {
         $this->doSet($key, $value, false);
     }
 
-    public function add($element): bool
+    /** @param T $element */
+    public function add(mixed $element): bool
     {
         return $this->doAdd($element, false);
     }
@@ -438,18 +451,15 @@ trait PersistentCollectionTrait
         return $this->initialized ? $this->coll->isEmpty() : $this->count() === 0;
     }
 
-    /**
-     * @return Traversable
-     * @phpstan-return Traversable<TKey, T>
-     */
-    #[ReturnTypeWillChange]
-    public function getIterator()
+    /** @phpstan-return Traversable<TKey, T> */
+    public function getIterator(): Traversable
     {
         $this->initialize();
 
         return $this->coll->getIterator();
     }
 
+    /** @phpstan-return BaseCollection<TKey, T> */
     public function map(Closure $func): BaseCollection
     {
         $this->initialize();
@@ -457,6 +467,7 @@ trait PersistentCollectionTrait
         return $this->coll->map($func);
     }
 
+    /** @phpstan-return BaseCollection<TKey, T> */
     public function filter(Closure $p): BaseCollection
     {
         $this->initialize();
@@ -539,13 +550,8 @@ trait PersistentCollectionTrait
 
     /* ArrayAccess implementation */
 
-    /**
-     * @param mixed $offset
-     *
-     * @return bool
-     */
-    #[ReturnTypeWillChange]
-    public function offsetExists($offset)
+    /** @param TKey $offset */
+    public function offsetExists(mixed $offset): bool
     {
         $this->initialize();
 
@@ -553,13 +559,12 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @param mixed $offset
+     * @param TKey $offset
      *
-     * @return mixed
      * @phpstan-return T|null
      */
     #[ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): ?object
     {
         $this->initialize();
 
@@ -567,13 +572,10 @@ trait PersistentCollectionTrait
     }
 
     /**
-     * @param mixed $offset
-     * @param mixed $value
-     *
-     * @return void
+     * @param TKey   $offset
+     * @param T|null $value
      */
-    #[ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if (! isset($offset)) {
             $this->doAdd($value, true);
@@ -584,9 +586,8 @@ trait PersistentCollectionTrait
         $this->doSet($offset, $value, true);
     }
 
-    /** @return void */
-    #[ReturnTypeWillChange]
-    public function offsetUnset(mixed $offset)
+    /** @param TKey $offset */
+    public function offsetUnset(mixed $offset): void
     {
         $this->doRemove($offset, true);
     }
@@ -647,11 +648,9 @@ trait PersistentCollectionTrait
     /**
      * Actual logic for adding an element to the collection.
      *
-     * @param mixed $value
-     *
-     * @return true
+     * @param T $value
      */
-    private function doAdd($value, bool $arrayAccess): true
+    private function doAdd(object $value, bool $arrayAccess): true
     {
         /* Initialize the collection before calling add() so this append operation
          * uses the appropriate key. Otherwise, we risk overwriting original data
@@ -674,6 +673,8 @@ trait PersistentCollectionTrait
     /**
      * Actual logic for removing element by its key.
      *
+     * @param TKey $offset
+     *
      * @return bool|T|null
      * @phpstan-return (
      *      $arrayAccess is false
@@ -681,7 +682,7 @@ trait PersistentCollectionTrait
      *      : T|true|null
      * )
      */
-    private function doRemove(mixed $offset, bool $arrayAccess): bool|object|null
+    private function doRemove(string|int $offset, bool $arrayAccess): bool|object|null
     {
         $this->initialize();
         if ($arrayAccess) {
@@ -703,10 +704,10 @@ trait PersistentCollectionTrait
     /**
      * Actual logic for setting an element in the collection.
      *
-     * @param mixed $offset
-     * @param mixed $value
+     * @param TKey   $offset
+     * @param T|null $value
      */
-    private function doSet($offset, $value, bool $arrayAccess): void
+    private function doSet(string|int $offset, ?object $value, bool $arrayAccess): void
     {
         $arrayAccess ? $this->coll->offsetSet($offset, $value) : $this->coll->set($offset, $value);
 
