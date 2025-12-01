@@ -726,7 +726,7 @@ final class ClassMetadata implements BaseClassMetadata
     /**
      * Whether this class describes the mapping of a mapped superclass.
      */
-    public $isMappedSuperclass = false;
+    public private(set) bool $isMappedSuperclass = false;
 
     /**
      * Whether this class describes the mapping of a embedded document.
