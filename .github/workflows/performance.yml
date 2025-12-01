@@ -59,7 +59,7 @@ jobs:
       - name: "Upload composer.lock as build artifact"
         uses: actions/upload-artifact@v5
         with:
-          name: composer.lock
+          name: composer.lock-${{ matrix.php-version }}
           path: composer.lock
 
       - name: "Run PHPBench"
