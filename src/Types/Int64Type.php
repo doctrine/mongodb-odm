@@ -11,6 +11,7 @@ use MongoDB\BSON\Int64;
  */
 class Int64Type extends IntType implements Incrementable, Versionable
 {
+    /** @return Int64|null */
     public function convertToDatabaseValue($value)
     {
         if ($value instanceof Int64 || $value === null) {

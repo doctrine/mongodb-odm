@@ -12,6 +12,7 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
  */
 class IdType extends Type
 {
+    /** @return ObjectId|null */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {

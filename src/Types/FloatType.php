@@ -9,11 +9,13 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class FloatType extends Type implements Incrementable
 {
+    /** @return float|null */
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? (float) $value : null;
     }
 
+    /** @return float|null */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (float) $value : null;
@@ -29,8 +31,9 @@ class FloatType extends Type implements Incrementable
         return '$return = (float) $value;';
     }
 
+    /** @return float|null */
     public function diff($old, $new)
     {
-        return $new - $old;
+        return (float) ($new - $old);
     }
 }

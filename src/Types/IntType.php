@@ -11,11 +11,13 @@ use function max;
  */
 class IntType extends Type implements Incrementable, Versionable
 {
+    /** @return int|null */
     public function convertToDatabaseValue($value)
     {
         return $value !== null ? (int) $value : null;
     }
 
+    /** @return int|null */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (int) $value : null;
@@ -31,11 +33,13 @@ class IntType extends Type implements Incrementable, Versionable
         return '$return = (int) $value;';
     }
 
+    /** @return int */
     public function diff($old, $new)
     {
         return $new - $old;
     }
 
+    /** @return int */
     public function getNextVersion($current)
     {
         return max(1, (int) $current + 1);

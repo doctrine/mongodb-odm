@@ -13,6 +13,7 @@ use function is_array;
  */
 class HashType extends Type
 {
+    /** @return object|null */
     public function convertToDatabaseValue($value)
     {
         if ($value !== null && ! is_array($value)) {
@@ -22,6 +23,7 @@ class HashType extends Type
         return $value !== null ? (object) $value : null;
     }
 
+    /** @return array<string, mixed>|null */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (array) $value : null;
