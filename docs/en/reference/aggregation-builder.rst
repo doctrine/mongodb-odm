@@ -112,6 +112,8 @@ single result or return an iterator containing all results.
 If you instead want to look at the built aggregation pipeline, call the
 ``Builder::getPipeline()`` method.
 
+.. _aggregation_builder_hydration:
+
 Hydration
 ---------
 

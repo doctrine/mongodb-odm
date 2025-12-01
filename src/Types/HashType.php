@@ -22,7 +22,7 @@ class HashType extends Type
         return $value !== null ? (object) $value : null;
     }
 
-    /** @return array<string, mixed> */
+    /** @return array<string, mixed>|null */
     public function convertToPHPValue(mixed $value): ?array
     {
         return $value !== null ? (array) $value : null;

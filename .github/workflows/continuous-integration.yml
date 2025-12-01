@@ -20,6 +20,7 @@ jobs:
       matrix:
         php-version:
           - "8.4"
+          - "8.5"
         mongodb-version:
           - "8.0"
           - "7.0"
@@ -31,7 +32,7 @@ jobs:
         dependencies:
           - "highest"
         symfony-version:
-          - "stable"
+          - "7.4"
         include:
           # Test against lowest dependencies
           - dependencies: "lowest"
@@ -39,28 +40,28 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "2.1.0"
             topology: "server"
-            symfony-version: "stable"
+            symfony-version: ""
           # Test with Symfony 6.4
           - topology: "server"
             php-version: "8.4"
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "6.4"
+            symfony-version: "6.4.*"
           # Test with a 6.0 replica set
           - topology: "replica_set"
             php-version: "8.4"
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: ""
           # Test with a 8.0 replica set
           - topology: "replica_set"
             php-version: "8.4"
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "stable"
+            symfony-version: ""
           # Test with a sharded cluster
           # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
 #          - topology: "sharded_cluster"
@@ -68,11 +69,11 @@ jobs:
 #            mongodb-version: "6.0"
 #            driver-version: "stable"
 #            dependencies: "highest"
-#            symfony-version: "stable"
+#            symfony-version: ""
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
@@ -98,6 +99,7 @@ jobs:
           extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
           coverage: "none"
           ini-values: "zend.assertions=1"
+          tools: "flex"
 
       - name: "Show driver information"
         run: "php --ri mongodb"

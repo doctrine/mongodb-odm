@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                                            http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+  <mapped-superclass name="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\Animal2910Xml"
+                     collection="animals"
+                     inheritance-type="SINGLE_COLLECTION">
+    <discriminator-field name="classification" />
+    <discriminator-map>
+      <discriminator-mapping value="bird" class="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\Bird2910Xml" />
+      <discriminator-mapping value="dog" class="Doctrine\ODM\MongoDB\Tests\Functional\Ticket\Dog2910Xml" />
+    </discriminator-map>
+
+    <id type="string" />
+  </mapped-superclass>
+
+</doctrine-mongo-mapping>

@@ -39,14 +39,14 @@
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/console": "^5.4 || ^6.4 || ^7.0 || ^8.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",
-        "symfony/var-exporter": "^6.4 || ^7.0 || ^8.0"
+        "symfony/var-exporter": "^6.4.1 || ^7.0 || ^8.0"
     },
     "require-dev": {
         "ext-bcmath": "*",
         "doctrine/coding-standard": "^14.0",
         "doctrine/orm": "^3.2",
         "jmikola/geojson": "^1.0",
-        "phpbench/phpbench": "^1.0.0",
+        "phpbench/phpbench": "^1.4.0",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",

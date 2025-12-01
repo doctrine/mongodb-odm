@@ -29,8 +29,8 @@ class FloatType extends Type implements Incrementable
         return '$return = (float) $value;';
     }
 
-    public function diff(mixed $old, mixed $new): mixed
+    public function diff(mixed $old, mixed $new): ?float
     {
-        return $new - $old;
+        return (float) ($new - $old);
     }
 }

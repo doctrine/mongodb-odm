@@ -41,6 +41,7 @@ abstract class BaseBench
         $config->setDefaultDB(self::DATABASE_NAME);
         $config->setMetadataDriverImpl(self::createMetadataDriverImpl());
         $config->setMetadataCache(new ArrayAdapter());
+        $config->setUseNativeLazyObject(true);
 
         $client = new Client(
             getenv('DOCTRINE_MONGODB_SERVER') ?: self::DEFAULT_MONGODB_SERVER,

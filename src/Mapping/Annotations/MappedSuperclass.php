@@ -16,8 +16,12 @@ final class MappedSuperclass extends AbstractDocument
     /** @var string|null */
     public $repositoryClass;
 
-    public function __construct(?string $repositoryClass = null)
+    /** @var string|null */
+    public $collection;
+
+    public function __construct(?string $repositoryClass = null, ?string $collection = null)
     {
         $this->repositoryClass = $repositoryClass;
+        $this->collection      = $collection;
     }
 }
