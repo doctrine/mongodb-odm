@@ -11,12 +11,12 @@ use function max;
  */
 class IntType extends Type implements Incrementable, Versionable
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): mixed
     {
         return $value !== null ? (int) $value : null;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): mixed
     {
         return $value !== null ? (int) $value : null;
     }
@@ -31,12 +31,12 @@ class IntType extends Type implements Incrementable, Versionable
         return '$return = (int) $value;';
     }
 
-    public function diff($old, $new)
+    public function diff(mixed $old, mixed $new): mixed
     {
         return $new - $old;
     }
 
-    public function getNextVersion($current)
+    public function getNextVersion(mixed $current): int
     {
         return max(1, (int) $current + 1);
     }

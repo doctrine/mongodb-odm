@@ -9,9 +9,9 @@ use MongoDB\BSON\Int64;
 /**
  * The Int64 type (long)
  */
-class Int64Type extends IntType implements Incrementable, Versionable
+class Int64Type extends IntType
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?Int64
     {
         if ($value instanceof Int64 || $value === null) {
             return $value;

@@ -20,7 +20,7 @@ class BinDataType extends Type
      */
     protected int $binDataType = Binary::TYPE_GENERIC;
 
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?Binary
     {
         if ($value === null) {
             return null;
@@ -37,7 +37,7 @@ class BinDataType extends Type
         return $value;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): mixed
     {
         return $value !== null ? ($value instanceof Binary ? $value->getData() : $value) : null;
     }

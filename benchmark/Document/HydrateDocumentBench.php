@@ -9,29 +9,28 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
-use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
-use PhpBench\Benchmark\Metadata\Annotations\Warmup;
+use PhpBench\Attributes\BeforeMethods;
+use PhpBench\Attributes\Warmup;
 
-/** @BeforeMethods({"init"}, extend=true) */
+#[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 final class HydrateDocumentBench extends BaseBench
 {
     /** @var array<string, mixed> */
-    private static $data;
+    private static array $data;
 
     /** @var array<string, mixed> */
-    private static $embedOneData;
+    private static array $embedOneData;
 
     /** @var array<string, mixed[]> */
-    private static $embedManyData;
+    private static array $embedManyData;
 
     /** @var array<string, mixed[]> */
-    private static $referenceOneData;
+    private static array $referenceOneData;
 
     /** @var array<string, mixed[]> */
-    private static $referenceManyData;
+    private static array $referenceManyData;
 
-    /** @var HydratorInterface */
-    private static $hydrator;
+    private static HydratorInterface $hydrator;
 
     public function init(): void
     {
@@ -78,31 +77,31 @@ final class HydrateDocumentBench extends BaseBench
             ->getHydratorFor(User::class);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocument(): void
     {
         self::$hydrator->hydrate(new User(), self::$data);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithEmbedOne(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$embedOneData);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithEmbedMany(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$embedManyData);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithReferenceOne(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$referenceOneData);
     }
 
-    /** @Warmup(2) */
+    #[Warmup(2)]
     public function benchHydrateDocumentWithReferenceMany(): void
     {
         self::$hydrator->hydrate(new User(), self::$data + self::$referenceManyData);

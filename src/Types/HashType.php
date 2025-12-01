@@ -13,7 +13,7 @@ use function is_array;
  */
 class HashType extends Type
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?object
     {
         if ($value !== null && ! is_array($value)) {
             throw MongoDBException::invalidValueForType('Hash', ['array', 'null'], $value);
@@ -22,7 +22,8 @@ class HashType extends Type
         return $value !== null ? (object) $value : null;
     }
 
-    public function convertToPHPValue($value)
+    /** @return array<string, mixed> */
+    public function convertToPHPValue(mixed $value): ?array
     {
         return $value !== null ? (array) $value : null;
     }

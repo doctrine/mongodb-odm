@@ -36,7 +36,7 @@ class DateType extends Type implements Versionable
      *
      * @throws InvalidArgumentException If $value is invalid.
      */
-    public static function getDateTime($value): DateTimeInterface
+    public static function getDateTime(mixed $value): DateTimeInterface
     {
         $datetime  = false;
         $exception = null;
@@ -70,8 +70,7 @@ class DateType extends Type implements Versionable
         return $datetime;
     }
 
-    /** @return DateTime|false */
-    private static function craftDateTime(int $seconds, int $microseconds = 0)
+    private static function craftDateTime(int $seconds, int $microseconds = 0): DateTime|false
     {
         $datetime = new DateTime();
         $datetime->setTimestamp($seconds);
@@ -82,7 +81,7 @@ class DateType extends Type implements Versionable
         return $datetime;
     }
 
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?UTCDateTime
     {
         if ($value === null || $value instanceof UTCDateTime) {
             return $value;
@@ -93,7 +92,7 @@ class DateType extends Type implements Versionable
         return new UTCDateTime($datetime);
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): ?DateTimeInterface
     {
         if ($value === null) {
             return null;
@@ -112,12 +111,7 @@ class DateType extends Type implements Versionable
         return 'if ($value === null) { $return = null; } else { $return = \\' . static::class . '::getDateTime($value); }';
     }
 
-    /**
-     * @param mixed $current
-     *
-     * @return DateTimeInterface
-     */
-    public function getNextVersion($current)
+    public function getNextVersion(mixed $current): DateTimeInterface
     {
         return new DateTime();
     }

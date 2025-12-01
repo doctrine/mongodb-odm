@@ -14,7 +14,7 @@ use function substr;
  */
 class TimestampType extends Type
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?Timestamp
     {
         if ($value instanceof Timestamp) {
             return $value;
@@ -23,7 +23,7 @@ class TimestampType extends Type
         return $value !== null ? new Timestamp(0, $value) : null;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): int|string|null
     {
         return $value instanceof Timestamp ? $this->extractSeconds($value) : ($value !== null ? (string) $value : null);
     }

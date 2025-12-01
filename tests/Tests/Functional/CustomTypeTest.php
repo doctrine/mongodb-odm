@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
+use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\After;
 use ReflectionProperty;
 
@@ -97,8 +99,10 @@ class DateCollectionType extends Type
 
     /**
      * Method called by PersistenceBuilder
+     *
+     * @return UTCDateTime[]
      */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?array
     {
         if ($value === null) {
             return null;
@@ -115,7 +119,8 @@ class DateCollectionType extends Type
         return $value;
     }
 
-    public function convertToPHPValue($value)
+    /** @return DateTimeInterface[] */
+    public function convertToPHPValue(mixed $value): ?array
     {
         if ($value === null) {
             return null;

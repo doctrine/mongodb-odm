@@ -867,8 +867,7 @@ final class ClassMetadata implements BaseClassMetadata
         return $this->reflClass;
     }
 
-    /** @param string $fieldName */
-    public function isIdentifier($fieldName): bool
+    public function isIdentifier(string $fieldName): bool
     {
         return $this->identifier === $fieldName;
     }
@@ -1034,7 +1033,7 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @param array<string, mixed>|string $fields Database field name(s)
      */
-    public function registerAlsoLoadMethod(string $method, $fields): void
+    public function registerAlsoLoadMethod(string $method, array|string $fields): void
     {
         $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : [$fields];
     }

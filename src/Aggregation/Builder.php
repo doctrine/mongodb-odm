@@ -34,14 +34,9 @@ use function sprintf;
 class Builder
 {
     /**
-     * The DocumentManager instance for this query
-     */
-    private DocumentManager $dm;
-
-    /**
      * The ClassMetadata instance.
      */
-    private ClassMetadata $class;
+    private readonly ClassMetadata $class;
 
     /** @var class-string */
     private ?string $hydrationClass = null;
@@ -49,7 +44,7 @@ class Builder
     /**
      * The Collection instance.
      */
-    private Collection $collection;
+    private readonly Collection $collection;
 
     /** @var Stage[] */
     private array $stages = [];
@@ -61,9 +56,8 @@ class Builder
      *
      * @param class-string $documentName
      */
-    public function __construct(DocumentManager $dm, string $documentName)
+    public function __construct(private readonly DocumentManager $dm, string $documentName)
     {
-        $this->dm         = $dm;
         $this->class      = $this->dm->getClassMetadata($documentName);
         $this->collection = $this->dm->getDocumentCollection($documentName);
     }
@@ -212,9 +206,8 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
      */
-    public function geoNear($x, $y = null): Stage\GeoNear
+    public function geoNear(float|array|Point $x, ?float $y = null): Stage\GeoNear
     {
         $stage = new Stage\GeoNear($this, $x, $y);
 
@@ -491,7 +484,7 @@ class Builder
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceRoot($expression = null): Stage\ReplaceRoot
+    public function replaceRoot(string|array|Expr|null $expression = null): Stage\ReplaceRoot
     {
         $stage = new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression);
 
@@ -511,7 +504,7 @@ class Builder
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceWith($expression = null): Stage\ReplaceWith
+    public function replaceWith(string|array|Expr|null $expression = null): Stage\ReplaceWith
     {
         $stage = new Stage\ReplaceWith($this, $this->dm, $this->class, $expression);
 
@@ -608,7 +601,7 @@ class Builder
      * @param int|string|null                                        $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string $fieldName Field name or array of field/order pairs
      */
-    public function sort($fieldName, $order = null): Stage\Sort
+    public function sort(array|string $fieldName, int|string|null $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage

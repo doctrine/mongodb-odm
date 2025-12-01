@@ -12,7 +12,7 @@ use MongoDB\Driver\Exception\InvalidArgumentException;
  */
 class IdType extends Type
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?ObjectId
     {
         if ($value === null) {
             return null;
@@ -29,7 +29,7 @@ class IdType extends Type
         return $value;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): mixed
     {
         return $value instanceof ObjectId ? (string) $value : $value;
     }

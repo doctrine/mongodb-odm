@@ -9,12 +9,12 @@ namespace Doctrine\ODM\MongoDB\Types;
  */
 class RawType extends Type
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): mixed
     {
         return $value;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): mixed
     {
         return $value;
     }

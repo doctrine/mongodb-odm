@@ -11,12 +11,12 @@ use MongoDB\BSON\Regex;
  */
 class StringType extends Type
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): Regex|string|null
     {
         return $value === null || $value instanceof Regex ? $value : (string) $value;
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): ?string
     {
         return $value !== null ? (string) $value : null;
     }

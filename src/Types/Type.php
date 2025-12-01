@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
+use Stringable;
 use Symfony\Component\Uid\Uuid;
 
 use function end;
@@ -19,35 +20,35 @@ use function str_replace;
 /**
  * The Type interface.
  */
-abstract class Type
+abstract class Type implements Stringable
 {
-    public const ID                 = 'id';
-    public const CUSTOMID           = 'custom_id';
-    public const BOOL               = 'bool';
-    public const INT                = 'int';
-    public const INT64              = 'int64';
-    public const FLOAT              = 'float';
-    public const STRING             = 'string';
-    public const DATE               = 'date';
-    public const DATE_IMMUTABLE     = 'date_immutable';
-    public const KEY                = 'key';
-    public const TIMESTAMP          = 'timestamp';
-    public const BINDATA            = 'bin';
-    public const BINDATAFUNC        = 'bin_func';
-    public const BINDATABYTEARRAY   = 'bin_bytearray';
-    public const BINDATAUUID        = 'bin_uuid';
-    public const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
-    public const BINDATAMD5         = 'bin_md5';
-    public const BINDATACUSTOM      = 'bin_custom';
-    public const HASH               = 'hash';
-    public const COLLECTION         = 'collection';
-    public const OBJECTID           = 'object_id';
-    public const RAW                = 'raw';
-    public const DECIMAL128         = 'decimal128';
-    public const UUID               = 'uuid';
-    public const VECTOR_FLOAT32     = 'vector_float32';
-    public const VECTOR_INT8        = 'vector_int8';
-    public const VECTOR_PACKED_BIT  = 'vector_packed_bit';
+    public const string ID                 = 'id';
+    public const string CUSTOMID           = 'custom_id';
+    public const string BOOL               = 'bool';
+    public const string INT                = 'int';
+    public const string INT64              = 'int64';
+    public const string FLOAT              = 'float';
+    public const string STRING             = 'string';
+    public const string DATE               = 'date';
+    public const string DATE_IMMUTABLE     = 'date_immutable';
+    public const string KEY                = 'key';
+    public const string TIMESTAMP          = 'timestamp';
+    public const string BINDATA            = 'bin';
+    public const string BINDATAFUNC        = 'bin_func';
+    public const string BINDATABYTEARRAY   = 'bin_bytearray';
+    public const string BINDATAUUID        = 'bin_uuid';
+    public const string BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
+    public const string BINDATAMD5         = 'bin_md5';
+    public const string BINDATACUSTOM      = 'bin_custom';
+    public const string HASH               = 'hash';
+    public const string COLLECTION         = 'collection';
+    public const string OBJECTID           = 'object_id';
+    public const string RAW                = 'raw';
+    public const string DECIMAL128         = 'decimal128';
+    public const string UUID               = 'uuid';
+    public const string VECTOR_FLOAT32     = 'vector_float32';
+    public const string VECTOR_INT8        = 'vector_int8';
+    public const string VECTOR_PACKED_BIT  = 'vector_packed_bit';
 
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static array $typeObjects = [];
@@ -96,7 +97,7 @@ abstract class Type
      *
      * @return mixed The database representation of the value.
      */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): mixed
     {
         return $value;
     }
@@ -109,7 +110,7 @@ abstract class Type
      *
      * @return mixed The PHP representation of the value.
      */
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): mixed
     {
         return $value;
     }
@@ -156,10 +157,8 @@ abstract class Type
 
     /**
      * Get a Type instance based on the type of the passed php variable.
-     *
-     * @param mixed $variable
      */
-    public static function getTypeFromPHPVariable($variable): ?Type
+    public static function getTypeFromPHPVariable(mixed $variable): ?Type
     {
         if (is_object($variable)) {
             if ($variable instanceof DateTimeImmutable) {
@@ -191,12 +190,7 @@ abstract class Type
         };
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    public static function convertPHPToDatabaseValue($value)
+    public static function convertPHPToDatabaseValue(mixed $value): mixed
     {
         $type = self::getTypeFromPHPVariable($value);
         if ($type !== null) {

@@ -220,7 +220,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
     }
 
-    protected function newClassMetadataInstance($className): ClassMetadata
+    protected function newClassMetadataInstance(string $className): ClassMetadata
     {
         return new ClassMetadata($className);
     }

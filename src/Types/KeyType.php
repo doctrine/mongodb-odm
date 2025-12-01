@@ -12,7 +12,7 @@ use MongoDB\BSON\MinKey;
  */
 class KeyType extends Type
 {
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): MinKey|MaxKey|null
     {
         if ($value === null) {
             return null;
@@ -21,7 +21,7 @@ class KeyType extends Type
         return $value ? new MaxKey() : new MinKey();
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): ?int
     {
         if ($value === null) {
             return null;
