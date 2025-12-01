@@ -21,7 +21,7 @@ Change the metadata driver configuration to use the ``AttributeDriver``:
     - $config->setMetadataDriverImpl(AnnotationsDriver::create(__DIR__ . '/Documents'));
     + $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/Documents'));
 
-Replace the ``@ORM\Document`` annotations with the ``#[ORM\Document]`` attribute.
+Replace the ``@ODM\Document`` annotations with the ``#[ODM\Document]`` attribute.
 
 .. code-block:: diff
 
@@ -30,19 +30,19 @@ Replace the ``@ORM\Document`` annotations with the ``#[ORM\Document]`` attribute
     - /**
     -  * @ODM\Document
     -  */
-    + #[ORM\Document]
+    + #[ODM\Document]
     class User
     {
     -    /**
-    -     * @ORM\Id
+    -     * @ODM\Id
     -     */
-    +     #[ORM\Id]
+    +     #[ODM\Id]
         public string $id;
 
     -    /**
-    -     * @ORM\Column(type="string")
+    -     * @ODM\Field(type="string")
     -     */
-    +     #[ORM\Column(type: "string")]
+    +     #[ODM\Field(type: "string")]
         public string $name;
     }
 
