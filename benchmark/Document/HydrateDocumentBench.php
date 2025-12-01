@@ -12,26 +12,25 @@ use MongoDB\BSON\UTCDateTime;
 use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Warmup;
 
-#[BeforeMethods(['init'])]
+#[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 final class HydrateDocumentBench extends BaseBench
 {
     /** @var array<string, mixed> */
-    private static $data;
+    private static array $data;
 
     /** @var array<string, mixed> */
-    private static $embedOneData;
+    private static array $embedOneData;
 
     /** @var array<string, mixed[]> */
-    private static $embedManyData;
+    private static array $embedManyData;
 
     /** @var array<string, mixed[]> */
-    private static $referenceOneData;
+    private static array $referenceOneData;
 
     /** @var array<string, mixed[]> */
-    private static $referenceManyData;
+    private static array $referenceManyData;
 
-    /** @var HydratorInterface */
-    private static $hydrator;
+    private static HydratorInterface $hydrator;
 
     public function init(): void
     {

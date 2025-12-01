@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use MongoDB\Client;
 use MongoDB\Model\DatabaseInfo;
-use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function array_map;
@@ -19,14 +18,12 @@ use function iterator_to_array;
 
 use const PHP_VERSION_ID;
 
-/** @BeforeMethods({"initDocumentManager", "clearDatabase"}) */
 abstract class BaseBench
 {
     public const DATABASE_NAME           = 'doctrine_odm_performance';
     private const DEFAULT_MONGODB_SERVER = 'mongodb://localhost:27017';
 
-    /** @var DocumentManager */
-    protected static $documentManager;
+    protected static DocumentManager $documentManager;
 
     protected function getDocumentManager(): DocumentManager
     {

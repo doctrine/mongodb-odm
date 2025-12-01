@@ -17,11 +17,10 @@ use PhpBench\Attributes\Warmup;
 
 use function assert;
 
-#[BeforeMethods(['init'])]
+#[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 final class LoadDocumentBench extends BaseBench
 {
-    /** @var ObjectId */
-    private static $userId;
+    private static ObjectId $userId;
 
     public function init(): void
     {
@@ -87,8 +86,7 @@ final class LoadDocumentBench extends BaseBench
         });
     }
 
-    /** @return User */
-    private function loadDocument()
+    private function loadDocument(): User
     {
         $document = $this->getDocumentManager()->find(User::class, self::$userId);
         assert($document instanceof User);

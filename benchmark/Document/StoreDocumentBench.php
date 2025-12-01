@@ -11,8 +11,10 @@ use Documents\Address;
 use Documents\Group;
 use Documents\Phonenumber;
 use Documents\User;
+use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Warmup;
 
+#[BeforeMethods(['initDocumentManager', 'clearDatabase'])]
 final class StoreDocumentBench extends BaseBench
 {
     #[Warmup(2)]
