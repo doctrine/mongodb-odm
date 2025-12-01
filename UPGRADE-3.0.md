@@ -23,6 +23,11 @@ generator to generate string UUIDs. For more efficient storage of UUIDs, use the
 `Doctrine\ODM\MongoDB\Types\BinaryUuidType` type in combination with the
 `Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator` generator.
 
+## Strong typing
+
+Native type hints have been introduced throughout the codebase. As a result, several
+methods signatures have changed, including but not limited to `Types` and `Mapping` namespaces.
+
 ## Metadata
 The `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` class has been marked final and
 will no longer be extendable.
@@ -30,6 +35,8 @@ will no longer be extendable.
 The `boolean`, `integer`, and `int_id` mapping types have been removed. Use the
 `bool`, `int`, and `int` types, respectively. These types behave exactly the
 same.
+
+The `Int64Type` no longer extends `IntType`.
 
 The `NOTIFY` change tracking policy has been removed, we suggest switching to
 `DEFERRED_EXPLICIT` instead. Consequentially `ClassMetadata::isChangeTrackingNotify` 
