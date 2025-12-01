@@ -33,7 +33,7 @@ class IntType extends Type implements Incrementable, Versionable
 
     public function diff(mixed $old, mixed $new): int
     {
-        return (int) $new - $old;
+        return (int) ($new - $old);
     }
 
     public function getNextVersion(mixed $current): int
