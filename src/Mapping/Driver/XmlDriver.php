@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\Driver\FileLocator;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
@@ -51,9 +52,9 @@ use function trim;
  */
 class XmlDriver extends FileDriver
 {
-    public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
+    public const string DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
-    private const DEFAULT_GRIDFS_MAPPINGS = [
+    private const array DEFAULT_GRIDFS_MAPPINGS = [
         'length' => [
             'name' => 'length',
             'type' => 'int',
@@ -76,8 +77,7 @@ class XmlDriver extends FileDriver
         ],
     ];
 
-    /** @param string|null $fileExtension */
-    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    public function __construct(string|array|FileLocator $locator, ?string $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
     }

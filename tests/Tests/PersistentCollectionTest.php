@@ -29,7 +29,7 @@ class PersistentCollectionTest extends BaseTestCase
         $collection->expects($this->once())
             ->method('slice')
             ->with($start, $limit)
-            ->willReturn(true);
+            ->willReturn([]);
         $pCollection = new PersistentCollection($collection, $this->dm, $this->uow);
         $pCollection->slice($start, $limit);
     }
@@ -294,7 +294,7 @@ class PersistentCollectionTest extends BaseTestCase
     public function testRemoveIsForwarded(): void
     {
         $collection = $this->getMockCollection();
-        $collection->expects($this->once())->method('remove')->willReturn(2);
+        $collection->expects($this->once())->method('remove')->willReturn(null);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->remove(0);
         self::assertTrue($pcoll->isDirty());

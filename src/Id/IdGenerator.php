@@ -10,8 +10,6 @@ interface IdGenerator
 {
     /**
      * Generates an identifier for a document.
-     *
-     * @return mixed
      */
-    public function generate(DocumentManager $dm, object $document);
+    public function generate(DocumentManager $dm, object $document): mixed;
 }

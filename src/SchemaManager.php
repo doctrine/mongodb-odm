@@ -46,15 +46,15 @@ use function usleep;
  */
 final class SchemaManager
 {
-    private const GRIDFS_FILE_COLLECTION_INDEX = ['files_id' => 1, 'n' => 1];
+    private const array GRIDFS_FILE_COLLECTION_INDEX = ['files_id' => 1, 'n' => 1];
 
-    private const GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
+    private const array GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
 
-    private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
-    private const CODE_COMMAND_NOT_SUPPORTED        = 115;
-    private const CODE_SEARCH_NOT_ENABLED           = 31082;
+    private const int CODE_SHARDING_ALREADY_INITIALIZED = 23;
+    private const int CODE_COMMAND_NOT_SUPPORTED        = 115;
+    private const int CODE_SEARCH_NOT_ENABLED           = 31082;
 
-    private const ALLOWED_MISSING_INDEX_OPTIONS = [
+    private const array ALLOWED_MISSING_INDEX_OPTIONS = [
         'background',
         'partialFilterExpression',
         'sparse',

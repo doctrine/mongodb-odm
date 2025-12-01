@@ -68,11 +68,10 @@ class MongoDBException extends Exception
 
     /**
      * @param string|string[] $expected
-     * @param mixed           $got
      *
      * @return MongoDBException
      */
-    public static function invalidValueForType(string $type, $expected, $got): self
+    public static function invalidValueForType(string $type, string|array $expected, mixed $got): self
     {
         if (is_array($expected)) {
             $expected = sprintf(

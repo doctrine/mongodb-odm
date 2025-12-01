@@ -82,7 +82,7 @@ class VectorSearch extends Stage
         }
 
         if ($this->queryVector !== null) {
-            $params['queryVector'] = Type::getType($this->persister->getClassMetadata()->fieldMappings[$this->path]['type'] ?? Type::RAW)->convertToDatabaseValue($this->queryVector);
+            $params['queryVector'] = Type::getType($this->persister->getClassMetadata()->fieldMappings[$this->path ?? '']['type'] ?? Type::RAW)->convertToDatabaseValue($this->queryVector);
         }
 
         return [$this->getStageName() => $params];

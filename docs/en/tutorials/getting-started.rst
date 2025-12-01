@@ -75,7 +75,7 @@ To make the above classes persistent, we need to provide Doctrine with some
 mapping information so that it knows how to consume the objects and persist
 them to the database.
 
-You can provide your mapping information in Annotations or XML:
+You can provide your mapping information in Attribute or XML:
 
 .. configuration-block::
 

@@ -694,7 +694,7 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @see discriminatorField
      *
-     * @var class-string|int|null
+     * @var class-string|string|int|null
      */
     public private(set) string|int|null $discriminatorValue = null;
 
@@ -706,7 +706,7 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @see discriminatorField
      *
-     * @var array<string, class-string>
+     * @var array<string|int, class-string>
      */
     public private(set) array $discriminatorMap = [];
 
@@ -721,12 +721,12 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @see discriminatorField
      */
-    public private(set) ?string $defaultDiscriminatorValue = null;
+    public private(set) string|int|null $defaultDiscriminatorValue = null;
 
     /**
      * Whether this class describes the mapping of a mapped superclass.
      */
-    public private(set) bool $isMappedSuperclass = false;
+    public $isMappedSuperclass = false;
 
     /**
      * Whether this class describes the mapping of a embedded document.
@@ -830,12 +830,8 @@ final class ClassMetadata implements BaseClassMetadata
      * Helper method to get reference id of ref* type references
      *
      * @internal
-     *
-     * @param mixed $reference
-     *
-     * @return mixed
      */
-    public static function getReferenceId($reference, string $storeAs)
+    public static function getReferenceId(mixed $reference, string $storeAs): mixed
     {
         return $storeAs === self::REFERENCE_STORE_AS_ID ? $reference : $reference[self::getReferencePrefix($storeAs) . 'id'];
     }
@@ -921,8 +917,7 @@ final class ClassMetadata implements BaseClassMetadata
         return [$this->identifier];
     }
 
-    /** @param string $fieldName */
-    public function hasField($fieldName): bool
+    public function hasField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
     }
@@ -1070,7 +1065,7 @@ final class ClassMetadata implements BaseClassMetadata
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
      */
-    public function setDiscriminatorField($discriminatorField): void
+    public function setDiscriminatorField(array|string|null $discriminatorField): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -1346,13 +1341,13 @@ final class ClassMetadata implements BaseClassMetadata
     }
 
     /** @return array<string, mixed>|object|null */
-    public function getValidator()
+    public function getValidator(): array|object|null
     {
         return $this->validator;
     }
 
     /** @param array<string, mixed>|object|null $validator */
-    public function setValidator($validator): void
+    public function setValidator(array|object|null $validator): void
     {
         $this->validator = $validator;
     }
@@ -1390,16 +1385,13 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * Sets the write concern used by this class.
-     *
-     * @param string|int|null $writeConcern
      */
-    public function setWriteConcern($writeConcern): void
+    public function setWriteConcern(string|int|null $writeConcern): void
     {
         $this->writeConcern = $writeConcern;
     }
 
-    /** @return int|string|null */
-    public function getWriteConcern()
+    public function getWriteConcern(): string|int|null
     {
         return $this->writeConcern;
     }
@@ -1521,7 +1513,7 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @throws InvalidArgumentException
      */
-    public function setCollection($name): void
+    public function setCollection(array|string $name): void
     {
         if (is_array($name)) {
             if (! isset($name['name'])) {
@@ -1774,10 +1766,8 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
-     *
-     * @param string $fieldName
      */
-    public function hasAssociation($fieldName): bool
+    public function hasAssociation(string $fieldName): bool
     {
         return $this->hasReference($fieldName) || $this->hasEmbed($fieldName);
     }
@@ -1785,10 +1775,8 @@ final class ClassMetadata implements BaseClassMetadata
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
-     *
-     * @param string $fieldName
      */
-    public function isSingleValuedAssociation($fieldName): bool
+    public function isSingleValuedAssociation(string $fieldName): bool
     {
         return $this->isSingleValuedReference($fieldName) || $this->isSingleValuedEmbed($fieldName);
     }
@@ -1796,10 +1784,8 @@ final class ClassMetadata implements BaseClassMetadata
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
-     *
-     * @param string $fieldName
      */
-    public function isCollectionValuedAssociation($fieldName): bool
+    public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return $this->isCollectionValuedReference($fieldName) || $this->isCollectionValuedEmbed($fieldName);
     }
@@ -1850,12 +1836,8 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * Casts the identifier to its portable PHP type.
-     *
-     * @param mixed $id
-     *
-     * @return mixed $id
      */
-    public function getPHPIdentifierValue($id)
+    public function getPHPIdentifierValue(mixed $id): mixed
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
@@ -1864,12 +1846,8 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * Casts the identifier to its database type.
-     *
-     * @param mixed $id
-     *
-     * @return mixed $id
      */
-    public function getDatabaseIdentifierValue($id)
+    public function getDatabaseIdentifierValue(mixed $id): mixed
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
@@ -1880,10 +1858,8 @@ final class ClassMetadata implements BaseClassMetadata
      * Sets the document identifier of a document.
      *
      * The value will be converted to a PHP type before being set.
-     *
-     * @param mixed $id
      */
-    public function setIdentifierValue(object $document, $id): void
+    public function setIdentifierValue(object $document, mixed $id): void
     {
         $id = $this->getPHPIdentifierValue($id);
         $this->propertyAccessors[$this->identifier]->setValue($document, $id);
@@ -1891,10 +1867,8 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * Gets the document identifier as a PHP type.
-     *
-     * @return mixed $id
      */
-    public function getIdentifierValue(object $document)
+    public function getIdentifierValue(object $document): mixed
     {
         return $this->propertyAccessors[$this->identifier]->getValue($document);
     }
@@ -1903,30 +1877,24 @@ final class ClassMetadata implements BaseClassMetadata
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
-     *
-     * @param object $object
      */
-    public function getIdentifierValues($object): array
+    public function getIdentifierValues(object $object): array
     {
         return [$this->identifier => $this->getIdentifierValue($object)];
     }
 
     /**
      * Get the document identifier object as a database type.
-     *
-     * @return mixed $id
      */
-    public function getIdentifierObject(object $document)
+    public function getIdentifierObject(object $document): mixed
     {
         return $this->getDatabaseIdentifierValue($this->getIdentifierValue($document));
     }
 
     /**
      * Sets the specified field to the specified value on the given document.
-     *
-     * @param mixed $value
      */
-    public function setFieldValue(object $document, string $field, $value): void
+    public function setFieldValue(object $document, string $field, mixed $value): void
     {
         if ($document instanceof InternalProxy && ! $document->__isInitialized()) {
             //property changes to an uninitialized proxy will not be tracked or persisted,
@@ -1943,10 +1911,8 @@ final class ClassMetadata implements BaseClassMetadata
 
     /**
      * Gets the specified field's value off the given document.
-     *
-     * @return mixed
      */
-    public function getFieldValue(object $document, string $field)
+    public function getFieldValue(object $document, string $field): mixed
     {
         if ($document instanceof InternalProxy && $field !== $this->identifier && ! $document->__isInitialized()) {
             $document->__load();
@@ -2279,18 +2245,13 @@ final class ClassMetadata implements BaseClassMetadata
         return array_keys($this->associationMappings);
     }
 
-    /** @param string $fieldName */
-    public function getTypeOfField($fieldName): ?string
+    public function getTypeOfField(string $fieldName): ?string
     {
         return $this->fieldMappings[$fieldName]['type'] ?? null;
     }
 
-    /**
-     * @param string $assocName
-     *
-     * @return class-string|null
-     */
-    public function getAssociationTargetClass($assocName): ?string
+    /** @return class-string|null */
+    public function getAssociationTargetClass(string $assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -2317,14 +2278,12 @@ final class ClassMetadata implements BaseClassMetadata
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /** @param string $assocName */
-    public function isAssociationInverseSide($assocName): bool
+    public function isAssociationInverseSide(string $assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /** @param string $assocName */
-    public function getAssociationMappedByTargetField($assocName): string
+    public function getAssociationMappedByTargetField(string $assocName): string
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -2597,7 +2556,7 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * @return array The names of all the fields that should be serialized.
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         // This metadata is always serialized/cached.
         $serialized = [

@@ -121,8 +121,7 @@ EOPHP;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this->uow, $dm->getEventManager());
     }
 
-    /** @param mixed $identifier */
-    public function getProxy(ClassMetadata $metadata, $identifier): InternalProxy
+    public function getProxy(ClassMetadata $metadata, mixed $identifier): InternalProxy
     {
         $className = $metadata->getName();
 

@@ -11,6 +11,7 @@ use MongoDB\BSON\ObjectId;
  */
 class ObjectIdType extends Type implements Versionable
 {
+    /** @return ObjectId|null */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -24,6 +25,7 @@ class ObjectIdType extends Type implements Versionable
         return $value;
     }
 
+    /** @return string|null */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (string) $value : null;

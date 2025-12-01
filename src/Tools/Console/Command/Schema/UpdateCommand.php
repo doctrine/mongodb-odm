@@ -75,24 +75,22 @@ class UpdateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->updateDocumentIndexes($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->updateIndexes($maxTimeMs, $writeConcern);
     }
 
-    /** @return void */
-    protected function processDocumentValidator(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processDocumentValidator(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->updateDocumentValidator($document, $maxTimeMs, $writeConcern);
     }
 
-    /** @return void */
-    protected function processValidators(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processValidators(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->updateValidators($maxTimeMs, $writeConcern);
     }

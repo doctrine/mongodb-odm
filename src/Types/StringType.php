@@ -11,11 +11,13 @@ use MongoDB\BSON\Regex;
  */
 class StringType extends Type
 {
+    /** @return Regex|string|null */
     public function convertToDatabaseValue($value)
     {
         return $value === null || $value instanceof Regex ? $value : (string) $value;
     }
 
+    /** @return string|null */
     public function convertToPHPValue($value)
     {
         return $value !== null ? (string) $value : null;

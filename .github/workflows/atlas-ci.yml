@@ -15,13 +15,13 @@ jobs:
       matrix:
         php-version:
           - "8.4"
-        symfony:
-          - "stable"
+        symfony-version:
+          - ""
         proxy:
           - "native"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
         with:
           fetch-depth: 2
 
@@ -58,7 +58,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          tools: "pecl"
+          tools: "flex"
           extensions: "mongodb, bcmath"
           coverage: "none"
           ini-values: "zend.assertions=1"
@@ -70,20 +70,13 @@ jobs:
       - name: "Remove phpbench/phpbench"
         run: composer remove --no-update --dev phpbench/phpbench
 
-      - name: "Configure Symfony ${{ matrix.symfony }}"
-        if: "${{ matrix.symfony != 'stable' }}"
-        run: |
-          composer config minimum-stability dev
-          # update symfony deps
-          composer require --no-update symfony/console:^${{ matrix.symfony }}
-          composer require --no-update symfony/var-dumper:^${{ matrix.symfony }}
-          composer require --no-update --dev symfony/cache:^${{ matrix.symfony }}
-
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "highest"
           composer-options: "--prefer-dist"
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
 
       - name: "Run PHPUnit with Atlas Local"
         run: "vendor/bin/phpunit --group atlas"

@@ -11,6 +11,5 @@ use MongoDB\BSON\Binary;
  */
 class BinDataCustomType extends BinDataType
 {
-    /** @var int */
-    protected $binDataType = Binary::TYPE_USER_DEFINED;
+    protected int $binDataType = Binary::TYPE_USER_DEFINED;
 }

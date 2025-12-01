@@ -17,11 +17,10 @@ class BinDataType extends Type
      * Data type for binary data
      *
      * @see http://bsonspec.org/#/specification
-     *
-     * @var int
      */
-    protected $binDataType = Binary::TYPE_GENERIC;
+    protected int $binDataType = Binary::TYPE_GENERIC;
 
+    /** @return Binary|null */
     public function convertToDatabaseValue($value)
     {
         if ($value === null) {
@@ -39,6 +38,7 @@ class BinDataType extends Type
         return $value;
     }
 
+    /** @return mixed|string|null */
     public function convertToPHPValue($value)
     {
         return $value !== null ? ($value instanceof Binary ? $value->getData() : $value) : null;

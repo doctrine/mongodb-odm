@@ -137,7 +137,7 @@ before normal hydration.
         }
     }
 
-The annotation is defined with one or a list of field names. During hydration,
+The attribute is defined with one or a list of field names. During hydration,
 these fields will be checked in order and, for each field present, the annotated
 method will be invoked with its value as a single argument. Since the
 ``firstName`` and ``lastName`` fields are mapped, they would then be updated
@@ -152,10 +152,10 @@ Moving Fields
 Migrating your schema can be a difficult task, but Doctrine provides a few
 different methods for dealing with it:
 
--  **@AlsoLoad** - load values from old fields or transform data through methods
--  **@Field(notSaved=true)** - load values into fields without saving them again
--  **@PostLoad** - execute code after all fields have been loaded
--  **@PrePersist** - execute code before your document gets saved
+-  ``#[AlsoLoad]`` - load values from old fields or transform data through methods
+-  ``#[Field(notSaved: true)]`` - load values into fields without saving them again
+-  ``#[PostLoad]`` - execute code after all fields have been loaded
+-  ``#[PrePersist]`` - execute code before your document gets saved
 
 Imagine you have some address-related fields on a Person document:
 

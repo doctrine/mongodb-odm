@@ -38,16 +38,10 @@ use function is_array;
 class DocumentRepository implements ObjectRepository, Selectable
 {
     /** @var class-string<T> */
-    protected $documentName;
-
-    /** @var DocumentManager */
-    protected $dm;
-
-    /** @var UnitOfWork */
-    protected $uow;
+    protected string $documentName;
 
     /** @var ClassMetadata<T> */
-    protected $class;
+    protected ClassMetadata $class;
 
     /**
      * Initializes this instance with the specified document manager, unit of work and class metadata.
@@ -57,11 +51,9 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @param ClassMetadata   $classMetadata The class metadata.
      * @phpstan-param ClassMetadata<T>   $classMetadata The class metadata.
      */
-    public function __construct(DocumentManager $dm, UnitOfWork $uow, ClassMetadata $classMetadata)
+    public function __construct(protected DocumentManager $dm, protected UnitOfWork $uow, ClassMetadata $classMetadata)
     {
         $this->documentName = $classMetadata->name;
-        $this->dm           = $dm;
-        $this->uow          = $uow;
         $this->class        = $classMetadata;
     }
 
@@ -92,7 +84,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      * @throws MappingException
      * @throws LockException
      */
-    public function find($id, int $lockMode = LockMode::NONE, ?int $lockVersion = null): ?object
+    public function find(mixed $id, int $lockMode = LockMode::NONE, ?int $lockVersion = null): ?object
     {
         if ($id === null) {
             return null;
@@ -151,11 +143,8 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds documents by a set of criteria.
-     *
-     * @param int|null $limit
-     * @param int|null $offset
      */
-    public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
+    public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
     {
         return $this->getDocumentPersister()->loadAll($criteria, $orderBy, $limit, $offset)->toArray();
     }

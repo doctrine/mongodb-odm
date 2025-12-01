@@ -40,22 +40,10 @@ use function sprintf;
  * @phpstan-import-type FieldMapping from ClassMetadata
  * @phpstan-import-type Hints from UnitOfWork
  */
-final class ReferencePrimer
+final readonly class ReferencePrimer
 {
-    /**
-     * The DocumentManager instance.
-     */
-    private DocumentManager $dm;
-
-    /**
-     * The UnitOfWork instance.
-     */
-    private UnitOfWork $uow;
-
-    public function __construct(DocumentManager $dm, UnitOfWork $uow)
+    public function __construct(private DocumentManager $dm, private UnitOfWork $uow)
     {
-        $this->dm  = $dm;
-        $this->uow = $uow;
     }
 
     /**
@@ -65,11 +53,11 @@ final class ReferencePrimer
      * the default primer defined in the constructor. If $primer is not
      * callable, the default primer will be used.
      *
-     * @param ClassMetadata<object>             $class     Class metadata for the document
-     * @param array<object>|Traversable<object> $documents Documents containing references to prime
-     * @param string                            $fieldName Field name containing references to prime
-     * @param array                             $hints     UnitOfWork hints for priming queries
-     * @param callable|null                     $primer    Optional primer callable
+     * @param ClassMetadata<object> $class     Class metadata for the document
+     * @param iterable<object>      $documents Documents containing references to prime
+     * @param string                $fieldName Field name containing references to prime
+     * @param array                 $hints     UnitOfWork hints for priming queries
+     * @param callable|null         $primer    Optional primer callable
      * @phpstan-param Hints $hints
      *
      * @throws InvalidArgumentException If the mapped field is not the owning
@@ -77,7 +65,7 @@ final class ReferencePrimer
      * @throws LogicException If the mapped field is a simple reference and is
      *                         missing a target document class.
      */
-    public function primeReferences(ClassMetadata $class, $documents, string $fieldName, array $hints = [], ?callable $primer = null): void
+    public function primeReferences(ClassMetadata $class, iterable $documents, string $fieldName, array $hints = [], ?callable $primer = null): void
     {
         $data      = $this->parseDotSyntaxForPrimer($fieldName, $class, $documents);
         $mapping   = $data['mapping'];
@@ -136,12 +124,12 @@ final class ReferencePrimer
      * ... but you cannot prime this: myDocument.embeddedDocument.referencedDocuments.referencedDocument(s)
      * This addresses Issue #624.
      *
-     * @param array<object>|Traversable<object> $documents
-     * @param FieldMapping|null                 $mapping
+     * @param iterable<object>  $documents
+     * @param FieldMapping|null $mapping
      *
      * @return array{fieldName: string, class: ClassMetadata<object>, documents: array<object>|Traversable<object>, mapping: FieldMapping}
      */
-    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, $documents, ?array $mapping = null): array
+    private function parseDotSyntaxForPrimer(string $fieldName, ClassMetadata $class, iterable $documents, ?array $mapping = null): array
     {
         // Recursion passthrough:
         if ($mapping !== null) {

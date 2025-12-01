@@ -82,6 +82,7 @@ class DateType extends Type implements Versionable
         return $datetime;
     }
 
+    /** @return UTCDateTime|null */
     public function convertToDatabaseValue($value)
     {
         if ($value === null || $value instanceof UTCDateTime) {
@@ -93,6 +94,7 @@ class DateType extends Type implements Versionable
         return new UTCDateTime($datetime);
     }
 
+    /** @return DateTimeInterface|null */
     public function convertToPHPValue($value)
     {
         if ($value === null) {

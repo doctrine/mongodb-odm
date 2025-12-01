@@ -29,13 +29,6 @@ use ReflectionProperty;
 
 class BuilderTest extends BaseTestCase
 {
-    public function testPrimeRequiresBooleanOrCallable(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->dm->createQueryBuilder(User::class)
-            ->field('groups')->prime(1);
-    }
-
     public function testReferencesGoesThroughDiscriminatorMap(): void
     {
         $f = new Feature('Smarter references');
