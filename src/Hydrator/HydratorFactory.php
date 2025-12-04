@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -165,14 +164,14 @@ final class HydratorFactory
             if (isset($mapping['alsoLoadFields'])) {
                 foreach ($mapping['alsoLoadFields'] as $name) {
                     $code .= sprintf(
-                        <<<EOF
+                        <<<'PHP'
 
-        // AlsoLoad("$name")
-        if (! array_key_exists('%1\$s', \$data) && array_key_exists('$name', \$data)) {
-            \$data['%1\$s'] = \$data['$name'];
+        // AlsoLoad("%1$s")
+        if (! array_key_exists('%1$s', $data) && array_key_exists('$name', $data)) {
+            $data['%1$s'] = $data['$name'];
         }
 
-EOF
+PHP
                         ,
                         $mapping['name'],
                     );
@@ -181,48 +180,48 @@ EOF
 
             if ($mapping['type'] === 'date') {
                 $code .= sprintf(
-                    <<<'EOF'
+                    <<<'PHP'
 
         // Field(type: "date")
         if (array_key_exists('%1$s', $data) && ($data['%1$s'] !== null || ($this->class->fieldMappings['%2$s']['nullable'] ?? false))) {
             $value = $data['%1$s'];
-            %3$s
+            $return = Type::getType('%3$s')->convertToPHPValue($value);
             $this->class->propertyAccessors['%2$s']->setValue($document, $return === null ? null : clone $return);
             $hydratedData['%2$s'] = $return;
         }
 
-EOF
+PHP
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $mapping['type'],
                 );
             } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(
-                    <<<EOF
+                    <<<'PHP'
 
-        // Field(type: "{$mapping['type']}")
-        if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
-            \$value = \$data['%1\$s'];
-            if (\$value !== null) {
-                \$typeIdentifier = \$this->class->fieldMappings['%2\$s']['type'];
-                %3\$s
+        // Field(type: "%3$s")
+        if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
+            $value = $data['%1$s'];
+            if ($value !== null) {
+                $typeIdentifier = $this->class->fieldMappings['%2$s']['type'];
+                $return = Type::getType('%3$s')->convertToPHPValue($value);
             } else {
-                \$return = null;
+                $return = null;
             }
-            \$this->class->propertyAccessors['%2\$s']->setValue(\$document, \$return);
-            \$hydratedData['%2\$s'] = \$return;
+            $this->class->propertyAccessors['%2$s']->setValue($document, $return);
+            $hydratedData['%2$s'] = $return;
         }
 
-EOF
+PHP
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $mapping['type'],
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(
-                    <<<'EOF'
+                    <<<'PHP'
 
         // ReferenceOne
         if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
@@ -243,7 +242,7 @@ EOF
             $hydratedData['%2$s'] = $return;
         }
 
-EOF
+PHP
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
@@ -252,14 +251,14 @@ EOF
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isInverseSide']) {
                 if (isset($mapping['repositoryMethod']) && $mapping['repositoryMethod']) {
                     $code .= sprintf(
-                        <<<'EOF'
+                        <<<'PHP'
 
         $className = $this->class->fieldMappings['%2$s']['targetDocument'];
         $return = $this->dm->getRepository($className)->%3$s($document);
         $this->class->propertyAccessors['%2$s']->setValue($document, $return);
         $hydratedData['%2$s'] = $return;
 
-EOF
+PHP
                         ,
                         $mapping['name'],
                         $mapping['fieldName'],
@@ -267,7 +266,7 @@ EOF
                     );
                 } else {
                     $code .= sprintf(
-                        <<<'EOF'
+                        <<<'PHP'
 
         $mapping = $this->class->fieldMappings['%2$s'];
         $className = $mapping['targetDocument'];
@@ -283,7 +282,7 @@ EOF
         $this->class->propertyAccessors['%2$s']->setValue($document, $return);
         $hydratedData['%2$s'] = $return;
 
-EOF
+PHP
                         ,
                         $mapping['name'],
                         $mapping['fieldName'],
@@ -291,7 +290,7 @@ EOF
                 }
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_MANY || $mapping['association'] === ClassMetadata::EMBED_MANY) {
                 $code .= sprintf(
-                    <<<'EOF'
+                    <<<'PHP'
 
         // %4$s
         $mongoData = $data['%1$s'] ?? null;
@@ -310,7 +309,7 @@ EOF
         $this->class->propertyAccessors['%2$s']->setValue($document, $return);
         $hydratedData['%2$s'] = $return;
 
-EOF
+PHP
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
@@ -319,7 +318,7 @@ EOF
                 );
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $code .= sprintf(
-                    <<<'EOF'
+                    <<<'PHP'
 
         // EmbedOne
         if (isset($data['%1$s']) || (! empty($this->class->fieldMappings['%2$s']['nullable']) && array_key_exists('%1$s', $data))) {
@@ -349,7 +348,7 @@ EOF
             $hydratedData['%2$s'] = $return;
         }
 
-EOF
+PHP
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
@@ -360,7 +359,7 @@ EOF
 
         $namespace = $this->hydratorNamespace;
         $code      = sprintf(
-            <<<EOF
+            <<<PHP
 <?php
 
 namespace $namespace;
@@ -370,6 +369,7 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorException;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Types\Type;
 
 use function array_key_exists;
 use function gettype;
@@ -389,7 +389,7 @@ class $hydratorClassName implements HydratorInterface
         return \$hydratedData;
     }
 }
-EOF
+PHP
             ,
             $code,
         );

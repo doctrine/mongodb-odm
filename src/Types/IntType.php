@@ -21,16 +21,6 @@ class IntType extends Type implements Incrementable, Versionable
         return $value !== null ? (int) $value : null;
     }
 
-    public function closureToMongo(): string
-    {
-        return '$return = (int) $value;';
-    }
-
-    public function closureToPHP(): string
-    {
-        return '$return = (int) $value;';
-    }
-
     public function diff(mixed $old, mixed $new): int
     {
         return (int) ($new - $old);

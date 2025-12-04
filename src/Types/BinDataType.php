@@ -6,8 +6,6 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 use MongoDB\BSON\Binary;
 
-use function sprintf;
-
 /**
  * The BinData type for generic data.
  */
@@ -40,15 +38,5 @@ class BinDataType extends Type
     public function convertToPHPValue(mixed $value): mixed
     {
         return $value !== null ? ($value instanceof Binary ? $value->getData() : $value) : null;
-    }
-
-    public function closureToMongo(): string
-    {
-        return sprintf('$return = $value !== null ? new \MongoDB\BSON\Binary($value, %d) : null;', $this->binDataType);
-    }
-
-    public function closureToPHP(): string
-    {
-        return '$return = $value !== null ? ($value instanceof \MongoDB\BSON\Binary ? $value->getData() : $value) : null;';
     }
 }

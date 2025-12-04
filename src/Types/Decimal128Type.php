@@ -11,8 +11,6 @@ use function bcsub;
 
 class Decimal128Type extends Type implements Incrementable, Versionable
 {
-    use ClosureToPHP;
-
     public function convertToDatabaseValue(mixed $value): ?Decimal128
     {
         if ($value === null) {

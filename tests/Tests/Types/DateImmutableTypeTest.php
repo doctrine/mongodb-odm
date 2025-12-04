@@ -114,24 +114,6 @@ class DateImmutableTypeTest extends TestCase
         self::assertNull($type->convertToPHPValue(null));
     }
 
-    /** @param mixed $input */
-    #[DataProvider('provideDatabaseToPHPValues')]
-    public function testClosureToPHP($input, DateTimeImmutable $output): void
-    {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
-
-        $return = (static function ($value) use ($type) {
-            $return = null;
-            eval($type->closureToPHP());
-
-            return $return;
-        })($input);
-
-        // @phpstan-ignore-next-line
-        self::assertInstanceOf(DateTimeImmutable::class, $return);
-        $this->assertTimestampEquals($output, $return);
-    }
-
     public static function provideDatabaseToPHPValues(): array
     {
         $yesterday = strtotime('yesterday');

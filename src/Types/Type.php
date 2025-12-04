@@ -116,24 +116,6 @@ abstract class Type implements Stringable
     }
 
     /**
-     * Get the PHP code equivalent to {@see convertToDatabaseValue()}, used in code generator.
-     * Use variables $value for input and $return for output.
-     */
-    public function closureToMongo(): string
-    {
-        return '$return = $value;';
-    }
-
-    /**
-     * Get the PHP code equivalent to {@see convertToPHPValue()}, used in code generator.
-     * Use variables $value for input and $return for output.
-     */
-    public function closureToPHP(): string
-    {
-        return '$return = $value;';
-    }
-
-    /**
      * Register a new type in the type map.
      */
     public static function registerType(string $name, string $class): void

@@ -8,7 +8,6 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
 use MongoDB\BSON\UTCDateTime;
@@ -95,8 +94,6 @@ class CustomTypeTest extends BaseTestCase
 
 class DateCollectionType extends Type
 {
-    use ClosureToPHP;
-
     /**
      * Method called by PersistenceBuilder
      *
@@ -136,15 +133,6 @@ class DateCollectionType extends Type
 
         return $value;
     }
-
-    /**
-     * Method never called
-     */
-    public function closureToMongo(): string
-    {
-        // todo: microseconds o.O
-        return '$return = array_map(function($v) { if ($v instanceof \MongoDB\BSON\UTCDateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDB\BSON\UTCDateTime($v); }, $value);';
-    }
 }
 
 class CustomTypeException extends Exception
@@ -177,8 +165,6 @@ class Language
 
 class LanguageType extends Type
 {
-    use ClosureToPHP;
-
     /** @return array{name:string,code:string}|null */
     public function convertToDatabaseValue($value): ?array
     {
