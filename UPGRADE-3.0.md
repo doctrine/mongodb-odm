@@ -68,3 +68,15 @@ to retain the functionality.
 
 `Doctrine\ODM\MongoDB\Event\OnClearEventArgs`' methods `getDocumentClass` and 
 `clearsAllDocuments` have been removed.
+
+## Remove `doctrine/cache` dependency
+
+The `doctrine/cache` library is deprecated and archived, superseded by [PSR-6](https://www.php-fig.org/psr/psr-6/).
+The methods `Configuration::getMetadataCacheImpl()` and `Configuration::setMetadataCacheImpl()`
+have been removed in favor of `Configuration::getMetadataCache()` and
+`Configuration::setMetadataCache()`, respectively.
+
+```diff
+- $dm->getConfiguration()->getMetadataCacheImpl();
++ $dm->getConfiguration()->getMetadataCache();
+```

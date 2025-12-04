@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB;
 
 use Composer\InstalledVersions;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Cache\Psr6\CacheAdapter;
-use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
@@ -122,7 +119,6 @@ class Configuration
      *      }>,
      *      hydratorDir?: string,
      *      hydratorNamespace?: string,
-     *      metadataCacheImpl?: Cache,
      *      metadataDriverImpl?: MappingDriver,
      *      persistentCollectionFactory?: PersistentCollectionFactory,
      *      persistentCollectionGenerator?: PersistentCollectionGenerator,
@@ -260,33 +256,6 @@ class Configuration
         return $this->attributes['metadataDriverImpl'] ?? null;
     }
 
-    public function getMetadataCacheImpl(): ?Cache
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.2',
-            'Using "%s" is deprecated. Please use "%s::getMetadataCache" instead.',
-            __METHOD__,
-            self::class,
-        );
-
-        return $this->attributes['metadataCacheImpl'] ?? null;
-    }
-
-    public function setMetadataCacheImpl(Cache $cacheImpl): void
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.2',
-            'Using "%s" is deprecated. Please use "%s::setMetadataCache" instead.',
-            __METHOD__,
-            self::class,
-        );
-
-        $this->attributes['metadataCacheImpl'] = $cacheImpl;
-        $this->metadataCache                   = CacheAdapter::wrap($cacheImpl);
-    }
-
     public function getMetadataCache(): ?CacheItemPoolInterface
     {
         return $this->metadataCache;
@@ -294,8 +263,7 @@ class Configuration
 
     public function setMetadataCache(CacheItemPoolInterface $cache): void
     {
-        $this->metadataCache                   = $cache;
-        $this->attributes['metadataCacheImpl'] = DoctrineProvider::wrap($cache);
+        $this->metadataCache = $cache;
     }
 
     /**
