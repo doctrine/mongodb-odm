@@ -198,6 +198,8 @@ class Configuration
 
     /**
      * Adds a namespace under a certain alias.
+     *
+     * @deprecated Document short aliases are deprecated - use ::class constant instead.
      */
     public function addDocumentNamespace(string $alias, string $namespace): void
     {
@@ -227,6 +229,8 @@ class Configuration
 
     /**
      * Retrieves the list of registered document namespace aliases.
+     *
+     * @deprecated Document short aliases are deprecated - use ::class constant instead.
      *
      * @return array<string, string>
      */
