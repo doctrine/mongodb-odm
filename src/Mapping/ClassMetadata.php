@@ -1140,9 +1140,14 @@ use const PHP_VERSION_ID;
             return;
         }
 
-        // @todo: deprecate, document and remove this:
         // Handle array argument with name/fieldName keys for BC
         if (is_array($discriminatorField)) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.16',
+                'Passing array to %s() is deprecated, pass string instead.',
+                __FUNCTION__,
+            );
             if (isset($discriminatorField['name'])) {
                 $discriminatorField = $discriminatorField['name'];
             } elseif (isset($discriminatorField['fieldName'])) {
