@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -21,6 +22,7 @@ use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
+use ReflectionProperty;
 
 use function array_key_exists;
 use function array_map;
@@ -57,6 +59,8 @@ abstract class BaseTestCase extends TestCase
 
     protected function tearDown(): void
     {
+        (new ReflectionProperty(Type::class, 'registry'))->setValue(null, null);
+
         if (! $this->dm) {
             return;
         }

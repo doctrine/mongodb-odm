@@ -832,7 +832,7 @@ final class UnitOfWork implements PropertyChangedListener
 
                 // skip equivalent date values
                 if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                    $dateType = Type::getType('date');
+                    $dateType = $this->dm->getTypes()->get('date');
                     assert($dateType instanceof DateType);
                     $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);

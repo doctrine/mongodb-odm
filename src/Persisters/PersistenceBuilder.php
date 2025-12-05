@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
@@ -77,7 +76,7 @@ final class PersistenceBuilder
 
             // @Field, @String, @Date, etc.
             if (! isset($mapping['association'])) {
-                $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                $insertData[$mapping['name']] = $this->dm->getTypes()->get($mapping['type'])->convertToDatabaseValue($new);
 
             // @ReferenceOne
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
@@ -154,12 +153,12 @@ final class PersistenceBuilder
             if (! isset($mapping['association'])) {
                 if (isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                     $operator = '$inc';
-                    $type     = Type::getType($mapping['type']);
+                    $type     = $this->dm->getTypes()->get($mapping['type']);
                     assert($type instanceof Incrementable);
                     $value = $type->convertToDatabaseValue($type->diff($old, $new));
                 } else {
                     $operator = '$set';
-                    $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    $value    = $this->dm->getTypes()->get($mapping['type'])->convertToDatabaseValue($new);
                 }
 
                 $updateData[$operator][$mapping['name']] = $value;
@@ -258,12 +257,12 @@ final class PersistenceBuilder
             if (! isset($mapping['association'])) {
                 if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                     $operator = '$inc';
-                    $type     = Type::getType($mapping['type']);
+                    $type     = $this->dm->getTypes()->get($mapping['type']);
                     assert($type instanceof Incrementable);
                     $value = $type->convertToDatabaseValue($type->diff($old, $new));
                 } else {
                     $operator = '$set';
-                    $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    $value    = $this->dm->getTypes()->get($mapping['type'])->convertToDatabaseValue($new);
                 }
 
                 $updateData[$operator][$mapping['name']] = $value;
@@ -374,7 +373,7 @@ final class PersistenceBuilder
                 switch ($mapping['association'] ?? null) {
                     // @Field, @String, @Date, etc.
                     case null:
-                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+                        $value = $this->dm->getTypes()->get($mapping['type'])->convertToDatabaseValue($rawValue);
                         break;
 
                     case ClassMetadata::EMBED_ONE:

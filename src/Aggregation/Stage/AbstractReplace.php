@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Types\Type;
 
 use function array_map;
 use function is_array;
@@ -50,6 +49,6 @@ abstract class AbstractReplace extends Operator
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 
-        return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
+        return $this->dm->getTypes()->convertToDatabaseValue(Expr::convertExpression($expression));
     }
 }

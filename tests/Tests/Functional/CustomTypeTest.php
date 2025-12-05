@@ -35,8 +35,8 @@ class CustomTypeTest extends BaseTestCase
     #[After]
     public function restoreTypeMap(): void
     {
-        $r = new ReflectionProperty(Type::class, 'typesMap');
-        $r->setValue(null, $r->getDefaultValue());
+        $r = new ReflectionProperty(Type::class, 'registry');
+        $r->setValue(null, null);
     }
 
     public function testCustomTypeValueConversions(): void

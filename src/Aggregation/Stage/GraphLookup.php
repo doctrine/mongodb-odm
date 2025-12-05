@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 use LogicException;
 
@@ -259,7 +258,7 @@ class GraphLookup extends Stage
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
         }
 
-        return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
+        return $this->dm->getTypes()->convertToDatabaseValue($expression);
     }
 
     private function convertTargetFieldName(string $fieldName): string

@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -196,7 +195,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $this->dm->getTypes()->get($mapping['type'])->closureToPHP(),
                 );
             } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(
@@ -219,7 +218,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $this->dm->getTypes()->get($mapping['type'])->closureToPHP(),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(

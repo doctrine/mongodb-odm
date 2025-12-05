@@ -22,16 +22,20 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
+use LogicException;
 use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Driver\ClientEncryption;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
+use ReflectionProperty;
 use RuntimeException;
 use Throwable;
 
@@ -144,7 +148,7 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null)
+    protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null, private ?TypeRegistry $typeRegistry = null)
     {
         $this->config       = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
@@ -153,6 +157,7 @@ class DocumentManager implements ObjectManager
             [],
             $this->config->getDriverOptions(),
         );
+        $this->initTypeRegistry();
 
         if ($this->config->isNativeLazyObjectEnabled()) {
             $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
@@ -205,6 +210,21 @@ class DocumentManager implements ObjectManager
         $this->repositoryFactory = $this->config->getRepositoryFactory();
     }
 
+    private function initTypeRegistry(): void
+    {
+        $prop     = new ReflectionProperty(Type::class, 'registry');
+        $registry = $prop->getValue();
+
+        $this->typeRegistry ??= $registry ?? new TypeRegistry();
+        $registry           ??= $this->typeRegistry;
+
+        if ($registry !== $this->typeRegistry) {
+            throw new LogicException('Type registry is already set and cannot be modified. A single TypeRegistry instance is allowed, this will change in MongoDB ODM 3.0.');
+        }
+
+        $prop->setValue(null, $this->typeRegistry);
+    }
+
     /**
      * Gets the proxy factory used by the DocumentManager to create document proxies.
      */
@@ -217,9 +237,9 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null): DocumentManager
+    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null, ?TypeRegistry $registry = null): DocumentManager
     {
-        return new static($client, $config, $eventManager);
+        return new static($client, $config, $eventManager, $registry);
     }
 
     /**
@@ -954,5 +974,10 @@ class DocumentManager implements ObjectManager
         }
 
         return $mapping['targetDocument'];
+    }
+
+    public function getTypes(): TypeRegistry
+    {
+        return $this->typeRegistry;
     }
 }
