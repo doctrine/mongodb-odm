@@ -28,11 +28,8 @@ use Throwable;
 
 use function array_diff_key;
 use function array_intersect_key;
-use function array_key_exists;
 use function interface_exists;
 use function is_string;
-use function trigger_deprecation;
-use function trim;
 
 /**
  * Configuration class for the DocumentManager. When setting up your DocumentManager
@@ -88,7 +85,6 @@ class Configuration
      *      defaultDocumentRepositoryClassName?: class-string<ObjectRepository<object>>,
      *      defaultGridFSRepositoryClassName?: class-string<GridFSRepository<object>>,
      *      defaultDB?: string,
-     *      documentNamespaces?: array<string, string>,
      *      filters?: array<string, array{
      *          class: class-string,
      *          parameters: array<string, mixed>
@@ -154,55 +150,6 @@ class Configuration
             'kmsProviders' => 1,
             'tlsOptions' => 1,
         ]);
-    }
-
-    /**
-     * Adds a namespace under a certain alias.
-     */
-    public function addDocumentNamespace(string $alias, string $namespace): void
-    {
-        $this->attributes['documentNamespaces'][$alias] = $namespace;
-    }
-
-    /**
-     * Resolves a registered namespace alias to the full namespace.
-     *
-     * @throws MongoDBException
-     */
-    public function getDocumentNamespace(string $documentNamespaceAlias): string
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.3',
-            'Document short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
-            $documentNamespaceAlias,
-        );
-
-        if (! isset($this->attributes['documentNamespaces'][$documentNamespaceAlias])) {
-            throw MongoDBException::unknownDocumentNamespace($documentNamespaceAlias);
-        }
-
-        return trim($this->attributes['documentNamespaces'][$documentNamespaceAlias], '\\');
-    }
-
-    /**
-     * Retrieves the list of registered document namespace aliases.
-     *
-     * @return array<string, string>
-     */
-    public function getDocumentNamespaces(): array
-    {
-        return $this->attributes['documentNamespaces'];
-    }
-
-    /**
-     * Set the document alias map
-     *
-     * @param array<string, string> $documentNamespaces
-     */
-    public function setDocumentNamespaces(array $documentNamespaces): void
-    {
-        $this->attributes['documentNamespaces'] = $documentNamespaces;
     }
 
     /**
@@ -374,17 +321,6 @@ class Configuration
     /** @phpstan-param CommitOptions $defaultCommitOptions */
     public function setDefaultCommitOptions(array $defaultCommitOptions): void
     {
-        foreach (UnitOfWork::DEPRECATED_WRITE_OPTIONS as $deprecatedOption) {
-            if (array_key_exists($deprecatedOption, $defaultCommitOptions)) {
-                trigger_deprecation(
-                    'doctrine/mongodb-odm',
-                    '2.6',
-                    'The "%s" commit option used in the configuration is deprecated.',
-                    $deprecatedOption,
-                );
-            }
-        }
-
         $this->attributes['defaultCommitOptions'] = $defaultCommitOptions;
     }
 

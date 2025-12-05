@@ -23,8 +23,6 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
-use Doctrine\Persistence\Mapping\ReflectionService;
-use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use InvalidArgumentException;
 use LogicException;
 use MongoDB\BSON\Decimal128;
@@ -33,7 +31,6 @@ use MongoDB\BSON\UTCDateTime;
 use ReflectionClass;
 use ReflectionEnum;
 use ReflectionNamedType;
-use ReflectionProperty;
 use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV4;
 use Symfony\Component\Uid\UuidV7;
@@ -59,7 +56,6 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
-use function trigger_deprecation;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -437,15 +433,6 @@ final class ClassMetadata implements BaseClassMetadata
     public const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
 
     /**
-     * NOTIFY means that Doctrine relies on the entities sending out notifications
-     * when their properties change. Such entity classes must implement
-     * the <tt>NotifyPropertyChanged</tt> interface.
-     *
-     * @deprecated
-     */
-    public const CHANGETRACKING_NOTIFY = 3;
-
-    /**
      * SET means that fields will be written to the database using a $set operator
      */
     public const STORAGE_STRATEGY_SET = 'set';
@@ -608,15 +595,6 @@ final class ClassMetadata implements BaseClassMetadata
      * @var list<class-string>
      */
     public private(set) array $subClasses = [];
-
-    /**
-     * The ReflectionProperty instances of the mapped class.
-     *
-     * @deprecated Since 2.13, use $propertyAccessors instead.
-     *
-     * @var LegacyReflectionFields|array<ReflectionProperty>
-     */
-    public private(set) LegacyReflectionFields|array $reflFields = [];
 
     /** @var array<string, PropertyAccessors\PropertyAccessor> */
     public private(set) array $propertyAccessors = [];
@@ -802,8 +780,6 @@ final class ClassMetadata implements BaseClassMetadata
 
     private InstantiatorInterface $instantiator;
 
-    private ReflectionService $reflectionService;
-
     /** @var class-string|null */
     private ?string $rootClass;
 
@@ -815,11 +791,9 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function __construct(string $documentName)
     {
-        $this->name              = $documentName;
-        $this->rootDocumentName  = $documentName;
-        $this->reflectionService = new RuntimeReflectionService();
-        $this->reflClass         = new ReflectionClass($documentName);
-        $this->reflFields        = new LegacyReflectionFields($this, $this->reflectionService);
+        $this->name             = $documentName;
+        $this->rootDocumentName = $documentName;
+        $this->reflClass        = new ReflectionClass($documentName);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -1425,29 +1399,6 @@ final class ClassMetadata implements BaseClassMetadata
     }
 
     /**
-     * Whether the change tracking policy of this class is "notify".
-     *
-     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.4. Please use DEFERRED_EXPLICIT tracking
-     * policy and isChangeTrackingDeferredImplicit method to detect it.
-     */
-    public function isChangeTrackingNotify(): bool
-    {
-        return $this->changeTrackingPolicy === self::CHANGETRACKING_NOTIFY;
-    }
-
-    /**
-     * Gets the ReflectionProperties of the mapped class.
-     *
-     * @deprecated Since 2.13, use getPropertyAccessors() instead.
-     *
-     * @return array<ReflectionProperty>|LegacyReflectionFields
-     */
-    public function getReflectionProperties(): array|LegacyReflectionFields
-    {
-        return $this->reflFields;
-    }
-
-    /**
      * Gets the ReflectionProperties of the mapped class.
      *
      * @return PropertyAccessor[] An array of PropertyAccessor instances.
@@ -1455,16 +1406,6 @@ final class ClassMetadata implements BaseClassMetadata
     public function getPropertyAccessors(): array
     {
         return $this->propertyAccessors;
-    }
-
-    /**
-     * Gets a ReflectionProperty for a specific field of the mapped class.
-     *
-     * @deprecated Since 2.13, use getPropertyAccessor() instead.
-     */
-    public function getReflectionProperty(string $name): ReflectionProperty
-    {
-        return $this->reflFields[$name];
     }
 
     public function getPropertyAccessor(string $name): PropertyAccessor|null
@@ -2407,13 +2348,7 @@ final class ClassMetadata implements BaseClassMetadata
         }
 
         if (isset($mapping['targetDocument']) && isset($mapping['discriminatorMap'])) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.2',
-                'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated. Only one of them can be used at a time',
-                $mapping['fieldName'],
-                $this->name,
-            );
+            throw MappingException::targetDocumentCanNotBeCombinedWithDiscriminatorMap($this->name, $mapping['fieldName']);
         }
 
         if (isset($mapping['reference']) && $mapping['type'] === self::ONE) {
@@ -2535,7 +2470,6 @@ final class ClassMetadata implements BaseClassMetadata
      *
      * Parts that are also NOT serialized because they cannot be properly unserialized:
      *      - reflClass (ReflectionClass)
-     *      - reflFields (ReflectionProperty array)
      *      - propertyAccessors (ReflectionProperty array)
      *
      * @return array The names of all the fields that should be serialized.
@@ -2643,10 +2577,8 @@ final class ClassMetadata implements BaseClassMetadata
     public function __wakeup(): void
     {
         // Restore ReflectionClass and properties
-        $this->reflClass         = new ReflectionClass($this->name);
-        $this->instantiator      = new Instantiator();
-        $this->reflectionService = new RuntimeReflectionService();
-        $this->reflFields        = new LegacyReflectionFields($this, $this->reflectionService);
+        $this->reflClass    = new ReflectionClass($this->name);
+        $this->instantiator = new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping['declared'] ?? $this->name, $field);

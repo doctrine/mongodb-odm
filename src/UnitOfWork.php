@@ -34,7 +34,6 @@ use UnexpectedValueException;
 use function array_diff_key;
 use function array_filter;
 use function array_intersect_key;
-use function array_key_exists;
 use function array_merge;
 use function assert;
 use function call_user_func;
@@ -48,7 +47,6 @@ use function preg_match;
 use function serialize;
 use function spl_object_id;
 use function sprintf;
-use function trigger_deprecation;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -63,9 +61,6 @@ use function trigger_deprecation;
  * }
  * @phpstan-type Hints array<int, mixed>
  * @phpstan-type CommitOptions array{
- *      fsync?: bool,
- *      safe?: int,
- *      w?: int,
  *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
@@ -96,9 +91,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public const int STATE_REMOVED = 4;
 
-    /** @internal */
-    public const array DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
-    private const array TRANSACTION_OPTIONS     = [
+    private const array TRANSACTION_OPTIONS = [
         'maxCommitTimeMS' => 1,
         'readConcern' => 1,
         'readPreference' => 1,
@@ -410,19 +403,6 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function commit(array $options = []): void
     {
-        foreach (self::DEPRECATED_WRITE_OPTIONS as $deprecatedOption) {
-            if (! array_key_exists($deprecatedOption, $options)) {
-                continue;
-            }
-
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.6',
-                'The "%s" commit option is deprecated.',
-                $deprecatedOption,
-            );
-        }
-
         // Raise preFlush
         $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
 
@@ -732,13 +712,8 @@ final class UnitOfWork implements PropertyChangedListener
 
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
-            $originalData           = $this->originalDocumentData[$oid];
-            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-            if ($isChangeTrackingNotify && ! $recompute && isset($this->documentChangeSets[$oid])) {
-                $changeSet = $this->documentChangeSets[$oid];
-            } else {
-                $changeSet = [];
-            }
+            $originalData = $this->originalDocumentData[$oid];
+            $changeSet    = [];
 
             $gridFSMetadataProperty = null;
 
@@ -790,10 +765,6 @@ final class UnitOfWork implements PropertyChangedListener
                     }
 
                     $changeSet[$propName] = [$orgValue, $actualValue];
-                    continue;
-                }
-
-                if ($isChangeTrackingNotify) {
                     continue;
                 }
 
@@ -2015,21 +1986,10 @@ final class UnitOfWork implements PropertyChangedListener
                             if (! $managedCol->isEmpty() && $managedCol !== $mergeCol) {
                                 $managedCol->unwrap()->clear();
                                 $managedCol->setDirty(true);
-
-                                if ($assoc2['isOwningSide'] && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForSynchronization($managedCopy);
-                                }
                             }
                         }
                     }
                 }
-
-                if (! $class->isChangeTrackingNotify()) {
-                    continue;
-                }
-
-                // Just treat all properties as changed, there is no other choice.
-                $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
             }
 
             if ($class->isChangeTrackingDeferredExplicit()) {

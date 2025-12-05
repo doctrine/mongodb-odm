@@ -802,28 +802,6 @@ class DocumentPersisterTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    public function testDefaultWriteConcernIsRespectedBackwardCompatibility(): void
-    {
-        $this->skipTestIfTransactionalFlushEnabled();
-
-        $class             = DocumentPersisterTestDocument::class;
-        $documentPersister = $this->uow->getDocumentPersister($class);
-
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
-
-        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setValue($documentPersister, $collection);
-
-        $this->dm->getConfiguration()->setDefaultCommitOptions(['w' => 0]);
-
-        $testDocument = new $class();
-        $this->dm->persist($testDocument);
-        $this->dm->flush();
-    }
-
     public function testVersionIncrementOnUpdateSuccess(): void
     {
         $testDocument = new DocumentPersisterTestDocumentWithVersion();

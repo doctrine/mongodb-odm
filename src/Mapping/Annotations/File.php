@@ -21,9 +21,6 @@ final class File extends AbstractDocument
     /** @var string|null */
     public $repositoryClass;
 
-    /** @var Index[] */
-    public $indexes;
-
     /** @var bool bool */
     public $readOnly;
 
@@ -33,15 +30,11 @@ final class File extends AbstractDocument
     /** @var int|null */
     public $chunkSizeBytes;
 
-    /**
-     * @param Index[]         $indexes
-     * @param string|int|null $writeConcern
-     */
+    /** @param string|int|null $writeConcern */
     public function __construct(
         ?string $db = null,
         ?string $bucketName = null,
         ?string $repositoryClass = null,
-        array $indexes = [],
         bool $readOnly = false,
         ?string $shardKey = null,
         public $writeConcern = null,
@@ -50,7 +43,6 @@ final class File extends AbstractDocument
         $this->db              = $db;
         $this->bucketName      = $bucketName;
         $this->repositoryClass = $repositoryClass;
-        $this->indexes         = $indexes;
         $this->readOnly        = $readOnly;
         $this->shardKey        = $shardKey;
         $this->chunkSizeBytes  = $chunkSizeBytes;

@@ -27,7 +27,6 @@ use function assert;
 use function get_class_methods;
 use function in_array;
 use function interface_exists;
-use function trigger_deprecation;
 use function ucfirst;
 
 /**
@@ -197,16 +196,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             Events::loadClassMetadata,
             new LoadClassMetadataEventArgs($class, $this->dm),
         );
-
-        // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-        if ($class->isChangeTrackingNotify()) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.4',
-                'NOTIFY tracking policy used in class "%s" is deprecated. Please use DEFERRED_EXPLICIT instead.',
-                $class->name,
-            );
-        }
     }
 
     /**

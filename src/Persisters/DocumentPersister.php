@@ -42,7 +42,6 @@ use stdClass;
 use function array_combine;
 use function array_fill;
 use function array_intersect_key;
-use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -64,7 +63,6 @@ use function sprintf;
 use function str_contains;
 use function strpos;
 use function strtolower;
-use function trigger_deprecation;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -74,10 +72,7 @@ use function trigger_deprecation;
  * @template T of object = object
  *
  * @phpstan-type CommitOptions array{
- *      fsync?: bool,
- *      safe?: int,
  *      session?: ?Session,
- *      w?: int,
  *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
@@ -1549,16 +1544,6 @@ final class DocumentPersister
         }
 
         $writeOptions = array_merge($defaultOptions, $documentOptions, $options);
-        if (array_key_exists('w', $writeOptions)) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.2',
-                'The "w" option as commit option is deprecated, please pass "%s" object in "writeConcern" option.',
-                WriteConcern::class,
-            );
-            $writeOptions['writeConcern'] = new WriteConcern($writeOptions['w']);
-            unset($writeOptions['w']);
-        }
 
         return $this->isInTransaction($options)
             ? $this->uow->stripTransactionOptions($writeOptions)

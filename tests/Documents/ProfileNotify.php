@@ -10,7 +10,6 @@ use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 
 #[ODM\Document]
-#[ODM\ChangeTrackingPolicy('NOTIFY')]
 class ProfileNotify implements NotifyPropertyChanged
 {
     /** @var string|null */

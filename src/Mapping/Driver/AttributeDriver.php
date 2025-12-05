@@ -26,9 +26,7 @@ use function array_replace;
 use function assert;
 use function class_exists;
 use function constant;
-use function count;
 use function is_array;
-use function trigger_deprecation;
 
 /**
  * The AttributeDriver reads the mapping metadata from attributes.
@@ -187,20 +185,6 @@ class AttributeDriver implements MappingDriver
 
         if (isset($documentAttribute->writeConcern)) {
             $metadata->setWriteConcern($documentAttribute->writeConcern);
-        }
-
-        if (isset($documentAttribute->indexes) && count($documentAttribute->indexes)) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.2',
-                'The "indexes" parameter in the "%s" attribute for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.',
-                $documentAttribute::class,
-                $className,
-            );
-
-            foreach ($documentAttribute->indexes as $index) {
-                $this->addIndex($metadata, $index);
-            }
         }
 
         if (! empty($documentAttribute->readOnly)) {

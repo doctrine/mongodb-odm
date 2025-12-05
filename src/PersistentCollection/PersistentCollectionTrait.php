@@ -20,7 +20,6 @@ use function array_map;
 use function array_udiff_assoc;
 use function array_values;
 use function count;
-use function get_class;
 use function is_object;
 use function method_exists;
 
@@ -174,12 +173,6 @@ trait PersistentCollectionTrait
         }
 
         $this->isDirty = true;
-
-        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
-            return;
-        }
-
-        $this->uow->scheduleForSynchronization($this->owner);
     }
 
     public function isDirty(): bool
@@ -737,15 +730,6 @@ trait PersistentCollectionTrait
         }
 
         return isset($this->mapping['reference']) && $this->mapping['isOwningSide'] && $this->mapping['orphanRemoval'];
-    }
-
-    /**
-     * Checks whether collection owner needs to be scheduled for dirty change in case the collection is modified.
-     */
-    private function needsSchedulingForSynchronization(): bool
-    {
-        return $this->owner && isset($this->dm) && ! empty($this->mapping['isOwningSide'])
-            && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
     }
 
     /**
