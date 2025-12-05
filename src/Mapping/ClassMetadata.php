@@ -1030,12 +1030,10 @@ final class ClassMetadata implements BaseClassMetadata
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param array{name?: string, fieldName?: string}|string|null $discriminatorField
-     *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
      */
-    public function setDiscriminatorField(array|string|null $discriminatorField): void
+    public function setDiscriminatorField(?string $discriminatorField): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -1045,16 +1043,6 @@ final class ClassMetadata implements BaseClassMetadata
             $this->discriminatorField = null;
 
             return;
-        }
-
-        // @todo: deprecate, document and remove this:
-        // Handle array argument with name/fieldName keys for BC
-        if (is_array($discriminatorField)) {
-            if (isset($discriminatorField['name'])) {
-                $discriminatorField = $discriminatorField['name'];
-            } elseif (isset($discriminatorField['fieldName'])) {
-                $discriminatorField = $discriminatorField['fieldName'];
-            }
         }
 
         foreach ($this->fieldMappings as $fieldMapping) {

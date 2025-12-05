@@ -869,7 +869,6 @@ class AbstractMappingDriverUser
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
-        $metadata->setDiscriminatorField(['fieldName' => 'discr']);
         $metadata->setDiscriminatorMap(['default' => self::class]);
         $metadata->setDefaultDiscriminatorValue('default');
         $metadata->mapField([
