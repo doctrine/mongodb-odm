@@ -203,11 +203,20 @@ class Configuration
      */
     public function addDocumentNamespace(string $alias, string $namespace): void
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'Document short namespace aliases such as "%s" are deprecated, use ::class constant instead.',
+            $alias,
+        );
+
         $this->attributes['documentNamespaces'][$alias] = $namespace;
     }
 
     /**
      * Resolves a registered namespace alias to the full namespace.
+     *
+     * @deprecated Document short aliases are deprecated - use ::class constant instead.
      *
      * @throws MongoDBException
      */
@@ -236,16 +245,30 @@ class Configuration
      */
     public function getDocumentNamespaces(): array
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'Document short namespace aliases are deprecated, use ::class constant instead.',
+        );
+
         return $this->attributes['documentNamespaces'];
     }
 
     /**
      * Set the document alias map
      *
+     * @deprecated Document short aliases are deprecated - use ::class constant instead.
+     *
      * @param array<string, string> $documentNamespaces
      */
     public function setDocumentNamespaces(array $documentNamespaces): void
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.3',
+            'Document short namespace aliases are deprecated, use ::class constant instead.',
+        );
+
         $this->attributes['documentNamespaces'] = $documentNamespaces;
     }
 
