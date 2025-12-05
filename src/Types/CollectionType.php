@@ -29,4 +29,9 @@ class CollectionType extends Type
     {
         return $value !== null ? array_values($value) : null;
     }
+
+    public function closureToPHP(): string
+    {
+        return '$return = array_values($value);';
+    }
 }

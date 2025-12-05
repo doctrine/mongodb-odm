@@ -42,6 +42,16 @@ class TypeTest extends BaseTestCase
         self::assertSameTypeAndValue($bsonValue, $type->convertToDatabaseValue($phpValue));
     }
 
+    #[DataProvider('provideTypes')]
+    public function testConversionWithClosureToPHP(string $typeIdentifier, mixed $expectedValue, mixed $value = null): void
+    {
+        $value ??= $expectedValue;
+        $return = $this;
+        eval(Type::getType($typeIdentifier)->closureToPHP());
+
+        self::assertSameTypeAndValue($expectedValue, $return);
+    }
+
     public static function provideTypes(): array
     {
         return [

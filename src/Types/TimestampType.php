@@ -14,6 +14,8 @@ use function substr;
  */
 class TimestampType extends Type
 {
+    use ClosureToPHP;
+
     /** @return Timestamp|null */
     public function convertToDatabaseValue($value)
     {

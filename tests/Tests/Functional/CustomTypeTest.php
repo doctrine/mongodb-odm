@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
 use PHPUnit\Framework\Attributes\After;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionProperty;
 
 use function array_map;
@@ -26,6 +27,7 @@ class CustomTypeTest extends BaseTestCase
 
         Type::addType('date_collection', DateCollectionType::class);
         Type::addType(Language::class, LanguageType::class);
+        Type::addType('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
     }
 
     #[After]
@@ -88,6 +90,14 @@ class CustomTypeTest extends BaseTestCase
 
         $databaseValue = Type::convertPHPToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
+    }
+
+    #[IgnoreDeprecations]
+    public function testNotOverridingClosureToPHPIsDeprecated(): void
+    {
+        $type = Type::getType('custom_type_without_closure_to_php');
+
+        self::assertSame('$return = $value;', $type->closureToPHP());
     }
 }
 
@@ -197,4 +207,8 @@ class LanguageType extends Type
 
         return new Language($value['name'], $value['code']);
     }
+}
+
+class CustomTypeWithoutClosureToPHP extends Type
+{
 }
