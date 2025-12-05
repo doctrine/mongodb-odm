@@ -935,7 +935,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             foreach ($documentsToProcess as $document) {
-                // Ignore uninitialized lazy object
+                // Ignore uninitialized lazy objects
                 if ($this->isUninitializedObject($document)) {
                     continue;
                 }

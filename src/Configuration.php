@@ -81,16 +81,6 @@ class Configuration
     public const int AUTOGENERATE_EVAL = 3;
 
     /**
-     * Autogenerate the class when the file does not exist or
-     * when the proxied file changed.
-     *
-     * This strategy causes a file_exists() call whenever any class is used the
-     * first time in a request. When the proxied file is changed, the class will
-     * be updated.
-     */
-    public const int AUTOGENERATE_FILE_NOT_EXISTS_OR_CHANGED = 4;
-
-    /**
      * Array of attributes for this configuration instance.
      *
      * @phpstan-var array{

@@ -59,9 +59,8 @@ The following methods have been removed from `Doctrine\ODM\MongoDB\Configuration
 - `setProxyDir` and `getProxyDir`,
 - `setProxyNamespace` and `getProxyNamespace`,
 - `setAutoGenerateProxyClasses` and `getAutoGenerateProxyClasses`,
-- `getProxyManagerConfiguration`
-- `getProxyFactory`
-- `buildGhostObjectFactory`
+- `getProxyManagerConfiguration`,
+- `buildGhostObjectFactory`.
 
 The `Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver` interface has been
 dropped in favor of the `Doctrine\Persistence\Mapping\ProxyClassNameResolver`
