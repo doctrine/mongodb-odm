@@ -63,4 +63,4 @@ jobs:
           path: composer.lock
 
       - name: "Run PHPBench"
-        run: "vendor/bin/phpbench run --report=default --revs=100 --iterations=5 --report=aggregate"
+        run: "vendor/bin/phpbench run --report=default --report=aggregate"

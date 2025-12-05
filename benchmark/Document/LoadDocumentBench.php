@@ -13,11 +13,16 @@ use Documents\Phonenumber;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use PhpBench\Attributes\BeforeMethods;
+use PhpBench\Attributes\Iterations;
+use PhpBench\Attributes\Revs;
 use PhpBench\Attributes\Warmup;
 
 use function assert;
 
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
+#[Warmup(2)]
+#[Revs(100)]
+#[Iterations(5)]
 final class LoadDocumentBench extends BaseBench
 {
     private static ObjectId $userId;
@@ -52,19 +57,16 @@ final class LoadDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
-    #[Warmup(2)]
     public function benchLoadDocument(): void
     {
         $this->loadDocument();
     }
 
-    #[Warmup(2)]
     public function benchLoadEmbedOne(): void
     {
         $this->loadDocument()->getAddress()->getCity();
     }
 
-    #[Warmup(2)]
     public function benchLoadEmbedMany(): void
     {
         $this->loadDocument()->getPhonenumbers()->forAll(static function (int $key, Phonenumber $element) {
@@ -72,13 +74,11 @@ final class LoadDocumentBench extends BaseBench
         });
     }
 
-    #[Warmup(2)]
     public function benchLoadReferenceOne(): void
     {
         $this->loadDocument()->getAccount()->getName();
     }
 
-    #[Warmup(2)]
     public function benchLoadReferenceMany(): void
     {
         $this->loadDocument()->getGroups()->forAll(static function (int $key, Group $group) {
