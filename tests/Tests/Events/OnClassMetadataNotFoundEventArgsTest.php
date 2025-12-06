@@ -14,7 +14,7 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
 {
     public function testEventArgsMutability(): void
     {
-        $documentManager = $this->createMock(DocumentManager::class);
+        $documentManager = $this->createStub(DocumentManager::class);
 
         $args = new OnClassMetadataNotFoundEventArgs(stdClass::class, $documentManager);
 

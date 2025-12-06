@@ -635,7 +635,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+            ->with($this->isArray(), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -656,7 +656,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -677,7 +677,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+            ->with($this->isArray(), $this->isArray(), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -699,7 +699,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -721,7 +721,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+            ->with($this->isArray(), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -745,7 +745,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -768,7 +768,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+            ->with($this->isArray(), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -790,7 +790,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -812,7 +812,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+            ->with($this->isArray(), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);

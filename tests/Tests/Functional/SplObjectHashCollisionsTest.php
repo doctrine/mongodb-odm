@@ -15,7 +15,7 @@ class SplObjectHashCollisionsTest extends BaseTestCase
 {
     /** @param callable(DocumentManager, object=): void $f */
     #[DataProvider('provideParentAssociationsIsCleared')]
-    public function testParentAssociationsIsCleared(callable $f): void
+    public function testParentAssociationsIsCleared(callable $f, int $leftover): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');

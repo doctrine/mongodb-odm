@@ -559,7 +559,7 @@ class UnitOfWorkTest extends BaseTestCase
         $collection = $this->createMock(MongoDBCollection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $documentPersister = $this->uow->getDocumentPersister(ForumUser::class);
 

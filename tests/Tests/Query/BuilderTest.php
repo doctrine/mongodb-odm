@@ -497,8 +497,8 @@ class BuilderTest extends BaseTestCase
             'type()' => ['type', [7]],
             'all()' => ['all', [['value1', 'value2']]],
             'mod()' => ['mod', [2, 0]],
-            'near()' => ['near', [1, 2], null, 5, 10],
-            'nearSphere()' => ['nearSphere', [1, 2], null, 5, 10],
+            'near()' => ['near', [[1, 2], null, 5, 10]],
+            'nearSphere()' => ['nearSphere', [[1, 2], null, 5, 10]],
             'geoIntersects()' => ['geoIntersects', [self::createGeometry()]],
             'geoWithin()' => ['geoWithin', [self::createGeometry()]],
             'geoWithinBox()' => ['geoWithinBox', [1, 2, 3, 4]],
@@ -864,8 +864,7 @@ class BuilderTest extends BaseTestCase
         return new Builder($this->dm, User::class);
     }
 
-    /** @return MockObject&Expr */
-    private function getMockExpr()
+    private function getMockExpr(): Expr&MockObject
     {
         return $this->createMock(Expr::class);
     }

@@ -22,16 +22,15 @@ use LogicException;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
-use MongoDB\Driver\CursorId;
 use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\Server;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use Traversable;
 
 use function array_keys;
-use function class_exists;
 use function iterator_to_array;
 
 use const DOCTRINE_MONGODB_DATABASE;
@@ -426,7 +425,7 @@ class QueryTest extends BaseTestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        new Query($this->dm, new ClassMetadata(User::class), $this->getMockCollection(), ['type' => -1], []);
+        new Query($this->dm, new ClassMetadata(User::class), $this->createStub(Collection::class), ['type' => -1], []);
     }
 
     /** @param Query::TYPE_* $type */
@@ -502,7 +501,7 @@ class QueryTest extends BaseTestCase
 
     public function testFindWithHint(): void
     {
-        $cursor = $this->createCursorMock();
+        $cursor = $this->createCursorStub();
 
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
@@ -529,7 +528,7 @@ class QueryTest extends BaseTestCase
         $nearest            = new ReadPreference('nearest');
         $secondaryPreferred = new ReadPreference('secondaryPreferred');
 
-        $cursor = $this->createCursorMock();
+        $cursor = $this->createCursorStub();
 
         $collection = $this->getMockCollection();
         $collection->expects($this->once())
@@ -620,20 +619,14 @@ class QueryTest extends BaseTestCase
         iterator_to_array($iterator);
     }
 
-    /** @return MockObject&Collection */
-    private function getMockCollection()
+    private function getMockCollection(): Collection&MockObject
     {
         return $this->createMock(Collection::class);
     }
 
-    private function createCursorMock(): CursorInterface|Traversable
+    private function createCursorStub(): CursorInterface&Stub
     {
-        return $this->createMock(
-            // Use the cursorID class to differentiate between 1.x and 2.x
-            class_exists(CursorId::class)
-                ? Traversable::class
-                : CursorInterface::class,
-        );
+        return $this->createStub(CursorInterface::class);
     }
 }
 
