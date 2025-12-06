@@ -89,7 +89,7 @@ class SchemaManagerTest extends BaseTestCase
     /** @var array<Collection&MockObject> */
     private array $documentCollections = [];
 
-    /** @var array<Bucket&MockObject> */
+    /** @var array<Bucket&Stub> */
     private array $documentBuckets = [];
 
     /** @var array<Database&MockObject> */
