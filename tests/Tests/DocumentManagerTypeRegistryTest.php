@@ -29,7 +29,6 @@ class DocumentManagerTypeRegistryTest extends BaseTestCase
     {
         $dm = DocumentManager::create(null, $this->dm->getConfiguration());
 
-        $this->assertInstanceOf(TypeRegistry::class, $dm->getTypes());
         $this->assertSame($this->prop->getValue(), $dm->getTypes());
     }
 

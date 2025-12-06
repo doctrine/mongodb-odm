@@ -115,39 +115,45 @@ abstract class Type
     /**
      * Register a new type in the type map.
      *
-     * @deprecated Use {@see TypeRegistry::register()} directly instead
+     * @deprecated Use {@see TypeRegistry::register()} instead
      */
     public static function registerType(string $name, string $class): void
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::registerType() is deprecated, use TypeRegistry::register() instead.');
+
         self::getRegistry()->register($name, $class);
     }
 
     /**
      * Get a Type instance.
      *
-     * @deprecated Use {@see TypeRegistry::get()} directly instead
+     * @deprecated Use {@see TypeRegistry::get()} instead
      *
      * @throws InvalidTypeException
      */
     public static function getType(string $type): Type
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Type::getType() is deprecated, use TypeRegistry::get() instead.');
+
         return self::getRegistry()->get($type);
     }
 
     /**
      * Get a Type instance based on the type of the passed php variable.
      *
-     * @deprecated Use TypeRegistry::getFromPHPVariable() directly instead
+     * @deprecated Use {@see TypeRegistry::getFromPHPVariable()} instead
      *
      * @param mixed $variable
      */
     public static function getTypeFromPHPVariable($variable): ?Type
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Type::getTypeFromPHPVariable() is deprecated, use TypeRegistry::fromVariable() instead.');
+
         return self::getRegistry()->fromVariable($variable);
     }
 
     /**
-     * @deprecated Use TypeRegistry::fromVariable() to get the type
+     * @deprecated Use {@see TypeRegistry::convertToDatabaseValue()} instead
      *
      * @param mixed $value
      *
@@ -155,22 +161,24 @@ abstract class Type
      */
     public static function convertPHPToDatabaseValue($value)
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::convertPHPToDatabaseValue() is deprecated, use TypeRegistry::convertToDatabaseValue() instead.');
+
         return self::getRegistry()->convertToDatabaseValue($value);
     }
 
     /**
      * Adds a custom type to the type map.
      *
-     * @deprecated Use {@see TypeRegistry::register()} directly instead
+     * @deprecated Use {@see TypeRegistry::register()} instead
      *
      * @param class-string $className
      *
      * @throws MappingException
-     *
-     * @static
      */
     public static function addType(string $name, string $className): void
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::addType() is deprecated, use TypeRegistry::register() instead.');
+
         $registry = self::getRegistry();
         if ($registry->has($name)) {
             throw MappingException::typeExists($name);
@@ -182,28 +190,28 @@ abstract class Type
     /**
      * Checks if exists support for a type.
      *
-     * @deprecated Use {@see TypeRegistry::has()} directly instead
-     *
-     * @static
+     * @deprecated Use {@see TypeRegistry::has()} instead
      */
     public static function hasType(string $name): bool
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::hasType() is deprecated, use TypeRegistry::has() instead.');
+
         return self::getRegistry()->has($name);
     }
 
     /**
      * Overrides an already defined type to use a different implementation.
      *
-     * @deprecated Use {@see TypeRegistry::register()} directly instead
+     * @deprecated Use {@see TypeRegistry::register()} instead
      *
      * @param class-string $className
      *
      * @throws MappingException
-     *
-     * @static
      */
     public static function overrideType(string $name, string $className): void
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::overrideType() is deprecated, use TypeRegistry::register() instead.');
+
         $registry = self::getRegistry();
         if (! $registry->has($name)) {
             throw MappingException::typeNotFound($name);
@@ -222,6 +230,8 @@ abstract class Type
      */
     public static function getTypesMap(): array
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::getTypesMap() is deprecated and will be removed in 3.0. Use TypeRegistry methods instead.');
+
         return self::getRegistry()->getMap();
     }
 
