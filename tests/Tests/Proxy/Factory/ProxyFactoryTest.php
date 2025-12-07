@@ -19,8 +19,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 class ProxyFactoryTest extends BaseTestCase
 {
-    /** @var Client|MockObject */
-    private Client $client;
+    private Client&MockObject $client;
 
     public function testProxyInitializeWithException(): void
     {

@@ -45,6 +45,7 @@ use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use ReflectionProperty;
 
 use function array_count_values;
@@ -88,7 +89,7 @@ class SchemaManagerTest extends BaseTestCase
     /** @var array<Collection&MockObject> */
     private array $documentCollections = [];
 
-    /** @var array<Bucket&MockObject> */
+    /** @var array<Bucket&Stub> */
     private array $documentBuckets = [];
 
     /** @var array<Database&MockObject> */
@@ -100,8 +101,8 @@ class SchemaManagerTest extends BaseTestCase
     {
         parent::setUp();
 
-        $client   = $this->createMock(Client::class);
-        $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createMock(EventManager::class));
+        $client   = $this->createStub(Client::class);
+        $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createStub(EventManager::class));
 
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
             if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument) {
@@ -109,7 +110,7 @@ class SchemaManagerTest extends BaseTestCase
             }
 
             if ($cm->isFile) {
-                $this->documentBuckets[$cm->getBucketName()] = $this->getMockBucket();
+                $this->documentBuckets[$cm->getBucketName()] = $this->getBucketStub();
             } else {
                 $this->documentCollections[$cm->getCollection()] = $this->getMockCollection($cm->getCollection());
             }
@@ -1407,30 +1408,27 @@ EOT;
         return ($cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB()) ?: 'doctrine';
     }
 
-    /** @return Bucket&MockObject */
-    private function getMockBucket()
+    private function getBucketStub(): Bucket&Stub
     {
-        $mock = $this->createMock(Bucket::class);
+        $mock = $this->createStub(Bucket::class);
         $mock->method('getFilesCollection')->willReturn($this->getMockCollection());
         $mock->method('getChunksCollection')->willReturn($this->getMockCollection());
 
         return $mock;
     }
 
-    /** @return Collection&MockObject */
-    private function getMockCollection(?string $name = null)
+    private function getMockCollection(?string $name = null): Collection&MockObject
     {
         $collection = $this->createMock(Collection::class);
-        $collection->method('getCollectionName')->willReturnCallback(static fn () => $name);
+        $collection->expects($this->atLeast(0))->method('getCollectionName')->willReturnCallback(static fn () => $name);
 
         return $collection;
     }
 
-    /** @return Database&MockObject */
-    private function getMockDatabase()
+    private function getMockDatabase(): Database&MockObject
     {
         $db = $this->createMock(Database::class);
-        $db->method('getCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
+        $db->expects($this->atLeast(0))->method('getCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
         $db->method('selectGridFSBucket')->willReturnCallback(fn (array $options) => $this->documentBuckets[$options['bucketName']]);
         $db->method('listCollections')->willReturnCallback(function () {
             $collections = [];
