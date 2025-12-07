@@ -554,16 +554,6 @@ trait PersistentCollectionTrait
         ];
     }
 
-    /**
-     * @deprecated Implement and use __serialize() instead.
-     *
-     * @return string[]
-     */
-    public function __sleep(): array
-    {
-        return ['coll', 'initialized', 'mongoData', 'snapshot', 'isDirty', 'hints'];
-    }
-
     /* ArrayAccess implementation */
 
     /** @param TKey $offset */

@@ -96,6 +96,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm         = unserialize($serialized);
 
         // Check state
+        self::assertInstanceOf(ClassMetadata::class, $cm);
         self::assertNotEmpty($cm->getPropertyAccessors());
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);

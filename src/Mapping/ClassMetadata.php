@@ -30,7 +30,6 @@ use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
 use ReflectionClass;
 use ReflectionEnum;
-use ReflectionMethod;
 use ReflectionNamedType;
 use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV4;
@@ -57,7 +56,6 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
-use function trigger_deprecation;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -2466,144 +2464,119 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function __serialize(): array
     {
-        if (static::class !== self::class && (new ReflectionMethod($this, '__sleep'))->getDeclaringClass() !== self::class) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.16',
-                'The method __sleep() is deprecated. Implement and use %s() instead.',
-                __METHOD__,
-            );
+        $data = [
+            'fieldMappings' => $this->fieldMappings,
+            'associationMappings' => $this->associationMappings,
+            'identifier' => $this->identifier,
+            'name' => $this->name,
+            'db' => $this->db,
+            'collection' => $this->collection,
+            'readPreference' => $this->readPreference,
+            'readPreferenceTags' => $this->readPreferenceTags,
+            'writeConcern' => $this->writeConcern,
+            'rootDocumentName' => $this->rootDocumentName,
+            'generatorType' => $this->generatorType,
+            'generatorOptions' => $this->generatorOptions,
+            'idGenerator' => $this->idGenerator,
+            'indexes' => $this->indexes,
+            'shardKey' => $this->shardKey,
+            'timeSeriesOptions' => $this->timeSeriesOptions,
+        ];
+
+        // The rest of the metadata is only serialized if necessary.
+        if ($this->changeTrackingPolicy !== self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $data['changeTrackingPolicy'] = $this->changeTrackingPolicy;
         }
 
-        $data = [];
-        foreach ($this->__sleep() as $field) {
-            $data[$field] = $this->$field;
+        if ($this->customRepositoryClassName) {
+            $data['customRepositoryClassName'] = $this->customRepositoryClassName;
+        }
+
+        if ($this->inheritanceType !== self::INHERITANCE_TYPE_NONE || $this->discriminatorField !== null) {
+            $data['inheritanceType']           = $this->inheritanceType;
+            $data['discriminatorField']        = $this->discriminatorField;
+            $data['discriminatorValue']        = $this->discriminatorValue;
+            $data['discriminatorMap']          = $this->discriminatorMap;
+            $data['defaultDiscriminatorValue'] = $this->defaultDiscriminatorValue;
+            $data['parentClasses']             = $this->parentClasses;
+            $data['subClasses']                = $this->subClasses;
+        }
+
+        if ($this->isMappedSuperclass) {
+            $data['isMappedSuperclass'] = $this->isMappedSuperclass;
+        }
+
+        if ($this->isEmbeddedDocument) {
+            $data['isEmbeddedDocument'] = $this->isEmbeddedDocument;
+        }
+
+        if ($this->isQueryResultDocument) {
+            $data['isQueryResultDocument'] = $this->isQueryResultDocument;
+        }
+
+        if ($this->isView) {
+            $data['isView']    = $this->isView;
+            $data['rootClass'] = $this->rootClass;
+        }
+
+        if ($this->isFile) {
+            $data['isFile']         = $this->isFile;
+            $data['bucketName']     = $this->bucketName;
+            $data['chunkSizeBytes'] = $this->chunkSizeBytes;
+        }
+
+        if ($this->isVersioned) {
+            $data['isVersioned']  = $this->isVersioned;
+            $data['versionField'] = $this->versionField;
+        }
+
+        if ($this->isLockable) {
+            $data['isLockable'] = $this->isLockable;
+            $data['lockField']  = $this->lockField;
+        }
+
+        if ($this->lifecycleCallbacks) {
+            $data['lifecycleCallbacks'] = $this->lifecycleCallbacks;
+        }
+
+        if ($this->collectionCapped) {
+            $data['collectionCapped'] = $this->collectionCapped;
+            $data['collectionSize']   = $this->collectionSize;
+            $data['collectionMax']    = $this->collectionMax;
+        }
+
+        if ($this->isReadOnly) {
+            $data['isReadOnly'] = $this->isReadOnly;
+        }
+
+        if ($this->validator !== null) {
+            $data['validator']        = $this->validator;
+            $data['validationAction'] = $this->validationAction;
+            $data['validationLevel']  = $this->validationLevel;
+        }
+
+        if ($this->searchIndexes) {
+            $data['searchIndexes'] = $this->searchIndexes;
+        }
+
+        if ($this->isEncrypted) {
+            $data['isEncrypted'] = $this->isEncrypted;
         }
 
         return $data;
     }
 
     /**
-     * @deprecated
+     * Restores state after unserialization.
      *
-     * @return list<string> The names of all the fields that should be serialized.
-     */
-    public function __sleep(): array
-    {
-        // This metadata is always serialized/cached.
-        $serialized = [
-            'fieldMappings',
-            'associationMappings',
-            'identifier',
-            'name',
-            'db',
-            'collection',
-            'readPreference',
-            'readPreferenceTags',
-            'writeConcern',
-            'rootDocumentName',
-            'generatorType',
-            'generatorOptions',
-            'idGenerator',
-            'indexes',
-            'searchIndexes',
-            'shardKey',
-            'timeSeriesOptions',
-            'isEncrypted',
-        ];
-
-        // The rest of the metadata is only serialized if necessary.
-        if ($this->changeTrackingPolicy !== self::CHANGETRACKING_DEFERRED_IMPLICIT) {
-            $serialized[] = 'changeTrackingPolicy';
-        }
-
-        if ($this->customRepositoryClassName) {
-            $serialized[] = 'customRepositoryClassName';
-        }
-
-        if ($this->inheritanceType !== self::INHERITANCE_TYPE_NONE || $this->discriminatorField !== null) {
-            $serialized[] = 'inheritanceType';
-            $serialized[] = 'discriminatorField';
-            $serialized[] = 'discriminatorValue';
-            $serialized[] = 'discriminatorMap';
-            $serialized[] = 'defaultDiscriminatorValue';
-            $serialized[] = 'parentClasses';
-            $serialized[] = 'subClasses';
-        }
-
-        if ($this->isMappedSuperclass) {
-            $serialized[] = 'isMappedSuperclass';
-        }
-
-        if ($this->isEmbeddedDocument) {
-            $serialized[] = 'isEmbeddedDocument';
-        }
-
-        if ($this->isQueryResultDocument) {
-            $serialized[] = 'isQueryResultDocument';
-        }
-
-        if ($this->isView) {
-            $serialized[] = 'isView';
-            $serialized[] = 'rootClass';
-        }
-
-        if ($this->isFile) {
-            $serialized[] = 'isFile';
-            $serialized[] = 'bucketName';
-            $serialized[] = 'chunkSizeBytes';
-        }
-
-        if ($this->isVersioned) {
-            $serialized[] = 'isVersioned';
-            $serialized[] = 'versionField';
-        }
-
-        if ($this->isLockable) {
-            $serialized[] = 'isLockable';
-            $serialized[] = 'lockField';
-        }
-
-        if ($this->lifecycleCallbacks) {
-            $serialized[] = 'lifecycleCallbacks';
-        }
-
-        if ($this->collectionCapped) {
-            $serialized[] = 'collectionCapped';
-            $serialized[] = 'collectionSize';
-            $serialized[] = 'collectionMax';
-        }
-
-        if ($this->isReadOnly) {
-            $serialized[] = 'isReadOnly';
-        }
-
-        if ($this->validator !== null) {
-            $serialized[] = 'validator';
-            $serialized[] = 'validationAction';
-            $serialized[] = 'validationLevel';
-        }
-
-        return $serialized;
-    }
-
-    /**
-     * Restores the serialized values and some state that cannot be serialized/unserialized.
-     *
-     * @param array<string, mixed> $data The serialized data.
+     * @param array<string, mixed> $data
      */
     public function __unserialize(array $data): void
     {
-        foreach ($data as $field => $value) {
-            $this->$field = $value;
+        foreach ($data as $property => $value) {
+            $this->$property = $value;
         }
 
-        $this->__wakeup();
-    }
-
-    /** @deprecated */
-    public function __wakeup(): void
-    {
         // Restore ReflectionClass and properties
         $this->reflClass    = new ReflectionClass($this->name);
         $this->instantiator = new Instantiator();
