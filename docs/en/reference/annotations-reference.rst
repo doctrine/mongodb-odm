@@ -25,7 +25,7 @@ Replace the ``@ODM\Document`` annotations with the ``#[ODM\Document]`` attribute
 
 .. code-block:: diff
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
     - /**
     -  * @ODM\Document

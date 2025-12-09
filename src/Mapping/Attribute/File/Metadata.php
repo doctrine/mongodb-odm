@@ -5,19 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute\File;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractField;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-use function class_alias;
-
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @final
- */
+/** @final */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Metadata extends AbstractField
+class Metadata extends AbstractField implements MappingAttribute
 {
     /** @var bool */
     public $embedded = true;
@@ -53,6 +47,3 @@ class Metadata extends AbstractField
         $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(Metadata::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\File\Metadata::class);

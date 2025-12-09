@@ -6,7 +6,7 @@ namespace Documents;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /** @ODM\Document() */
 #[ODM\Document]

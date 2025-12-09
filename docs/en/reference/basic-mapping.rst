@@ -57,9 +57,9 @@ to be designated as a document. This can be done through the
 
         namespace Documents;
 
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-        #[Document]
+        #[ODM\Document]
         class User
         {
         }
@@ -88,9 +88,9 @@ option as follows:
 
         namespace Documents;
 
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-        #[Document(db: 'my_db', collection: 'users')]
+        #[ODM\Document(db: 'my_db', collection: 'users')]
         class User
         {
         }
@@ -257,13 +257,12 @@ Here is an example:
 
         namespace Documents;
 
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-        #[Document]
+        #[ODM\Document]
         class User
         {
-            #[Id]
+            #[ODM\Id]
             public string $id;
         }
 
@@ -309,13 +308,12 @@ Here is an example how to manually set a string identifier for your documents:
 
         namespace Documents;
 
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-        #[Document]
+        #[ODM\Document]
         class MyPersistentClass
         {
-            #[Id(strategy: 'NONE', type: 'string')]
+            #[ODM\Id(strategy: 'NONE', type: 'string')]
             public string $id;
 
             //...
@@ -430,15 +428,14 @@ Example:
 
         namespace Documents;
 
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-        #[Document]
+        #[ODM\Document]
         class User
         {
             // ...
 
-            #[Field]
+            #[ODM\Field]
             public string $username;
         }
 

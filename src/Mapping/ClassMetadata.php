@@ -13,7 +13,6 @@ use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;

@@ -368,14 +368,14 @@ Example:
 
     <?php
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+    use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 
-    #[Document]
+    #[ODM\Document]
     class Client
     {
-        #[Field]
-        #[Encrypt(queryType: EncryptQuery::Equality)]
+        #[ODM\Field]
+        #[ODM\Encrypt(queryType: EncryptQuery::Equality)]
         public string $name;
     }
 
@@ -390,23 +390,23 @@ value in the parent document.
 
     <?php
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-    #[Encrypt]
-    #[EmbeddedDocument]
+    #[ODM\Encrypt]
+    #[ODM\EmbeddedDocument]
     class CreditCard
     {
-        #[Field]
+        #[ODM\Field]
         public string $number;
 
-        #[Field]
+        #[ODM\Field]
         public string $expiryDate;
     }
 
-    #[Document]
+    #[ODM\Document]
     class User
     {
-        #[EmbedOne(targetDocument: CreditCard::class)]
+        #[ODM\EmbedOne(targetDocument: CreditCard::class)]
         public CreditCard $creditCard;
     }
 
@@ -1476,15 +1476,12 @@ Example:
 .. code-block:: php
 
     <?php
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\VectorSearchIndex;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
     use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
     use Doctrine\ODM\MongoDB\Types\Type;
 
-    #[Document(collection: 'vector_embeddings')]
-    #[VectorSearchIndex(
+    #[ODM\Document(collection: 'vector_embeddings')]
+    #[ODM\VectorSearchIndex(
         fields: [
             [
                 'type' => 'vector',
@@ -1501,14 +1498,14 @@ Example:
     )]
     class VectorEmbedding
     {
-        #[Id]
+        #[ODM\Id]
         public ?string $id = null;
 
         /** @var list<float> */
-        #[Field(type: Type::COLLECTION)]
+        #[ODM\Field(type: Type::COLLECTION)]
         public array $plotEmbeddingVoyage3Large = [];
 
-        #[Field]
+        #[ODM\Field]
         public string $category;
     }
 

@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use function class_alias;
 
-abstract class AbstractIndex implements Annotation
+abstract class AbstractIndex
 {
     /** @var string[] */
     public $keys;

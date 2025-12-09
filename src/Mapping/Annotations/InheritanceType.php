@@ -7,15 +7,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_exists;
-use function trigger_deprecation;
-
-trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
-
-class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\InheritanceType::class);
-
-return;
-
 /**
  * Specifies which inheritance type to use for a document
  *
@@ -25,6 +16,6 @@ return;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class InheritanceType extends \Doctrine\ODM\MongoDB\Mapping\Attribute\InheritanceType
+final class InheritanceType extends \Doctrine\ODM\MongoDB\Mapping\Attribute\InheritanceType implements Annotation
 {
 }

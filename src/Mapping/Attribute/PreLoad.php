@@ -5,21 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Marks a method as a preLoad lifecycle callback
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PreLoad implements Annotation
+class PreLoad implements MappingAttribute
 {
 }
-
-// @phpstan-ignore class.notFound
-class_alias(PreLoad::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\PreLoad::class);

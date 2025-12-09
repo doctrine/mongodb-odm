@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Specify a field name to store a discriminator value
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class DiscriminatorField implements Annotation
+class DiscriminatorField implements MappingAttribute
 {
     /** @var string */
     public $value;
@@ -27,6 +22,3 @@ class DiscriminatorField implements Annotation
         $this->value = $value;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(DiscriminatorField::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\DiscriminatorField::class);

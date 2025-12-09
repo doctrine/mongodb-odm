@@ -36,7 +36,7 @@ return the same result because Voyage AI uses normalized vectors to length 1.
 
 .. code-block:: php
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
     use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
     use Doctrine\ODM\MongoDB\Types\Type;
     use Symfony\AI\Platform\Vector\Vector;

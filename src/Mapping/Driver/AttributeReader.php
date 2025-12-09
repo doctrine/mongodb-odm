@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\Attribute\Annotation;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -16,19 +16,19 @@ use function is_subclass_of;
 /** @internal */
 final class AttributeReader
 {
-    /** @return array<object> */
+    /** @return MappingAttribute[] */
     public function getClassAttributes(ReflectionClass $class): array
     {
         return $this->convertToAttributeInstances($class->getAttributes());
     }
 
-    /** @return array<object> */
+    /** @return MappingAttribute[] */
     public function getMethodAttributes(ReflectionMethod $method): array
     {
         return $this->convertToAttributeInstances($method->getAttributes());
     }
 
-    /** @return array<object> */
+    /** @return MappingAttribute[] */
     public function getPropertyAttributes(ReflectionProperty $property): array
     {
         return $this->convertToAttributeInstances($property->getAttributes());
@@ -37,7 +37,7 @@ final class AttributeReader
     /**
      * @param ReflectionAttribute<object>[] $attributes
      *
-     * @return Annotation[]
+     * @return MappingAttribute[]
      */
     private function convertToAttributeInstances(array $attributes): array
     {
@@ -45,13 +45,13 @@ final class AttributeReader
 
         foreach ($attributes as $attribute) {
             $attributeName = $attribute->getName();
-            // Make sure we only get Doctrine Annotations
-            if (! is_subclass_of($attributeName, Annotation::class)) {
+            // Make sure we only get MongoDB ODM attribute classes
+            if (! is_subclass_of($attributeName, MappingAttribute::class)) {
                 continue;
             }
 
             $instance = $attribute->newInstance();
-            assert($instance instanceof Annotation);
+            assert($instance instanceof MappingAttribute);
             $instances[] = $instance;
         }
 

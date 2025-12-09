@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
-
-use function class_alias;
 
 /**
  * Marks a document or superclass as a time series document
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class TimeSeries implements Annotation
+class TimeSeries implements MappingAttribute
 {
     public function __construct(
         public readonly string $timeField,
@@ -30,6 +25,3 @@ class TimeSeries implements Annotation
     ) {
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(TimeSeries::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\TimeSeries::class);

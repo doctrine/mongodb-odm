@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Identifies a class as a GridFS file that can be stored in the database
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class File extends AbstractDocument
+class File extends AbstractDocument implements MappingAttribute
 {
     /** @var string|null */
     public $db;
@@ -63,6 +58,3 @@ class File extends AbstractDocument
         $this->chunkSizeBytes  = $chunkSizeBytes;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(File::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\File::class);

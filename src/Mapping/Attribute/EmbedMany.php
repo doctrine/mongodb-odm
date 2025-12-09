@@ -5,21 +5,16 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-
-use function class_alias;
 
 /**
  * Embeds multiple documents
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class EmbedMany extends AbstractField
+class EmbedMany extends AbstractField implements MappingAttribute
 {
     /** @var bool */
     public $embedded = true;
@@ -66,6 +61,3 @@ class EmbedMany extends AbstractField
         $this->storeEmptyArray           = $storeEmptyArray;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(EmbedMany::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany::class);

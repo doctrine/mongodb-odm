@@ -7,15 +7,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_exists;
-use function trigger_deprecation;
-
-trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
-
-class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\UniqueIndex::class);
-
-return;
-
 /**
  * Specifies a unique index on a field
  *
@@ -25,6 +16,6 @@ return;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class UniqueIndex extends \Doctrine\ODM\MongoDB\Mapping\Attribute\UniqueIndex
+final class UniqueIndex extends \Doctrine\ODM\MongoDB\Mapping\Attribute\UniqueIndex implements Annotation
 {
 }

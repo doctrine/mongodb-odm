@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
-use Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;

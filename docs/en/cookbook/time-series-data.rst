@@ -47,7 +47,7 @@ First, we define the model for our data:
     <?php
 
     use DateTimeImmutable;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
     use MongoDB\BSON\ObjectId;
 
     #[ODM\Document]

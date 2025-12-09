@@ -41,28 +41,27 @@ Mapping documents as GridFS files
 
     namespace Documents;
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\File;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
     #[File(bucketName: 'image')]
     class Image
     {
-        #[Id]
+        #[ODM\Id]
         private ?string $id;
 
-        #[File\Filename]
+        #[ODM\File\Filename]
         private ?string $name;
 
-        #[File\UploadDate]
+        #[ODM\File\UploadDate]
         private \DateTimeInterface $uploadDate;
 
-        #[File\Length]
+        #[ODM\File\Length]
         private ?int $length;
 
-        #[File\ChunkSize]
+        #[ODM\File\ChunkSize]
         private ?int $chunkSize;
 
-        #[File\Metadata(targetDocument: ImageMetadata::class)]
+        #[ODM\File\Metadata(targetDocument: ImageMetadata::class)]
         private ImageMetadata $metadata;
 
         public function getId(): ?string
@@ -131,13 +130,12 @@ The ``ImageMetadata`` class must be an embedded document:
 
     namespace Documents;
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
-    #[EmbeddedDocument]
+    #[ODM\EmbeddedDocument]
     class ImageMetadata
     {
-        #[Field(type: 'string')]
+        #[ODM\Field(type: 'string')]
         private string $contentType;
 
         public function __construct(string $contentType)

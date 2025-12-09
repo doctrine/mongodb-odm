@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_alias;
-
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @final
- */
+/** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class ShardKey implements Annotation
+class ShardKey implements MappingAttribute
 {
     /** @var string[] */
     public $keys;
@@ -34,6 +27,3 @@ class ShardKey implements Annotation
         $this->numInitialChunks = $numInitialChunks;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(ShardKey::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\ShardKey::class);

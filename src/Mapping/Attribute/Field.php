@@ -6,19 +6,14 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
 use BackedEnum;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Specifies a generic field mapping
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Field extends AbstractField
+class Field extends AbstractField implements MappingAttribute
 {
     /** @var class-string<BackedEnum>|null */
     public $enumType;
@@ -41,6 +36,3 @@ class Field extends AbstractField
         $this->enumType = $enumType;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(Field::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\Field::class);

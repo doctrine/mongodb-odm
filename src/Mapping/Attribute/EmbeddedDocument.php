@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Identifies a class as a document that can be embedded but not stored by itself
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class EmbeddedDocument extends AbstractDocument
+class EmbeddedDocument extends AbstractDocument implements MappingAttribute
 {
     /** @var Index[] */
     public $indexes;
@@ -28,6 +23,3 @@ class EmbeddedDocument extends AbstractDocument
         $this->indexes = $indexes;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(EmbeddedDocument::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument::class);

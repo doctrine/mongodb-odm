@@ -113,7 +113,7 @@ Now map the same class to the Doctrine MongoDB ODM:
         namespace Documents\Blog;
 
         use Documents\Blog\Repository\ODM\BlogPostRepository;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
         #[ODM\Document(repositoryClass: BlogPostRepository::class)]
         class BlogPost

@@ -5,19 +5,13 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
-use function class_alias;
 
 /**
  * Specifies a one-to-one relationship to a different document
- *
- * @Annotation
- * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class ReferenceOne extends AbstractField
+class ReferenceOne extends AbstractField implements MappingAttribute
 {
     /** @var bool */
     public $reference = true;
@@ -106,6 +100,3 @@ class ReferenceOne extends AbstractField
         $this->skip                      = $skip;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(ReferenceOne::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne::class);

@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use function class_alias;
 
-abstract class AbstractField implements Annotation
+abstract class AbstractField
 {
     /** @var string|null */
     public $name;

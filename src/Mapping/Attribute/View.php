@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_alias;
-
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @final
- */
+/** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class View extends AbstractDocument
+class View extends AbstractDocument implements MappingAttribute
 {
     /** @var string|null */
     public $db;
@@ -41,6 +34,3 @@ class View extends AbstractDocument
         $this->repositoryClass = $repositoryClass;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(View::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\View::class);

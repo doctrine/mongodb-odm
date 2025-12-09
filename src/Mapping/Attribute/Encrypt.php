@@ -6,24 +6,20 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
 use DateTimeInterface;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
-
-use function class_alias;
 
 /**
  * Defines an encrypted field mapping.
  *
  * @see https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/#configure-encrypted-fields-for-optimal-search-and-storage
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-class Encrypt implements Annotation
+class Encrypt implements MappingAttribute
 {
     public int|float|Int64|Decimal128|UTCDateTime|null $min;
     public int|float|Int64|Decimal128|UTCDateTime|null $max;
@@ -48,6 +44,3 @@ class Encrypt implements Annotation
         $this->max = $max instanceof DateTimeInterface ? new UTCDateTime($max) : $max;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(Encrypt::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt::class);

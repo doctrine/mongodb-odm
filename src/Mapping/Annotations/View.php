@@ -7,15 +7,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_exists;
-use function trigger_deprecation;
-
-trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
-
-class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\View::class);
-
-return;
-
 /**
  * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\View instead
  *
@@ -23,6 +14,6 @@ return;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class View extends \Doctrine\ODM\MongoDB\Mapping\Attribute\View
+final class View extends \Doctrine\ODM\MongoDB\Mapping\Attribute\View implements Annotation
 {
 }

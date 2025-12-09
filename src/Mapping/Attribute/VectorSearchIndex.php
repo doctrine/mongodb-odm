@@ -5,22 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
-use function class_alias;
 
 /**
  * Defines a vector search index on a class.
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @phpstan-import-type VectorSearchIndexField from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class VectorSearchIndex implements Annotation
+class VectorSearchIndex implements MappingAttribute
 {
     /** @param list<VectorSearchIndexField> $fields */
     public function __construct(
@@ -29,6 +24,3 @@ class VectorSearchIndex implements Annotation
     ) {
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(VectorSearchIndex::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\VectorSearchIndex::class);

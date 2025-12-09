@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Specifies the change tracking policy for a document
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class ChangeTrackingPolicy implements Annotation
+class ChangeTrackingPolicy implements MappingAttribute
 {
     /** @var string */
     public $value;
@@ -27,6 +22,3 @@ class ChangeTrackingPolicy implements Annotation
         $this->value = $value;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(ChangeTrackingPolicy::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\ChangeTrackingPolicy::class);

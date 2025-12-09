@@ -6,18 +6,12 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
 
-use function class_alias;
-
 /**
  * Specifies a field to use for pessimistic locking
  *
- * @Annotation
  * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Lock implements Annotation
+class Lock implements MappingAttribute
 {
 }
-
-// @phpstan-ignore class.notFound
-class_alias(Lock::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\Lock::class);

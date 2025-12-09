@@ -86,7 +86,7 @@ You can provide your mapping information in Attribute or XML:
         use DateTimeImmutable;
         use Doctrine\Common\Collections\ArrayCollection;
         use Doctrine\Common\Collections\Collection;
-        use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
         #[ODM\Document]
         class User

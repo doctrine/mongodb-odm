@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\Account;
 use Documents\Address;

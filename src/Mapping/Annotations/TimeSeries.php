@@ -7,17 +7,8 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_exists;
-use function trigger_deprecation;
-
-trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
-
-class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries::class);
-
-return;
-
 /**
- * Marks a document or superfinal class as a time series document
+ * Marks a document or superclass as a time series document
  *
  * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries instead
  *
@@ -25,6 +16,6 @@ return;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class TimeSeries extends \Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries
+final class TimeSeries extends \Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries implements Annotation
 {
 }

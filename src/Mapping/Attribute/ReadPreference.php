@@ -5,17 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
-use function class_alias;
-
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @final
- */
+/** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class ReadPreference implements Annotation
+class ReadPreference implements MappingAttribute
 {
     /** @var string */
     public $value;
@@ -30,6 +23,3 @@ class ReadPreference implements Annotation
         $this->tags  = $tags;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(ReadPreference::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\ReadPreference::class);

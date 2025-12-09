@@ -8,7 +8,8 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
@@ -711,9 +712,11 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     {
         $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocumentWithGranularity::class);
 
+        self::assertInstanceOf(TimeSeries::class, $metadata->timeSeriesOptions);
+        // Compare using arrays as the object can be an instance of the Attribute or the child Annotation class
         self::assertEquals(
-            new ODM\TimeSeries('time', 'metadata', Granularity::Seconds, 86400),
-            $metadata->timeSeriesOptions,
+            (array) new TimeSeries('time', 'metadata', Granularity::Seconds, 86400),
+            (array) $metadata->timeSeriesOptions,
         );
     }
 
@@ -721,9 +724,10 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
     {
         $metadata = $this->dm->getClassMetadata(AbstractMappingDriverTimeSeriesDocumentWithBucket::class);
 
+        self::assertInstanceOf(TimeSeries::class, $metadata->timeSeriesOptions);
         self::assertEquals(
-            new ODM\TimeSeries('time', 'metadata', expireAfterSeconds: 86400, bucketMaxSpanSeconds: 10, bucketRoundingSeconds: 15),
-            $metadata->timeSeriesOptions,
+            (array) new TimeSeries('time', 'metadata', expireAfterSeconds: 86400, bucketMaxSpanSeconds: 10, bucketRoundingSeconds: 15),
+            (array) $metadata->timeSeriesOptions,
         );
     }
 }

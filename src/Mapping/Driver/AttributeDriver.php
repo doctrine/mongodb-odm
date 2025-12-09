@@ -6,10 +6,8 @@ namespace Doctrine\ODM\MongoDB\Mapping\Driver;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ODM\MongoDB\Events;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Indexes;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractIndex;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\ShardKey;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata as PersistenceClassMetadata;
@@ -22,6 +20,8 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
+use function array_any;
+use function array_find;
 use function array_merge;
 use function array_replace;
 use function assert;
@@ -88,8 +88,6 @@ class AttributeDriver implements MappingDriver
 
         $documentAttribute = null;
         foreach ($classAttributes as $attribute) {
-            $classAttributes[$attribute::class] = $attribute;
-
             if ($attribute instanceof ODM\AbstractDocument) {
                 if ($documentAttribute !== null) {
                     throw MappingException::classCanOnlyBeMappedByOneAbstractDocument($className, $documentAttribute, $attribute);
@@ -111,7 +109,7 @@ class AttributeDriver implements MappingDriver
                 $this->addVectorSearchIndex($metadata, $attribute);
             }
 
-            if ($attribute instanceof ODM\Indexes) {
+            if ($attribute instanceof Indexes) {
                 trigger_deprecation(
                     'doctrine/mongodb-odm',
                     '2.2',
@@ -255,7 +253,7 @@ class AttributeDriver implements MappingDriver
                     $indexes[] = $propertyAttribute;
                 }
 
-                if ($propertyAttribute instanceof ODM\Indexes) {
+                if ($propertyAttribute instanceof Indexes) {
                     trigger_deprecation(
                         'doctrine/mongodb-odm',
                         '2.2',
@@ -296,17 +294,18 @@ class AttributeDriver implements MappingDriver
         }
 
         // Set shard key after all fields to ensure we mapped all its keys
-        if (isset($classAttributes[ShardKey::class])) {
-            assert($classAttributes[ShardKey::class] instanceof ShardKey);
-            $this->setShardKey($metadata, $classAttributes[ShardKey::class]);
+        $attribute = array_find($classAttributes, static fn ($attr) => $attr instanceof ODM\ShardKey);
+        if ($attribute) {
+            $this->setShardKey($metadata, $attribute);
         }
 
         // Mark as time series only after mapping all fields
-        if (isset($classAttributes[TimeSeries::class])) {
-            assert($classAttributes[TimeSeries::class] instanceof TimeSeries);
-            $metadata->markAsTimeSeries($classAttributes[TimeSeries::class]);
+        $attribute = array_find($classAttributes, static fn ($attr) => $attr instanceof ODM\TimeSeries);
+        if ($attribute) {
+            $metadata->markAsTimeSeries($attribute);
         }
 
+        $hasLifecycleCallbacks = array_any($classAttributes, static fn ($attr) => $attr instanceof ODM\HasLifecycleCallbacks);
         foreach ($reflClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             /* Filter for the declaring class only. Callbacks from parent
              * classes will already be registered.
@@ -320,7 +319,7 @@ class AttributeDriver implements MappingDriver
                     $metadata->registerAlsoLoadMethod($method->getName(), $methodAttribute->value);
                 }
 
-                if (! isset($classAttributes[ODM\HasLifecycleCallbacks::class])) {
+                if (! $hasLifecycleCallbacks) {
                     continue;
                 }
 
@@ -348,7 +347,7 @@ class AttributeDriver implements MappingDriver
     }
 
     /** @param array<string, int|string> $keys */
-    private function addIndex(ClassMetadata $class, AbstractIndex $index, array $keys = []): void
+    private function addIndex(ClassMetadata $class, ODM\AbstractIndex $index, array $keys = []): void
     {
         $keys    = array_merge($keys, $index->keys);
         $options = [];

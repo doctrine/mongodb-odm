@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
-use function class_alias;
 
 /**
  * Embeds a single document
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class EmbedOne extends AbstractField
+class EmbedOne extends AbstractField implements MappingAttribute
 {
     /** @var bool */
     public $embedded = true;
@@ -55,6 +50,3 @@ class EmbedOne extends AbstractField
         $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(EmbedOne::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne::class);

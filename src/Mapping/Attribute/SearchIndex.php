@@ -5,23 +5,18 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
-use function class_alias;
 
 /**
  * Defines a search index on a class.
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-search/index-definitions/
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @phpstan-import-type SearchIndexStoredSource from ClassMetadata
  * @phpstan-import-type SearchIndexSynonym from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class SearchIndex implements Annotation
+class SearchIndex implements MappingAttribute
 {
     /**
      * @param array<string, array>|null     $fields
@@ -41,6 +36,3 @@ class SearchIndex implements Annotation
     ) {
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(SearchIndex::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\SearchIndex::class);

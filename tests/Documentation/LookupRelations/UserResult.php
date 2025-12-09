@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Documentation\LookupRelations;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedMany;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
-use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 
 #[Document]
 class UserResult

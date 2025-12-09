@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Specifies a parent class that other documents may extend to inherit mapping
  * information
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class MappedSuperclass extends AbstractDocument
+class MappedSuperclass extends AbstractDocument implements MappingAttribute
 {
     /** @var string|null */
     public $repositoryClass;
@@ -32,6 +27,3 @@ class MappedSuperclass extends AbstractDocument
         $this->collection      = $collection;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(MappedSuperclass::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\MappedSuperclass::class);

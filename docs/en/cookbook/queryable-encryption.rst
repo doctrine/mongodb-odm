@@ -47,9 +47,8 @@ fields that require encryption.
 
     namespace Documents;
 
-    use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
-    use Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery;
+    use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+    use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 
     #[ODM\Document]
     class Patient
@@ -69,7 +68,7 @@ fields that require encryption.
          * This allows us to find a patient by their exact SSN.
          */
         #[ODM\Field(type: 'string')]
-        #[Encrypt(queryType: EncryptQuery::Equality)]
+        #[ODM\Encrypt(queryType: EncryptQuery::Equality)]
         public string $ssn;
 
         /**
@@ -77,7 +76,7 @@ fields that require encryption.
          * By not specifying a queryType, we make it non-queryable.
          */
         #[ODM\EmbedOne(targetDocument: Billing::class)]
-        #[Encrypt]
+        #[ODM\Encrypt]
         public Billing $billing;
 
         /**

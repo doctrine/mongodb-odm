@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
-
-use function class_alias;
 
 /**
  * Specifies a unique index on a field
  *
- * @Annotation
- * @NamedArgumentConstructor
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-class UniqueIndex extends AbstractIndex
+class UniqueIndex extends AbstractIndex implements MappingAttribute
 {
     public function __construct(
         array $keys = [],
@@ -42,6 +37,3 @@ class UniqueIndex extends AbstractIndex
         );
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(UniqueIndex::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\UniqueIndex::class);

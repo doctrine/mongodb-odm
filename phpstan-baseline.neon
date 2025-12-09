@@ -475,7 +475,7 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Parameter \#2 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:addFieldMapping\(\) expects array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}, array\<string, array\<''contention''\|''max''\|''min''\|''precision''\|''queryType''\|''sparsity''\|''trimFactor''\|int\<0, max\>, Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\EncryptQuery\|float\|int\|MongoDB\\BSON\\Decimal128\|MongoDB\\BSON\\Int64\|MongoDB\\BSON\\UTCDateTime\|string\|null\>\|bool\|string\> given\.$#'
+			message: '#^Parameter \#2 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:addFieldMapping\(\) expects array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}, array\<string, array\<''contention''\|''max''\|''min''\|''precision''\|''queryType''\|''sparsity''\|''trimFactor''\|int\<0, max\>, Doctrine\\ODM\\MongoDB\\Mapping\\EncryptQuery\|float\|int\|MongoDB\\BSON\\Decimal128\|MongoDB\\BSON\\Int64\|MongoDB\\BSON\\UTCDateTime\|string\|null\>\|bool\|string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php
@@ -1069,13 +1069,13 @@ parameters:
 			path: tests/Tests/Functional/QueryableEncryptionTest.php
 
 		-
-			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
+			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php
 
 		-
-			message: '#^Parameter \$targetDocument of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\ReferenceOne constructor expects class\-string\|null, string given\.$#'
+			message: '#^Parameter \$targetDocument of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects class\-string\|null, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php

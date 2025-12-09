@@ -3,10 +3,9 @@
 ## Attribute namespaces
 
 Doctrine annotations are already deprecated in favor of PHP attributes.
-As of MongoDB ODM 2.16, the attribute namespaces have been changed from
+As of MongoDB ODM 2.16, the namespace of attribute classes has been changed from
 `Doctrine\ODM\MongoDB\Mapping\Annotations` to `Doctrine\ODM\MongoDB\Mapping\Attribute`.
-The old annotation namespaces continue to work for the time being, but they are
-deprecated and will be removed in 3.0.
+The old classes continue to work, but they are deprecated and will be removed in 3.0.
 
 ```diff
 - use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -22,6 +21,9 @@ deprecated and will be removed in 3.0.
       public string $name;
   }
 ```
+
+The enum `Doctrine\ODM\MongoDB\Mapping\Annotations\EncryptQuery` has been moved to
+`Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery`.
 
 ## Package `doctrine/cache` no longer required
 

@@ -54,6 +54,10 @@ parameters:
       - message: '#MongoDB\\BSON\\VectorType#'
       - message: '#MongoDB\\BSON\\Binary\:\:(TYPE_VECTOR|getVectorType|toArray|fromVector)#'
 
+      - message: '#^Class Doctrine\\ODM\\MongoDB\\Mapping\\([a-zA-Z0-9\\]+) extends @final class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\([a-zA-Z0-9\\]+)\.$#'
+        identifier: class.extendsFinalByPhpDoc
+        path: src/Mapping/Annotations/
+
   # To be removed when reaching phpstan level 6
   checkMissingVarTagTypehint: true
   checkMissingTypehints: true

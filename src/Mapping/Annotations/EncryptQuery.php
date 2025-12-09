@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
+use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
+
 use function class_exists;
 use function trigger_deprecation;
 
-trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
+trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Enum %s\\EncryptQuery is deprecated, use %s instead.', __NAMESPACE__, EncryptQuery::class);
 
-class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery::class);
-
-return;
-
-/** @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery instead */
-final class EncryptQuery extends \Doctrine\ODM\MongoDB\Mapping\Attribute\EncryptQuery
-{
-}
+class_exists(EncryptQuery::class);

@@ -5,18 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
-use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-use function class_alias;
-
-/**
- * @Annotation
- * @NamedArgumentConstructor
- * @Target({"CLASS"})
- */
+/** @Target({"CLASS"}) */
 #[Attribute(Attribute::TARGET_CLASS)]
-class Validation implements Annotation
+class Validation implements MappingAttribute
 {
     /** @var string|null */
     public $validator;
@@ -47,6 +40,3 @@ class Validation implements Annotation
         $this->level     = $level;
     }
 }
-
-// @phpstan-ignore class.notFound
-class_alias(Validation::class, \Doctrine\ODM\MongoDB\Mapping\Annotations\Validation::class);
