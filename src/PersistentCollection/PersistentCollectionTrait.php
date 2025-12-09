@@ -509,6 +509,23 @@ trait PersistentCollectionTrait
      * Called by PHP when this collection is serialized. Ensures that the
      * internal state of the collection can be reproduced after serialization
      *
+     * @return array<string, mixed>
+     */
+    public function __serialize(): array
+    {
+        return [
+            'coll' => $this->coll,
+            'initialized' => $this->initialized,
+            'mongoData' => $this->mongoData,
+            'snapshot' => $this->snapshot,
+            'isDirty' => $this->isDirty,
+            'hints' => $this->hints,
+        ];
+    }
+
+    /**
+     * @deprecated Implement and use __serialize() instead.
+     *
      * @return string[]
      */
     public function __sleep()

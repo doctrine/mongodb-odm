@@ -34,6 +34,7 @@ use MongoDB\BSON\UTCDateTime;
 use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionEnum;
+use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionProperty;
 use Symfony\Component\Uid\UuidV1;
@@ -2645,7 +2646,31 @@ use const PHP_VERSION_ID;
      *      - reflFields (ReflectionProperty array)
      *      - propertyAccessors (ReflectionProperty array)
      *
-     * @return array The names of all the fields that should be serialized.
+     * @return array<string, mixed> The serialized data.
+     */
+    public function __serialize(): array
+    {
+        if ((new ReflectionMethod($this, '__sleep'))->getDeclaringClass() !== self::class) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.16',
+                'The method __sleep() is deprecated. Implement and use %s() instead.',
+                __METHOD__,
+            );
+        }
+
+        $data = [];
+        foreach ($this->__sleep() as $field) {
+            $data[$field] = $this->$field;
+        }
+
+        return $data;
+    }
+
+    /**
+     * @deprecated
+     *
+     * @return list<string> The names of all the fields that should be serialized.
      */
     public function __sleep()
     {
@@ -2700,7 +2725,7 @@ use const PHP_VERSION_ID;
             $serialized[] = 'isQueryResultDocument';
         }
 
-        if ($this->isView()) {
+        if ($this->isView) {
             $serialized[] = 'isView';
             $serialized[] = 'rootClass';
         }
@@ -2745,8 +2770,20 @@ use const PHP_VERSION_ID;
     }
 
     /**
-     * Restores some state that cannot be serialized/unserialized.
+     * Restores the serialized values and some state that cannot be serialized/unserialized.
+     *
+     * @param array<string, mixed> $data The serialized data.
      */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $field => $value) {
+            $this->$field = $value;
+        }
+
+        $this->__wakeup();
+    }
+
+    /** @deprecated */
     public function __wakeup(): void
     {
         // Restore ReflectionClass and properties
