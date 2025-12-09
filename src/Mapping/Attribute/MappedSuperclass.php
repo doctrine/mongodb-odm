@@ -15,9 +15,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class MappedSuperclass extends AbstractDocument
+class MappedSuperclass extends AbstractDocument
 {
     /** @var string|null */
     public $repositoryClass;

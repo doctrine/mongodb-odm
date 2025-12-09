@@ -16,9 +16,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ReferenceMany extends AbstractField
+class ReferenceMany extends AbstractField
 {
     /** @var bool */
     public $reference = true;

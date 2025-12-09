@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class DiscriminatorMap implements Annotation
+class DiscriminatorMap implements Annotation
 {
     /** @var array<class-string> */
     public $value;

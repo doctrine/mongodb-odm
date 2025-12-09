@@ -13,9 +13,10 @@ use function class_alias;
 /**
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Filename extends AbstractField
+class Filename extends AbstractField
 {
     public function __construct()
     {

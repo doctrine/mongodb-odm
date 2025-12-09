@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD)]
-final class AlsoLoad implements Annotation
+class AlsoLoad implements Annotation
 {
     /** @param string|string[] $value */
     public function __construct(public $value, public ?string $name = null)

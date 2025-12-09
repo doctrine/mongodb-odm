@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Id extends AbstractField
+class Id extends AbstractField
 {
     /** @var bool */
     public $id = true;

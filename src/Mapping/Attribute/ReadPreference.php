@@ -12,9 +12,10 @@ use function class_alias;
 /**
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class ReadPreference implements Annotation
+class ReadPreference implements Annotation
 {
     /** @var string */
     public $value;

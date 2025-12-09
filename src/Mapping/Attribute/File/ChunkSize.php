@@ -13,9 +13,10 @@ use function class_alias;
 /**
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ChunkSize extends AbstractField
+class ChunkSize extends AbstractField
 {
     public function __construct()
     {

@@ -12,9 +12,10 @@ use function class_alias;
 /**
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class ShardKey implements Annotation
+class ShardKey implements Annotation
 {
     /** @var string[] */
     public $keys;

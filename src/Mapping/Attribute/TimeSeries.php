@@ -15,9 +15,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class TimeSeries implements Annotation
+class TimeSeries implements Annotation
 {
     public function __construct(
         public readonly string $timeField,

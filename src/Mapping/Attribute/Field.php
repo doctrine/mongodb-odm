@@ -15,9 +15,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Field extends AbstractField
+class Field extends AbstractField
 {
     /** @var class-string<BackedEnum>|null */
     public $enumType;

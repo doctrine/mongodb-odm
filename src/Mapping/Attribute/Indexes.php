@@ -15,9 +15,10 @@ use function class_alias;
  * @deprecated class was deprecated in doctrine/mongodb-odm 2.2 and will be removed in 3.0. Specify all Index and UniqueIndex annotations on a class level.
  *
  * @Annotation
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Indexes extends BaseAnnotation implements Annotation
+class Indexes extends BaseAnnotation implements Annotation
 {
     /** @var AbstractIndex[]|AbstractIndex */
     public $value = [];

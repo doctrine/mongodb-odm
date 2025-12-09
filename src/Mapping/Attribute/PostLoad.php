@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PostLoad implements Annotation
+class PostLoad implements Annotation
 {
 }
 

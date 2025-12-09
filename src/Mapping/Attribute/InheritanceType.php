@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class InheritanceType implements Annotation
+class InheritanceType implements Annotation
 {
     /** @var string */
     public $value;

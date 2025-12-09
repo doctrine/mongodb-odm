@@ -12,9 +12,10 @@ use function class_alias;
  * Specifies a field to use for pessimistic locking
  *
  * @Annotation
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Lock implements Annotation
+class Lock implements Annotation
 {
 }
 

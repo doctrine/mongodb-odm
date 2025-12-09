@@ -12,9 +12,10 @@ use function class_alias;
 /**
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class View extends AbstractDocument
+class View extends AbstractDocument
 {
     /** @var string|null */
     public $db;

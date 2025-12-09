@@ -17,7 +17,7 @@ use function class_alias;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ReferenceOne extends AbstractField
+class ReferenceOne extends AbstractField
 {
     /** @var bool */
     public $reference = true;

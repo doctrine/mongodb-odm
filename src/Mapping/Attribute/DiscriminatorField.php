@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorField implements Annotation
+class DiscriminatorField implements Annotation
 {
     /** @var string */
     public $value;

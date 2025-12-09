@@ -4,11 +4,27 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedOne;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 use function class_exists;
 use function trigger_deprecation;
 
 trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
 
-class_exists(EmbedOne::class);
+class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedOne::class);
+
+return;
+
+/**
+ * Embeds a single document
+ *
+ * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedOne instead
+ *
+ * @Annotation
+ * @NamedArgumentConstructor
+ */
+#[Attribute(Attribute::TARGET_PROPERTY)]
+final class EmbedOne extends \Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedOne
+{
+}

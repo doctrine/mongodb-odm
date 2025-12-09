@@ -4,11 +4,27 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
-use Doctrine\ODM\MongoDB\Mapping\Attribute\ChangeTrackingPolicy;
+use Attribute;
+use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 
 use function class_exists;
 use function trigger_deprecation;
 
 trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Namespace "Doctrine\ODM\MongoDB\Mapping\Annotations" is deprecated, use "Doctrine\ODM\MongoDB\Mapping\Attribute" instead.');
 
-class_exists(ChangeTrackingPolicy::class);
+class_exists(\Doctrine\ODM\MongoDB\Mapping\Attribute\ChangeTrackingPolicy::class);
+
+return;
+
+/**
+ * Specifies the change tracking policy for a document
+ *
+ * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\ChangeTrackingPolicy instead
+ *
+ * @Annotation
+ * @NamedArgumentConstructor
+ */
+#[Attribute(Attribute::TARGET_CLASS)]
+final class ChangeTrackingPolicy extends \Doctrine\ODM\MongoDB\Mapping\Attribute\ChangeTrackingPolicy
+{
+}

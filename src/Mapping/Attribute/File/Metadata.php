@@ -14,9 +14,10 @@ use function class_alias;
 /**
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Metadata extends AbstractField
+class Metadata extends AbstractField
 {
     /** @var bool */
     public $embedded = true;

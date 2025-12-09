@@ -13,9 +13,10 @@ use function class_alias;
  * callback annotations on public methods.
  *
  * @Annotation
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class HasLifecycleCallbacks implements Annotation
+class HasLifecycleCallbacks implements Annotation
 {
 }
 

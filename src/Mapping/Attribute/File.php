@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class File extends AbstractDocument
+class File extends AbstractDocument
 {
     /** @var string|null */
     public $db;

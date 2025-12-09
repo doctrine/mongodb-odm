@@ -14,9 +14,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class UniqueIndex extends AbstractIndex
+class UniqueIndex extends AbstractIndex
 {
     public function __construct(
         array $keys = [],

@@ -20,9 +20,10 @@ use function class_alias;
  *
  * @Annotation
  * @NamedArgumentConstructor
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class Encrypt implements Annotation
+class Encrypt implements Annotation
 {
     public int|float|Int64|Decimal128|UTCDateTime|null $min;
     public int|float|Int64|Decimal128|UTCDateTime|null $max;
