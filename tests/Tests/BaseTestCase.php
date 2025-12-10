@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
-use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -59,7 +59,7 @@ abstract class BaseTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        (new ReflectionProperty(Type::class, 'registry'))->setValue(null, null);
+        (new ReflectionProperty(TypeRegistry::class, 'sharedInstance'))->setValue(null, null);
 
         if (! $this->dm) {
             return;

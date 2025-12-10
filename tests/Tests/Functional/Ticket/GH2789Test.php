@@ -9,21 +9,12 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use MongoDB\BSON\Binary;
-use PHPUnit\Framework\Attributes\After;
-use ReflectionProperty;
 
 use function assert;
 use function is_int;
 
 class GH2789Test extends BaseTestCase
 {
-    #[After]
-    public function restoreTypeMap(): void
-    {
-        $r = new ReflectionProperty(Type::class, 'registry');
-        $r->setValue(null, null);
-    }
-
     public function testVersionWithCustomType(): void
     {
         $this->dm->getTypes()->register(GH2789CustomType::class, GH2789CustomType::class);

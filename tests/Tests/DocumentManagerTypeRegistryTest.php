@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
-use LogicException;
 use ReflectionProperty;
 
 /**
@@ -21,7 +19,7 @@ class DocumentManagerTypeRegistryTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->prop = new ReflectionProperty(Type::class, 'registry');
+        $this->prop = new ReflectionProperty(TypeRegistry::class, 'sharedInstance');
         $this->prop->setValue(null, null);
     }
 
@@ -49,7 +47,7 @@ class DocumentManagerTypeRegistryTest extends BaseTestCase
         $dm       = DocumentManager::create(null, $this->dm->getConfiguration(), null, $registry);
 
         $this->assertSame($registry, $dm->getTypes());
-        $this->assertSame($registry, $this->prop->getValue());
+        $this->assertNull($this->prop->getValue());
     }
 
     public function testInitTypeRegistryWhenBothAreTheSame(): void
@@ -70,10 +68,9 @@ class DocumentManagerTypeRegistryTest extends BaseTestCase
 
         $this->prop->setValue(null, $globalRegistry);
 
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('Type registry is already set and cannot be modified. A single TypeRegistry instance is allowed, this will change in MongoDB ODM 3.0.');
-
-        DocumentManager::create(null, $this->dm->getConfiguration(), null, $instanceRegistry);
+        $dm = DocumentManager::create(null, $this->dm->getConfiguration(), null, $instanceRegistry);
+        $this->assertSame($instanceRegistry, $dm->getTypes());
+        $this->assertSame($globalRegistry, $this->prop->getValue());
     }
 
     public function testUsingMultipleDocumentManagersGetTheSameTypeRegistryByDefault(): void

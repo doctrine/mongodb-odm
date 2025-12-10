@@ -54,6 +54,8 @@ class TypeRegistry
     /** @var array<string, Type> Cache of instantiated Type objects */
     private array $typeObjects = [];
 
+    private static ?TypeRegistry $sharedInstance = null;
+
     /**
      * Register a new type in the type map.
      *
@@ -157,5 +159,11 @@ class TypeRegistry
     public function getMap(): array
     {
         return $this->typesMap;
+    }
+
+    /** @internal Do not use this method. */
+    public static function getSharedInstance(): TypeRegistry
+    {
+        return self::$sharedInstance ??= new self();
     }
 }

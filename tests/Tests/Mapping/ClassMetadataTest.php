@@ -1215,7 +1215,7 @@ class ClassMetadataTest extends BaseTestCase
             $cm->mapField(['name' => 'dateTimeImmutable']);
         }, $errors);
 
-        self::assertSame(['Since doctrine/mongodb-odm 2.16: Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via ClassMetadata::setTypeRegistry().'], $errors);
+        self::assertSame(['Since doctrine/mongodb-odm 2.16: Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via ClassMetadata::setTypeRegistry($dm->getTypes()).'], $errors);
         self::assertSame('date_immutable', $cm->getFieldMapping('dateTimeImmutable')['type']);
     }
 }

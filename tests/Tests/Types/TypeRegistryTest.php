@@ -103,4 +103,9 @@ class TypeRegistryTest extends BaseTestCase
         };
         self::assertSame($object, $registry->convertToDatabaseValue($object));
     }
+
+    public function testSharedInstance(): void
+    {
+        self::assertSame(TypeRegistry::getSharedInstance(), TypeRegistry::getSharedInstance());
+    }
 }
