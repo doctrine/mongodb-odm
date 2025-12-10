@@ -59,13 +59,18 @@ class TypeRegistry
      *
      * The name of the type can be a PHP class name used for automatic type detection
      *
-     * @param non-empty-string   $name
-     * @param class-string<Type> $class
+     * @param non-empty-string        $name
+     * @param class-string<Type>|Type $type
      */
-    public function register(string $name, string $class): void
+    public function register(string $name, string|Type $type): void
     {
-        $this->typesMap[$name] = $class;
-        unset($this->typeObjects[$name]);
+        if ($type instanceof Type) {
+            $this->typesMap[$name]    = $type::class;
+            $this->typeObjects[$name] = $type;
+        } else {
+            $this->typesMap[$name] = $type;
+            unset($this->typeObjects[$name]);
+        }
     }
 
     /**

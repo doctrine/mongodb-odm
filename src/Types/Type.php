@@ -55,11 +55,6 @@ abstract class Type
 
     private static ?TypeRegistry $registry = null;
 
-    /** Prevent instantiation and force use of the factory method. */
-    final private function __construct()
-    {
-    }
-
     /**
      * Converts a value from its PHP representation to its database representation
      * of this type.

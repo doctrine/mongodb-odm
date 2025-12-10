@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Types\FloatType;
 use Doctrine\ODM\MongoDB\Types\IntType;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\RawType;
@@ -73,6 +74,21 @@ class TypeRegistryTest extends BaseTestCase
 
         $registry->register('my_custom_type', RawType::class);
         self::assertInstanceOf(RawType::class, $registry->get('my_custom_type'));
+    }
+
+    public function testRegisterTypeInstance(): void
+    {
+        $registry = new TypeRegistry();
+        self::assertFalse($registry->has('my_custom_type'));
+
+        $typeInstance = new IntType();
+        $registry->register('my_custom_type', $typeInstance);
+        self::assertTrue($registry->has('my_custom_type'));
+        self::assertSame($typeInstance, $registry->get('my_custom_type'));
+
+        // Replace it with a type by class name unsets the instance
+        $registry->register('my_custom_type', FloatType::class);
+        self::assertInstanceOf(FloatType::class, $registry->get('my_custom_type'));
     }
 
     public function testConvertToDatabaseValue(): void

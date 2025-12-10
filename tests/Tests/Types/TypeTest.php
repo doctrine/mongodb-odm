@@ -68,36 +68,34 @@ class TypeTest extends BaseTestCase
         self::assertSameTypeAndValue($expectedValue, $return);
     }
 
-    public static function provideTypes(): array
+    public static function provideTypes(): Generator
     {
-        return [
-            'id' => [Type::ID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')],
-            'intId' => [Type::INTID, 1],
-            'customId' => [Type::CUSTOMID, (object) ['foo' => 'bar']],
-            'bool' => [Type::BOOL, true],
-            'boolean' => [Type::BOOLEAN, false],
-            'int' => [Type::INT, 69],
-            'integer' => [Type::INTEGER, 42],
-            'int64' => [Type::INT64, 100, new Int64(100)],
-            'float' => [Type::FLOAT, 3.14],
-            'string' => [Type::STRING, 'ohai'],
-            'minKey' => [Type::KEY, 0, new MinKey()],
-            'maxKey' => [Type::KEY, 1, new MaxKey()],
-            'timestamp' => [Type::TIMESTAMP, $t = time(), new Timestamp(0, $t)],
-            'binData' => [Type::BINDATA, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_GENERIC)],
-            'binDataFunc' => [Type::BINDATAFUNC, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_FUNCTION)],
-            'binDataByteArray' => [Type::BINDATABYTEARRAY, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_OLD_BINARY)],
-            'binDataUuid' => [Type::BINDATAUUID, 'testtesttesttest', new Binary('testtesttesttest', Binary::TYPE_OLD_UUID)],
-            'binDataUuidRFC4122' => [Type::BINDATAUUIDRFC4122, str_repeat('a', 16), new Binary(str_repeat('a', 16), Binary::TYPE_UUID)],
-            'binDataMD5' => [Type::BINDATAMD5, md5('ODM'), new Binary(md5('ODM'), Binary::TYPE_MD5)],
-            'binDataCustom' => [Type::BINDATACUSTOM, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_USER_DEFINED)],
-            'hash' => [Type::HASH, ['foo' => 'bar'], (object) ['foo' => 'bar']],
-            'collection' => [Type::COLLECTION, ['foo', 'bar']],
-            'objectId' => [Type::OBJECTID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')],
-            'raw' => [Type::RAW, (object) ['foo' => 'bar']],
-            'decimal128' => [Type::DECIMAL128, '4.20', new Decimal128('4.20')],
-            'uuid' => [Type::UUID, new UuidV4('550e8400-e29b-41d4-a716-446655440000'), new Binary(hex2bin('550e8400e29b41d4a716446655440000'), Binary::TYPE_UUID)],
-        ];
+        yield 'id' => [Type::ID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')];
+        yield 'intId' => [Type::INTID, 1];
+        yield 'customId' => [Type::CUSTOMID, (object) ['foo' => 'bar']];
+        yield 'bool' => [Type::BOOL, true];
+        yield 'boolean' => [Type::BOOLEAN, false];
+        yield 'int' => [Type::INT, 69];
+        yield 'integer' => [Type::INTEGER, 42];
+        yield 'int64' => [Type::INT64, 100, new Int64(100)];
+        yield 'float' => [Type::FLOAT, 3.14];
+        yield 'string' => [Type::STRING, 'ohai'];
+        yield 'minKey' => [Type::KEY, 0, new MinKey()];
+        yield 'maxKey' => [Type::KEY, 1, new MaxKey()];
+        yield 'timestamp' => [Type::TIMESTAMP, $t = time(), new Timestamp(0, $t)];
+        yield 'binData' => [Type::BINDATA, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_GENERIC)];
+        yield 'binDataFunc' => [Type::BINDATAFUNC, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_FUNCTION)];
+        yield 'binDataByteArray' => [Type::BINDATABYTEARRAY, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_OLD_BINARY)];
+        yield 'binDataUuid' => [Type::BINDATAUUID, 'testtesttesttest', new Binary('testtesttesttest', Binary::TYPE_OLD_UUID)];
+        yield 'binDataUuidRFC4122' => [Type::BINDATAUUIDRFC4122, str_repeat('a', 16), new Binary(str_repeat('a', 16), Binary::TYPE_UUID)];
+        yield 'binDataMD5' => [Type::BINDATAMD5, md5('ODM'), new Binary(md5('ODM'), Binary::TYPE_MD5)];
+        yield 'binDataCustom' => [Type::BINDATACUSTOM, 'foobarbaz', new Binary('foobarbaz', Binary::TYPE_USER_DEFINED)];
+        yield 'hash' => [Type::HASH, ['foo' => 'bar'], (object) ['foo' => 'bar']];
+        yield 'collection' => [Type::COLLECTION, ['foo', 'bar']];
+        yield 'objectId' => [Type::OBJECTID, '507f1f77bcf86cd799439011', new ObjectId('507f1f77bcf86cd799439011')];
+        yield 'raw' => [Type::RAW, (object) ['foo' => 'bar']];
+        yield 'decimal128' => [Type::DECIMAL128, '4.20', new Decimal128('4.20')];
+        yield 'uuid' => [Type::UUID, new UuidV4('550e8400-e29b-41d4-a716-446655440000'), new Binary(hex2bin('550e8400e29b41d4a716446655440000'), Binary::TYPE_UUID)];
     }
 
     /** @param mixed $test */
