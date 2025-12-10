@@ -79,7 +79,8 @@ Restrictions to keep in mind:
    method that did not change in the request.
 
 When you have implemented the type you still need to let Doctrine
-know about it:
+know about it. You can create a ``TypeRegistry`` and inject it into the
+``DocumentManager``:
 
 .. code-block:: php
 
@@ -87,16 +88,19 @@ know about it:
 
     // in bootstrapping code
 
-    use Doctrine\ODM\MongoDB\Types\Type;
+    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Types\TypeRegistry;
+
+    $types = new TypeRegistry();
 
     // Adds a type. This results in an exception if type with given name is already registered
-    Type::addType('date_with_timezone', \My\Project\Types\DateTimeWithTimezoneType::class);
+    $types->register('date_with_timezone', \My\Project\Types\DateTimeWithTimezoneType::class);
 
     // Overrides a type. This results in an exception if type with given name is not registered
-    Type::overrideType('date_immutable', \My\Project\Types\DateTimeWithTimezoneType::class);
+    $types->register('date_immutable', \My\Project\Types\DateTimeWithTimezoneType::class);
 
-    // Registers a type without checking whether it was already registered
-    Type::registerType('date_immutable', \My\Project\Types\DateTimeWithTimezoneType::class);
+    // Initialize DocumentManager with the TypeRegistry
+    $dm = DocumentManager::create($client, $config, null, $types);
 
 As can be seen above, when registering the custom types in the configuration you
 specify a unique name for the mapping type and map that to the corresponding
@@ -182,7 +186,8 @@ Register the type in your bootstrap code::
 
 .. code-block:: php
 
-    Type::addType(Money::class, App\MongoDB\Types\MoneyType::class);
+    $types = new TypeRegistry();
+    $types->register(Money::class, App\MongoDB\Types\MoneyType::class);
 
 By using the |FQCN| of the value object class as the type name, the type is
 automatically used when encountering a property of that class. This means you
