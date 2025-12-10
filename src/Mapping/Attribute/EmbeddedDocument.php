@@ -12,7 +12,7 @@ use Attribute;
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class EmbeddedDocument extends AbstractDocument implements MappingAttribute
+class EmbeddedDocument extends AbstractDocument
 {
     /** @var Index[] */
     public $indexes;

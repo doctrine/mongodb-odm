@@ -8,6 +8,6 @@ use Attribute;
 
 /** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class QueryResultDocument extends AbstractDocument implements MappingAttribute
+class QueryResultDocument extends AbstractDocument
 {
 }

@@ -12,7 +12,7 @@ use Attribute;
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class Document extends AbstractDocument implements MappingAttribute
+class Document extends AbstractDocument
 {
     /** @var string|null */
     public $db;

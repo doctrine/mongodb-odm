@@ -13,7 +13,7 @@ use Attribute;
  * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class MappedSuperclass extends AbstractDocument implements MappingAttribute
+class MappedSuperclass extends AbstractDocument
 {
     /** @var string|null */
     public $repositoryClass;

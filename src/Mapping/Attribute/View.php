@@ -8,7 +8,7 @@ use Attribute;
 
 /** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class View extends AbstractDocument implements MappingAttribute
+class View extends AbstractDocument
 {
     /** @var string|null */
     public $db;

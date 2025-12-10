@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use function class_alias;
 
-abstract class AbstractDocument
+abstract class AbstractDocument implements MappingAttribute
 {
 }
 
