@@ -7,23 +7,13 @@ namespace Documentation\CustomMapping;
 use DateTimeImmutable;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Types\Type;
-use PHPUnit\Framework\Attributes\After;
-use ReflectionProperty;
 
 class CustomMappingTest extends BaseTestCase
 {
-    #[After]
-    public function restoreTypeMap(): void
-    {
-        $r = new ReflectionProperty(Type::class, 'registry');
-        $r->setValue(null, null);
-    }
-
     public function testTest(): void
     {
-        Type::addType('date_with_timezone', DateTimeWithTimezoneType::class);
-        Type::overrideType('date_immutable', DateTimeWithTimezoneType::class);
+        $this->dm->getTypes()->register('date_with_timezone', DateTimeWithTimezoneType::class);
+        $this->dm->getTypes()->register('date_immutable', DateTimeWithTimezoneType::class);
 
         $thing       = new Thing();
         $thing->date = new DateTimeImmutable('2021-01-01 00:00:00', new DateTimeZone('Africa/Tripoli'));

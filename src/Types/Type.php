@@ -133,7 +133,7 @@ abstract class Type
      */
     public static function getType(string $type): Type
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Type::getType() is deprecated, use TypeRegistry::get() instead.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::getType() is deprecated, use TypeRegistry::get() instead.');
 
         return self::getRegistry()->get($type);
     }
@@ -141,13 +141,13 @@ abstract class Type
     /**
      * Get a Type instance based on the type of the passed php variable.
      *
-     * @deprecated Use {@see TypeRegistry::getFromPHPVariable()} instead
+     * @deprecated Will be removed in 3.0
      *
      * @param mixed $variable
      */
     public static function getTypeFromPHPVariable($variable): ?Type
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.10', 'Type::getTypeFromPHPVariable() is deprecated, use TypeRegistry::fromVariable() instead.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::getTypeFromPHPVariable() is deprecated without replacement.');
 
         return self::getRegistry()->fromVariable($variable);
     }

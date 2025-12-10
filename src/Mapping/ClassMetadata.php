@@ -20,6 +20,7 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -613,6 +614,8 @@ if (PHP_VERSION_ID >= 80400) {
     /** @var class-string|null */
     private ?string $rootClass;
 
+    private TypeRegistry $types;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
@@ -670,6 +673,25 @@ if (PHP_VERSION_ID >= 80400) {
         }
 
         return ($pathPrefix ? $pathPrefix . '.' : '') . self::getReferencePrefix($storeAs) . 'id';
+    }
+
+    /**
+     * Inject the TypeRegistry instance, used for field transformation and type detection.
+     */
+    public function setTypeRegistry(TypeRegistry $types): void
+    {
+        $this->types = $types;
+    }
+
+    private function getTypeRegistry(): TypeRegistry
+    {
+        if (! isset($this->types)) {
+            /* @see Type::getRegistry() */
+            $this->types = (new ReflectionMethod(Type::class, 'getRegistry'))->invoke(null);
+            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via ClassMetadata::setTypeRegistry($dm->getTypes()).');
+        }
+
+        return $this->types;
     }
 
     public function getReflectionClass(): ReflectionClass
@@ -1457,7 +1479,7 @@ if (PHP_VERSION_ID >= 80400) {
             default:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
-                $type              = Type::getType($mapping['type']);
+                $type              = $this->getTypeRegistry()->get($mapping['type']);
                 if ($type instanceof Incrementable) {
                     $allowedStrategies[] = self::STORAGE_STRATEGY_INCREMENT;
                 }
@@ -1668,7 +1690,7 @@ if (PHP_VERSION_ID >= 80400) {
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
-        return Type::getType($idType)->convertToPHPValue($id);
+        return $this->getTypeRegistry()->get($idType)->convertToPHPValue($id);
     }
 
     /**
@@ -1682,7 +1704,7 @@ if (PHP_VERSION_ID >= 80400) {
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
-        return Type::getType($idType)->convertToDatabaseValue($id);
+        return $this->getTypeRegistry()->get($idType)->convertToDatabaseValue($id);
     }
 
     /**
@@ -1953,7 +1975,7 @@ if (PHP_VERSION_ID >= 80400) {
      */
     public function setVersionMapping(array &$mapping): void
     {
-        if (! Type::getType($mapping['type']) instanceof Versionable) {
+        if (! $this->getTypeRegistry()->get($mapping['type']) instanceof Versionable) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 
@@ -2221,7 +2243,7 @@ if (PHP_VERSION_ID >= 80400) {
 
         if (isset($mapping['encrypt']['queryType'])) {
             // The encrypted range query options min and max must be converted to the database type
-            $type = Type::getType($mapping['type']);
+            $type = $this->getTypeRegistry()->get($mapping['type']);
             foreach (['min', 'max'] as $option) {
                 if (isset($mapping['encrypt'][$option])) {
                     $mapping['encrypt'][$option] = $type->convertToDatabaseValue($mapping['encrypt'][$option]);
@@ -2635,7 +2657,7 @@ if (PHP_VERSION_ID >= 80400) {
             return $mapping;
         }
 
-        if (! $type->isBuiltin() && Type::hasType($type->getName())) {
+        if (! $type->isBuiltin() && $this->getTypeRegistry()->has($type->getName())) {
             $mapping['type'] = $type->getName();
 
             return $mapping;

@@ -26,7 +26,7 @@ class GH2789Test extends BaseTestCase
 
     public function testVersionWithCustomType(): void
     {
-        Type::addType(GH2789CustomType::class, GH2789CustomType::class);
+        $this->dm->getTypes()->register(GH2789CustomType::class, GH2789CustomType::class);
 
         $doc = new GH2789VersionedUuid('original message');
 

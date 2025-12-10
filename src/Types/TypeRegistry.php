@@ -91,7 +91,23 @@ class TypeRegistry
     }
 
     /**
+     * Determine the database representation of a value based on its PHP type.
+     */
+    public function convertToDatabaseValue(mixed $value): mixed
+    {
+        $type = $this->fromVariable($value);
+
+        if ($type === null) {
+            return $value;
+        }
+
+        return $type->convertToDatabaseValue($value);
+    }
+
+    /**
      * Get a Type instance based on the type of the passed PHP variable.
+     *
+     * @internal
      */
     public function fromVariable(mixed $variable): ?Type
     {
@@ -123,20 +139,6 @@ class TypeRegistry
             'string' => $this->get(Type::STRING),
             default => null,
         };
-    }
-
-    /**
-     * Determine the database representation of a value based on its PHP type.
-     */
-    public function convertToDatabaseValue(mixed $value): mixed
-    {
-        $type = $this->fromVariable($value);
-
-        if ($type === null) {
-            return $value;
-        }
-
-        return $type->convertToDatabaseValue($value);
     }
 
     /**

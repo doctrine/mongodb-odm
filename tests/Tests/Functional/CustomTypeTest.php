@@ -10,9 +10,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Exception;
-use PHPUnit\Framework\Attributes\After;
-use ReflectionProperty;
 
 use function array_map;
 use function array_values;
@@ -23,20 +22,16 @@ class CustomTypeTest extends BaseTestCase
 {
     use CaptureDeprecationMessages;
 
+    private TypeRegistry $registry;
+
     public function setUp(): void
     {
         parent::setUp();
 
-        Type::addType('date_collection', DateCollectionType::class);
-        Type::addType(Language::class, LanguageType::class);
-        Type::addType('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
-    }
-
-    #[After]
-    public function restoreTypeMap(): void
-    {
-        $r = new ReflectionProperty(Type::class, 'registry');
-        $r->setValue(null, null);
+        $this->registry = $this->dm->getTypes();
+        $this->registry->register('date_collection', DateCollectionType::class);
+        $this->registry->register(Language::class, LanguageType::class);
+        $this->registry->register('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -84,13 +79,13 @@ class CustomTypeTest extends BaseTestCase
         self::assertSame('fr', $country->lang->code);
     }
 
-    public function testTypeFromPHPVariable(): void
+    public function testConvertToDatabaseValue(): void
     {
         $lang = new Language('French', 'fr');
-        $type = Type::getTypeFromPHPVariable($lang);
+        $type = $this->registry->fromVariable($lang);
         self::assertInstanceOf(LanguageType::class, $type);
 
-        $databaseValue = Type::convertPHPToDatabaseValue($lang);
+        $databaseValue = $this->registry->convertToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
     }
 
@@ -122,7 +117,8 @@ class DateCollectionType extends Type
             throw new CustomTypeException('Array expected.');
         }
 
-        $converter = Type::getType('date');
+        $registry  = new TypeRegistry();
+        $converter = $registry->get('date');
 
         $value = array_map(static fn ($date) => $converter->convertToDatabaseValue($date), array_values($value));
 
@@ -139,7 +135,8 @@ class DateCollectionType extends Type
             throw new CustomTypeException('Array expected.');
         }
 
-        $converter = Type::getType('date');
+        $registry  = new TypeRegistry();
+        $converter = $registry->get('date');
 
         $value = array_map(static fn ($date) => $converter->convertToPHPValue($date), array_values($value));
 

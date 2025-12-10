@@ -9,21 +9,19 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use PHPUnit\Framework\Attributes\RequiresMethod;
 
-use function call_user_func;
 use function class_exists;
-use function restore_error_handler;
-use function set_error_handler;
 use function sprintf;
-
-use const E_USER_DEPRECATED;
 
 #[RequiresMethod(AnnotationReader::class, '__construct')]
 class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
 {
+    use CaptureDeprecationMessages;
+
     protected static function loadDriver(array $paths = []): MappingDriver
     {
         if (class_exists(FileClassLocator::class)) {
@@ -37,6 +35,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedIndexesClassAnnotation::class);
+        $classMetadata->setTypeRegistry($this->dm->getTypes());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -58,6 +57,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedDocumentClassAnnotationIndexesOption::class);
+        $classMetadata->setTypeRegistry($this->dm->getTypes());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -79,6 +79,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedIndexesPropertyAnnotation::class);
+        $classMetadata->setTypeRegistry($this->dm->getTypes());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -94,30 +95,6 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
 
         self::assertTrue(isset($indexes[0]['keys']['foo']));
         self::assertEquals(1, $indexes[0]['keys']['foo']);
-    }
-
-    /**
-     * @param list<string> $errors
-     *
-     * @param-out list<string> $errors
-     */
-    private function captureDeprecationMessages(callable $callable, ?array &$errors): mixed
-    {
-        /* TODO: this method can be replaced with expectUserDeprecationMessage() in PHPUnit 11+.
-         * See: https://docs.phpunit.de/en/11.1/error-handling.html#expecting-deprecations-e-user-deprecated */
-        $errors = [];
-
-        set_error_handler(static function (int $errno, string $errstr) use (&$errors): bool {
-            $errors[] = $errstr;
-
-            return false;
-        }, E_USER_DEPRECATED);
-
-        try {
-            return call_user_func($callable);
-        } finally {
-            restore_error_handler();
-        }
     }
 }
 
