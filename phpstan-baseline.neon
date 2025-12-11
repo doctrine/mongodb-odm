@@ -415,8 +415,20 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:\$rootClass \(class\-string\|null\) is never assigned null so it can be removed from the property type\.$#'
-			identifier: property.unusedType
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata'' and ''Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata'' will always evaluate to false\.$#'
+			identifier: notIdentical.alwaysFalse
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and \*NEVER\* will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: src/Mapping/ClassMetadata.php
 
@@ -1067,6 +1079,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php
+
+		-
+			message: '#^Class Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ExtendedClassMetadata extends @final class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\.$#'
+			identifier: class.extendsFinalByPhpDoc
+			count: 1
+			path: tests/Tests/Mapping/ClassMetadataTest.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ClassMetadataTest\:\:testEmptyVectorSearchIndexDefinition\(\) has parameter \$definition with no value type specified in iterable type array\.$#'

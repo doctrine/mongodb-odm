@@ -924,7 +924,7 @@ use const PHP_VERSION_ID;
             return $pathPrefix;
         }
 
-        return ($pathPrefix ? $pathPrefix . '.' : '') . static::getReferencePrefix($storeAs) . 'id';
+        return ($pathPrefix ? $pathPrefix . '.' : '') . self::getReferencePrefix($storeAs) . 'id';
     }
 
     public function getReflectionClass(): ReflectionClass
