@@ -2650,7 +2650,7 @@ use const PHP_VERSION_ID;
      */
     public function __serialize(): array
     {
-        if ((new ReflectionMethod($this, '__sleep'))->getDeclaringClass() !== self::class) {
+        if (static::class !== self::class && (new ReflectionMethod($this, '__sleep'))->getDeclaringClass() !== self::class) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
                 '2.16',
@@ -2690,8 +2690,10 @@ use const PHP_VERSION_ID;
             'generatorOptions',
             'idGenerator',
             'indexes',
+            'searchIndexes',
             'shardKey',
             'timeSeriesOptions',
+            'isEncrypted',
         ];
 
         // The rest of the metadata is only serialized if necessary.

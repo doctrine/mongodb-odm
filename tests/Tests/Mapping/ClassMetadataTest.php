@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -51,6 +52,8 @@ use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
 {
+    use CaptureDeprecationMessages;
+
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -84,6 +87,8 @@ class ClassMetadataTest extends BaseTestCase
         $cm->setValidator(Document::fromJSON($validatorJson)->toPHP());
         $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
         $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
+        $cm->isEncrypted = true;
+        $cm->addSearchIndex(['mappings' => ['fields' => ['title' => ['type' => 'string']]]], 'custom_name');
         self::assertIsArray($cm->getFieldMapping('phonenumbers'));
         self::assertCount(1, $cm->fieldMappings);
         self::assertCount(1, $cm->associationMappings);
@@ -117,6 +122,25 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(Document::fromJSON($validatorJson)->toPHP(), $cm->getValidator());
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN, $cm->getValidationAction());
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
+        self::assertTrue($cm->isEncrypted);
+        self::assertSame([['definition' => ['mappings' => ['fields' => ['title' => ['type' => 'string']]]], 'name' => 'custom_name', 'type' => 'search']], $cm->getSearchIndexes());
+    }
+
+    public function testExtendingClassMetadata(): void
+    {
+        $cm = new ExtendedClassMetadata(CmsUser::class);
+        $cm->setCollection('custom_collection');
+        $cm->customProperty = 'some_value';
+
+        $serialized = $this->captureDeprecationMessages(static fn () => serialize($cm), $deprecations);
+        $cm         = unserialize($serialized);
+
+        self::assertInstanceOf(ExtendedClassMetadata::class, $cm);
+        self::assertSame(CmsUser::class, $cm->name);
+        self::assertSame('custom_collection', $cm->getCollection());
+        self::assertSame('some_value', $cm->customProperty);
+
+        self::assertSame(['Since doctrine/mongodb-odm 2.16: The method __sleep() is deprecated. Implement and use Doctrine\ODM\MongoDB\Mapping\ClassMetadata::__serialize() instead.'], $deprecations);
     }
 
     public function testOwningSideAndInverseSide(): void
@@ -1135,4 +1159,15 @@ class TimeSeriesTestDocument
 
     #[ODM\Field]
     public string $metadata;
+}
+
+class ExtendedClassMetadata extends ClassMetadata
+{
+    public string $customProperty;
+
+    /** @return list<string> */
+    public function __sleep(): array
+    {
+        return array_merge(parent::__sleep(), ['customProperty']);
+    }
 }
