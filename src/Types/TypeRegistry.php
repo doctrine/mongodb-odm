@@ -11,6 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 use function gettype;
 use function is_object;
+use function is_subclass_of;
 use function method_exists;
 use function sprintf;
 
@@ -71,6 +72,10 @@ class TypeRegistry
             $this->typesMap[$name]    = $type::class;
             $this->typeObjects[$name] = $type;
         } else {
+            if (! is_subclass_of($type, Type::class)) {
+                throw new InvalidArgumentException(sprintf('Type class "%s" must be a subclass of "%s".', $type, Type::class));
+            }
+
             if (method_exists($type, '__construct')) {
                 throw new InvalidArgumentException(sprintf('Type class "%s" must not have a constructor to be registered by class name. Register an instance of the class instead.', $type));
             }

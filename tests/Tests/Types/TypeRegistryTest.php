@@ -14,8 +14,10 @@ use Doctrine\ODM\MongoDB\Types\RawType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Generator;
+use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
+use stdClass;
 
 use function sprintf;
 
@@ -107,5 +109,13 @@ class TypeRegistryTest extends BaseTestCase
     public function testSharedInstance(): void
     {
         self::assertSame(TypeRegistry::getSharedInstance(), TypeRegistry::getSharedInstance());
+    }
+
+    public function testRegisterRequiresATypeClassOrInstance(): void
+    {
+        $registry = new TypeRegistry();
+        self::expectException(InvalidArgumentException::class);
+        // @phpstan-ignore argument.type
+        $registry->register('invalid_type', stdClass::class);
     }
 }
