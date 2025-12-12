@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Exception;
+use InvalidArgumentException;
 
 use function array_map;
 use function array_values;
@@ -31,7 +32,6 @@ class CustomTypeTest extends BaseTestCase
         $this->registry = $this->dm->getTypes();
         $this->registry->register('date_collection', DateCollectionType::class);
         $this->registry->register(Language::class, LanguageType::class);
-        $this->registry->register('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -91,12 +91,20 @@ class CustomTypeTest extends BaseTestCase
 
     public function testNotOverridingClosureToPHPIsDeprecated(): void
     {
-        $type = Type::getType('custom_type_without_closure_to_php');
+        $type = new CustomTypeWithoutClosureToPHP();
 
         $code = $this->captureDeprecationMessages(static fn () => $type->closureToPHP(), $deprecations);
 
         self::assertSame('$return = $value;', $code);
         self::assertSame(['Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.'], $deprecations);
+    }
+
+    public function testConstructorNotAllowedInCustomTypeRegisteredByClassName(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Type class "Doctrine\ODM\MongoDB\Tests\Functional\CustomTypeWithConstructor" must not have a constructor to be registered by class name. Register an instance of the class instead.');
+
+        $this->registry->register('custom_with_constructor', CustomTypeWithConstructor::class);
     }
 }
 
@@ -212,4 +220,11 @@ class LanguageType extends Type
 
 class CustomTypeWithoutClosureToPHP extends Type
 {
+}
+
+class CustomTypeWithConstructor extends Type
+{
+    public function __construct()
+    {
+    }
 }

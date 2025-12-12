@@ -6,11 +6,13 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use ReflectionClass;
+use InvalidArgumentException;
 use Symfony\Component\Uid\Uuid;
 
 use function gettype;
 use function is_object;
+use function method_exists;
+use function sprintf;
 
 /**
  * The TypeRegistry is responsible for managing the mapping types supported.
@@ -61,7 +63,6 @@ class TypeRegistry
      *
      * The name of the type can be a PHP class name used for automatic type detection
      *
-     * @param non-empty-string        $name
      * @param class-string<Type>|Type $type
      */
     public function register(string $name, string|Type $type): void
@@ -70,6 +71,10 @@ class TypeRegistry
             $this->typesMap[$name]    = $type::class;
             $this->typeObjects[$name] = $type;
         } else {
+            if (method_exists($type, '__construct')) {
+                throw new InvalidArgumentException(sprintf('Type class "%s" must not have a constructor to be registered by class name. Register an instance of the class instead.', $type));
+            }
+
             $this->typesMap[$name] = $type;
             unset($this->typeObjects[$name]);
         }
@@ -94,7 +99,7 @@ class TypeRegistry
             throw InvalidTypeException::invalidTypeName($name);
         }
 
-        return $this->typeObjects[$name] ??= (new ReflectionClass($this->typesMap[$name]))->newInstanceWithoutConstructor();
+        return $this->typeObjects[$name] ??= new $this->typesMap[$name]();
     }
 
     /**
