@@ -91,16 +91,16 @@ know about it. You can create a ``TypeRegistry`` and inject it into the
     use Doctrine\ODM\MongoDB\DocumentManager;
     use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 
-    $types = new TypeRegistry();
+    $typeRegistry = new TypeRegistry();
 
     // Adds a type. This results in an exception if type with given name is already registered
-    $types->register('date_with_timezone', \My\Project\Types\DateTimeWithTimezoneType::class);
+    $typeRegistry->register('date_with_timezone', new \My\Project\Types\DateTimeWithTimezoneType());
 
     // Overrides a type. This results in an exception if type with given name is not registered
-    $types->register('date_immutable', \My\Project\Types\DateTimeWithTimezoneType::class);
+    $typeRegistry->register('date_immutable', new \My\Project\Types\DateTimeWithTimezoneType();
 
     // Initialize DocumentManager with the TypeRegistry
-    $dm = DocumentManager::create($client, $config, null, $types);
+    $dm = DocumentManager::create($client, $config, null, $typeRegistry);
 
 As can be seen above, when registering the custom types in the configuration you
 specify a unique name for the mapping type and map that to the corresponding
@@ -186,8 +186,8 @@ Register the type in your bootstrap code::
 
 .. code-block:: php
 
-    $types = new TypeRegistry();
-    $types->register(Money::class, App\MongoDB\Types\MoneyType::class);
+    $typeRegistry = new TypeRegistry();
+    $typeRegistry->register(Money::class, new App\MongoDB\Types\MoneyType());
 
 By using the |FQCN| of the value object class as the type name, the type is
 automatically used when encountering a property of that class. This means you
