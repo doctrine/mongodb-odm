@@ -16,9 +16,13 @@ trait CaptureDeprecationMessages
      * This method can be replaced with expectUserDeprecationMessage() in PHPUnit 11+.
      * https://docs.phpunit.de/en/11.1/error-handling.html#expecting-deprecations-e-user-deprecated
      *
-     * @param list<string> $errors
+     * @param callable(): T $callable
+     * @param list<string>  $errors
+     *
+     * @return T
      *
      * @param-out list<string> $errors
+     * @template T
      */
     private function captureDeprecationMessages(callable $callable, ?array &$errors): mixed
     {
