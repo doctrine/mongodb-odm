@@ -25,6 +25,7 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -813,8 +814,10 @@ final class UnitOfWork implements PropertyChangedListener
                     $actualValue = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
                 }
 
+                $type = $class->fieldMappings[$propName]['type'] ?? null;
+
                 // if embed-many or reference-many relationship
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
+                if ($type === ClassMetadata::MANY) {
                     $changeSet[$propName] = [$orgValue, $actualValue];
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
@@ -831,15 +834,13 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip equivalent date values
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                    $dateType = $this->dm->getTypes()->get('date');
-                    assert($dateType instanceof DateType);
-                    $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
-                    $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
+                if ($type === 'date' || $type === 'date_immutable') {
+                    $dbOrgValue    = DateType::getDateTime($orgValue);
+                    $dbActualValue = DateType::getDateTime($actualValue);
 
                     // We rely on loose comparison to compare every field (including microseconds)
                     // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-                    if ($dbOrgValue == $dbActualValue) {
+                    if (new UTCDateTime($dbActualValue) == new UTCDateTime($dbOrgValue)) {
                         continue;
                     }
                 }
