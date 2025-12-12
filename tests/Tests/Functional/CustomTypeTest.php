@@ -82,7 +82,7 @@ class CustomTypeTest extends BaseTestCase
     public function testConvertToDatabaseValue(): void
     {
         $lang = new Language('French', 'fr');
-        $type = $this->registry->fromVariable($lang);
+        $type = $this->registry->guessTypeFromValue($lang);
         self::assertInstanceOf(LanguageType::class, $type);
 
         $databaseValue = $this->registry->convertToDatabaseValue($lang);

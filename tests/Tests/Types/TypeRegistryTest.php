@@ -21,11 +21,11 @@ use function sprintf;
 
 class TypeRegistryTest extends BaseTestCase
 {
-    #[DataProvider('provideTypeFromVariable')]
+    #[DataProvider('provideTypeToGuessFromValue')]
     public function testTypeFromVariable(?string $expectedType, mixed $variable): void
     {
         $registry = new TypeRegistry();
-        $type     = $registry->fromVariable($variable);
+        $type     = $registry->guessTypeFromValue($variable);
 
         if ($expectedType === null) {
             self::assertNull($type);
@@ -36,7 +36,7 @@ class TypeRegistryTest extends BaseTestCase
         }
     }
 
-    public static function provideTypeFromVariable(): Generator
+    public static function provideTypeToGuessFromValue(): Generator
     {
         yield 'null' => [null, null];
         yield 'bool' => [Type::BOOL, true];

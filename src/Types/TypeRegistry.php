@@ -107,7 +107,7 @@ class TypeRegistry
      */
     public function convertToDatabaseValue(mixed $value): mixed
     {
-        $type = $this->fromVariable($value);
+        $type = $this->guessTypeFromValue($value);
 
         if ($type === null) {
             return $value;
@@ -121,7 +121,7 @@ class TypeRegistry
      *
      * @internal
      */
-    public function fromVariable(mixed $variable): ?Type
+    public function guessTypeFromValue(mixed $variable): ?Type
     {
         if (is_object($variable)) {
             if ($variable instanceof DateTimeImmutable) {

@@ -142,7 +142,7 @@ abstract class Type
     {
         trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::getTypeFromPHPVariable() is deprecated without replacement.');
 
-        return TypeRegistry::getSharedInstance()->fromVariable($variable);
+        return TypeRegistry::getSharedInstance()->guessTypeFromValue($variable);
     }
 
     /**
