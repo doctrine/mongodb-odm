@@ -88,7 +88,10 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
         $shardKeyQuery = $method->invoke($persister, $o);
 
-        self::assertSame(['reference.$id' => $userId], $shardKeyQuery);
+        self::assertSame([
+            'reference.$ref' => $this->dm->getDocumentCollection(User::class)->getCollectionName(),
+            'reference.$id' => $userId,
+        ], $shardKeyQuery);
     }
 }
 

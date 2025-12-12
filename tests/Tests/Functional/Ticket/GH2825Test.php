@@ -201,6 +201,120 @@ class GH2825Test extends BaseTestCase
         self::assertEquals(['id' => $referenceId], $result['referencedDocumentsStoreAsRef'][0]);
         self::assertEquals(['$ref' => 'GH2825Document', '$id' => $referenceId], $result['referencedDocumentsStoreAsDbRef'][0]);
     }
+
+    public function testQueryBuilderQueriesEmbeddedReferenceOneCorrectlyUsingEquals(): void
+    {
+        $document           = new GH2825Document('document');
+        $document->embedded = new GH2825Embedded('embedded');
+
+        $reference                                 = new GH2825Document('original');
+        $document->embedded->referenceStoreAsId    = $reference;
+        $document->embedded->referenceStoreAsRef   = $reference;
+        $document->embedded->referenceStoreAsDbRef = $reference;
+
+        $this->dm->persist($reference);
+        $this->dm->persist($document);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $reference = $this->dm->find(GH2825Document::class, $reference->id);
+
+        $query = $this->dm->createQueryBuilder(GH2825Document::class)
+            ->field('embedded.referenceStoreAsId')->equals($reference)
+            ->getQuery();
+
+        self::assertEquals(
+            ['embedded.referenceStoreAsId' => new ObjectId($reference->id)],
+            $query->debug('query'),
+        );
+
+        self::assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->createQueryBuilder(GH2825Document::class)
+            ->field('embedded.referenceStoreAsRef')->equals($reference)
+            ->getQuery();
+
+        self::assertEquals(
+            ['embedded.referenceStoreAsRef.id' => new ObjectId($reference->id)],
+            $query->debug('query'),
+        );
+
+        self::assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->createQueryBuilder(GH2825Document::class)
+            ->field('embedded.referenceStoreAsDbRef')->equals($reference)
+            ->getQuery();
+
+        self::assertEquals(
+            [
+                'embedded.referenceStoreAsDbRef.$ref' => $this->dm->getDocumentCollection(GH2825Document::class)->getCollectionName(),
+                'embedded.referenceStoreAsDbRef.$id' => new ObjectId($reference->id),
+            ],
+            $query->debug('query'),
+        );
+
+        self::assertNotNull($query->getSingleResult());
+    }
+
+    public function testQueryBuilderQueriesEmbeddedReferenceManyCorrectlyUsingEquals(): void
+    {
+        $document           = new GH2825Document('document');
+        $document->embedded = new GH2825Embedded('embedded');
+
+        $reference                                             = new GH2825Document('original');
+        $document->embedded->referencedDocumentsStoreAsId[]    = $reference;
+        $document->embedded->referencedDocumentsStoreAsRef[]   = $reference;
+        $document->embedded->referencedDocumentsStoreAsDbRef[] = $reference;
+
+        $this->dm->persist($reference);
+        $this->dm->persist($document);
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $reference = $this->dm->find(GH2825Document::class, $reference->id);
+
+        $query = $this->dm->createQueryBuilder(GH2825Document::class)
+            ->field('embedded.referencedDocumentsStoreAsId')->equals($reference)
+            ->getQuery();
+
+        self::assertEquals(
+            ['embedded.referencedDocumentsStoreAsId' => new ObjectId($reference->id)],
+            $query->debug('query'),
+        );
+
+        self::assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->createQueryBuilder(GH2825Document::class)
+            ->field('embedded.referencedDocumentsStoreAsRef')->equals($reference)
+            ->getQuery();
+
+        self::assertEquals(
+            ['embedded.referencedDocumentsStoreAsRef' => ['$elemMatch' => ['id' => new ObjectId($reference->id)]]],
+            $query->debug('query'),
+        );
+
+        self::assertNotNull($query->getSingleResult());
+
+        $query = $this->dm->createQueryBuilder(GH2825Document::class)
+            ->field('embedded.referencedDocumentsStoreAsDbRef')->equals($reference)
+            ->getQuery();
+
+        self::assertEquals(
+            [
+                'embedded.referencedDocumentsStoreAsDbRef' => [
+                    '$elemMatch' => [
+                        '$ref' => $this->dm->getDocumentCollection(GH2825Document::class)->getCollectionName(),
+                        '$id' => new ObjectId($reference->id),
+                    ],
+                ],
+            ],
+            $query->debug('query'),
+        );
+
+        self::assertNotNull($query->getSingleResult());
+    }
 }
 
 #[ODM\Document]

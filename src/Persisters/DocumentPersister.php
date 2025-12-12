@@ -41,7 +41,6 @@ use stdClass;
 
 use function array_combine;
 use function array_fill;
-use function array_intersect_key;
 use function array_key_exists;
 use function array_keys;
 use function array_map;
@@ -1610,36 +1609,11 @@ final class DocumentPersister
             return [[$fieldName, $reference]];
         }
 
-        switch ($mapping['storeAs']) {
-            case ClassMetadata::REFERENCE_STORE_AS_REF:
-                $keys = ['id' => true];
-                break;
-
-            case ClassMetadata::REFERENCE_STORE_AS_DB_REF:
-            case ClassMetadata::REFERENCE_STORE_AS_DB_REF_WITH_DB:
-                $keys = ['$ref' => true, '$id' => true, '$db' => true];
-
-                if ($mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_DB_REF) {
-                    unset($keys['$db']);
-                }
-
-                if (isset($mapping['targetDocument'])) {
-                    unset($keys['$ref'], $keys['$db']);
-                }
-
-                break;
-
-            default:
-                throw new InvalidArgumentException(sprintf('Reference type %s is invalid.', $mapping['storeAs']));
-        }
-
-        if ($mapping['type'] === ClassMetadata::MANY) {
-            return [[$fieldName, ['$elemMatch' => array_intersect_key($reference, $keys)]]];
-        }
-
-        return array_map(
-            static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
-            array_keys($keys),
-        );
+        return $mapping['type'] === ClassMetadata::MANY
+            ? [[$fieldName, ['$elemMatch' => $reference]]]
+            : array_map(
+                static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
+                array_keys($reference),
+            );
     }
 }
