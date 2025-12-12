@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PreRemove as PreRemoveAttribute;
 
 /**
  * Marks a method as a preRemove lifecycle callback
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreRemove extends \Doctrine\ODM\MongoDB\Mapping\Attribute\PreRemove implements Annotation
+final class PreRemove extends PreRemoveAttribute implements Annotation
 {
 }

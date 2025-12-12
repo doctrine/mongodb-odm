@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ReferenceOne as ReferenceOneAttribute;
 
 /**
  * Specifies a one-to-one relationship to a different document
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class ReferenceOne extends \Doctrine\ODM\MongoDB\Mapping\Attribute\ReferenceOne implements Annotation
+final class ReferenceOne extends ReferenceOneAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\UniqueIndex as UniqueIndexAttribute;
 
 /**
  * Specifies a unique index on a field
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final class UniqueIndex extends \Doctrine\ODM\MongoDB\Mapping\Attribute\UniqueIndex implements Annotation
+final class UniqueIndex extends UniqueIndexAttribute implements Annotation
 {
 }

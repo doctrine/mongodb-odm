@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id as IdAttribute;
 
 /**
  * Special field mapping to map document identifiers
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Id extends \Doctrine\ODM\MongoDB\Mapping\Attribute\Id implements Annotation
+final class Id extends IdAttribute implements Annotation
 {
 }

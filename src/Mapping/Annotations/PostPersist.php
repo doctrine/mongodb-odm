@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PostPersist as PostPersistAttribute;
 
 /**
  * Marks a method as a postPersist lifecycle callback
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PostPersist extends \Doctrine\ODM\MongoDB\Mapping\Attribute\PostPersist implements Annotation
+final class PostPersist extends PostPersistAttribute implements Annotation
 {
 }

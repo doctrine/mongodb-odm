@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PreFlush as PreFlushAttribute;
 
 /**
  * Marks a method as a preFlush lifecycle callback
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreFlush extends \Doctrine\ODM\MongoDB\Mapping\Attribute\PreFlush implements Annotation
+final class PreFlush extends PreFlushAttribute implements Annotation
 {
 }

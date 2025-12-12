@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbeddedDocument as EmbeddedDocumentAttribute;
 
 /**
  * Identifies a class as a document that can be embedded but not stored by itself
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class EmbeddedDocument extends \Doctrine\ODM\MongoDB\Mapping\Attribute\EmbeddedDocument implements Annotation
+final class EmbeddedDocument extends EmbeddedDocumentAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedMany as EmbedManyAttribute;
 
 /**
  * Embeds multiple documents
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class EmbedMany extends \Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedMany implements Annotation
+final class EmbedMany extends EmbedManyAttribute implements Annotation
 {
 }

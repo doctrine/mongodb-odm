@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PostRemove as PostRemoveAttribute;
 
 /**
  * Marks a method as a postRemove lifecycle callback
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PostRemove extends \Doctrine\ODM\MongoDB\Mapping\Attribute\PostRemove implements Annotation
+final class PostRemove extends PostRemoveAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\QueryResultDocument as QueryResultDocumentAttribute;
 
 /**
  * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\QueryResultDocument instead
@@ -14,6 +15,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class QueryResultDocument extends \Doctrine\ODM\MongoDB\Mapping\Attribute\QueryResultDocument implements Annotation
+final class QueryResultDocument extends QueryResultDocumentAttribute implements Annotation
 {
 }

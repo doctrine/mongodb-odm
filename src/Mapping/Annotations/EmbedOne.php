@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedOne as EmbedOneAttribute;
 
 /**
  * Embeds a single document
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class EmbedOne extends \Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedOne implements Annotation
+final class EmbedOne extends EmbedOneAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries as TimeSeriesAttribute;
 
 /**
  * Marks a document or superclass as a time series document
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class TimeSeries extends \Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries implements Annotation
+final class TimeSeries extends TimeSeriesAttribute implements Annotation
 {
 }

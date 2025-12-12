@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\SearchIndex as SearchIndexAttribute;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -21,6 +22,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @phpstan-import-type SearchIndexSynonym from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final class SearchIndex extends \Doctrine\ODM\MongoDB\Mapping\Attribute\SearchIndex implements Annotation
+final class SearchIndex extends SearchIndexAttribute implements Annotation
 {
 }

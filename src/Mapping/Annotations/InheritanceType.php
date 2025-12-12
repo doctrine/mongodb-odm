@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\InheritanceType as InheritanceTypeAttribute;
 
 /**
  * Specifies which inheritance type to use for a document
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class InheritanceType extends \Doctrine\ODM\MongoDB\Mapping\Attribute\InheritanceType implements Annotation
+final class InheritanceType extends InheritanceTypeAttribute implements Annotation
 {
 }

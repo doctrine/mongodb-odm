@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PreLoad as PreLoadAttribute;
 
 /**
  * Marks a method as a preLoad lifecycle callback
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreLoad extends \Doctrine\ODM\MongoDB\Mapping\Attribute\PreLoad implements Annotation
+final class PreLoad extends PreLoadAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\PreUpdate as PreUpdateAttribute;
 
 /**
  * Marks a method as a preUpdate lifecycle callback
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final class PreUpdate extends \Doctrine\ODM\MongoDB\Mapping\Attribute\PreUpdate implements Annotation
+final class PreUpdate extends PreUpdateAttribute implements Annotation
 {
 }

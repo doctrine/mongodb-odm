@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations\File;
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Annotation;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\File\UploadDate as UploadDateAttribute;
 
 /**
  * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\File\UploadDate instead
@@ -15,6 +16,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Annotation;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class UploadDate extends \Doctrine\ODM\MongoDB\Mapping\Attribute\File\UploadDate implements Annotation
+final class UploadDate extends UploadDateAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Encrypt as EncryptAttribute;
 
 /**
  * Defines an encrypted field mapping.
@@ -18,6 +19,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class Encrypt extends \Doctrine\ODM\MongoDB\Mapping\Attribute\Encrypt implements Annotation
+final class Encrypt extends EncryptAttribute implements Annotation
 {
 }

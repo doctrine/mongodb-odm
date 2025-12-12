@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\File as FileAttribute;
 
 /**
  * Identifies a class as a GridFS file that can be stored in the database
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class File extends \Doctrine\ODM\MongoDB\Mapping\Attribute\File implements Annotation
+final class File extends FileAttribute implements Annotation
 {
 }

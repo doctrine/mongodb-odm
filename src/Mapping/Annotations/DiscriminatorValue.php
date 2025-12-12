@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\DiscriminatorValue as DiscriminatorValueAttribute;
 
 /**
  * Use the specified discriminator for this class
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class DiscriminatorValue extends \Doctrine\ODM\MongoDB\Mapping\Attribute\DiscriminatorValue implements Annotation
+final class DiscriminatorValue extends DiscriminatorValueAttribute implements Annotation
 {
 }

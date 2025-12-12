@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document as DocumentAttribute;
 
 /**
  * Identifies a class as a document that can be stored in the database
@@ -16,6 +17,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Document extends \Doctrine\ODM\MongoDB\Mapping\Attribute\Document implements Annotation
+final class Document extends DocumentAttribute implements Annotation
 {
 }

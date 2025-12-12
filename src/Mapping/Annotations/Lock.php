@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Lock as LockAttribute;
 
 /**
  * Specifies a field to use for pessimistic locking
@@ -14,6 +15,6 @@ use Attribute;
  * @Annotation
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Lock extends \Doctrine\ODM\MongoDB\Mapping\Attribute\Lock implements Annotation
+final class Lock extends LockAttribute implements Annotation
 {
 }

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\VectorSearchIndex as VectorSearchIndexAttribute;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
@@ -20,6 +21,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @phpstan-import-type VectorSearchIndexField from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-final class VectorSearchIndex extends \Doctrine\ODM\MongoDB\Mapping\Attribute\VectorSearchIndex implements Annotation
+final class VectorSearchIndex extends VectorSearchIndexAttribute implements Annotation
 {
 }

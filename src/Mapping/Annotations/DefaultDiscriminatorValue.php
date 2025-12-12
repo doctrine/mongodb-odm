@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\DefaultDiscriminatorValue as DefaultDiscriminatorValueAttribute;
 
 /**
  * Specifies a default discriminator value to be used when the discriminator
@@ -17,6 +18,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final class DefaultDiscriminatorValue extends \Doctrine\ODM\MongoDB\Mapping\Attribute\DefaultDiscriminatorValue implements Annotation
+final class DefaultDiscriminatorValue extends DefaultDiscriminatorValueAttribute implements Annotation
 {
 }

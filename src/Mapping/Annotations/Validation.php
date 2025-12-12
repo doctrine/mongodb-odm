@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Validation as ValidationAttribute;
 
 /**
  * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\Validation instead
@@ -15,6 +16,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @Target({"CLASS"})
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Validation extends \Doctrine\ODM\MongoDB\Mapping\Attribute\Validation implements Annotation
+final class Validation extends ValidationAttribute implements Annotation
 {
 }

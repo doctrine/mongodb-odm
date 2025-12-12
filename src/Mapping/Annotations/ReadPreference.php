@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Annotations;
 
 use Attribute;
 use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ReadPreference as ReadPreferenceAttribute;
 
 /**
  * @deprecated Use \Doctrine\ODM\MongoDB\Mapping\Attribute\ReadPreference instead
@@ -14,6 +15,6 @@ use Doctrine\Common\Annotations\Annotation\NamedArgumentConstructor;
  * @NamedArgumentConstructor
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class ReadPreference extends \Doctrine\ODM\MongoDB\Mapping\Attribute\ReadPreference implements Annotation
+final class ReadPreference extends ReadPreferenceAttribute implements Annotation
 {
 }
