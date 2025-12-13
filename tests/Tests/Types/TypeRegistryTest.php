@@ -76,6 +76,9 @@ class TypeRegistryTest extends BaseTestCase
 
         $registry->register('my_custom_type', RawType::class);
         self::assertInstanceOf(RawType::class, $registry->get('my_custom_type'));
+
+        $map = $registry->getMap();
+        self::assertSame(RawType::class, $map['my_custom_type']);
     }
 
     public function testRegisterTypeInstance(): void
@@ -88,9 +91,15 @@ class TypeRegistryTest extends BaseTestCase
         self::assertTrue($registry->has('my_custom_type'));
         self::assertSame($typeInstance, $registry->get('my_custom_type'));
 
+        $map = $registry->getMap();
+        self::assertSame(IntType::class, $map['my_custom_type']);
+
         // Replace it with a type by class name unsets the instance
         $registry->register('my_custom_type', FloatType::class);
         self::assertInstanceOf(FloatType::class, $registry->get('my_custom_type'));
+
+        $map = $registry->getMap();
+        self::assertSame(FloatType::class, $map['my_custom_type']);
     }
 
     public function testConvertToDatabaseValue(): void

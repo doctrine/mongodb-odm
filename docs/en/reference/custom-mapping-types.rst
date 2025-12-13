@@ -96,11 +96,12 @@ know about it. You can create a ``TypeRegistry`` and inject it into the
     // Adds a type. This results in an exception if type with given name is already registered
     $typeRegistry->register('date_with_timezone', new \My\Project\Types\DateTimeWithTimezoneType());
 
-    // Overrides a type. This results in an exception if type with given name is not registered
+    // Overrides a type. This replaces any existing type with given name
     $typeRegistry->register('date_immutable', new \My\Project\Types\DateTimeWithTimezoneType();
 
     // Initialize DocumentManager with the TypeRegistry
-    $dm = DocumentManager::create($client, $config, null, $typeRegistry);
+    $config = new Configuration();
+    $config->setTypeRegistry($typeRegistry);
 
 As can be seen above, when registering the custom types in the configuration you
 specify a unique name for the mapping type and map that to the corresponding

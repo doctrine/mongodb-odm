@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use PHPUnit\Framework\Attributes\RequiresMethod;
@@ -35,7 +36,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedIndexesClassAnnotation::class);
-        $classMetadata->setTypeRegistry($this->config->getTypeRegistry());
+        $classMetadata->setTypeRegistry(new TypeRegistry());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -57,7 +58,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedDocumentClassAnnotationIndexesOption::class);
-        $classMetadata->setTypeRegistry($this->config->getTypeRegistry());
+        $classMetadata->setTypeRegistry(new TypeRegistry());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -79,7 +80,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedIndexesPropertyAnnotation::class);
-        $classMetadata->setTypeRegistry($this->config->getTypeRegistry());
+        $classMetadata->setTypeRegistry(new TypeRegistry());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
