@@ -49,6 +49,6 @@ abstract class AbstractReplace extends Operator
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 
-        return $this->dm->getTypes()->convertToDatabaseValue(Expr::convertExpression($expression));
+        return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue(Expr::convertExpression($expression));
     }
 }

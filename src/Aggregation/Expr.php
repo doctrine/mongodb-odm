@@ -1121,7 +1121,7 @@ class Expr implements
         }
 
         // Convert PHP types to MongoDB types for everything else
-        return $this->dm->getTypes()->convertToDatabaseValue($expression);
+        return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue($expression);
     }
 
     private function getDocumentPersister(): DocumentPersister

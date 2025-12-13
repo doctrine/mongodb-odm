@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
+use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
@@ -614,7 +615,7 @@ if (PHP_VERSION_ID >= 80400) {
     /** @var class-string|null */
     private ?string $rootClass;
 
-    private TypeRegistry $types;
+    private TypeRegistry $typeRegistry;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
@@ -680,18 +681,17 @@ if (PHP_VERSION_ID >= 80400) {
      */
     public function setTypeRegistry(TypeRegistry $types): void
     {
-        $this->types = $types;
+        $this->typeRegistry = $types;
     }
 
     private function getTypeRegistry(): TypeRegistry
     {
-        if (! isset($this->types)) {
-            /* @see Type::getRegistry() */
-            $this->types = TypeRegistry::getSharedInstance();
-            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via ClassMetadata::setTypeRegistry($dm->getTypes()).');
+        if (! isset($this->typeRegistry)) {
+            $this->typeRegistry = TypeRegistry::getSharedInstance();
+            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via $classMetadata->setTypeRegistry($configuration->getTypeRegistry()).');
         }
 
-        return $this->types;
+        return $this->typeRegistry;
     }
 
     public function getReflectionClass(): ReflectionClass
@@ -1688,9 +1688,7 @@ if (PHP_VERSION_ID >= 80400) {
      */
     public function getPHPIdentifierValue($id)
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return $this->getTypeRegistry()->get($idType)->convertToPHPValue($id);
+        return $this->getFieldType($this->identifier)->convertToPHPValue($id);
     }
 
     /**
@@ -1702,9 +1700,7 @@ if (PHP_VERSION_ID >= 80400) {
      */
     public function getDatabaseIdentifierValue($id)
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return $this->getTypeRegistry()->get($idType)->convertToDatabaseValue($id);
+        return $this->getFieldType($this->identifier)->convertToDatabaseValue($id);
     }
 
     /**
@@ -1804,6 +1800,19 @@ if (PHP_VERSION_ID >= 80400) {
         }
 
         return $this->fieldMappings[$fieldName];
+    }
+
+    public function getFieldType(string $fieldName): Type
+    {
+        if (! isset($this->fieldMappings[$fieldName]['type'])) {
+            return $this->getTypeRegistry()->get(Type::RAW);
+        }
+
+        try {
+            return $this->getTypeRegistry()->get($this->fieldMappings[$fieldName]['type']);
+        } catch (InvalidTypeException) {
+            throw MappingException::invalidTypeForField($this->name, $fieldName, $this->fieldMappings[$fieldName]['type']);
+        }
     }
 
     /**

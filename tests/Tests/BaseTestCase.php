@@ -47,14 +47,16 @@ abstract class BaseTestCase extends TestCase
 {
     protected static ?bool $supportsTransactions;
     protected static bool $allowsTransactions = true;
+    protected Configuration $config;
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
     private bool $disableFailPoints = false;
 
     protected function setUp(): void
     {
-        $this->dm  = static::createTestDocumentManager();
-        $this->uow = $this->dm->getUnitOfWork();
+        $this->dm     = static::createTestDocumentManager();
+        $this->config = $this->dm->getConfiguration();
+        $this->uow    = $this->dm->getUnitOfWork();
     }
 
     protected function tearDown(): void

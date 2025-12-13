@@ -119,7 +119,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        $class->setTypeRegistry($this->dm->getTypes());
+        $class->setTypeRegistry($this->config->getTypeRegistry());
 
         if (PHP_VERSION_ID < 80400) {
             return;
@@ -136,7 +136,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        $class->setTypeRegistry($this->dm->getTypes());
+        $class->setTypeRegistry($this->config->getTypeRegistry());
     }
 
     protected function isEntity(ClassMetadataInterface $class): bool

@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use DateTime;
 use DateTimeImmutable;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
@@ -41,18 +42,24 @@ class TypeTest extends BaseTestCase
 {
     use CaptureDeprecationMessages;
 
-    private static TypeRegistry $registry;
+    private TypeRegistry $registry;
 
-    public static function setUpBeforeClass(): void
+    private ClassMetadata $class;
+
+    public function setUp(): void
     {
-        self::$registry = new TypeRegistry();
+        parent::setUp();
+
+        $this->registry = new TypeRegistry();
+        $this->class    = new ClassMetadata(TypeTestDocument::class);
+        $this->class->setTypeRegistry($this->registry);
     }
 
     #[DataProvider('provideTypes')]
     public function testConversion(string $typeName, mixed $phpValue, mixed $bsonValue = null): void
     {
         $bsonValue ??= $phpValue;
-        $type        = self::$registry->get($typeName);
+        $type        = $this->registry->get($typeName);
 
         self::assertSameTypeAndValue($phpValue, $type->convertToPHPValue($bsonValue));
         self::assertSameTypeAndValue($bsonValue, $type->convertToDatabaseValue($phpValue));
@@ -61,8 +68,14 @@ class TypeTest extends BaseTestCase
     #[DataProvider('provideTypes')]
     public function testConversionWithClosureToPHP(string $typeIdentifier, mixed $expectedValue, mixed $value = null): void
     {
-        $value ??= $expectedValue;
-        $return = $this;
+        $this->class->mapField([
+            'fieldName' => 'theField',
+            'type' => $typeIdentifier,
+        ]);
+
+        $value   ??= $expectedValue;
+        $fieldName = 'theField';
+        $return    = $this;
         eval(Type::getType($typeIdentifier)->closureToPHP());
 
         self::assertSameTypeAndValue($expectedValue, $return);
@@ -102,7 +115,7 @@ class TypeTest extends BaseTestCase
     #[DataProvider('provideTypesForIdempotent')]
     public function testConversionIsIdempotent(string $type, $test): void
     {
-        self::assertSameTypeAndValue($test, self::$registry->get($type)->convertToDatabaseValue($test));
+        self::assertSameTypeAndValue($test, $this->registry->get($type)->convertToDatabaseValue($test));
     }
 
     public static function provideTypesForIdempotent(): Generator
@@ -143,7 +156,7 @@ class TypeTest extends BaseTestCase
         $cleanMicroseconds = (int) $date->format('v') * 1000;
         $expectedDate      = $date->modify($date->format('H:i:s') . '.' . str_pad((string) $cleanMicroseconds, 6, '0', STR_PAD_LEFT));
 
-        $type = self::$registry->get(Type::DATE_IMMUTABLE);
+        $type = $this->registry->get(Type::DATE_IMMUTABLE);
         self::assertEquals($expectedDate, $type->convertToPHPValue($type->convertToDatabaseValue($date)));
     }
 
@@ -166,7 +179,7 @@ class TypeTest extends BaseTestCase
         } elseif ($type === null) {
             self::fail(sprintf('Type is null, expected "%s"', $expectedType));
         } else {
-            $expectedType = self::$registry->get($expectedType);
+            $expectedType = $this->registry->get($expectedType);
             self::assertInstanceOf($expectedType::class, $type, $type::class);
         }
 
@@ -194,7 +207,7 @@ class TypeTest extends BaseTestCase
         self::expectException(InvalidTypeException::class);
         self::expectExceptionMessage('Invalid type specified: "foo"');
 
-        self::$registry->get('foo');
+        $this->registry->get('foo');
     }
 
     public function testDeprecatedMethods(): void
@@ -243,4 +256,14 @@ class TypeTest extends BaseTestCase
         self::assertSame(get_debug_type($expected), get_debug_type($actual));
         self::assertEquals($expected, $actual);
     }
+}
+
+
+class TypeTestDocument
+{
+    /** @var string */
+    public $id;
+
+    /** @var mixed */
+    public $theField;
 }

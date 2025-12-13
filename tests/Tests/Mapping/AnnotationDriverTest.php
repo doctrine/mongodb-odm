@@ -35,7 +35,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedIndexesClassAnnotation::class);
-        $classMetadata->setTypeRegistry($this->dm->getTypes());
+        $classMetadata->setTypeRegistry($this->config->getTypeRegistry());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -57,7 +57,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedDocumentClassAnnotationIndexesOption::class);
-        $classMetadata->setTypeRegistry($this->dm->getTypes());
+        $classMetadata->setTypeRegistry($this->config->getTypeRegistry());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),
@@ -79,7 +79,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
     {
         $driver        = static::loadDriver();
         $classMetadata = new ClassMetadata(DeprecatedIndexesPropertyAnnotation::class);
-        $classMetadata->setTypeRegistry($this->dm->getTypes());
+        $classMetadata->setTypeRegistry($this->config->getTypeRegistry());
 
         $this->captureDeprecationMessages(
             static fn () => $driver->loadMetadataForClass($classMetadata->name, $classMetadata),

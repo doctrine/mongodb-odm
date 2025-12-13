@@ -258,7 +258,7 @@ class GraphLookup extends Stage
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
         }
 
-        return $this->dm->getTypes()->convertToDatabaseValue($expression);
+        return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue(Expr::convertExpression($expression));
     }
 
     private function convertTargetFieldName(string $fieldName): string

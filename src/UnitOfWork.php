@@ -834,7 +834,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip equivalent date values
-                if ($type === 'date' || $type === 'date_immutable') {
+                if (($type === 'date' || $type === 'date_immutable') && $orgValue !== null && $actualValue !== null) {
                     $dbOrgValue    = DateType::getDateTime($orgValue);
                     $dbActualValue = DateType::getDateTime($actualValue);
 

@@ -85,7 +85,7 @@ abstract class AbstractBucket extends Stage
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
         }
 
-        return $this->dm->getTypes()->convertToDatabaseValue($expression);
+        return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue($expression);
     }
 
     private function getDocumentPersister(): DocumentPersister

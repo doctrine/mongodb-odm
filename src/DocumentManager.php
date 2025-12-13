@@ -22,7 +22,6 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
@@ -145,7 +144,7 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null, private ?TypeRegistry $typeRegistry = null)
+    protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
         $this->config       = $config ?: new Configuration();
         $this->eventManager = $eventManager ?: new EventManager();
@@ -204,7 +203,6 @@ class DocumentManager implements ObjectManager
             default => new StaticProxyFactory($this),
         };
         $this->repositoryFactory = $this->config->getRepositoryFactory();
-        $this->typeRegistry    ??= TypeRegistry::getSharedInstance();
     }
 
     /**
@@ -219,9 +217,9 @@ class DocumentManager implements ObjectManager
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
-    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null, ?TypeRegistry $registry = null): DocumentManager
+    public static function create(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null): DocumentManager
     {
-        return new static($client, $config, $eventManager, $registry);
+        return new static($client, $config, $eventManager);
     }
 
     /**
@@ -956,10 +954,5 @@ class DocumentManager implements ObjectManager
         }
 
         return $mapping['targetDocument'];
-    }
-
-    public function getTypes(): TypeRegistry
-    {
-        return $this->typeRegistry;
     }
 }

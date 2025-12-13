@@ -10,6 +10,6 @@ trait ClosureToPHP
     /** @return string Redirects to the method convertToPHPValue from child class */
     final public function closureToPHP(): string
     {
-        return '$return = $this->dm->getTypes()->get($typeIdentifier)->convertToPHPValue($value);';
+        return '$return = $this->class->getFieldType($fieldName)->convertToPHPValue($value);';
     }
 }

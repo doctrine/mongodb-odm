@@ -210,7 +210,7 @@ final class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 $nextVersion    = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
-                $type           = $this->dm->getTypes()->get($versionMapping['type']);
+                $type           = $this->class->getFieldType($this->class->versionField);
                 assert($type instanceof Versionable);
                 if ($nextVersion === null) {
                     $nextVersion = $type->getNextVersion(null);
@@ -288,7 +288,7 @@ final class DocumentPersister
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $nextVersion    = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
-            $type           = $this->dm->getTypes()->get($versionMapping['type']);
+            $type           = $this->class->getFieldType($this->class->versionField);
             assert($type instanceof Versionable);
             if ($nextVersion === null) {
                 $nextVersion = $type->getNextVersion(null);
@@ -373,7 +373,7 @@ final class DocumentPersister
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $currentVersion = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
-            $type           = $this->dm->getTypes()->get($versionMapping['type']);
+            $type           = $this->class->getFieldType($this->class->versionField);
             assert($type instanceof Versionable);
             $nextVersion                             = $type->getNextVersion($currentVersion);
             $update['$set'][$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
@@ -576,7 +576,7 @@ final class DocumentPersister
                     $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
                 }
             } else {
-                $shardKeyQueryPart[$key] = $this->dm->getTypes()->get($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
+                $shardKeyQueryPart[$key] = $this->class->getFieldType($mapping['name'])->convertToDatabaseValue($data[$mapping['fieldName']]);
             }
         }
 
@@ -1103,7 +1103,7 @@ final class DocumentPersister
                 $value = $value->value;
             }
 
-            return $this->dm->getTypes()->convertToDatabaseValue($value);
+            return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue($value);
         }
 
         $mapping  = $class->fieldMappings[$fieldName];
@@ -1111,12 +1111,6 @@ final class DocumentPersister
 
         if (! empty($mapping['reference']) || ! empty($mapping['embedded'])) {
             return $value;
-        }
-
-        if (! $this->dm->getTypes()->has($typeName)) {
-            throw new InvalidArgumentException(
-                sprintf('Mapping type "%s" does not exist', $typeName),
-            );
         }
 
         if ($value instanceof BackedEnum && isset($mapping['enumType'])) {
@@ -1127,7 +1121,7 @@ final class DocumentPersister
             return $value;
         }
 
-        return $this->dm->getTypes()->get($typeName)->convertToDatabaseValue($value);
+        return $class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($value);
     }
 
     private function prepareQueryReference(mixed $value, ClassMetadata $class): mixed

@@ -29,7 +29,7 @@ class CustomTypeTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->registry = $this->dm->getTypes();
+        $this->registry = $this->config->getTypeRegistry();
         $this->registry->register('date_collection', DateCollectionType::class);
         $this->registry->register(Language::class, LanguageType::class);
     }
