@@ -51,7 +51,7 @@ jobs:
         uses: "ramsey/composer-install@v3"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: "composer-lock-static-analysis-phpstan"
           path: composer.lock
