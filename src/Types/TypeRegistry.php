@@ -162,8 +162,6 @@ class TypeRegistry
      * Get the type array map which holds all registered types and the corresponding
      * type class
      *
-     * @internal
-     *
      * @return array<string, class-string<Type>>
      */
     public function getMap(): array
