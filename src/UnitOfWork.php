@@ -16,7 +16,6 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
-use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
@@ -25,7 +24,6 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
-use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -814,10 +812,8 @@ final class UnitOfWork implements PropertyChangedListener
                     $actualValue = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
                 }
 
-                $type = $class->fieldMappings[$propName]['type'] ?? null;
-
                 // if embed-many or reference-many relationship
-                if ($type === ClassMetadata::MANY) {
+                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
                     $changeSet[$propName] = [$orgValue, $actualValue];
                     /* If original collection was exchanged with a non-empty value
                      * and $set will be issued, there is no need to $unset it first
@@ -834,13 +830,14 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 // skip equivalent date values
-                if (($type === 'date' || $type === 'date_immutable') && $orgValue !== null && $actualValue !== null) {
-                    $dbOrgValue    = DateType::getDateTime($orgValue);
-                    $dbActualValue = DateType::getDateTime($actualValue);
+                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
+                    $dateType      = $class->getFieldType($propName);
+                    $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
+                    $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
-                    // We rely on loose comparison to compare every field (including microseconds)
+                    // We rely on loose comparison to compare every field
                     // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-                    if (new UTCDateTime($dbActualValue) == new UTCDateTime($dbOrgValue)) {
+                    if ($dbOrgValue == $dbActualValue) {
                         continue;
                     }
                 }
