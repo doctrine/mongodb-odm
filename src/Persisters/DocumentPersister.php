@@ -1605,15 +1605,25 @@ final class DocumentPersister
     private function prepareReference(string $fieldName, object $value, array $mapping, bool $inNewObj): array
     {
         $reference = $this->dm->createReference($value, $mapping);
+
+        // If a reference is stored as an identifier, we can always match it
+        // directly. For ReferenceMany, multi-key indexes are used to match
+        // array elements
         if ($inNewObj || $mapping['storeAs'] === ClassMetadata::REFERENCE_STORE_AS_ID) {
             return [[$fieldName, $reference]];
         }
 
-        return $mapping['type'] === ClassMetadata::MANY
-            ? [[$fieldName, ['$elemMatch' => $reference]]]
-            : array_map(
-                static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
-                array_keys($reference),
-            );
+        // For other ReferenceMany fields, we need to use $elemMatch to find a
+        // single array element that matches all fields
+        if ($mapping['type'] === ClassMetadata::MANY) {
+            return [[$fieldName, ['$elemMatch' => $reference]]];
+        }
+
+        // For ReferenceOne fields, we can use multiple conditions on individual
+        // fields, prefixed with the field name of the reference
+        return array_map(
+            static fn ($key) => [$fieldName . '.' . $key, $reference[$key]],
+            array_keys($reference),
+        );
     }
 }
