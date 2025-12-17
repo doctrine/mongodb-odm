@@ -15,6 +15,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Account;
 use Documents\Address;
+use Documents\DocumentWithStaticProperty;
 use Documents\DocumentWithUnmappedProperties;
 use Documents\Group;
 use Documents\Phonenumber;
@@ -35,6 +36,15 @@ class ReferencesTest extends BaseTestCase
         $this->assertInstanceOf(DocumentWithUnmappedProperties::class, $loadedDocument);
 
         self::assertSame('bar', $loadedDocument->foo);
+        self::assertTrue($this->dm->isUninitializedObject($loadedDocument));
+    }
+
+    public function testSkipInitializationForStaticProperties(): void
+    {
+        $loadedDocument = $this->dm->getReference(DocumentWithStaticProperty::class, '123');
+        $this->assertInstanceOf(DocumentWithStaticProperty::class, $loadedDocument);
+
+        self::assertSame('bar', $loadedDocument::$foo);
         self::assertTrue($this->dm->isUninitializedObject($loadedDocument));
     }
 
