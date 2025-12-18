@@ -12,6 +12,7 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Cart;
+use Documents\DocumentWithStaticProperty;
 use Documents\DocumentWithUnmappedProperties;
 use MongoDB\Client;
 use MongoDB\Collection;
@@ -94,6 +95,23 @@ class ProxyFactoryTest extends BaseTestCase
         }
 
         self::assertSame('bar', $proxy->foo);
+    }
+
+    public function testCreateProxyForDocumentWithStaticProperties(): void
+    {
+        $proxy = $this->dm->getReference(DocumentWithStaticProperty::class, '123');
+        self::assertTrue(self::isLazyObject($proxy));
+
+        // Disable initializer so we can access properties without initialising the object
+        if ($proxy instanceof InternalProxy) {
+            $proxy->__setInitialized(true);
+        } elseif ($proxy instanceof GhostObjectInterface) {
+            $proxy->setProxyInitializer(null);
+        } elseif ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
+            $this->dm->getClassMetadata($proxy::class)->getReflectionClass()->markLazyObjectAsInitialized($proxy);
+        }
+
+        self::assertSame('bar', $proxy::$foo);
     }
 }
 
