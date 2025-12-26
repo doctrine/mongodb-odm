@@ -10,20 +10,20 @@ use Attribute;
  * Identifies a class as a document that can be stored in the database
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class Document extends AbstractDocument
+final class Document extends AbstractDocument
 {
     /**
      * @param string|array{name: string, capped?: bool, size?: int, max?: int}|null $collection
      * @param Index[]                                                               $indexes
      */
     public function __construct(
-        public ?string $db = null,
-        public string|array|null $collection = null,
-        public ?string $repositoryClass = null,
-        public array $indexes = [],
-        public bool $readOnly = false,
-        public ?string $shardKey = null,
-        public int|string|null $writeConcern = null,
+        public readonly ?string $db = null,
+        public readonly string|array|null $collection = null,
+        public readonly ?string $repositoryClass = null,
+        public readonly array $indexes = [],
+        public readonly bool $readOnly = false,
+        public readonly ?string $shardKey = null,
+        public readonly int|string|null $writeConcern = null,
     ) {
     }
 }

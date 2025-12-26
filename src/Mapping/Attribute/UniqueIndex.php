@@ -10,7 +10,7 @@ use Attribute;
  * Specifies a unique index on a field
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-final readonly class UniqueIndex extends AbstractIndex implements MappingAttribute
+final class UniqueIndex extends AbstractIndex implements MappingAttribute
 {
     public function __construct(
         array $keys = [],

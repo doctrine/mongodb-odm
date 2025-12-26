@@ -11,9 +11,9 @@ use Attribute;
  * field is not set in a document
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final readonly class DefaultDiscriminatorValue implements MappingAttribute
+final class DefaultDiscriminatorValue implements MappingAttribute
 {
-    public function __construct(public string $value)
+    public function __construct(public readonly string $value)
     {
     }
 }

@@ -11,7 +11,7 @@ use BackedEnum;
  * Specifies a generic field mapping
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class Field extends AbstractField implements MappingAttribute
+final class Field extends AbstractField implements MappingAttribute
 {
     /**
      * @param mixed[]                       $options
@@ -24,7 +24,7 @@ final readonly class Field extends AbstractField implements MappingAttribute
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        public ?string $enumType = null,
+        public readonly ?string $enumType = null,
     ) {
         parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
     }

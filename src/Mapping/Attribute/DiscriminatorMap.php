@@ -10,10 +10,10 @@ use Attribute;
  * Specify a map of discriminator values and classes
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-final readonly class DiscriminatorMap implements MappingAttribute
+final class DiscriminatorMap implements MappingAttribute
 {
     /** @param array<class-string> $value */
-    public function __construct(public array $value)
+    public function __construct(public readonly array $value)
     {
     }
 }

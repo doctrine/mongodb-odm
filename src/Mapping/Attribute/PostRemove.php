@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a postRemove lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PostRemove implements MappingAttribute
+final class PostRemove implements MappingAttribute
 {
 }

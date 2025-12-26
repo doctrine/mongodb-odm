@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a postLoad lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PostLoad implements MappingAttribute
+final class PostLoad implements MappingAttribute
 {
 }

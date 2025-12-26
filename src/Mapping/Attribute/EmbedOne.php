@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * Embeds a single document
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class EmbedOne extends AbstractField implements MappingAttribute
+final class EmbedOne extends AbstractField implements MappingAttribute
 {
     /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
@@ -20,10 +20,10 @@ final readonly class EmbedOne extends AbstractField implements MappingAttribute
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        public ?string $targetDocument = null,
-        public ?string $discriminatorField = null,
-        public ?array $discriminatorMap = null,
-        public ?string $defaultDiscriminatorValue = null,
+        public readonly ?string $targetDocument = null,
+        public readonly ?string $discriminatorField = null,
+        public readonly ?array $discriminatorMap = null,
+        public readonly ?string $defaultDiscriminatorValue = null,
     ) {
         parent::__construct($name, ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
     }

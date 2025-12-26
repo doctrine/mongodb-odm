@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a preUpdate lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PreUpdate implements MappingAttribute
+final class PreUpdate implements MappingAttribute
 {
 }

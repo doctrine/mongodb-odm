@@ -11,6 +11,6 @@ use Attribute;
  * callback attributes on public methods.
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class HasLifecycleCallbacks implements MappingAttribute
+final class HasLifecycleCallbacks implements MappingAttribute
 {
 }

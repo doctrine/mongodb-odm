@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a preRemove lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PreRemove implements MappingAttribute
+final class PreRemove implements MappingAttribute
 {
 }

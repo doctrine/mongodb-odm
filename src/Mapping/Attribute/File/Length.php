@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class Length extends AbstractField implements MappingAttribute
+final class Length extends AbstractField implements MappingAttribute
 {
     public function __construct()
     {

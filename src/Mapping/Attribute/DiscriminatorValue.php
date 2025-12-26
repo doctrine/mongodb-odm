@@ -10,9 +10,9 @@ use Attribute;
  * Use the specified discriminator for this class
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class DiscriminatorValue implements MappingAttribute
+final class DiscriminatorValue implements MappingAttribute
 {
-    public function __construct(public string $value)
+    public function __construct(public readonly string $value)
     {
     }
 }

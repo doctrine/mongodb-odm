@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a preLoad lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PreLoad implements MappingAttribute
+final class PreLoad implements MappingAttribute
 {
 }

@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a postPersist lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PostPersist implements MappingAttribute
+final class PostPersist implements MappingAttribute
 {
 }

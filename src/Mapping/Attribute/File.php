@@ -10,18 +10,18 @@ use Attribute;
  * Identifies a class as a GridFS file that can be stored in the database
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class File extends AbstractDocument
+final class File extends AbstractDocument
 {
     /** @param Index[] $indexes */
     public function __construct(
-        public ?string $db = null,
-        public ?string $bucketName = null,
-        public ?string $repositoryClass = null,
-        public array $indexes = [],
-        public bool $readOnly = false,
-        public ?string $shardKey = null,
-        public string|int|null $writeConcern = null,
-        public ?int $chunkSizeBytes = null,
+        public readonly ?string $db = null,
+        public readonly ?string $bucketName = null,
+        public readonly ?string $repositoryClass = null,
+        public readonly array $indexes = [],
+        public readonly bool $readOnly = false,
+        public readonly ?string $shardKey = null,
+        public readonly string|int|null $writeConcern = null,
+        public readonly ?int $chunkSizeBytes = null,
     ) {
     }
 }

@@ -7,6 +7,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class QueryResultDocument extends AbstractDocument
+final class QueryResultDocument extends AbstractDocument
 {
 }

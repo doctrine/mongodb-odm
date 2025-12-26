@@ -10,9 +10,9 @@ use Attribute;
  * Specifies which inheritance type to use for a document
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class InheritanceType implements MappingAttribute
+final class InheritanceType implements MappingAttribute
 {
-    public function __construct(public string $value)
+    public function __construct(public readonly string $value)
     {
     }
 }

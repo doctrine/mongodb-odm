@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a postUpdate lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PostUpdate implements MappingAttribute
+final class PostUpdate implements MappingAttribute
 {
 }

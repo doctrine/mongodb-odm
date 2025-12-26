@@ -10,10 +10,10 @@ use Attribute;
  * Identifies a class as a document that can be embedded but not stored by itself
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class EmbeddedDocument extends AbstractDocument
+final class EmbeddedDocument extends AbstractDocument
 {
     /** @param Index[] $indexes */
-    public function __construct(public array $indexes = [])
+    public function __construct(public readonly array $indexes = [])
     {
     }
 }

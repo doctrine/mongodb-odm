@@ -11,9 +11,11 @@ use Attribute;
  * information
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class MappedSuperclass extends AbstractDocument
+final class MappedSuperclass extends AbstractDocument
 {
-    public function __construct(public ?string $repositoryClass = null, public ?string $collection = null)
-    {
+    public function __construct(
+        public readonly ?string $repositoryClass = null,
+        public readonly ?string $collection = null,
+    ) {
     }
 }

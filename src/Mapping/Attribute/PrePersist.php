@@ -10,6 +10,6 @@ use Attribute;
  * Marks a method as a prePersist lifecycle callback
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-final readonly class PrePersist implements MappingAttribute
+final class PrePersist implements MappingAttribute
 {
 }

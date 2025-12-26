@@ -12,7 +12,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * Specifies a one-to-many relationship to a different document
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class ReferenceMany extends AbstractField implements MappingAttribute
+final class ReferenceMany extends AbstractField implements MappingAttribute
 {
     /**
      * @param array<string, class-string>|null $discriminatorMap
@@ -27,23 +27,23 @@ final readonly class ReferenceMany extends AbstractField implements MappingAttri
         array $options = [],
         string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         bool $notSaved = false,
-        public string $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF,
-        public ?string $targetDocument = null,
-        public ?string $discriminatorField = null,
-        public ?array $discriminatorMap = null,
-        public ?string $defaultDiscriminatorValue = null,
-        public array|string|null $cascade = null,
-        public ?bool $orphanRemoval = null,
-        public ?string $inversedBy = null,
-        public ?string $mappedBy = null,
-        public ?string $repositoryMethod = null,
-        public array $sort = [],
-        public array $criteria = [],
-        public ?int $limit = null,
-        public ?int $skip = null,
-        public ?string $collectionClass = null,
-        public array $prime = [],
-        public bool $storeEmptyArray = false,
+        public readonly string $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF,
+        public readonly ?string $targetDocument = null,
+        public readonly ?string $discriminatorField = null,
+        public readonly ?array $discriminatorMap = null,
+        public readonly ?string $defaultDiscriminatorValue = null,
+        public readonly array|string|null $cascade = null,
+        public readonly ?bool $orphanRemoval = null,
+        public readonly ?string $inversedBy = null,
+        public readonly ?string $mappedBy = null,
+        public readonly ?string $repositoryMethod = null,
+        public readonly array $sort = [],
+        public readonly array $criteria = [],
+        public readonly ?int $limit = null,
+        public readonly ?int $skip = null,
+        public readonly ?string $collectionClass = null,
+        public readonly array $prime = [],
+        public readonly bool $storeEmptyArray = false,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
     }

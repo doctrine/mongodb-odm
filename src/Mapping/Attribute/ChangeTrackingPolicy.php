@@ -10,9 +10,9 @@ use Attribute;
  * Specifies the change tracking policy for a document
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class ChangeTrackingPolicy implements MappingAttribute
+final class ChangeTrackingPolicy implements MappingAttribute
 {
-    public function __construct(public string $value)
+    public function __construct(public readonly string $value)
     {
     }
 }
