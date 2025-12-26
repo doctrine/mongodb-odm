@@ -16,7 +16,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @phpstan-import-type SearchIndexSynonym from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-readonly class SearchIndex implements MappingAttribute
+final readonly class SearchIndex implements MappingAttribute
 {
     /**
      * @param array<string, array>|null     $fields

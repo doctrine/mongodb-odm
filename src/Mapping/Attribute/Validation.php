@@ -8,7 +8,7 @@ use Attribute;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-readonly class Validation implements MappingAttribute
+final readonly class Validation implements MappingAttribute
 {
     /**
      * @phpstan-param ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR|ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN|null $action

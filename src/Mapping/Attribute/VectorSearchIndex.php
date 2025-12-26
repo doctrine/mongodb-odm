@@ -15,7 +15,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @phpstan-import-type VectorSearchIndexField from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-readonly class VectorSearchIndex implements MappingAttribute
+final readonly class VectorSearchIndex implements MappingAttribute
 {
     /** @param list<VectorSearchIndexField> $fields */
     public function __construct(
