@@ -25,7 +25,6 @@ use function array_replace;
 use function assert;
 use function class_exists;
 use function constant;
-use function is_array;
 
 /**
  * The AttributeDriver reads the mapping metadata from attributes.

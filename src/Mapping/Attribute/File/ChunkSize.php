@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class ChunkSize extends AbstractField implements MappingAttribute
+final class ChunkSize extends AbstractField implements MappingAttribute
 {
     public function __construct()
     {
