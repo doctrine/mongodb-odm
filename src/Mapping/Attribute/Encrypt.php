@@ -15,11 +15,9 @@ use MongoDB\BSON\UTCDateTime;
  * Defines an encrypted field mapping.
  *
  * @see https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/#configure-encrypted-fields-for-optimal-search-and-storage
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-class Encrypt implements MappingAttribute
+final readonly class Encrypt implements MappingAttribute
 {
     public int|float|Int64|Decimal128|UTCDateTime|null $min;
     public int|float|Int64|Decimal128|UTCDateTime|null $max;

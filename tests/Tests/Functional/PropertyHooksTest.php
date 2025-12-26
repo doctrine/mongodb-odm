@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\PropertyHooks\User;

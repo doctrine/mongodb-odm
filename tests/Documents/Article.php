@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use DateTimeInterface;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use MongoDB\BSON\UTCDateTime;
 
 use function array_search;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Documents\TimeSeries;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 
 #[ODM\Document]

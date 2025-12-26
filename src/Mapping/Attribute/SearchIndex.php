@@ -16,7 +16,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @phpstan-import-type SearchIndexSynonym from ClassMetadata
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class SearchIndex implements MappingAttribute
+readonly class SearchIndex implements MappingAttribute
 {
     /**
      * @param array<string, array>|null     $fields
@@ -31,7 +31,7 @@ class SearchIndex implements MappingAttribute
         public ?string $analyzer = null,
         public ?string $searchAnalyzer = null,
         public ?array $analyzers = null,
-        public $storedSource = null,
+        public bool|array|null $storedSource = null,
         public ?array $synonyms = null,
     ) {
     }

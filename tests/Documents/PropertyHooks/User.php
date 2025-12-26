@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Documents\PropertyHooks;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
 use ValueError;
 
 #[Document(collection: 'property_hooks_user')]

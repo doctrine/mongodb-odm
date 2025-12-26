@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Marks a method as a postUpdate lifecycle callback
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PostUpdate implements MappingAttribute
+final readonly class PostUpdate implements MappingAttribute
 {
 }

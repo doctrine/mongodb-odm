@@ -9,21 +9,11 @@ use Attribute;
 /**
  * Specifies a parent class that other documents may extend to inherit mapping
  * information
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class MappedSuperclass extends AbstractDocument
+final readonly class MappedSuperclass extends AbstractDocument
 {
-    /** @var string|null */
-    public $repositoryClass;
-
-    /** @var string|null */
-    public $collection;
-
-    public function __construct(?string $repositoryClass = null, ?string $collection = null)
+    public function __construct(public ?string $repositoryClass = null, public ?string $collection = null)
     {
-        $this->repositoryClass = $repositoryClass;
-        $this->collection      = $collection;
     }
 }

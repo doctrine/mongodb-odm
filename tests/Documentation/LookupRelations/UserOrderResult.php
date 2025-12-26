@@ -6,10 +6,10 @@ namespace Documentation\LookupRelations;
 
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\QueryResultDocument;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbedMany;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\QueryResultDocument;
 
 #[QueryResultDocument]
 class UserOrderResult

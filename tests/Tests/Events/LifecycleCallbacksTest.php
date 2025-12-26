@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Events;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Event;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 

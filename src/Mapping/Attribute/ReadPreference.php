@@ -6,20 +6,11 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
 
-/** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class ReadPreference implements MappingAttribute
+final readonly class ReadPreference implements MappingAttribute
 {
-    /** @var string */
-    public $value;
-
-    /** @var string[][]|null */
-    public $tags;
-
     /** @param string[][]|null $tags */
-    public function __construct(string $value, ?array $tags = null)
+    public function __construct(public string $value, public ?array $tags = null)
     {
-        $this->value = $value;
-        $this->tags  = $tags;
     }
 }

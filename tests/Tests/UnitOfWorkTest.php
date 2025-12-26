@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Closure;
 use DateTime;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;

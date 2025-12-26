@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
 use DateTimeInterface;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;

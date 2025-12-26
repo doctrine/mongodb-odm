@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Documentation\Validation;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbeddedDocument;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\EmbeddedDocument;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
 
 #[EmbeddedDocument]
 class OrderLine

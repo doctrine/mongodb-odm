@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Documentation\ResolveTargetDocument;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
 use Documentation\ResolveTargetDocument\CustomerModule\Customer as BaseCustomer;
 use Documentation\ResolveTargetDocument\InvoiceModule\InvoiceSubjectInterface;
 

@@ -9,15 +9,10 @@ use BackedEnum;
 
 /**
  * Specifies a generic field mapping
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Field extends AbstractField implements MappingAttribute
+final class Field extends AbstractField implements MappingAttribute
 {
-    /** @var class-string<BackedEnum>|null */
-    public $enumType;
-
     /**
      * @param mixed[]                       $options
      * @param class-string<BackedEnum>|null $enumType
@@ -29,10 +24,8 @@ class Field extends AbstractField implements MappingAttribute
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        ?string $enumType = null,
+        public readonly ?string $enumType = null,
     ) {
         parent::__construct($name, $type, $nullable, $options, $strategy, $notSaved);
-
-        $this->enumType = $enumType;
     }
 }

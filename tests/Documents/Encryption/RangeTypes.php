@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Documents\Encryption;
 
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Encrypt;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Encrypt;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
 use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\Decimal128;

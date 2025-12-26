@@ -8,17 +8,11 @@ use Attribute;
 
 /**
  * Use the specified discriminator for this class
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class DiscriminatorValue implements MappingAttribute
+final readonly class DiscriminatorValue implements MappingAttribute
 {
-    /** @var string */
-    public $value;
-
-    public function __construct(string $value)
+    public function __construct(public string $value)
     {
-        $this->value = $value;
     }
 }

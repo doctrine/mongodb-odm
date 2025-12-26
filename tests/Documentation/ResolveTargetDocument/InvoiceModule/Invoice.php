@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Documentation\ResolveTargetDocument\InvoiceModule;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ReferenceOne;
 
 #[Document]
 class Invoice
