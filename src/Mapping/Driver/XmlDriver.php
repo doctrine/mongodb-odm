@@ -83,7 +83,7 @@ class XmlDriver extends FileDriver
     }
 
     // phpcs:disable SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
+    public function loadMetadataForClass(string $className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
     {
         assert($metadata instanceof ClassMetadata);
         $xmlRoot = $this->getElement($className);
@@ -819,10 +819,8 @@ class XmlDriver extends FileDriver
      * Special strings "false", "true", and "null" are converted to their
      * respective values. Numeric strings are cast to int or float depending on
      * whether they contain decimal separators or not.
-     *
-     * @return scalar|null
      */
-    private function convertXMLElementValue(string $value)
+    private function convertXMLElementValue(string $value): string|bool|int|float|null
     {
         $value = trim($value);
 
@@ -896,7 +894,7 @@ class XmlDriver extends FileDriver
         return [(string) $xmlReadPreference['mode'], $tags];
     }
 
-    protected function loadMappingFile($file): array
+    protected function loadMappingFile(string $file): array
     {
         $result = [];
 

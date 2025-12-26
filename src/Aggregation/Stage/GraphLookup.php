@@ -26,7 +26,7 @@ class GraphLookup extends Stage
     private ?string $from;
 
     /** @var string|Expr|mixed[]|null */
-    private string|Expr|array|null $startWith;
+    private string|Expr|array|null $startWith = null;
 
     private ?string $connectFromField = null;
 
@@ -46,7 +46,7 @@ class GraphLookup extends Stage
      * @param string $from Target collection for the $graphLookup operation to
      * search, recursively matching the connectFromField to the connectToField.
      */
-    public function __construct(Builder $builder, string $from, private DocumentManager $dm, private ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, private readonly DocumentManager $dm, private readonly ClassMetadata $class)
     {
         parent::__construct($builder);
 
@@ -210,7 +210,7 @@ class GraphLookup extends Stage
      *
      * @param string|mixed[]|Expr $expression
      */
-    public function startWith($expression): static
+    public function startWith(string|array|Expr $expression): static
     {
         $this->startWith = $expression;
 
@@ -249,12 +249,7 @@ class GraphLookup extends Stage
         return $this;
     }
 
-    /**
-     * @param array|mixed|string $expression
-     *
-     * @return array|mixed|string
-     */
-    private function convertExpression($expression)
+    private function convertExpression(mixed $expression): mixed
     {
         if (is_array($expression)) {
             return array_map($this->convertExpression(...), $expression);

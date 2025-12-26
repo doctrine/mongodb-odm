@@ -26,11 +26,7 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
     /** @var list<string> */
     private array $path;
 
-    /**
-     * @param int|float|UTCDateTime|array|Point|null $origin
-     * @param int|float|null                         $pivot
-     */
-    public function __construct(Search $search, DocumentPersister $persister, $origin = null, $pivot = null, string ...$path)
+    public function __construct(Search $search, DocumentPersister $persister, int|float|UTCDateTime|array|Point|null $origin = null, int|float|null $pivot = null, string ...$path)
     {
         parent::__construct($search, $persister);
 
@@ -40,16 +36,14 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
             ->path(...$path);
     }
 
-    /** @param int|float|UTCDateTime|array|Point|null $origin */
-    public function origin($origin): static
+    public function origin(int|float|UTCDateTime|array|Point|null $origin): static
     {
         $this->origin = $origin;
 
         return $this;
     }
 
-    /** @param int|float|null $pivot */
-    public function pivot($pivot): static
+    public function pivot(int|float|null $pivot): static
     {
         $this->pivot = $pivot;
 

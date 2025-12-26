@@ -52,12 +52,10 @@ class Densify extends Stage
     }
 
     /**
-     * @param array|string $bounds
-     * @param int|float    $step
      * @phpstan-param BoundsType  $bounds
      * @phpstan-param ""|UnitType $unit
      */
-    public function range($bounds, $step, string $unit = ''): static
+    public function range(array|string $bounds, int|float $step, string $unit = ''): static
     {
         $this->range = (object) [
             'bounds' => $bounds,

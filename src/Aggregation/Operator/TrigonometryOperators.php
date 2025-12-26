@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all trigonometry aggregation pipeline operators.
  *
@@ -20,139 +18,108 @@ interface TrigonometryOperators
      * Returns the inverse cosine (arc cosine) of a value in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acos/
-     *
-     * @param mixed|Expr $expression
      */
-    public function acos($expression): static;
+    public function acos(mixed $expression): static;
 
     /**
      * Returns the inverse hyperbolic cosine (hyperbolic arc cosine) of a value
      * in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/acosh/
-     *
-     * @param mixed|Expr $expression
      */
-    public function acosh($expression): static;
+    public function acosh(mixed $expression): static;
 
     /**
      * Returns the inverse sin (arc sine) of a value in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asin/
-     *
-     * @param mixed|Expr $expression
      */
-    public function asin($expression): static;
+    public function asin(mixed $expression): static;
 
     /**
      * Returns the inverse hyperbolic sine (hyperbolic arc sine) of a value in
      * radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/asinh/
-     *
-     * @param mixed|Expr $expression
      */
-    public function asinh($expression): static;
+    public function asinh(mixed $expression): static;
 
     /**
      * Returns the inverse tangent (arc tangent) of a value in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan/
-     *
-     * @param mixed|Expr $expression
      */
-    public function atan($expression): static;
+    public function atan(mixed $expression): static;
 
     /**
      * Returns the inverse tangent (arc tangent) of y / x in radians, where y
      * and x are the first and second values passed to the expression respectively.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atan2/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function atan2($expression1, $expression2): static;
+    public function atan2(mixed $expression1, mixed $expression2): static;
 
     /**
      * Returns the inverse hyperbolic tangent (hyperbolic arc tangent) of a
      * value in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/atanh/
-     *
-     * @param mixed|Expr $expression
      */
-    public function atanh($expression): static;
+    public function atanh(mixed $expression): static;
 
     /**
      * Returns the cosine of a value that is measured in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cos/
-     *
-     * @param mixed|Expr $expression
      */
-    public function cos($expression): static;
+    public function cos(mixed $expression): static;
 
     /**
      * Returns the hyperbolic cosine of a value that is measured in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cosh/
-     *
-     * @param mixed|Expr $expression
      */
-    public function cosh($expression): static;
+    public function cosh(mixed $expression): static;
 
     /**
      * Converts a value from degrees to radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/degreesToRadians/
-     *
-     * @param mixed|Expr $expression
      */
-    public function degreesToRadians($expression): static;
+    public function degreesToRadians(mixed $expression): static;
 
     /**
      * Converts a value from radians to degrees.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/radiansToDegrees/
-     *
-     * @param mixed|Expr $expression
      */
-    public function radiansToDegrees($expression): static;
+    public function radiansToDegrees(mixed $expression): static;
 
     /**
      * Returns the sine of a value that is measured in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sin/
-     *
-     * @param mixed|Expr $expression
      */
-    public function sin($expression): static;
+    public function sin(mixed $expression): static;
 
     /**
      * Returns the hyperbolic sine of a value that is measured in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sinh/
-     *
-     * @param mixed|Expr $expression
      */
-    public function sinh($expression): static;
+    public function sinh(mixed $expression): static;
 
     /**
      * Returns the tangent of a value that is measured in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tan/
-     *
-     * @param mixed|Expr $expression
      */
-    public function tan($expression): static;
+    public function tan(mixed $expression): static;
 
     /**
      * Returns the hyperbolic tangent of a value that is measured in radians.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tanh/
-     *
-     * @param mixed|Expr $expression
      */
-    public function tanh($expression): static;
+    public function tanh(mixed $expression): static;
 }

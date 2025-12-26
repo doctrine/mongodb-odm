@@ -29,7 +29,7 @@ final class Aggregation implements IterableResult
      * @param array<string, mixed> $options
      * @phpstan-param PipelineExpression $pipeline
      */
-    public function __construct(private DocumentManager $dm, private ?ClassMetadata $classMetadata, private Collection $collection, private array $pipeline, private array $options = [], private bool $rewindable = true)
+    public function __construct(private readonly DocumentManager $dm, private readonly ?ClassMetadata $classMetadata, private readonly Collection $collection, private array $pipeline, private readonly array $options = [], private readonly bool $rewindable = true)
     {
     }
 

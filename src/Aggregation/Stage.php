@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use GeoJson\Geometry\Point;
 
 /**
@@ -13,6 +15,9 @@ use GeoJson\Geometry\Point;
  *
  * @phpstan-import-type PipelineExpression from Builder
  * @phpstan-import-type StageExpression from Builder
+ * @phpstan-import-type SortDirectionKeywords from Sort
+ * @phpstan-import-type SortMetaKeywords from Search
+ * @phpstan-import-type SortMeta from Search
  */
 abstract class Stage
 {
@@ -152,9 +157,8 @@ abstract class Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
      */
-    public function geoNear($x, $y = null): Stage\GeoNear
+    public function geoNear(float|array|Point $x, ?float $y = null): Stage\GeoNear
     {
         return $this->builder->geoNear($x, $y);
     }
@@ -291,10 +295,10 @@ abstract class Stage
      * including the _id field. You can promote an existing embedded document to
      * the top level, or create a new document for promotion.
      *
-     * @param string|mixed[]|null $expression Optional. A replacement expression that
+     * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceRoot($expression = null): Stage\ReplaceRoot
+    public function replaceRoot(string|array|Expr|null $expression = null): Stage\ReplaceRoot
     {
         return $this->builder->replaceRoot($expression);
     }
@@ -312,7 +316,7 @@ abstract class Stage
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceWith($expression = null): Stage\ReplaceWith
+    public function replaceWith(string|array|Expr|null $expression = null): Stage\ReplaceWith
     {
         return $this->builder->replaceWith($expression);
     }
@@ -393,9 +397,10 @@ abstract class Stage
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param int|string|array|null            $order     Field order (if one field is specified)
+     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
-    public function sort($fieldName, $order = null): self
+    public function sort(array|string $fieldName, int|string|array|null $order = null): self
     {
         return $this->builder->sort($fieldName, $order);
     }

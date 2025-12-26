@@ -23,10 +23,8 @@ interface ArithmeticOperators
      * to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/abs/
-     *
-     * @param mixed|Expr $number
      */
-    public function abs($number): static;
+    public function abs(mixed $number): static;
 
     /**
      * Adds numbers together or adds numbers and a date. If one of the arguments
@@ -38,11 +36,9 @@ interface ArithmeticOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/add/
      *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
      */
-    public function add($expression1, $expression2, ...$expressions): static;
+    public function add(mixed $expression1, mixed $expression2, mixed ...$expressions): static;
 
     /**
      * Returns the smallest integer greater than or equal to the specified
@@ -52,10 +48,8 @@ interface ArithmeticOperators
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ceil/
-     *
-     * @param mixed|Expr $number
      */
-    public function ceil($number): static;
+    public function ceil(mixed $number): static;
 
     /**
      * Divides one number by another and returns the result. The first argument
@@ -64,11 +58,8 @@ interface ArithmeticOperators
      * The arguments can be any valid expression as long as the resolve to numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/divide/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function divide($expression1, $expression2): static;
+    public function divide(mixed $expression1, mixed $expression2): static;
 
     /**
      * Raises Euler’s number to the specified exponent and returns the result.
@@ -77,10 +68,8 @@ interface ArithmeticOperators
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/exp/
-     *
-     * @param mixed|Expr $exponent
      */
-    public function exp($exponent): static;
+    public function exp(mixed $exponent): static;
 
     /**
      * Returns the largest integer less than or equal to the specified number.
@@ -89,10 +78,8 @@ interface ArithmeticOperators
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/floor/
-     *
-     * @param mixed|Expr $number
      */
-    public function floor($number): static;
+    public function floor(mixed $number): static;
 
     /**
      * Calculates the natural logarithm ln (i.e loge) of a number and returns
@@ -102,10 +89,8 @@ interface ArithmeticOperators
      * resolves to a non-negative number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     *
-     * @param mixed|Expr $number
      */
-    public function ln($number): static;
+    public function ln(mixed $number): static;
 
     /**
      * Calculates the log of a number in the specified base and returns the
@@ -117,11 +102,8 @@ interface ArithmeticOperators
      * to a positive number greater than 1.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log/
-     *
-     * @param mixed|Expr $number
-     * @param mixed|Expr $base
      */
-    public function log($number, $base): static;
+    public function log(mixed $number, mixed $base): static;
 
     /**
      * Calculates the log base 10 of a number and returns the result as a double.
@@ -130,10 +112,8 @@ interface ArithmeticOperators
      * resolves to a non-negative number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/log10/
-     *
-     * @param mixed|Expr $number
      */
-    public function log10($number): static;
+    public function log10(mixed $number): static;
 
     /**
      * Divides one number by another and returns the remainder. The first
@@ -143,11 +123,8 @@ interface ArithmeticOperators
      * numbers.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mod/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function mod($expression1, $expression2): static;
+    public function mod(mixed $expression1, mixed $expression2): static;
 
     /**
      * Multiplies numbers together and returns the result.
@@ -157,11 +134,9 @@ interface ArithmeticOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/multiply/
      *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional expressions
      */
-    public function multiply($expression1, $expression2, ...$expressions): static;
+    public function multiply(mixed $expression1, mixed $expression2, mixed ...$expressions): static;
 
     /**
      * Raises a number to the specified exponent and returns the result.
@@ -172,11 +147,8 @@ interface ArithmeticOperators
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/pow/
-     *
-     * @param mixed|Expr $number
-     * @param mixed|Expr $exponent
      */
-    public function pow($number, $exponent): static;
+    public function pow(mixed $number, mixed $exponent): static;
 
     /**
      * Rounds a number to a whole integer or to a specified decimal place.
@@ -185,11 +157,8 @@ interface ArithmeticOperators
      * to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/round/
-     *
-     * @param mixed|Expr      $number
-     * @param mixed|Expr|null $place
      */
-    public function round($number, $place = null): static;
+    public function round(mixed $number, mixed $place = null): static;
 
     /**
      * Calculates the square root of a positive number and returns the result as
@@ -199,10 +168,8 @@ interface ArithmeticOperators
      * non-negative number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sqrt/
-     *
-     * @param mixed|Expr $expression
      */
-    public function sqrt($expression): static;
+    public function sqrt(mixed $expression): static;
 
     /**
      * Subtracts two numbers to return the difference. The second argument is
@@ -211,11 +178,8 @@ interface ArithmeticOperators
      * The arguments can be any valid expression as long as they resolve to numbers and/or dates.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/subtract/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function subtract($expression1, $expression2): static;
+    public function subtract(mixed $expression1, mixed $expression2): static;
 
     /**
      * Truncates a number to its integer.
@@ -224,8 +188,6 @@ interface ArithmeticOperators
      * resolves to a number.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/trunc/
-     *
-     * @param mixed|Expr $number
      */
-    public function trunc($number): static;
+    public function trunc(mixed $number): static;
 }

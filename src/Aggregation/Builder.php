@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\IterableResult;
@@ -27,7 +28,10 @@ use function sprintf;
 /**
  * Fluent interface for building aggregation pipelines.
  *
- * @phpstan-import-type SortShape from Sort
+ * @phpstan-import-type SortDirectionKeywords from Sort
+ * @phpstan-import-type SortMetaKeywords from Search
+ * @phpstan-import-type SortMeta from Search
+ * @phpstan-import-type SortShape from Search
  * @phpstan-type StageExpression array<string, mixed>
  * @phpstan-type PipelineExpression list<StageExpression>
  */
@@ -598,10 +602,11 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|null                                        $order     Field order (if one field is specified)
+     * @param int|string|array|null                                  $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string $fieldName Field name or array of field/order pairs
+     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
-    public function sort(array|string $fieldName, int|string|null $order = null): Stage\Sort
+    public function sort(array|string $fieldName, int|string|array|null $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage

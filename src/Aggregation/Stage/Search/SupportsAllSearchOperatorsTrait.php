@@ -10,7 +10,6 @@ use GeoJson\Geometry\LineString;
 use GeoJson\Geometry\MultiPolygon;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
-use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
 /** @internal */
@@ -44,8 +43,7 @@ trait SupportsAllSearchOperatorsTrait
         return $this->addOperator(new EmbeddedDocument($this->getSearchStage(), $this->getDocumentPersister(), $path));
     }
 
-    /** @param string|int|float|ObjectId|UTCDateTime|null $value */
-    public function equals(string $path = '', $value = null): Equals
+    public function equals(string $path = '', mixed $value = null): Equals
     {
         return $this->addOperator(new Equals($this->getSearchStage(), $this->getDocumentPersister(), $path, $value));
     }
@@ -56,7 +54,7 @@ trait SupportsAllSearchOperatorsTrait
     }
 
     /** @param LineString|Point|Polygon|MultiPolygon|array<string, mixed>|null $geometry */
-    public function geoShape($geometry = null, string $relation = '', string ...$path): GeoShape
+    public function geoShape(LineString|Point|Polygon|MultiPolygon|array|null $geometry = null, string $relation = '', string ...$path): GeoShape
     {
         return $this->addOperator(new GeoShape($this->getSearchStage(), $this->getDocumentPersister(), $geometry, $relation, ...$path));
     }
@@ -67,16 +65,13 @@ trait SupportsAllSearchOperatorsTrait
     }
 
     /** @param array<string, mixed>|object $documents */
-    public function moreLikeThis(...$documents): MoreLikeThis
+    public function moreLikeThis(array|object ...$documents): MoreLikeThis
     {
         return $this->addOperator(new MoreLikeThis($this->getSearchStage(), $this->getDocumentPersister(), ...$documents));
     }
 
-    /**
-     * @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin
-     * @param int|float|null                                        $pivot
-     */
-    public function near($origin = null, $pivot = null, string ...$path): Near
+    /** @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin */
+    public function near(int|float|UTCDateTime|array|Point|null $origin = null, int|float|null $pivot = null, string ...$path): Near
     {
         return $this->addOperator(new Near($this->getSearchStage(), $this->getDocumentPersister(), $origin, $pivot, ...$path));
     }

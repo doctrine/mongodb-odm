@@ -28,6 +28,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Types\Type;
 use LogicException;
+use MongoDB\BSON\Javascript;
 
 use function array_filter;
 use function array_map;
@@ -83,12 +84,12 @@ class Expr implements
     {
     }
 
-    public function abs($number): static
+    public function abs(mixed $number): static
     {
         return $this->operator('$abs', $number);
     }
 
-    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): static
+    public function accumulator(string|Javascript $init, string|Javascript $accumulate, mixed $accumulateArgs, string|Javascript $merge, mixed $initArgs = null, string|Javascript|null $finalize = null, string $lang = 'js'): static
     {
         return $this->operator(
             '$accumulator',
@@ -107,7 +108,7 @@ class Expr implements
         );
     }
 
-    public function add($expression1, $expression2, ...$expressions): static
+    public function add(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         return $this->operator('$add', func_get_args());
     }
@@ -120,7 +121,7 @@ class Expr implements
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): static
+    public function addAnd(mixed $expression, mixed ...$expressions): static
     {
         $this->expr['$and'] = array_merge(
             $this->expr['$and'] ?? [],
@@ -138,7 +139,7 @@ class Expr implements
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): static
+    public function addOr(mixed $expression, mixed ...$expressions): static
     {
         $this->expr['$or'] = array_merge(
             $this->expr['$or'] ?? [],
@@ -148,57 +149,57 @@ class Expr implements
         return $this;
     }
 
-    public function addToSet($expression): static
+    public function addToSet(mixed $expression): static
     {
         return $this->operator('$addToSet', $expression);
     }
 
-    public function allElementsTrue($expression): static
+    public function allElementsTrue(mixed $expression): static
     {
         return $this->operator('$allElementsTrue', $expression);
     }
 
-    public function and($expression, ...$expressions): static
+    public function and(mixed $expression, mixed ...$expressions): static
     {
         return $this->operator('$and', func_get_args());
     }
 
-    public function anyElementTrue($expression): static
+    public function anyElementTrue(mixed $expression): static
     {
         return $this->operator('$anyElementTrue', $expression);
     }
 
-    public function arrayElemAt($array, $index): static
+    public function arrayElemAt(mixed $array, mixed $index): static
     {
         return $this->operator('$arrayElemAt', func_get_args());
     }
 
-    public function avg($expression, ...$expressions): static
+    public function avg(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$avg', ...func_get_args());
     }
 
-    public function binarySize($expression): static
+    public function binarySize(mixed $expression): static
     {
         return $this->operator('$binarySize', $expression);
     }
 
-    public function bottom($output, $sortBy): static
+    public function bottom(mixed $output, array $sortBy): static
     {
         return $this->operator('$bottom', ['output' => $output, 'sortBy' => $sortBy]);
     }
 
-    public function bottomN($output, $sortBy, $n): static
+    public function bottomN(mixed $output, array $sortBy, mixed $n): static
     {
         return $this->operator('$bottomN', ['output' => $output, 'sortBy' => $sortBy, 'n' => $n]);
     }
 
-    public function bsonSize($expression): static
+    public function bsonSize(mixed $expression): static
     {
         return $this->operator('$bsonSize', $expression);
     }
 
-    public function case($expression): static
+    public function case(mixed $expression): static
     {
         $this->requiresSwitchStatement(static::class . '::case');
 
@@ -207,27 +208,27 @@ class Expr implements
         return $this;
     }
 
-    public function ceil($number): static
+    public function ceil(mixed $number): static
     {
         return $this->operator('$ceil', $number);
     }
 
-    public function cmp($expression1, $expression2): static
+    public function cmp(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$cmp', func_get_args());
     }
 
-    public function concat($expression1, $expression2, ...$expressions): static
+    public function concat(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         return $this->operator('$concat', func_get_args());
     }
 
-    public function concatArrays($array1, $array2, ...$arrays): static
+    public function concatArrays(mixed $array1, mixed $array2, mixed ...$arrays): static
     {
         return $this->operator('$concatArrays', func_get_args());
     }
 
-    public function cond($if, $then, $else): static
+    public function cond(mixed $if, mixed $then, mixed $else): static
     {
         return $this->operator('$cond', ['if' => $if, 'then' => $then, 'else' => $else]);
     }
@@ -241,11 +242,9 @@ class Expr implements
      *
      * @internal
      *
-     * @param mixed|self $expression
-     *
      * @return string|array<string, mixed>
      */
-    public static function convertExpression($expression)
+    public static function convertExpression(mixed $expression): mixed
     {
         if (is_array($expression)) {
             return array_map(static fn ($expression) => static::convertExpression($expression), $expression);
@@ -263,17 +262,17 @@ class Expr implements
         return $this->operator('$count', []);
     }
 
-    public function covariancePop($expression1, $expression2): static
+    public function covariancePop(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$covariancePop', func_get_args());
     }
 
-    public function covarianceSamp($expression1, $expression2): static
+    public function covarianceSamp(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$covarianceSamp', func_get_args());
     }
 
-    public function dateAdd($startDate, $unit, $amount, $timezone = null): static
+    public function dateAdd(mixed $startDate, mixed $unit, mixed $amount, mixed $timezone = null): static
     {
         return $this->operator(
             '$dateAdd',
@@ -289,7 +288,7 @@ class Expr implements
         );
     }
 
-    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): static
+    public function dateDiff(mixed $startDate, mixed $endDate, mixed $unit, mixed $timezone = null, mixed $startOfWeek = null): static
     {
         return $this->operator(
             '$dateDiff',
@@ -306,7 +305,7 @@ class Expr implements
         );
     }
 
-    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): static
+    public function dateFromParts(mixed $year = null, mixed $isoWeekYear = null, mixed $month = null, mixed $isoWeek = null, mixed $day = null, mixed $isoDayOfWeek = null, mixed $hour = null, mixed $minute = null, mixed $second = null, mixed $millisecond = null, mixed $timezone = null): static
     {
         return $this->operator(
             '$dateFromParts',
@@ -341,7 +340,7 @@ class Expr implements
         );
     }
 
-    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): static
+    public function dateFromString(mixed $dateString, mixed $format = null, mixed $timezone = null, mixed $onError = null, mixed $onNull = null): static
     {
         return $this->operator(
             '$dateFromString',
@@ -358,7 +357,7 @@ class Expr implements
         );
     }
 
-    public function dateSubtract($startDate, $unit, $amount, $timezone = null): static
+    public function dateSubtract(mixed $startDate, mixed $unit, mixed $amount, mixed $timezone = null): static
     {
         return $this->operator(
             '$dateSubtract',
@@ -374,7 +373,7 @@ class Expr implements
         );
     }
 
-    public function dateToParts($date, $timezone = null, $iso8601 = null): static
+    public function dateToParts(mixed $date, mixed $timezone = null, mixed $iso8601 = null): static
     {
         return $this->operator(
             '$dateToParts',
@@ -389,7 +388,7 @@ class Expr implements
         );
     }
 
-    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): static
+    public function dateToString(string $format, mixed $expression, mixed $timezone = null, mixed $onNull = null): static
     {
         return $this->operator(
             '$dateToString',
@@ -405,7 +404,7 @@ class Expr implements
         );
     }
 
-    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): static
+    public function dateTrunc(mixed $date, mixed $unit, mixed $binSize = null, mixed $timezone = null, mixed $startOfWeek = null): static
     {
         return $this->operator(
             '$dateTrunc',
@@ -422,22 +421,22 @@ class Expr implements
         );
     }
 
-    public function dayOfMonth($expression): static
+    public function dayOfMonth(mixed $expression): static
     {
         return $this->operator('$dayOfMonth', $expression);
     }
 
-    public function dayOfWeek($expression): static
+    public function dayOfWeek(mixed $expression): static
     {
         return $this->operator('$dayOfWeek', $expression);
     }
 
-    public function dayOfYear($expression): static
+    public function dayOfYear(mixed $expression): static
     {
         return $this->operator('$dayOfYear', $expression);
     }
 
-    public function default($expression): static
+    public function default(mixed $expression): static
     {
         $this->requiresSwitchStatement(static::class . '::default');
 
@@ -455,12 +454,12 @@ class Expr implements
         return $this->operator('$denseRank', []);
     }
 
-    public function derivative($input, string $unit): static
+    public function derivative(mixed $input, string $unit): static
     {
         return $this->operator('$derivative', ['input' => $input, 'unit' => $unit]);
     }
 
-    public function divide($expression1, $expression2): static
+    public function divide(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$divide', func_get_args());
     }
@@ -470,17 +469,17 @@ class Expr implements
         return $this->operator('$documentNumber', []);
     }
 
-    public function eq($expression1, $expression2): static
+    public function eq(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$eq', func_get_args());
     }
 
-    public function exp($exponent): static
+    public function exp(mixed $exponent): static
     {
         return $this->operator('$exp', $exponent);
     }
 
-    public function expMovingAvg($input, ?int $n = null, ?float $alpha = null): static
+    public function expMovingAvg(mixed $input, ?int $n = null, ?float $alpha = null): static
     {
         return $this->operator(
             '$expMovingAvg',
@@ -503,7 +502,7 @@ class Expr implements
         return new static($this->dm, $this->class);
     }
 
-    public function expression($value): static
+    public function expression(mixed $value): static
     {
         if (! $this->currentField) {
             throw new LogicException(sprintf('%s requires setting a current field using field().', __METHOD__));
@@ -525,17 +524,17 @@ class Expr implements
         return $this;
     }
 
-    public function filter($input, $as, $cond): static
+    public function filter(mixed $input, mixed $as, mixed $cond): static
     {
         return $this->operator('$filter', ['input' => $input, 'as' => $as, 'cond' => $cond]);
     }
 
-    public function first($expression): static
+    public function first(mixed $expression): static
     {
         return $this->operator('$first', $expression);
     }
 
-    public function firstN($expression, $n): static
+    public function firstN(mixed $expression, mixed $n): static
     {
         return $this->operator('$firstN', [
             'input' => $expression,
@@ -543,12 +542,12 @@ class Expr implements
         ]);
     }
 
-    public function function($body, $args, $lang = 'js'): static
+    public function function(string|Javascript $body, mixed $args, string $lang = 'js'): static
     {
         return $this->operator('$function', ['body' => $body, 'args' => $args, 'lang' => $lang]);
     }
 
-    public function floor($number): static
+    public function floor(mixed $number): static
     {
         return $this->operator('$floor', $number);
     }
@@ -559,7 +558,7 @@ class Expr implements
         return $this->expr;
     }
 
-    public function getField($field, $input = null): static
+    public function getField(mixed $field, mixed $input = null): static
     {
         return $this->operator(
             '$getField',
@@ -573,32 +572,32 @@ class Expr implements
         );
     }
 
-    public function gt($expression1, $expression2): static
+    public function gt(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$gt', func_get_args());
     }
 
-    public function gte($expression1, $expression2): static
+    public function gte(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$gte', func_get_args());
     }
 
-    public function hour($expression): static
+    public function hour(mixed $expression): static
     {
         return $this->operator('$hour', $expression);
     }
 
-    public function ifNull($expression, $replacementExpression): static
+    public function ifNull(mixed $expression, mixed $replacementExpression): static
     {
         return $this->operator('$ifNull', func_get_args());
     }
 
-    public function in($expression, $arrayExpression): static
+    public function in(mixed $expression, mixed $arrayExpression): static
     {
         return $this->operator('$in', func_get_args());
     }
 
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): static
+    public function indexOfArray(mixed $arrayExpression, mixed $searchExpression, mixed $start = null, mixed $end = null): static
     {
         $args = [$arrayExpression, $searchExpression];
         if ($start !== null) {
@@ -612,7 +611,7 @@ class Expr implements
         return $this->operator('$indexOfArray', $args);
     }
 
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): static
+    public function indexOfBytes(mixed $stringExpression, mixed $substringExpression, string|int|null $start = null, string|int|null $end = null): static
     {
         $args = [$stringExpression, $substringExpression];
         if ($start !== null) {
@@ -626,7 +625,7 @@ class Expr implements
         return $this->operator('$indexOfBytes', $args);
     }
 
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): static
+    public function indexOfCP(mixed $stringExpression, mixed $substringExpression, string|int|null $start = null, string|int|null $end = null): static
     {
         $args = [$stringExpression, $substringExpression];
         if ($start !== null) {
@@ -640,37 +639,37 @@ class Expr implements
         return $this->operator('$indexOfCP', $args);
     }
 
-    public function integral($input, string $unit): static
+    public function integral(mixed $input, string $unit): static
     {
         return $this->operator('$integral', ['input' => $input, 'unit' => $unit]);
     }
 
-    public function isArray($expression): static
+    public function isArray(mixed $expression): static
     {
         return $this->operator('$isArray', $expression);
     }
 
-    public function isoDayOfWeek($expression): static
+    public function isoDayOfWeek(mixed $expression): static
     {
         return $this->operator('$isoDayOfWeek', $expression);
     }
 
-    public function isoWeek($expression): static
+    public function isoWeek(mixed $expression): static
     {
         return $this->operator('$isoWeek', $expression);
     }
 
-    public function isoWeekYear($expression): static
+    public function isoWeekYear(mixed $expression): static
     {
         return $this->operator('$isoWeekYear', $expression);
     }
 
-    public function last($expression): static
+    public function last(mixed $expression): static
     {
         return $this->operator('$last', $expression);
     }
 
-    public function lastN($expression, $n): static
+    public function lastN(mixed $expression, mixed $n): static
     {
         return $this->operator('$lastN', [
             'input' => $expression,
@@ -678,62 +677,62 @@ class Expr implements
         ]);
     }
 
-    public function let($vars, $in): static
+    public function let(mixed $vars, mixed $in): static
     {
         return $this->operator('$let', ['vars' => $vars, 'in' => $in]);
     }
 
-    public function linearFill($expression): static
+    public function linearFill(mixed $expression): static
     {
         return $this->operator('$linearFill', $expression);
     }
 
-    public function literal($value): static
+    public function literal(mixed $value): static
     {
         return $this->operator('$literal', $value);
     }
 
-    public function ln($number): static
+    public function ln(mixed $number): static
     {
         return $this->operator('$ln', $number);
     }
 
-    public function locf($expression): static
+    public function locf(mixed $expression): static
     {
         return $this->operator('$locf', $expression);
     }
 
-    public function log($number, $base): static
+    public function log(mixed $number, mixed $base): static
     {
         return $this->operator('$log', func_get_args());
     }
 
-    public function log10($number): static
+    public function log10(mixed $number): static
     {
         return $this->operator('$log10', $number);
     }
 
-    public function lt($expression1, $expression2): static
+    public function lt(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$lt', func_get_args());
     }
 
-    public function lte($expression1, $expression2): static
+    public function lte(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$lte', func_get_args());
     }
 
-    public function map($input, $as, $in): static
+    public function map(mixed $input, string $as, mixed $in): static
     {
         return $this->operator('$map', ['input' => $input, 'as' => $as, 'in' => $in]);
     }
 
-    public function max($expression, ...$expressions): static
+    public function max(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$max', ...func_get_args());
     }
 
-    public function maxN($expression, $n): static
+    public function maxN(mixed $expression, mixed $n): static
     {
         return $this->operator('$maxN', [
             'input' => $expression,
@@ -741,27 +740,27 @@ class Expr implements
         ]);
     }
 
-    public function mergeObjects($expression, ...$expressions): static
+    public function mergeObjects(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$mergeObjects', ...func_get_args());
     }
 
-    public function meta($metaDataKeyword): static
+    public function meta(mixed $metaDataKeyword): static
     {
         return $this->operator('$meta', $metaDataKeyword);
     }
 
-    public function millisecond($expression): static
+    public function millisecond(mixed $expression): static
     {
         return $this->operator('$millisecond', $expression);
     }
 
-    public function min($expression, ...$expressions): static
+    public function min(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$min', ...func_get_args());
     }
 
-    public function minN($expression, $n): static
+    public function minN(mixed $expression, mixed $n): static
     {
         return $this->operator('$minN', [
             'input' => $expression,
@@ -769,42 +768,42 @@ class Expr implements
         ]);
     }
 
-    public function minute($expression): static
+    public function minute(mixed $expression): static
     {
         return $this->operator('$minute', $expression);
     }
 
-    public function mod($expression1, $expression2): static
+    public function mod(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$mod', func_get_args());
     }
 
-    public function month($expression): static
+    public function month(mixed $expression): static
     {
         return $this->operator('$month', $expression);
     }
 
-    public function multiply($expression1, $expression2, ...$expressions): static
+    public function multiply(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         return $this->operator('$multiply', func_get_args());
     }
 
-    public function ne($expression1, $expression2): static
+    public function ne(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$ne', func_get_args());
     }
 
-    public function not($expression): static
+    public function not(mixed $expression): static
     {
         return $this->operator('$not', $expression);
     }
 
-    public function pow($number, $exponent): static
+    public function pow(mixed $number, mixed $exponent): static
     {
         return $this->operator('$pow', func_get_args());
     }
 
-    public function push($expression): static
+    public function push(mixed $expression): static
     {
         return $this->operator('$push', $expression);
     }
@@ -814,7 +813,7 @@ class Expr implements
         return $this->operator('$rand', []);
     }
 
-    public function range($start, $end, $step = null): static
+    public function range(mixed $start, mixed $end, mixed $step = null): static
     {
         return $this->operator('$range', func_get_args());
     }
@@ -824,12 +823,12 @@ class Expr implements
         return $this->operator('$rank', []);
     }
 
-    public function reduce($input, $initialValue, $in): static
+    public function reduce(mixed $input, mixed $initialValue, mixed $in): static
     {
         return $this->operator('$reduce', ['input' => $input, 'initialValue' => $initialValue, 'in' => $in]);
     }
 
-    public function reverseArray($expression): static
+    public function reverseArray(mixed $expression): static
     {
         return $this->operator('$reverseArray', $expression);
     }
@@ -839,42 +838,42 @@ class Expr implements
         return $this->operator('$sampleRate', $rate);
     }
 
-    public function second($expression): static
+    public function second(mixed $expression): static
     {
         return $this->operator('$second', $expression);
     }
 
-    public function setDifference($expression1, $expression2): static
+    public function setDifference(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$setDifference', func_get_args());
     }
 
-    public function setEquals($expression1, $expression2, ...$expressions): static
+    public function setEquals(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         return $this->operator('$setEquals', func_get_args());
     }
 
-    public function setField($field, $input, $value): static
+    public function setField(mixed $field, mixed $input, mixed $value): static
     {
         return $this->operator('$setField', ['field' => $field, 'input' => $input, 'value' => $value]);
     }
 
-    public function setIntersection($expression1, $expression2, ...$expressions): static
+    public function setIntersection(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         return $this->operator('$setIntersection', func_get_args());
     }
 
-    public function setIsSubset($expression1, $expression2): static
+    public function setIsSubset(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$setIsSubset', func_get_args());
     }
 
-    public function setUnion($expression1, $expression2, ...$expressions): static
+    public function setUnion(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         return $this->operator('$setUnion', func_get_args());
     }
 
-    public function shift($output, int $by, $default = null): static
+    public function shift(mixed $output, int $by, mixed $default = null): static
     {
         return $this->operator(
             '$shift',
@@ -889,12 +888,12 @@ class Expr implements
         );
     }
 
-    public function size($expression): static
+    public function size(mixed $expression): static
     {
         return $this->operator('$size', $expression);
     }
 
-    public function slice($array, $n, $position = null): static
+    public function slice(mixed $array, mixed $n, mixed $position = null): static
     {
         // With two args provided, the order of parameters is <array>, <n>.
         // With three args provided, the order of parameters is <array>,
@@ -908,7 +907,7 @@ class Expr implements
         return $this->operator('$slice', $args);
     }
 
-    public function sortArray($input, $sortBy): static
+    public function sortArray(mixed $input, array $sortBy): static
     {
         return $this->operator('$sortArray', [
             'input' => $input,
@@ -916,157 +915,157 @@ class Expr implements
         ]);
     }
 
-    public function split($string, $delimiter): static
+    public function split(mixed $string, mixed $delimiter): static
     {
         return $this->operator('$split', func_get_args());
     }
 
-    public function sqrt($expression): static
+    public function sqrt(mixed $expression): static
     {
         return $this->operator('$sqrt', $expression);
     }
 
-    public function stdDevPop($expression, ...$expressions): static
+    public function stdDevPop(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$stdDevPop', ...func_get_args());
     }
 
-    public function stdDevSamp($expression, ...$expressions): static
+    public function stdDevSamp(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$stdDevSamp', ...func_get_args());
     }
 
-    public function strcasecmp($expression1, $expression2): static
+    public function strcasecmp(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$strcasecmp', func_get_args());
     }
 
-    public function strLenBytes($string): static
+    public function strLenBytes(mixed $string): static
     {
         return $this->operator('$strLenBytes', $string);
     }
 
-    public function strLenCP($string): static
+    public function strLenCP(mixed $string): static
     {
         return $this->operator('$strLenCP', $string);
     }
 
-    public function substr($string, $start, $length): static
+    public function substr(mixed $string, mixed $start, mixed $length): static
     {
         return $this->operator('$substr', func_get_args());
     }
 
-    public function substrBytes($string, $start, $count): static
+    public function substrBytes(mixed $string, mixed $start, mixed $count): static
     {
         return $this->operator('$substrBytes', func_get_args());
     }
 
-    public function substrCP($string, $start, $count): static
+    public function substrCP(mixed $string, mixed $start, mixed $count): static
     {
         return $this->operator('$substrCP', func_get_args());
     }
 
-    public function subtract($expression1, $expression2): static
+    public function subtract(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$subtract', func_get_args());
     }
 
-    public function sum($expression, ...$expressions): static
+    public function sum(mixed $expression, mixed ...$expressions): static
     {
         return $this->accumulatorOperator('$sum', ...func_get_args());
     }
 
-    public function toBool($expression): static
+    public function toBool(mixed $expression): static
     {
         return $this->operator('$toBool', $expression);
     }
 
-    public function toDate($expression): static
+    public function toDate(mixed $expression): static
     {
         return $this->operator('$toDate', $expression);
     }
 
-    public function toDecimal($expression): static
+    public function toDecimal(mixed $expression): static
     {
         return $this->operator('$toDecimal', $expression);
     }
 
-    public function toDouble($expression): static
+    public function toDouble(mixed $expression): static
     {
         return $this->operator('$toDouble', $expression);
     }
 
-    public function toInt($expression): static
+    public function toInt(mixed $expression): static
     {
         return $this->operator('$toInt', $expression);
     }
 
-    public function toLong($expression): static
+    public function toLong(mixed $expression): static
     {
         return $this->operator('$toLong', $expression);
     }
 
-    public function toLower($expression): static
+    public function toLower(mixed $expression): static
     {
         return $this->operator('$toLower', $expression);
     }
 
-    public function toObjectId($expression): static
+    public function toObjectId(mixed $expression): static
     {
         return $this->operator('$toObjectId', $expression);
     }
 
-    public function top($output, $sortBy): static
+    public function top(mixed $output, array $sortBy): static
     {
         return $this->operator('$top', ['output' => $output, 'sortBy' => $sortBy]);
     }
 
-    public function topN($output, $sortBy, $n): static
+    public function topN(mixed $output, array $sortBy, mixed $n): static
     {
         return $this->operator('$topN', ['output' => $output, 'sortBy' => $sortBy, 'n' => $n]);
     }
 
-    public function toString($expression): static
+    public function toString(mixed $expression): static
     {
         return $this->operator('$toString', $expression);
     }
 
-    public function toUpper($expression): static
+    public function toUpper(mixed $expression): static
     {
         return $this->operator('$toUpper', $expression);
     }
 
-    public function trunc($number): static
+    public function trunc(mixed $number): static
     {
         return $this->operator('$trunc', $number);
     }
 
-    public function tsIncrement($expression): static
+    public function tsIncrement(mixed $expression): static
     {
         return $this->operator('$tsIncrement', $expression);
     }
 
-    public function tsSecond($expression): static
+    public function tsSecond(mixed $expression): static
     {
         return $this->operator('$tsSecond', $expression);
     }
 
-    public function type($expression): static
+    public function type(mixed $expression): static
     {
         return $this->operator('$type', $expression);
     }
 
-    public function week($expression): static
+    public function week(mixed $expression): static
     {
         return $this->operator('$week', $expression);
     }
 
-    public function year($expression): static
+    public function year(mixed $expression): static
     {
         return $this->operator('$year', $expression);
     }
 
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): static
+    public function zip(mixed $inputs, ?bool $useLongestLength = null, mixed $defaults = null): static
     {
         $args = ['inputs' => $inputs];
         if ($useLongestLength !== null) {
@@ -1084,10 +1083,8 @@ class Expr implements
      * Wrapper for accumulator operators that exist in forms with one and multiple arguments
      *
      * @see Expr::operator()
-     *
-     * @param mixed|self ...$expressions
      */
-    private function accumulatorOperator(string $operator, ...$expressions): static
+    private function accumulatorOperator(string $operator, mixed ...$expressions): static
     {
         if (count($expressions) === 1) {
             return $this->operator($operator, $expressions[0]);
@@ -1102,12 +1099,8 @@ class Expr implements
      * - If the argument is an array, it is recursively prepared.
      * - If the argument is an Expr instance, its expression is returned.
      * - Otherwise, the argument is converted to a MongoDB type according to the ODM type information.
-     *
-     * @param mixed|self $expression
-     *
-     * @return mixed
      */
-    private function prepareArgument($expression)
+    private function prepareArgument(mixed $expression): mixed
     {
         if (is_string($expression) && substr($expression, 0, 1) === '$') {
             return '$' . $this->getDocumentPersister()->prepareFieldName(substr($expression, 1));
@@ -1135,10 +1128,8 @@ class Expr implements
      *
      * If there is a current field, the operator will be set on it; otherwise,
      * the operator is set at the top level of the query.
-     *
-     * @param mixed|mixed[]|self $expression
      */
-    private function operator(string $operator, $expression): static
+    private function operator(string $operator, mixed $expression): static
     {
         if ($this->currentField) {
             $this->expr[$this->currentField][$operator] = $this->prepareArgument($expression);
@@ -1149,7 +1140,7 @@ class Expr implements
         return $this;
     }
 
-    public function or($expression, ...$expressions): static
+    public function or(mixed $expression, mixed ...$expressions): static
     {
         return $this->operator('$or', func_get_args());
     }
@@ -1175,7 +1166,7 @@ class Expr implements
         return $this;
     }
 
-    public function then($expression): static
+    public function then(mixed $expression): static
     {
         if (! is_array($this->switchBranch)) {
             throw new BadMethodCallException(static::class . '::then requires a valid case statement (call case() first).');
@@ -1194,17 +1185,17 @@ class Expr implements
         return $this;
     }
 
-    public function arrayToObject($array): static
+    public function arrayToObject(mixed $array): static
     {
         return $this->operator('$arrayToObject', $array);
     }
 
-    public function objectToArray($object): static
+    public function objectToArray(mixed $object): static
     {
         return $this->operator('$objectToArray', $object);
     }
 
-    public function regexFind($input, $regex, $options = null): static
+    public function regexFind(mixed $input, mixed $regex, ?string $options = null): static
     {
         return $this->operator(
             '$regexFind',
@@ -1219,7 +1210,7 @@ class Expr implements
         );
     }
 
-    public function regexFindAll($input, $regex, $options = null): static
+    public function regexFindAll(mixed $input, mixed $regex, ?string $options = null): static
     {
         return $this->operator(
             '$regexFindAll',
@@ -1234,7 +1225,7 @@ class Expr implements
         );
     }
 
-    public function regexMatch($input, $regex, $options = null): static
+    public function regexMatch(mixed $input, mixed $regex, ?string $options = null): static
     {
         return $this->operator(
             '$regexMatch',
@@ -1249,7 +1240,7 @@ class Expr implements
         );
     }
 
-    public function replaceAll($input, $find, $replacement): static
+    public function replaceAll(mixed $input, mixed $find, mixed $replacement): static
     {
         return $this->operator('$replaceAll', [
             'input' => $input,
@@ -1258,7 +1249,7 @@ class Expr implements
         ]);
     }
 
-    public function replaceOne($input, $find, $replacement): static
+    public function replaceOne(mixed $input, mixed $find, mixed $replacement): static
     {
         return $this->operator('$replaceOne', [
             'input' => $input,
@@ -1267,102 +1258,102 @@ class Expr implements
         ]);
     }
 
-    public function round($number, $place = null): static
+    public function round(mixed $number, mixed $place = null): static
     {
         return $this->operator('$round', func_get_args());
     }
 
-    public function trim($input, $chars = null): static
+    public function trim(mixed $input, mixed $chars = null): static
     {
         return $this->operator('$trim', func_get_args());
     }
 
-    public function ltrim($input, $chars = null): static
+    public function ltrim(mixed $input, mixed $chars = null): static
     {
         return $this->operator('$ltrim', func_get_args());
     }
 
-    public function rtrim($input, $chars = null): static
+    public function rtrim(mixed $input, mixed $chars = null): static
     {
         return $this->operator('$rtrim', func_get_args());
     }
 
-    public function sin($expression): static
+    public function sin(mixed $expression): static
     {
         return $this->operator('$sin', $expression);
     }
 
-    public function cos($expression): static
+    public function cos(mixed $expression): static
     {
         return $this->operator('$cos', $expression);
     }
 
-    public function tan($expression): static
+    public function tan(mixed $expression): static
     {
         return $this->operator('$tan', $expression);
     }
 
-    public function asin($expression): static
+    public function asin(mixed $expression): static
     {
         return $this->operator('$asin', $expression);
     }
 
-    public function acos($expression): static
+    public function acos(mixed $expression): static
     {
         return $this->operator('$acos', $expression);
     }
 
-    public function atan($expression): static
+    public function atan(mixed $expression): static
     {
         return $this->operator('$atan', $expression);
     }
 
-    public function atan2($expression1, $expression2): static
+    public function atan2(mixed $expression1, mixed $expression2): static
     {
         return $this->operator('$atan2', func_get_args());
     }
 
-    public function asinh($expression): static
+    public function asinh(mixed $expression): static
     {
         return $this->operator('$asinh', $expression);
     }
 
-    public function acosh($expression): static
+    public function acosh(mixed $expression): static
     {
         return $this->operator('$acosh', $expression);
     }
 
-    public function atanh($expression): static
+    public function atanh(mixed $expression): static
     {
         return $this->operator('$atanh', $expression);
     }
 
-    public function sinh($expression): static
+    public function sinh(mixed $expression): static
     {
         return $this->operator('$sinh', $expression);
     }
 
-    public function cosh($expression): static
+    public function cosh(mixed $expression): static
     {
         return $this->operator('$cosh', $expression);
     }
 
-    public function tanh($expression): static
+    public function tanh(mixed $expression): static
     {
         return $this->operator('$tanh', $expression);
     }
 
-    public function degreesToRadians($expression): static
+    public function degreesToRadians(mixed $expression): static
     {
         return $this->operator('$degreesToRadians', $expression);
     }
 
-    public function radiansToDegrees($expression): static
+    public function radiansToDegrees(mixed $expression): static
     {
         return $this->operator('$radiansToDegrees', $expression);
     }
 
-    public function convert($input, $to, $onError = null, $onNull = null): static
+    public function convert(mixed $input, mixed $to, mixed $onError = null, mixed $onNull = null): static
     {
         return $this->operator(
             '$convert',
@@ -1378,7 +1369,7 @@ class Expr implements
         );
     }
 
-    public function isNumber($expression): static
+    public function isNumber(mixed $expression): static
     {
         return $this->operator('$isNumber', $expression);
     }

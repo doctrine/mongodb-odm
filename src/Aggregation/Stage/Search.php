@@ -71,7 +71,7 @@ class Search extends Stage implements SupportsAllSearchOperators
     /** @var array<string, -1|1|SortMeta> */
     private array $sort = [];
 
-    public function __construct(Builder $builder, private DocumentPersister $persister)
+    public function __construct(Builder $builder, private readonly DocumentPersister $persister)
     {
         parent::__construct($builder);
     }
@@ -174,11 +174,11 @@ class Search extends Stage implements SupportsAllSearchOperators
 
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param int|string|array|null            $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string $fieldName
      * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
-    public function sort($fieldName, $order = null): static
+    public function sort(array|string $fieldName, int|string|array|null $order = null): static
     {
         $allowedMetaSort = ['searchScore'];
 

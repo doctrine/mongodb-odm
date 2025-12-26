@@ -25,7 +25,6 @@ use GeoJson\Geometry\LineString;
 use GeoJson\Geometry\MultiPolygon;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
-use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
 /** @internal */
@@ -58,8 +57,7 @@ trait SupportsCompoundableOperatorsTrait
         return $this->addOperator(new CompoundedEmbeddedDocument($this->getCompoundStage(), $this->getAddOperatorClosure(), $this->getSearchStage(), $this->getDocumentPersister(), $path));
     }
 
-    /** @param string|int|float|ObjectId|UTCDateTime|null $value */
-    public function equals(string $path = '', $value = null): Equals&CompoundSearchOperatorInterface
+    public function equals(string $path = '', mixed $value = null): Equals&CompoundSearchOperatorInterface
     {
         return $this->addOperator(new CompoundedEquals($this->getCompoundStage(), $this->getAddOperatorClosure(), $this->getSearchStage(), $this->getDocumentPersister(), $path, $value));
     }
@@ -70,7 +68,7 @@ trait SupportsCompoundableOperatorsTrait
     }
 
     /** @param LineString|Point|Polygon|MultiPolygon|array<string, mixed>|null $geometry */
-    public function geoShape($geometry = null, string $relation = '', string ...$path): GeoShape&CompoundSearchOperatorInterface
+    public function geoShape(LineString|Point|Polygon|MultiPolygon|array|null $geometry = null, string $relation = '', string ...$path): GeoShape&CompoundSearchOperatorInterface
     {
         return $this->addOperator(new CompoundedGeoShape($this->getCompoundStage(), $this->getAddOperatorClosure(), $this->getSearchStage(), $this->getDocumentPersister(), $geometry, $relation, ...$path));
     }
@@ -81,16 +79,13 @@ trait SupportsCompoundableOperatorsTrait
     }
 
     /** @param array<string, mixed>|object $documents */
-    public function moreLikeThis(...$documents): MoreLikeThis&CompoundSearchOperatorInterface
+    public function moreLikeThis(array|object ...$documents): MoreLikeThis&CompoundSearchOperatorInterface
     {
         return $this->addOperator(new CompoundedMoreLikeThis($this->getCompoundStage(), $this->getAddOperatorClosure(), $this->getSearchStage(), $this->getDocumentPersister(), ...$documents));
     }
 
-    /**
-     * @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin
-     * @param int|float|null                                        $pivot
-     */
-    public function near($origin = null, $pivot = null, string ...$path): Near&CompoundSearchOperatorInterface
+    /** @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin */
+    public function near(int|float|UTCDateTime|array|Point|null $origin = null, int|float|null $pivot = null, string ...$path): Near&CompoundSearchOperatorInterface
     {
         return $this->addOperator(new CompoundedNear($this->getCompoundStage(), $this->getAddOperatorClosure(), $this->getSearchStage(), $this->getDocumentPersister(), $origin, $pivot, ...$path));
     }

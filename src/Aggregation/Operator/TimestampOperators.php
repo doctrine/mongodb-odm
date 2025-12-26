@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing timestamp aggregation pipeline operators.
  *
@@ -20,17 +18,13 @@ interface TimestampOperators
      * Returns the incrementing ordinal from a timestamp as a long.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tsIncrement/
-     *
-     * @param mixed|Expr $expression
      */
-    public function tsIncrement($expression): static;
+    public function tsIncrement(mixed $expression): static;
 
     /**
      * Returns the seconds from a timestamp as a long.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/tsSecond/
-     *
-     * @param mixed|Expr $expression
      */
-    public function tsSecond($expression): static;
+    public function tsSecond(mixed $expression): static;
 }

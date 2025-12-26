@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use MongoDB\BSON\Javascript;
 
 /**
@@ -28,16 +27,8 @@ interface CustomOperators
      * Language.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/accumulator/
-     *
-     * @param string|Javascript      $init
-     * @param string|Javascript      $accumulate
-     * @param mixed|Expr             $accumulateArgs
-     * @param string|Javascript      $merge
-     * @param mixed|Expr|null        $initArgs
-     * @param string|Javascript|null $finalize
-     * @param string                 $lang
      */
-    public function accumulator($init, $accumulate, $accumulateArgs, $merge, $initArgs = null, $finalize = null, $lang = 'js'): static;
+    public function accumulator(string|Javascript $init, string|Javascript $accumulate, mixed $accumulateArgs, string|Javascript $merge, mixed $initArgs = null, string|Javascript|null $finalize = null, string $lang = 'js'): static;
 
     /**
      * Defines a custom aggregation function or expression in JavaScript.
@@ -46,10 +37,6 @@ interface CustomOperators
      * implement behavior not supported by the MongoDB Query Language.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/function/
-     *
-     * @param string|Javascript $body
-     * @param mixed|Expr        $args
-     * @param string            $lang
      */
-    public function function($body, $args, $lang = 'js'): static;
+    public function function(string|Javascript $body, mixed $args, string $lang = 'js'): static;
 }

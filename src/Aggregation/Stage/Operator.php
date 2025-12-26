@@ -56,28 +56,28 @@ abstract class Operator extends Stage implements
         $this->expr = $builder->expr();
     }
 
-    public function abs($number): static
+    public function abs(mixed $number): static
     {
         $this->expr->abs(...func_get_args());
 
         return $this;
     }
 
-    public function acos($expression): static
+    public function acos(mixed $expression): static
     {
         $this->expr->acos(...func_get_args());
 
         return $this;
     }
 
-    public function acosh($expression): static
+    public function acosh(mixed $expression): static
     {
         $this->expr->acosh(...func_get_args());
 
         return $this;
     }
 
-    public function add($expression1, $expression2, ...$expressions): static
+    public function add(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         $this->expr->add(...func_get_args());
 
@@ -116,273 +116,273 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function allElementsTrue($expression): static
+    public function allElementsTrue(mixed $expression): static
     {
         $this->expr->allElementsTrue(...func_get_args());
 
         return $this;
     }
 
-    public function and($expression, ...$expressions): static
+    public function and(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->and(...func_get_args());
 
         return $this;
     }
 
-    public function anyElementTrue($expression): static
+    public function anyElementTrue(mixed $expression): static
     {
         $this->expr->anyElementTrue(...func_get_args());
 
         return $this;
     }
 
-    public function arrayElemAt($array, $index): static
+    public function arrayElemAt(mixed $array, mixed $index): static
     {
         $this->expr->arrayElemAt(...func_get_args());
 
         return $this;
     }
 
-    public function arrayToObject($array): static
+    public function arrayToObject(mixed $array): static
     {
         $this->expr->arrayToObject(...func_get_args());
 
         return $this;
     }
 
-    public function atan($expression): static
+    public function atan(mixed $expression): static
     {
         $this->expr->atan(...func_get_args());
 
         return $this;
     }
 
-    public function asin($expression): static
+    public function asin(mixed $expression): static
     {
         $this->expr->asin(...func_get_args());
 
         return $this;
     }
 
-    public function asinh($expression): static
+    public function asinh(mixed $expression): static
     {
         $this->expr->asinh(...func_get_args());
 
         return $this;
     }
 
-    public function atan2($expression1, $expression2): static
+    public function atan2(mixed $expression1, mixed $expression2): static
     {
         $this->expr->atan2(...func_get_args());
 
         return $this;
     }
 
-    public function atanh($expression): static
+    public function atanh(mixed $expression): static
     {
         $this->expr->atanh(...func_get_args());
 
         return $this;
     }
 
-    public function avg($expression, ...$expressions): static
+    public function avg(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->avg(...func_get_args());
 
         return $this;
     }
 
-    public function binarySize($expression): static
+    public function binarySize(mixed $expression): static
     {
         $this->expr->binarySize(...func_get_args());
 
         return $this;
     }
 
-    public function bsonSize($expression): static
+    public function bsonSize(mixed $expression): static
     {
         $this->expr->bsonSize(...func_get_args());
 
         return $this;
     }
 
-    public function case($expression): static
+    public function case(mixed $expression): static
     {
         $this->expr->case(...func_get_args());
 
         return $this;
     }
 
-    public function ceil($number): static
+    public function ceil(mixed $number): static
     {
         $this->expr->ceil(...func_get_args());
 
         return $this;
     }
 
-    public function cmp($expression1, $expression2): static
+    public function cmp(mixed $expression1, mixed $expression2): static
     {
         $this->expr->cmp(...func_get_args());
 
         return $this;
     }
 
-    public function concat($expression1, $expression2, ...$expressions): static
+    public function concat(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         $this->expr->concat(...func_get_args());
 
         return $this;
     }
 
-    public function concatArrays($array1, $array2, ...$arrays): static
+    public function concatArrays(mixed $array1, mixed $array2, mixed ...$arrays): static
     {
         $this->expr->concatArrays(...func_get_args());
 
         return $this;
     }
 
-    public function cond($if, $then, $else): static
+    public function cond(mixed $if, mixed $then, mixed $else): static
     {
         $this->expr->cond(...func_get_args());
 
         return $this;
     }
 
-    public function convert($input, $to, $onError = null, $onNull = null): static
+    public function convert(mixed $input, mixed $to, mixed $onError = null, mixed $onNull = null): static
     {
         $this->expr->convert(...func_get_args());
 
         return $this;
     }
 
-    public function cos($expression): static
+    public function cos(mixed $expression): static
     {
         $this->expr->cos(...func_get_args());
 
         return $this;
     }
 
-    public function cosh($expression): static
+    public function cosh(mixed $expression): static
     {
         $this->expr->cosh(...func_get_args());
 
         return $this;
     }
 
-    public function dateAdd($startDate, $unit, $amount, $timezone = null): static
+    public function dateAdd(mixed $startDate, mixed $unit, mixed $amount, mixed $timezone = null): static
     {
         $this->expr->dateAdd(...func_get_args());
 
         return $this;
     }
 
-    public function dateDiff($startDate, $endDate, $unit, $timezone = null, $startOfWeek = null): static
+    public function dateDiff(mixed $startDate, mixed $endDate, mixed $unit, mixed $timezone = null, mixed $startOfWeek = null): static
     {
         $this->expr->dateDiff(...func_get_args());
 
         return $this;
     }
 
-    public function dateFromParts($year = null, $isoWeekYear = null, $month = null, $isoWeek = null, $day = null, $isoDayOfWeek = null, $hour = null, $minute = null, $second = null, $millisecond = null, $timezone = null): static
+    public function dateFromParts(mixed $year = null, mixed $isoWeekYear = null, mixed $month = null, mixed $isoWeek = null, mixed $day = null, mixed $isoDayOfWeek = null, mixed $hour = null, mixed $minute = null, mixed $second = null, mixed $millisecond = null, mixed $timezone = null): static
     {
         $this->expr->dateFromParts(...func_get_args());
 
         return $this;
     }
 
-    public function dateFromString($dateString, $format = null, $timezone = null, $onError = null, $onNull = null): static
+    public function dateFromString(mixed $dateString, mixed $format = null, mixed $timezone = null, mixed $onError = null, mixed $onNull = null): static
     {
         $this->expr->dateFromString(...func_get_args());
 
         return $this;
     }
 
-    public function dateSubtract($startDate, $unit, $amount, $timezone = null): static
+    public function dateSubtract(mixed $startDate, mixed $unit, mixed $amount, mixed $timezone = null): static
     {
         $this->expr->dateSubtract(...func_get_args());
 
         return $this;
     }
 
-    public function dateToParts($date, $timezone = null, $iso8601 = null): static
+    public function dateToParts(mixed $date, mixed $timezone = null, mixed $iso8601 = null): static
     {
         $this->expr->dateToParts(...func_get_args());
 
         return $this;
     }
 
-    public function dateToString(string $format, $expression, $timezone = null, $onNull = null): static
+    public function dateToString(string $format, mixed $expression, mixed $timezone = null, mixed $onNull = null): static
     {
         $this->expr->dateToString(...func_get_args());
 
         return $this;
     }
 
-    public function dateTrunc($date, $unit, $binSize = null, $timezone = null, $startOfWeek = null): static
+    public function dateTrunc(mixed $date, mixed $unit, mixed $binSize = null, mixed $timezone = null, mixed $startOfWeek = null): static
     {
         $this->expr->dateTrunc(...func_get_args());
 
         return $this;
     }
 
-    public function dayOfMonth($expression): static
+    public function dayOfMonth(mixed $expression): static
     {
         $this->expr->dayOfMonth(...func_get_args());
 
         return $this;
     }
 
-    public function dayOfWeek($expression): static
+    public function dayOfWeek(mixed $expression): static
     {
         $this->expr->dayOfWeek(...func_get_args());
 
         return $this;
     }
 
-    public function dayOfYear($expression): static
+    public function dayOfYear(mixed $expression): static
     {
         $this->expr->dayOfYear(...func_get_args());
 
         return $this;
     }
 
-    public function default($expression): static
+    public function default(mixed $expression): static
     {
         $this->expr->default(...func_get_args());
 
         return $this;
     }
 
-    public function degreesToRadians($expression): static
+    public function degreesToRadians(mixed $expression): static
     {
         $this->expr->degreesToRadians(...func_get_args());
 
         return $this;
     }
 
-    public function divide($expression1, $expression2): static
+    public function divide(mixed $expression1, mixed $expression2): static
     {
         $this->expr->divide(...func_get_args());
 
         return $this;
     }
 
-    public function eq($expression1, $expression2): static
+    public function eq(mixed $expression1, mixed $expression2): static
     {
         $this->expr->eq(...func_get_args());
 
         return $this;
     }
 
-    public function exp($exponent): static
+    public function exp(mixed $exponent): static
     {
         $this->expr->exp(...func_get_args());
 
         return $this;
     }
 
-    public function expression($value): static
+    public function expression(mixed $value): static
     {
         $this->expr->expression(...func_get_args());
 
@@ -401,392 +401,392 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function filter($input, $as, $cond): static
+    public function filter(mixed $input, mixed $as, mixed $cond): static
     {
         $this->expr->filter(...func_get_args());
 
         return $this;
     }
 
-    public function first($expression): static
+    public function first(mixed $expression): static
     {
         $this->expr->first(...func_get_args());
 
         return $this;
     }
 
-    public function firstN($expression, $n): static
+    public function firstN(mixed $expression, mixed $n): static
     {
         $this->expr->firstN(...func_get_args());
 
         return $this;
     }
 
-    public function floor($number): static
+    public function floor(mixed $number): static
     {
         $this->expr->floor(...func_get_args());
 
         return $this;
     }
 
-    public function getField($field, $input = null): static
+    public function getField(mixed $field, mixed $input = null): static
     {
         $this->expr->getField(...func_get_args());
 
         return $this;
     }
 
-    public function gt($expression1, $expression2): static
+    public function gt(mixed $expression1, mixed $expression2): static
     {
         $this->expr->gt(...func_get_args());
 
         return $this;
     }
 
-    public function gte($expression1, $expression2): static
+    public function gte(mixed $expression1, mixed $expression2): static
     {
         $this->expr->gte(...func_get_args());
 
         return $this;
     }
 
-    public function hour($expression): static
+    public function hour(mixed $expression): static
     {
         $this->expr->hour(...func_get_args());
 
         return $this;
     }
 
-    public function in($expression, $arrayExpression): static
+    public function in(mixed $expression, mixed $arrayExpression): static
     {
         $this->expr->in(...func_get_args());
 
         return $this;
     }
 
-    public function indexOfArray($arrayExpression, $searchExpression, $start = null, $end = null): static
+    public function indexOfArray(mixed $arrayExpression, mixed $searchExpression, mixed $start = null, mixed $end = null): static
     {
         $this->expr->indexOfArray(...func_get_args());
 
         return $this;
     }
 
-    public function indexOfBytes($stringExpression, $substringExpression, $start = null, $end = null): static
+    public function indexOfBytes(mixed $stringExpression, mixed $substringExpression, mixed $start = null, mixed $end = null): static
     {
         $this->expr->indexOfBytes(...func_get_args());
 
         return $this;
     }
 
-    public function indexOfCP($stringExpression, $substringExpression, $start = null, $end = null): static
+    public function indexOfCP(mixed $stringExpression, mixed $substringExpression, mixed $start = null, mixed $end = null): static
     {
         $this->expr->indexOfCP(...func_get_args());
 
         return $this;
     }
 
-    public function ifNull($expression, $replacementExpression): static
+    public function ifNull(mixed $expression, mixed $replacementExpression): static
     {
         $this->expr->ifNull(...func_get_args());
 
         return $this;
     }
 
-    public function isArray($expression): static
+    public function isArray(mixed $expression): static
     {
         $this->expr->isArray(...func_get_args());
 
         return $this;
     }
 
-    public function isNumber($expression): static
+    public function isNumber(mixed $expression): static
     {
         $this->expr->isNumber(...func_get_args());
 
         return $this;
     }
 
-    public function isoDayOfWeek($expression): static
+    public function isoDayOfWeek(mixed $expression): static
     {
         $this->expr->isoDayOfWeek(...func_get_args());
 
         return $this;
     }
 
-    public function isoWeek($expression): static
+    public function isoWeek(mixed $expression): static
     {
         $this->expr->isoWeek(...func_get_args());
 
         return $this;
     }
 
-    public function isoWeekYear($expression): static
+    public function isoWeekYear(mixed $expression): static
     {
         $this->expr->isoWeekYear(...func_get_args());
 
         return $this;
     }
 
-    public function last($expression): static
+    public function last(mixed $expression): static
     {
         $this->expr->last(...func_get_args());
 
         return $this;
     }
 
-    public function lastN($expression, $n): static
+    public function lastN(mixed $expression, mixed $n): static
     {
         $this->expr->lastN(...func_get_args());
 
         return $this;
     }
 
-    public function let($vars, $in): static
+    public function let(mixed $vars, mixed $in): static
     {
         $this->expr->let(...func_get_args());
 
         return $this;
     }
 
-    public function literal($value): static
+    public function literal(mixed $value): static
     {
         $this->expr->literal(...func_get_args());
 
         return $this;
     }
 
-    public function ln($number): static
+    public function ln(mixed $number): static
     {
         $this->expr->ln(...func_get_args());
 
         return $this;
     }
 
-    public function log($number, $base): static
+    public function log(mixed $number, mixed $base): static
     {
         $this->expr->log(...func_get_args());
 
         return $this;
     }
 
-    public function log10($number): static
+    public function log10(mixed $number): static
     {
         $this->expr->log10(...func_get_args());
 
         return $this;
     }
 
-    public function lt($expression1, $expression2): static
+    public function lt(mixed $expression1, mixed $expression2): static
     {
         $this->expr->lt(...func_get_args());
 
         return $this;
     }
 
-    public function lte($expression1, $expression2): static
+    public function lte(mixed $expression1, mixed $expression2): static
     {
         $this->expr->lte(...func_get_args());
 
         return $this;
     }
 
-    public function ltrim($input, $chars = null): static
+    public function ltrim(mixed $input, mixed $chars = null): static
     {
         $this->expr->ltrim(...func_get_args());
 
         return $this;
     }
 
-    public function map($input, $as, $in): static
+    public function map(mixed $input, mixed $as, mixed $in): static
     {
         $this->expr->map(...func_get_args());
 
         return $this;
     }
 
-    public function max($expression, ...$expressions): static
+    public function max(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->max(...func_get_args());
 
         return $this;
     }
 
-    public function maxN($expression, $n): static
+    public function maxN(mixed $expression, mixed $n): static
     {
         $this->expr->maxN(...func_get_args());
 
         return $this;
     }
 
-    public function mergeObjects($expression, ...$expressions): static
+    public function mergeObjects(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->mergeObjects(...func_get_args());
 
         return $this;
     }
 
-    public function meta($metaDataKeyword): static
+    public function meta(mixed $metaDataKeyword): static
     {
         $this->expr->meta(...func_get_args());
 
         return $this;
     }
 
-    public function millisecond($expression): static
+    public function millisecond(mixed $expression): static
     {
         $this->expr->millisecond(...func_get_args());
 
         return $this;
     }
 
-    public function min($expression, ...$expressions): static
+    public function min(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->min(...func_get_args());
 
         return $this;
     }
 
-    public function minN($expression, $n): static
+    public function minN(mixed $expression, mixed $n): static
     {
         $this->expr->minN(...func_get_args());
 
         return $this;
     }
 
-    public function minute($expression): static
+    public function minute(mixed $expression): static
     {
         $this->expr->minute(...func_get_args());
 
         return $this;
     }
 
-    public function mod($expression1, $expression2): static
+    public function mod(mixed $expression1, mixed $expression2): static
     {
         $this->expr->mod(...func_get_args());
 
         return $this;
     }
 
-    public function month($expression): static
+    public function month(mixed $expression): static
     {
         $this->expr->month(...func_get_args());
 
         return $this;
     }
 
-    public function multiply($expression1, $expression2, ...$expressions): static
+    public function multiply(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         $this->expr->multiply(...func_get_args());
 
         return $this;
     }
 
-    public function ne($expression1, $expression2): static
+    public function ne(mixed $expression1, mixed $expression2): static
     {
         $this->expr->ne(...func_get_args());
 
         return $this;
     }
 
-    public function not($expression): static
+    public function not(mixed $expression): static
     {
         $this->expr->not(...func_get_args());
 
         return $this;
     }
 
-    public function objectToArray($object): static
+    public function objectToArray(mixed $object): static
     {
         $this->expr->objectToArray(...func_get_args());
 
         return $this;
     }
 
-    public function or($expression, ...$expressions): static
+    public function or(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->or(...func_get_args());
 
         return $this;
     }
 
-    public function pow($number, $exponent): static
+    public function pow(mixed $number, mixed $exponent): static
     {
         $this->expr->pow(...func_get_args());
 
         return $this;
     }
 
-    public function range($start, $end, $step = null): static
+    public function range(mixed $start, mixed $end, mixed $step = null): static
     {
         $this->expr->range(...func_get_args());
 
         return $this;
     }
 
-    public function reduce($input, $initialValue, $in): static
+    public function reduce(mixed $input, mixed $initialValue, mixed $in): static
     {
         $this->expr->reduce(...func_get_args());
 
         return $this;
     }
 
-    public function regexFind($input, $regex, $options = null): static
+    public function regexFind(mixed $input, mixed $regex, mixed $options = null): static
     {
         $this->expr->regexFind(...func_get_args());
 
         return $this;
     }
 
-    public function regexFindAll($input, $regex, $options = null): static
+    public function regexFindAll(mixed $input, mixed $regex, mixed $options = null): static
     {
         $this->expr->regexFindAll(...func_get_args());
 
         return $this;
     }
 
-    public function regexMatch($input, $regex, $options = null): static
+    public function regexMatch(mixed $input, mixed $regex, mixed $options = null): static
     {
         $this->expr->regexMatch(...func_get_args());
 
         return $this;
     }
 
-    public function replaceAll($input, $find, $replacement): static
+    public function replaceAll(mixed $input, mixed $find, mixed $replacement): static
     {
         $this->expr->replaceAll(...func_get_args());
 
         return $this;
     }
 
-    public function replaceOne($input, $find, $replacement): static
+    public function replaceOne(mixed $input, mixed $find, mixed $replacement): static
     {
         $this->expr->replaceOne(...func_get_args());
 
         return $this;
     }
 
-    public function reverseArray($expression): static
+    public function reverseArray(mixed $expression): static
     {
         $this->expr->reverseArray(...func_get_args());
 
         return $this;
     }
 
-    public function rtrim($input, $chars = null): static
+    public function rtrim(mixed $input, mixed $chars = null): static
     {
         $this->expr->rtrim(...func_get_args());
 
         return $this;
     }
 
-    public function round($number, $place = null): static
+    public function round(mixed $number, mixed $place = null): static
     {
         $this->expr->round(...func_get_args());
 
         return $this;
     }
 
-    public function radiansToDegrees($expression): static
+    public function radiansToDegrees(mixed $expression): static
     {
         $this->expr->radiansToDegrees(...func_get_args());
 
@@ -807,168 +807,168 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function second($expression): static
+    public function second(mixed $expression): static
     {
         $this->expr->second(...func_get_args());
 
         return $this;
     }
 
-    public function setDifference($expression1, $expression2): static
+    public function setDifference(mixed $expression1, mixed $expression2): static
     {
         $this->expr->setDifference(...func_get_args());
 
         return $this;
     }
 
-    public function setEquals($expression1, $expression2, ...$expressions): static
+    public function setEquals(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         $this->expr->setEquals(...func_get_args());
 
         return $this;
     }
 
-    public function setField($field, $input, $value): static
+    public function setField(mixed $field, mixed $input, mixed $value): static
     {
         $this->expr->setField(...func_get_args());
 
         return $this;
     }
 
-    public function setIntersection($expression1, $expression2, ...$expressions): static
+    public function setIntersection(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         $this->expr->setIntersection(...func_get_args());
 
         return $this;
     }
 
-    public function setIsSubset($expression1, $expression2): static
+    public function setIsSubset(mixed $expression1, mixed $expression2): static
     {
         $this->expr->setIsSubset(...func_get_args());
 
         return $this;
     }
 
-    public function setUnion($expression1, $expression2, ...$expressions): static
+    public function setUnion(mixed $expression1, mixed $expression2, mixed ...$expressions): static
     {
         $this->expr->setUnion(...func_get_args());
 
         return $this;
     }
 
-    public function sin($expression): static
+    public function sin(mixed $expression): static
     {
         $this->expr->sin(...func_get_args());
 
         return $this;
     }
 
-    public function sinh($expression): static
+    public function sinh(mixed $expression): static
     {
         $this->expr->sinh(...func_get_args());
 
         return $this;
     }
 
-    public function size($expression): static
+    public function size(mixed $expression): static
     {
         $this->expr->size(...func_get_args());
 
         return $this;
     }
 
-    public function slice($array, $n, $position = null): static
+    public function slice(mixed $array, mixed $n, mixed $position = null): static
     {
         $this->expr->slice(...func_get_args());
 
         return $this;
     }
 
-    public function sortArray($input, $sortBy): static
+    public function sortArray(mixed $input, mixed $sortBy): static
     {
         $this->expr->sortArray(...func_get_args());
 
         return $this;
     }
 
-    public function split($string, $delimiter): static
+    public function split(mixed $string, mixed $delimiter): static
     {
         $this->expr->split(...func_get_args());
 
         return $this;
     }
 
-    public function sqrt($expression): static
+    public function sqrt(mixed $expression): static
     {
         $this->expr->sqrt(...func_get_args());
 
         return $this;
     }
 
-    public function stdDevPop($expression, ...$expressions): static
+    public function stdDevPop(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->stdDevPop(...func_get_args());
 
         return $this;
     }
 
-    public function stdDevSamp($expression, ...$expressions): static
+    public function stdDevSamp(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->stdDevSamp(...func_get_args());
 
         return $this;
     }
 
-    public function strcasecmp($expression1, $expression2): static
+    public function strcasecmp(mixed $expression1, mixed $expression2): static
     {
         $this->expr->strcasecmp(...func_get_args());
 
         return $this;
     }
 
-    public function strLenBytes($string): static
+    public function strLenBytes(mixed $string): static
     {
         $this->expr->strLenBytes(...func_get_args());
 
         return $this;
     }
 
-    public function strLenCP($string): static
+    public function strLenCP(mixed $string): static
     {
         $this->expr->strLenCP(...func_get_args());
 
         return $this;
     }
 
-    public function substr($string, $start, $length): static
+    public function substr(mixed $string, mixed $start, mixed $length): static
     {
         $this->expr->substr(...func_get_args());
 
         return $this;
     }
 
-    public function substrBytes($string, $start, $count): static
+    public function substrBytes(mixed $string, mixed $start, mixed $count): static
     {
         $this->expr->substrBytes(...func_get_args());
 
         return $this;
     }
 
-    public function substrCP($string, $start, $count): static
+    public function substrCP(mixed $string, mixed $start, mixed $count): static
     {
         $this->expr->substrCP(...func_get_args());
 
         return $this;
     }
 
-    public function subtract($expression1, $expression2): static
+    public function subtract(mixed $expression1, mixed $expression2): static
     {
         $this->expr->subtract(...func_get_args());
 
         return $this;
     }
 
-    public function sum($expression, ...$expressions): static
+    public function sum(mixed $expression, mixed ...$expressions): static
     {
         $this->expr->sum(...func_get_args());
 
@@ -982,147 +982,147 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function tan($expression): static
+    public function tan(mixed $expression): static
     {
         $this->expr->tan(...func_get_args());
 
         return $this;
     }
 
-    public function tanh($expression): static
+    public function tanh(mixed $expression): static
     {
         $this->expr->tanh(...func_get_args());
 
         return $this;
     }
 
-    public function then($expression): static
+    public function then(mixed $expression): static
     {
         $this->expr->then(...func_get_args());
 
         return $this;
     }
 
-    public function toBool($expression): static
+    public function toBool(mixed $expression): static
     {
         $this->expr->toBool(...func_get_args());
 
         return $this;
     }
 
-    public function toDate($expression): static
+    public function toDate(mixed $expression): static
     {
         $this->expr->toDate(...func_get_args());
 
         return $this;
     }
 
-    public function toDecimal($expression): static
+    public function toDecimal(mixed $expression): static
     {
         $this->expr->toDecimal(...func_get_args());
 
         return $this;
     }
 
-    public function toDouble($expression): static
+    public function toDouble(mixed $expression): static
     {
         $this->expr->toDouble(...func_get_args());
 
         return $this;
     }
 
-    public function toInt($expression): static
+    public function toInt(mixed $expression): static
     {
         $this->expr->toInt(...func_get_args());
 
         return $this;
     }
 
-    public function toLong($expression): static
+    public function toLong(mixed $expression): static
     {
         $this->expr->toLong(...func_get_args());
 
         return $this;
     }
 
-    public function toObjectId($expression): static
+    public function toObjectId(mixed $expression): static
     {
         $this->expr->toObjectId(...func_get_args());
 
         return $this;
     }
 
-    public function toString($expression): static
+    public function toString(mixed $expression): static
     {
         $this->expr->toString(...func_get_args());
 
         return $this;
     }
 
-    public function toLower($expression): static
+    public function toLower(mixed $expression): static
     {
         $this->expr->toLower(...func_get_args());
 
         return $this;
     }
 
-    public function toUpper($expression): static
+    public function toUpper(mixed $expression): static
     {
         $this->expr->toUpper(...func_get_args());
 
         return $this;
     }
 
-    public function trim($input, $chars = null): static
+    public function trim(mixed $input, mixed $chars = null): static
     {
         $this->expr->trim(...func_get_args());
 
         return $this;
     }
 
-    public function trunc($number): static
+    public function trunc(mixed $number): static
     {
         $this->expr->trunc(...func_get_args());
 
         return $this;
     }
 
-    public function tsIncrement($expression): static
+    public function tsIncrement(mixed $expression): static
     {
         $this->expr->tsIncrement(...func_get_args());
 
         return $this;
     }
 
-    public function tsSecond($expression): static
+    public function tsSecond(mixed $expression): static
     {
         $this->expr->tsSecond(...func_get_args());
 
         return $this;
     }
 
-    public function type($expression): static
+    public function type(mixed $expression): static
     {
         $this->expr->type(...func_get_args());
 
         return $this;
     }
 
-    public function week($expression): static
+    public function week(mixed $expression): static
     {
         $this->expr->week(...func_get_args());
 
         return $this;
     }
 
-    public function year($expression): static
+    public function year(mixed $expression): static
     {
         $this->expr->year(...func_get_args());
 
         return $this;
     }
 
-    public function zip($inputs, ?bool $useLongestLength = null, $defaults = null): static
+    public function zip(mixed $inputs, ?bool $useLongestLength = null, mixed $defaults = null): static
     {
         $this->expr->zip(...func_get_args());
 

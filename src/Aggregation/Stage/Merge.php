@@ -47,7 +47,7 @@ class Merge extends Stage
 
     private ?string $whenNotMatched = null;
 
-    public function __construct(Builder $builder, private DocumentManager $dm)
+    public function __construct(Builder $builder, private readonly DocumentManager $dm)
     {
         parent::__construct($builder);
     }
@@ -80,11 +80,8 @@ class Merge extends Stage
         return ['$merge' => $params];
     }
 
-    /**
-     * @param string|array $collection
-     * @phpstan-param OutputCollection $collection
-     */
-    public function into($collection): static
+    /** @phpstan-param OutputCollection $collection */
+    public function into(string|array $collection): static
     {
         if (is_array($collection)) {
             $this->into = $collection;
@@ -124,11 +121,8 @@ class Merge extends Stage
         return $this;
     }
 
-    /**
-     * @param string|array|Builder|Stage $whenMatched
-     * @phpstan-param WhenMatchedParamType $whenMatched
-     */
-    public function whenMatched($whenMatched): static
+    /** @phpstan-param WhenMatchedParamType $whenMatched */
+    public function whenMatched(string|array|Builder|Stage $whenMatched): static
     {
         if ($whenMatched instanceof Stage) {
             $this->whenMatched = $whenMatched->builder;

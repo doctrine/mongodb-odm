@@ -45,18 +45,17 @@ class Output extends Operator implements WindowOperators
         parent::__construct($builder);
     }
 
-    /** @param mixed|Expr $expression */
-    public function partitionBy($expression): SetWindowFields
+    public function partitionBy(mixed $expression): SetWindowFields
     {
         return $this->setWindowFields->partitionBy($expression);
     }
 
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string           $fieldName
+     * @param int|string|null                  $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string         $fieldName
      */
-    public function sortBy($fieldName, $order = null): SetWindowFields
+    public function sortBy(array|string $fieldName, int|string|null $order = null): SetWindowFields
     {
         return $this->setWindowFields->sortBy(...func_get_args());
     }

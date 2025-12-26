@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all conditional aggregation pipeline operators.
  *
@@ -24,10 +22,8 @@ interface ConditionalOperators
      * boolean, it is coerced to a boolean value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
-     *
-     * @param mixed|Expr $expression
      */
-    public function case($expression): static;
+    public function case(mixed $expression): static;
 
     /**
      * Evaluates a boolean expression to return one of the two specified return
@@ -36,12 +32,8 @@ interface ConditionalOperators
      * The arguments can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cond/
-     *
-     * @param mixed|Expr $if
-     * @param mixed|Expr $then
-     * @param mixed|Expr $else
      */
-    public function cond($if, $then, $else): static;
+    public function cond(mixed $if, mixed $then, mixed $else): static;
 
     /**
      * Adds a default statement for the current $switch operator.
@@ -53,10 +45,8 @@ interface ConditionalOperators
      * $switch operator throws an error.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
-     *
-     * @param mixed|Expr $expression
      */
-    public function default($expression): static;
+    public function default(mixed $expression): static;
 
     /**
      * Evaluates an expression and returns the value of the expression if the
@@ -67,11 +57,8 @@ interface ConditionalOperators
      * The arguments can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ifNull/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr $replacementExpression
      */
-    public function ifNull($expression, $replacementExpression): static;
+    public function ifNull(mixed $expression, mixed $replacementExpression): static;
 
     /**
      * Evaluates a series of case expressions. When it finds an expression which
@@ -92,8 +79,6 @@ interface ConditionalOperators
      * expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/switch/
-     *
-     * @param mixed|Expr $expression
      */
-    public function then($expression): static;
+    public function then(mixed $expression): static;
 }

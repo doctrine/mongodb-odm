@@ -22,7 +22,7 @@ class GeoNearTest extends BaseTestCase
             ->field('someField')
             ->equals('someValue');
 
-        $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
+        $stage = ['near' => [0.0, 0.0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
         self::assertSame(['$geoNear' => $stage], $geoNearStage->getExpression());
     }
 

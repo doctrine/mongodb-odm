@@ -42,11 +42,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /**
-     * @param array|Point $bottomLeft
-     * @param array|Point $topRight
-     */
-    public function box($bottomLeft, $topRight): static
+    public function box(array|Point $bottomLeft, array|Point $topRight): static
     {
         $this->box = (object) [
             'bottomLeft' => $this->convertGeometry($bottomLeft),
@@ -56,11 +52,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /**
-     * @param array|Point $center
-     * @param int|float   $radius
-     */
-    public function circle($center, $radius): static
+    public function circle(array|Point $center, int|float $radius): static
     {
         $this->circle = (object) [
             'center' => $this->convertGeometry($center),
@@ -70,8 +62,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /** @param Polygon|MultiPolygon|array $geometry */
-    public function geometry($geometry): static
+    public function geometry(Polygon|MultiPolygon|array $geometry): static
     {
         $this->geometry = $geometry;
 
@@ -102,8 +93,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this->appendScore($params);
     }
 
-    /** @param array|Geometry $geometry */
-    private function convertGeometry($geometry): array
+    private function convertGeometry(array|Geometry $geometry): array
     {
         if (! $geometry instanceof Geometry) {
             return $geometry;

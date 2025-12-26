@@ -49,8 +49,7 @@ class Fill extends Stage
         $this->output = new Output($this->builder, $this);
     }
 
-    /** @param mixed|Expr $expression */
-    public function partitionBy($expression): static
+    public function partitionBy(mixed $expression): static
     {
         $this->partitionBy = $expression;
 
@@ -66,11 +65,11 @@ class Fill extends Stage
 
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string           $fieldName
-     * @phpstan-param SortDirection|null         $order
+     * @param int|string|null                  $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string         $fieldName
+     * @phpstan-param SortDirection|null       $order
      */
-    public function sortBy($fieldName, $order = null): static
+    public function sortBy(array|string $fieldName, int|string|null $order = null): static
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 

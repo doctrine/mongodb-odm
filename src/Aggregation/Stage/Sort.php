@@ -30,11 +30,11 @@ class Sort extends Stage
 
     /**
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                                             $order     Field order (if one field is specified)
+     * @param int|string|array|null                                  $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string                        $fieldName
      * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
-    public function __construct(Builder $builder, $fieldName, $order = null)
+    public function __construct(Builder $builder, array|string $fieldName, int|string|array|null $order = null)
     {
         parent::__construct($builder);
 

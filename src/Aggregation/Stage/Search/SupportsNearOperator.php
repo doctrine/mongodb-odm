@@ -9,9 +9,6 @@ use MongoDB\BSON\UTCDateTime;
 
 interface SupportsNearOperator
 {
-    /**
-     * @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin
-     * @param int|float|null                                        $pivot
-     */
-    public function near($origin = null, $pivot = null, string ...$path): Near;
+    /** @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin */
+    public function near(int|float|UTCDateTime|array|Point|null $origin = null, int|float|null $pivot = null, string ...$path): Near;
 }

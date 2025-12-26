@@ -38,7 +38,7 @@ class AttributeDriver implements MappingDriver
     private AttributeReader $reader;
 
     /** @param string|string[]|ClassLocator|null $paths */
-    public function __construct($paths = null)
+    public function __construct(string|array|ClassLocator|null $paths = null)
     {
         $this->reader = new AttributeReader();
 
@@ -49,7 +49,7 @@ class AttributeDriver implements MappingDriver
         }
     }
 
-    public function isTransient($className): bool
+    public function isTransient(string $className): bool
     {
         $classAttributes = $this->getClassAttributes(new ReflectionClass($className));
 
@@ -62,7 +62,7 @@ class AttributeDriver implements MappingDriver
         return true;
     }
 
-    public function loadMetadataForClass($className, PersistenceClassMetadata $metadata): void
+    public function loadMetadataForClass(string $className, PersistenceClassMetadata $metadata): void
     {
         assert($metadata instanceof ClassMetadata);
         $reflClass = $metadata->getReflectionClass();
@@ -361,10 +361,8 @@ class AttributeDriver implements MappingDriver
      * Factory method for the Attribute Driver
      *
      * @param string|string[]|ClassLocator $paths
-     *
-     * @return self
      */
-    public static function create($paths = [])
+    public static function create(string|array|ClassLocator $paths = []): self
     {
         return new self($paths);
     }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all accumulator aggregation pipeline operators.
  *
@@ -20,11 +18,8 @@ interface AccumulatorOperators
      * Returns the average value of numeric values. Ignores non-numeric values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function avg($expression, ...$expressions): static;
+    public function avg(mixed $expression, mixed ...$expressions): static;
 
     /**
      * Returns the maximum value of numeric values.
@@ -33,11 +28,8 @@ interface AccumulatorOperators
      * values of different types.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function max($expression, ...$expressions): static;
+    public function max(mixed $expression, mixed ...$expressions): static;
 
     /**
      * Returns the minimum value of numeric values.
@@ -46,11 +38,8 @@ interface AccumulatorOperators
      * values of different types.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function min($expression, ...$expressions): static;
+    public function min(mixed $expression, mixed ...$expressions): static;
 
     /**
      * Calculates the population standard deviation of the input values. Use if
@@ -59,11 +48,8 @@ interface AccumulatorOperators
      * ignores non-numeric values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function stdDevPop($expression, ...$expressions): static;
+    public function stdDevPop(mixed $expression, mixed ...$expressions): static;
 
     /**
      * Calculates the sample standard deviation of the input values. Use if the
@@ -71,19 +57,13 @@ interface AccumulatorOperators
      * generalize about the population. $stdDevSamp ignores non-numeric values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function stdDevSamp($expression, ...$expressions): static;
+    public function stdDevSamp(mixed $expression, mixed ...$expressions): static;
 
     /**
      * Calculates the collective sum of numeric values. Ignores non-numeric values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function sum($expression, ...$expressions): static;
+    public function sum(mixed $expression, mixed ...$expressions): static;
 }

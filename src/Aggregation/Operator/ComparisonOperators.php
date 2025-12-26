@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all comparison aggregation pipeline operators.
  *
@@ -23,21 +21,15 @@ interface ComparisonOperators
      * 0 if the two values are equivalent.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/cmp/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function cmp($expression1, $expression2): static;
+    public function cmp(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two values and returns whether the are equivalent.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/eq/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function eq($expression1, $expression2): static;
+    public function eq(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -46,11 +38,8 @@ interface ComparisonOperators
      * value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/gt/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function gt($expression1, $expression2): static;
+    public function gt(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -59,11 +48,8 @@ interface ComparisonOperators
      * false when the first value is less than the second value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/gte/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function gte($expression1, $expression2): static;
+    public function gte(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -72,11 +58,8 @@ interface ComparisonOperators
      * value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lt/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function lt($expression1, $expression2): static;
+    public function lt(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -84,11 +67,8 @@ interface ComparisonOperators
      * false when the first value is greater than the second value.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lte/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function lte($expression1, $expression2): static;
+    public function lte(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two values and returns:
@@ -96,9 +76,6 @@ interface ComparisonOperators
      * false when the values are equivalent.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/ne/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function ne($expression1, $expression2): static;
+    public function ne(mixed $expression1, mixed $expression2): static;
 }

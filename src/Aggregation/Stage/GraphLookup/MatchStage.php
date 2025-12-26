@@ -42,7 +42,7 @@ class MatchStage extends BaseMatchStage
      *
      * @param string|mixed[]|Expr $expression
      */
-    public function startWith($expression): GraphLookup
+    public function startWith(string|array|Expr $expression): GraphLookup
     {
         return $this->graphLookup->startWith($expression);
     }
