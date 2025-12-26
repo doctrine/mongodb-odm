@@ -12,10 +12,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 final readonly class File extends AbstractDocument
 {
-    /**
-     * @param Index[]         $indexes
-     * @param string|int|null $writeConcern
-     */
+    /** @param Index[] $indexes */
     public function __construct(
         public ?string $db = null,
         public ?string $bucketName = null,

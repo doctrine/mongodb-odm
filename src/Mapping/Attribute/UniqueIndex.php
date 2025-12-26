@@ -17,7 +17,7 @@ final readonly class UniqueIndex extends AbstractIndex implements MappingAttribu
         ?string $name = null,
         ?bool $background = null,
         ?int $expireAfterSeconds = null,
-        $order = null,
+        int|string|null $order = null,
         bool $sparse = false,
         array $options = [],
         array $partialFilterExpression = [],

@@ -397,24 +397,6 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between ''Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata'' and ''Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata'' will always evaluate to false\.$#'
-			identifier: notIdentical.alwaysFalse
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between mixed and \*NEVER\* will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Template type T is declared as covariant, but occurs in invariant position in property Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:\$name\.$#'
 			identifier: generics.variance
 			count: 1
@@ -985,13 +967,13 @@ parameters:
 			path: tests/Tests/Functional/QueryableEncryptionTest.php
 
 		-
-			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
+			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php
 
 		-
-			message: '#^Parameter \$targetDocument of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects class\-string\|null, string given\.$#'
+			message: '#^Parameter \$targetDocument of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\ReferenceOne constructor expects class\-string\|null, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php
@@ -1011,12 +993,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ClassMetadataTest\:\:testSearchIndexDefinition\(\) has parameter \$definition with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Mapping/ClassMetadataTest.php
-
-		-
-			message: '#^Static call to instance method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<object\>\:\:__sleep\(\)\.$#'
-			identifier: method.staticCall
 			count: 1
 			path: tests/Tests/Mapping/ClassMetadataTest.php
 

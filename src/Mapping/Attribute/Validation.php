@@ -12,12 +12,12 @@ readonly class Validation implements MappingAttribute
 {
     /**
      * @phpstan-param ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR|ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN|null $action
-     * @phpstan-param ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF|ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT|ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE|null $action
+     * @phpstan-param ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF|ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT|ClassMetadata::SCHEMA_VALIDATION_LEVEL_MODERATE|null $level
      */
     public function __construct(
         public ?string $validator = null,
         public ?string $action = null,
-        public ?string $level = null
+        public ?string $level = null,
     ) {
     }
 }

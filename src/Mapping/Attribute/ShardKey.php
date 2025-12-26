@@ -13,7 +13,7 @@ final readonly class ShardKey implements MappingAttribute
     public function __construct(
         public array $keys = [],
         public ?bool $unique = null,
-        public ?int $numInitialChunks = null
+        public ?int $numInitialChunks = null,
     ) {
     }
 }

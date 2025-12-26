@@ -96,9 +96,7 @@ class AttributeDriver implements MappingDriver
             } elseif ($attribute instanceof ODM\DiscriminatorField) {
                 $metadata->setDiscriminatorField($attribute->value);
             } elseif ($attribute instanceof ODM\DiscriminatorMap) {
-                $value = $attribute->value;
-                assert(is_array($value));
-                $metadata->setDiscriminatorMap($value);
+                $metadata->setDiscriminatorMap($attribute->value);
             } elseif ($attribute instanceof ODM\DiscriminatorValue) {
                 $metadata->setDiscriminatorValue($attribute->value);
             } elseif ($attribute instanceof ODM\ChangeTrackingPolicy) {
