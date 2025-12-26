@@ -13,6 +13,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * @see https://www.mongodb.com/docs/atlas/atlas-vector-search/vector-search-type/
  *
  * @phpstan-import-type VectorSearchIndexField from ClassMetadata
+ *
+ * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class VectorSearchIndex implements MappingAttribute

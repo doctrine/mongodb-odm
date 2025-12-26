@@ -7,7 +7,10 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 use Attribute;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/** @Target({"CLASS"}) */
+/**
+ * @Target({"CLASS"})
+ * @final
+ */
 #[Attribute(Attribute::TARGET_CLASS)]
 class Validation implements MappingAttribute
 {
