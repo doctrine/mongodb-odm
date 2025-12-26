@@ -12,10 +12,8 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
  * Embeds multiple documents
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class EmbedMany extends AbstractField implements MappingAttribute
+final readonly class EmbedMany extends AbstractField implements MappingAttribute
 {
-    public bool $embedded = true;
-
     /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         ?string $name = null,
@@ -23,12 +21,12 @@ final class EmbedMany extends AbstractField implements MappingAttribute
         array $options = [],
         string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         bool $notSaved = false,
-        public readonly ?string $targetDocument = null,
-        public readonly ?string $discriminatorField = null,
-        public readonly ?array $discriminatorMap = null,
-        public readonly ?string $defaultDiscriminatorValue = null,
-        public readonly ?string $collectionClass = null,
-        public readonly bool $storeEmptyArray = false,
+        public ?string $targetDocument = null,
+        public ?string $discriminatorField = null,
+        public ?array $discriminatorMap = null,
+        public ?string $defaultDiscriminatorValue = null,
+        public ?string $collectionClass = null,
+        public bool $storeEmptyArray = false,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
     }

@@ -10,6 +10,6 @@ use Attribute;
  * Specifies a field to use for optimistic locking
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class Version implements MappingAttribute
+final readonly class Version implements MappingAttribute
 {
 }

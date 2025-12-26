@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final class UploadDate extends AbstractField implements MappingAttribute
+final readonly class UploadDate extends AbstractField implements MappingAttribute
 {
     public function __construct()
     {
