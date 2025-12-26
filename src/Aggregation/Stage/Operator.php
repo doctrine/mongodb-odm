@@ -471,14 +471,14 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function indexOfBytes(mixed $stringExpression, mixed $substringExpression, mixed $start = null, mixed $end = null): static
+    public function indexOfBytes(mixed $stringExpression, mixed $substringExpression, string|int|null $start = null, string|int|null $end = null): static
     {
         $this->expr->indexOfBytes(...func_get_args());
 
         return $this;
     }
 
-    public function indexOfCP(mixed $stringExpression, mixed $substringExpression, mixed $start = null, mixed $end = null): static
+    public function indexOfCP(mixed $stringExpression, mixed $substringExpression, string|int|null $start = null, string|int|null $end = null): static
     {
         $this->expr->indexOfCP(...func_get_args());
 
@@ -597,7 +597,7 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function map(mixed $input, mixed $as, mixed $in): static
+    public function map(mixed $input, string $as, mixed $in): static
     {
         $this->expr->map(...func_get_args());
 
@@ -730,21 +730,21 @@ abstract class Operator extends Stage implements
         return $this;
     }
 
-    public function regexFind(mixed $input, mixed $regex, mixed $options = null): static
+    public function regexFind(mixed $input, mixed $regex, ?string $options = null): static
     {
         $this->expr->regexFind(...func_get_args());
 
         return $this;
     }
 
-    public function regexFindAll(mixed $input, mixed $regex, mixed $options = null): static
+    public function regexFindAll(mixed $input, mixed $regex, ?string $options = null): static
     {
         $this->expr->regexFindAll(...func_get_args());
 
         return $this;
     }
 
-    public function regexMatch(mixed $input, mixed $regex, mixed $options = null): static
+    public function regexMatch(mixed $input, mixed $regex, ?string $options = null): static
     {
         $this->expr->regexMatch(...func_get_args());
 

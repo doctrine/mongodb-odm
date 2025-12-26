@@ -241,8 +241,6 @@ class Expr implements
      * are returned directly.
      *
      * @internal
-     *
-     * @return string|array<string, mixed>
      */
     public static function convertExpression(mixed $expression): mixed
     {
