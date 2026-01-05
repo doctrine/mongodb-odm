@@ -10,7 +10,9 @@ use Attribute;
 final class ReadPreference implements MappingAttribute
 {
     /** @param string[][]|null $tags */
-    public function __construct(public readonly string $value, public readonly ?array $tags = null)
-    {
+    public function __construct(
+        public readonly string $value,
+        public readonly ?array $tags = null,
+    ) {
     }
 }
