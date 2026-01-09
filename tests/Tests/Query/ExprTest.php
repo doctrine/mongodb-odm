@@ -414,7 +414,7 @@ class ExprTest extends BaseTestCase
      * @param array<string, mixed>       $expected
      */
     #[DataProvider('provideGeoJsonPoint')]
-    public function testNearWithGeoJsonPoint($point, array $expected): void
+    public function testNearWithGeoJsonPoint(Point|array $point, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -517,7 +517,7 @@ class ExprTest extends BaseTestCase
      * @param array<string, mixed>       $expected
      */
     #[DataProvider('provideGeoJsonPoint')]
-    public function testNearSphereWithGeoJsonPoint($point, array $expected): void
+    public function testNearSphereWithGeoJsonPoint(Point|array $point, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -713,7 +713,7 @@ class ExprTest extends BaseTestCase
      * @param array<string, mixed>                        $expected
      */
     #[DataProvider('provideGeoJsonPolygon')]
-    public function testGeoIntersects($geometry, array $expected): void
+    public function testGeoIntersects(Polygon|array $geometry, array $expected): void
     {
         $expr = $this->createExpr();
 
@@ -743,7 +743,7 @@ class ExprTest extends BaseTestCase
      * @param array<string, mixed>                        $expected
      */
     #[DataProvider('provideGeoJsonPolygon')]
-    public function testGeoWithin($geometry, array $expected): void
+    public function testGeoWithin(Polygon|array $geometry, array $expected): void
     {
         $expr = $this->createExpr();
 

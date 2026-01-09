@@ -81,9 +81,8 @@ class FunctionalTest extends BaseTestCase
         ];
     }
 
-    /** @param ObjectId|string $id */
     #[DataProvider('provideUpsertObjects')]
-    public function testUpsertObject(string $className, $id, string $discriminator): void
+    public function testUpsertObject(string $className, ObjectId|string $id, string $discriminator): void
     {
         $user           = new $className();
         $user->id       = (string) $id;

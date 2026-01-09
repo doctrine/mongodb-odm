@@ -107,7 +107,7 @@ class ParentObject
     }
 
     /** @return Collection<int, ChildObject> */
-    public function getChildren()
+    public function getChildren(): Collection
     {
         return $this->children;
     }

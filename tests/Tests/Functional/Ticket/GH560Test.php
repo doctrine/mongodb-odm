@@ -15,9 +15,8 @@ use function get_class;
 
 class GH560Test extends BaseTestCase
 {
-    /** @param int|string $id */
     #[DataProvider('provideDocumentIds')]
-    public function testPersistListenersAreCalled($id): void
+    public function testPersistListenersAreCalled(int|string $id): void
     {
         $listener = new GH560EventSubscriber([
             Events::prePersist,
@@ -39,9 +38,8 @@ class GH560Test extends BaseTestCase
         self::assertEquals($called, $listener->called);
     }
 
-    /** @param int|string $id */
     #[DataProvider('provideDocumentIds')]
-    public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase($id): void
+    public function testDocumentWithCustomIdStrategyIsSavedAndFoundFromDatabase(int|string $id): void
     {
         $doc = new GH560Document($id, 'test');
         $this->dm->persist($doc);
@@ -52,9 +50,8 @@ class GH560Test extends BaseTestCase
         self::assertEquals($id, $doc->id);
     }
 
-    /** @param int|string $id */
     #[DataProvider('provideDocumentIds')]
-    public function testUpdateListenersAreCalled($id): void
+    public function testUpdateListenersAreCalled(int|string $id): void
     {
         $listener = new GH560EventSubscriber([
             Events::preUpdate,
@@ -125,8 +122,7 @@ class GH560Document
     #[ODM\Field(type: 'string')]
     public $name;
 
-    /** @param int|string $id */
-    public function __construct($id, string $name)
+    public function __construct(int|string $id, string $name)
     {
         $this->id   = $id;
         $this->name = $name;

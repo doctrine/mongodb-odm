@@ -76,9 +76,8 @@ class DateImmutableTypeTest extends TestCase
         self::assertEquals($type->convertToDatabaseValue($timestamp), $type->convertToDatabaseValue($date));
     }
 
-    /** @param mixed $value */
     #[DataProvider('provideInvalidDateValues')]
-    public function testConvertToDatabaseValueWithInvalidValues($value): void
+    public function testConvertToDatabaseValueWithInvalidValues(mixed $value): void
     {
         $type = Type::getType(Type::DATE_IMMUTABLE);
         $this->expectException(InvalidArgumentException::class);
@@ -96,9 +95,8 @@ class DateImmutableTypeTest extends TestCase
         ];
     }
 
-    /** @param mixed $input */
     #[DataProvider('provideDatabaseToPHPValues')]
-    public function testConvertToPHPValue($input, DateTimeImmutable $output): void
+    public function testConvertToPHPValue(mixed $input, DateTimeImmutable $output): void
     {
         $type   = Type::getType(Type::DATE_IMMUTABLE);
         $return = $type->convertToPHPValue($input);
@@ -114,9 +112,8 @@ class DateImmutableTypeTest extends TestCase
         self::assertNull($type->convertToPHPValue(null));
     }
 
-    /** @param mixed $input */
     #[DataProvider('provideDatabaseToPHPValues')]
-    public function testClosureToPHP($input, DateTimeImmutable $output): void
+    public function testClosureToPHP(mixed $input, DateTimeImmutable $output): void
     {
         $type = Type::getType(Type::DATE_IMMUTABLE);
 

@@ -39,9 +39,8 @@ class GeoNearTest extends BaseTestCase
         self::assertSame([['$geoNear' => $stage]], $builder->getPipeline());
     }
 
-    /** @param mixed $value */
     #[DataProvider('provideOptionalSettings')]
-    public function testOptionalSettings(string $field, $value): void
+    public function testOptionalSettings(string $field, mixed $value): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
 

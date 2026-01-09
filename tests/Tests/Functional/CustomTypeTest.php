@@ -8,7 +8,6 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
@@ -23,8 +22,6 @@ use function is_array;
 
 class CustomTypeTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     public function setUp(): void
     {
         parent::setUp();
@@ -99,11 +96,11 @@ class CustomTypeTest extends BaseTestCase
     public function testNotOverridingClosureToPHPIsDeprecated(): void
     {
         $type = Type::getType('custom_type_without_closure_to_php');
+        $this->expectUserDeprecationMessage('Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.');
 
-        $code = $this->captureDeprecationMessages(static fn () => $type->closureToPHP(), $deprecations);
+        $code = $type->closureToPHP();
 
         self::assertSame('$return = $value;', $code);
-        self::assertSame(['Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.'], $deprecations);
     }
 }
 
@@ -194,7 +191,7 @@ class LanguageType extends Type
     use ClosureToPHP;
 
     /** @return array{name:string,code:string}|null */
-    public function convertToDatabaseValue($value): ?array
+    public function convertToDatabaseValue(mixed $value): ?array
     {
         if ($value === null) {
             return null;
@@ -206,7 +203,7 @@ class LanguageType extends Type
     }
 
     /** @param array{name:string,code:string}|null $value */
-    public function convertToPHPValue($value): ?Language
+    public function convertToPHPValue(mixed $value): ?Language
     {
         if ($value === null) {
             return null;

@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -52,8 +51,6 @@ use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -663,9 +660,8 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /** @param mixed $value */
     #[DataProvider('provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort')]
-    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, $value): void
+    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, mixed $value): void
     {
         $cm = new ClassMetadata('stdClass');
 

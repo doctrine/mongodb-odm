@@ -84,7 +84,7 @@ class Avatar
     }
 
     /** @return Collection<int, AvatarPart>|array<AvatarPart>|null */
-    public function getAvatarParts()
+    public function getAvatarParts(): Collection|array|null
     {
         return $this->avatarParts;
     }

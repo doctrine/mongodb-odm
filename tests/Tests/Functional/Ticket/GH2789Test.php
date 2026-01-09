@@ -69,21 +69,21 @@ class GH2789VersionedUuid
  */
 class GH2789CustomType extends Type implements Versionable
 {
-    public function convertToPHPValue($value): int
+    public function convertToPHPValue(mixed $value): int
     {
         assert($value instanceof Binary);
 
         return (int) $value->getData();
     }
 
-    public function convertToDatabaseValue($value): Binary
+    public function convertToDatabaseValue(mixed $value): Binary
     {
         assert(is_int($value));
 
         return new Binary((string) $value, 142);
     }
 
-    public function getNextVersion($current): int
+    public function getNextVersion(mixed $current): int
     {
         if ($current === null) {
             return 1;

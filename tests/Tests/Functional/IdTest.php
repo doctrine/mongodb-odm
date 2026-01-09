@@ -120,9 +120,8 @@ class IdTest extends BaseTestCase
         self::assertEquals(4, $user2->embedded[1]->id);
     }
 
-    /** @param int|float $user2Id */
     #[DataProvider('provideEqualButNotIdenticalIds')]
-    public function testEqualButNotIdenticalIds(string $user1Id, $user2Id): void
+    public function testEqualButNotIdenticalIds(string $user1Id, int|float $user2Id): void
     {
         self::assertNotSame($user1Id, $user2Id);
 
@@ -163,12 +162,8 @@ class IdTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param mixed $id
-     * @param mixed $expected
-     */
     #[DataProvider('getTestIdTypesAndStrategiesData')]
-    public function testIdTypesAndStrategies(string $type, string $strategy, $id = null, $expected = null, ?string $expectedMongoType = null): void
+    public function testIdTypesAndStrategies(string $type, string $strategy, mixed $id = null, mixed $expected = null, ?string $expectedMongoType = null): void
     {
         $className = $this->createIdTestClass($type, $strategy);
 

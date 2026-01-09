@@ -81,9 +81,8 @@ class TypeTest extends BaseTestCase
         ];
     }
 
-    /** @param mixed $test */
     #[DataProvider('provideTypesForIdempotent')]
-    public function testConversionIsIdempotent(Type $type, $test): void
+    public function testConversionIsIdempotent(Type $type, mixed $test): void
     {
         self::assertSameTypeAndValue($test, $type->convertToDatabaseValue($test));
     }

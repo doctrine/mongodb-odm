@@ -74,7 +74,7 @@ class GH1232Comment
 class GH1232CommentRepository extends DocumentRepository
 {
     /** @return Iterator<GH1232Comment> */
-    public function getLongComments(GH1232Post $post)
+    public function getLongComments(GH1232Post $post): Iterator
     {
         $comments = $this
             ->createQueryBuilder()

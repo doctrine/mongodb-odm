@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\LockException;
@@ -579,7 +580,7 @@ abstract class AbstractVersionBase
     #[ODM\EmbedMany(targetDocument: Issue::class)]
     public $issues;
 
-    /** @var int|string|DateTime|DateTimeImmutable|null */
+    /** @var int|string|DateTimeInterface|null */
     public $version;
 
     public function __construct(?string $title = null)
@@ -588,8 +589,7 @@ abstract class AbstractVersionBase
         $this->title  = $title;
     }
 
-    /** @return ObjectId|string|null */
-    public function getId()
+    public function getId(): ObjectId|string|null
     {
         return $this->id;
     }
@@ -599,8 +599,7 @@ abstract class AbstractVersionBase
         return $this->title;
     }
 
-    /** @return int|string|DateTime|DateTimeImmutable|null */
-    public function getVersion()
+    public function getVersion(): int|string|DateTimeInterface|null
     {
         return $this->version;
     }

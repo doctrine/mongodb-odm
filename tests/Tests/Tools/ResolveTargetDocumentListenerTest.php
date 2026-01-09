@@ -77,8 +77,7 @@ class ResolveTargetDocumentListenerTest extends BaseTestCase
 
 interface ResolveTargetInterface
 {
-    /** @return mixed */
-    public function getId();
+    public function getId(): mixed;
 }
 
 interface TargetInterface extends ResolveTargetInterface

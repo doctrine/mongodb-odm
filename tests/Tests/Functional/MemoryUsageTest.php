@@ -57,8 +57,7 @@ class MemoryUsageTest extends BaseTestCase
         echo sprintf('Memory increased by %s', $this->formatMemory($increase));
     }
 
-    /** @param int|float $size */
-    private function formatMemory($size): string
+    private function formatMemory(int|float $size): string
     {
         $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
 

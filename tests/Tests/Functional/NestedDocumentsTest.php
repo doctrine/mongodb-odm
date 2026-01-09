@@ -175,12 +175,7 @@ class Hierarchy
         return $this->name;
     }
 
-    /**
-     * @param int|string $name
-     *
-     * @return Hierarchy|null
-     */
-    public function getChild($name)
+    public function getChild(int|string $name): ?Hierarchy
     {
         if (is_numeric($name)) {
             return $this->children[$name];
@@ -195,12 +190,7 @@ class Hierarchy
         return null;
     }
 
-    /**
-     * @param string|Hierarchy $child
-     *
-     * @return Hierarchy
-     */
-    public function addChild($child)
+    public function addChild(string|Hierarchy $child): Hierarchy
     {
         if (is_string($child)) {
             $child = new Hierarchy($child);
@@ -212,7 +202,7 @@ class Hierarchy
     }
 
     /** @return Collection<int, Hierarchy>|array<Hierarchy> */
-    public function getChildren()
+    public function getChildren(): Collection|array
     {
         return $this->children;
     }
@@ -245,12 +235,7 @@ class BaseCategory
         return $this->name;
     }
 
-    /**
-     * @param string|int $name
-     *
-     * @return ChildCategory|null
-     */
-    public function getChild($name)
+    public function getChild(string|int $name): ?ChildCategory
     {
         if (is_numeric($name)) {
             return $this->children[$name];
@@ -265,12 +250,7 @@ class BaseCategory
         return null;
     }
 
-    /**
-     * @param string|ChildCategory $child
-     *
-     * @return ChildCategory
-     */
-    public function addChild($child)
+    public function addChild(string|ChildCategory $child): ChildCategory
     {
         if (is_string($child)) {
             $child = new ChildCategory($child);

@@ -119,7 +119,7 @@ abstract class ParentDocument
     }
 
     /** @return Collection<int, ChildDocument>|array<ChildDocument> */
-    public function getReferencedChildren()
+    public function getReferencedChildren(): Collection|array
     {
         return $this->referencedChildren;
     }
@@ -130,7 +130,7 @@ abstract class ParentDocument
     }
 
     /** @return Collection<int, ChildDocument>|array<ChildDocument> */
-    public function getEmbeddedChildren()
+    public function getEmbeddedChildren(): Collection|array
     {
         return $this->embeddedChildren;
     }

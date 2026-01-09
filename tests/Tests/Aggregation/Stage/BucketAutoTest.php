@@ -25,7 +25,7 @@ class BucketAutoTest extends BaseTestCase
      * @param mixed[]|Closure(Expr): mixed[] $args
      */
     #[DataProvider('provideGroupAccumulatorExpressionOperators')]
-    public function testGroupAccumulators(array $expected, string $operator, $args): void
+    public function testGroupAccumulators(array $expected, string $operator, array|Closure $args): void
     {
         $args = $this->resolveArgs($args);
 

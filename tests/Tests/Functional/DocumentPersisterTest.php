@@ -1028,8 +1028,7 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
-    /** @param mixed $value */
-    private static function createException($value): InvalidArgumentException
+    private static function createException(mixed $value): InvalidArgumentException
     {
         return new InvalidArgumentException(
             sprintf(

@@ -37,7 +37,7 @@ class OperatorTest extends BaseTestCase
     #[DataProvider('provideTimestampExpressionOperators')]
     #[DataProvider('provideTrigonometryExpressionOperators')]
     #[DataProvider('provideTypeExpressionOperators')]
-    public function testProxiedExpressionOperators(array $expected, string $operator, $args): void
+    public function testProxiedExpressionOperators(array $expected, string $operator, array|Closure $args): void
     {
         $stage = $this->getStubStage();
         $args  = $this->resolveArgs($args);

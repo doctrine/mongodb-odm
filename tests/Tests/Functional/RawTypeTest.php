@@ -12,9 +12,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class RawTypeTest extends BaseTestCase
 {
-    /** @param mixed $value */
     #[DataProvider('getTestRawTypeData')]
-    public function testRawType($value): void
+    public function testRawType(mixed $value): void
     {
         $test      = new RawType();
         $test->raw = $value;

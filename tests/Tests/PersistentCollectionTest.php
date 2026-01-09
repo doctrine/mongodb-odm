@@ -333,7 +333,7 @@ class PersistentCollectionTest extends BaseTestCase
     }
 
     /** @return Collection<int, object>&MockObject */
-    private function getMockCollection()
+    private function getMockCollection(): Collection&MockObject
     {
         return $this->createMock(Collection::class);
     }

@@ -680,9 +680,8 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => 1], $qb->debug('sort'));
     }
 
-    /** @param string|int $order */
     #[DataProvider('provideSortOrders')]
-    public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
+    public function testSortWithFieldNameAndOrder(int|string $order, int $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);

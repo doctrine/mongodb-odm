@@ -8,9 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Traversable;
-
-use function is_iterable;
 
 class MODM92Test extends BaseTestCase
 {
@@ -66,15 +63,11 @@ class MODM92TestDocument
      * by mapping array indexes (size URL's are required, cropMetadata is not).
      * Any invalid elements will be ignored.
      *
-     * @param array<MODM92TestEmbeddedDocument>|Traversable<MODM92TestEmbeddedDocument> $embeddedDocuments
+     * @param iterable<MODM92TestEmbeddedDocument> $embeddedDocuments
      */
-    public function setEmbeddedDocuments($embeddedDocuments): void
+    public function setEmbeddedDocuments(iterable $embeddedDocuments): void
     {
         $this->embeddedDocuments->clear();
-
-        if (! is_iterable($embeddedDocuments)) {
-            return;
-        }
 
         foreach ($embeddedDocuments as $embeddedDocument) {
             $this->embeddedDocuments->add($embeddedDocument);

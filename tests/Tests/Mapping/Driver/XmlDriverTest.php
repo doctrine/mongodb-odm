@@ -158,33 +158,3 @@ EOT;
         $this->driver->loadMetadataForClass($classMetadata->name, $classMetadata);
     }
 }
-
-namespace TestDocuments;
-
-use Doctrine\Common\Collections\Collection;
-use Documents\Group;
-use Documents\Profile;
-
-class UserCustomIdGenerator
-{
-    /** @var string|null */
-    protected $id;
-}
-
-class CustomIdGenerator
-{
-    /** @var string|null */
-    protected $id;
-}
-
-class UserNonStringOptions
-{
-    /** @var string|null */
-    protected $id;
-
-    /** @var Profile|null */
-    protected $profile;
-
-    /** @var Collection<int, Group> */
-    protected $groups;
-}
