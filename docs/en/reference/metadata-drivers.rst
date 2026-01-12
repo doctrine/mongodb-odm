@@ -8,13 +8,12 @@ it should behave when dealing with the different documents.
 Core Metadata Drivers
 ---------------------
 
-Doctrine provides a few different ways for you to specify your
+Doctrine MongoDB ODM provides a few different ways for you to specify your
 metadata:
 
+-  **Attributes** (AttributeDriver, recommended)
 -  **XML files** (XmlDriver)
--  **Attributes** (AttributeDriver)
 -  **PHP Code in files or static functions** (PhpDriver)
--  ~**Class DocBlock Annotations**~ (AnnotationDriver is deprecated)
 
 Something important to note about the above drivers is they are all
 an intermediate step to the same end result. The mapping
