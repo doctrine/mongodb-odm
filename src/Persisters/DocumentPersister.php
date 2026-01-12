@@ -1382,7 +1382,7 @@ final class DocumentPersister
     /**
      * Checks whether the value has DBRef fields.
      *
-     * This method doesn't check if the the value is a complete DBRef object,
+     * This method doesn't check if the value is a complete DBRef object,
      * although it should return true for a DBRef. Rather, we're checking that
      * the value has one or more fields for a DBref. In practice, this could be
      * $elemMatch criteria for matching a DBRef.
@@ -1399,7 +1399,7 @@ final class DocumentPersister
             $value = get_object_vars($value);
         }
 
-        foreach ($value as $key => $value) {
+        foreach ($value as $key => $v) {
             if ($key === '$ref' || $key === '$id' || $key === '$db') {
                 return true;
             }

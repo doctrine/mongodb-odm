@@ -134,7 +134,7 @@ abstract class Type
     /**
      * Get a Type instance based on the type of the passed php variable.
      *
-     * @deprecated Will be removed in 3.0
+     * @deprecated Use {@see TypeRegistry::guessTypeFromValue()} instead
      *
      * @param mixed $variable
      */
