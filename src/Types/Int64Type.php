@@ -27,11 +27,6 @@ class Int64Type extends Type implements Incrementable, Versionable
         return $value !== null ? (int) $value : null;
     }
 
-    public function closureToMongo(): string
-    {
-        return '$return = new \MongoDB\BSON\Int64($value);';
-    }
-
     public function closureToPHP(): string
     {
         return '$return = (int) $value;';

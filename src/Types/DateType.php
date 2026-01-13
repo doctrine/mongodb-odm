@@ -101,11 +101,6 @@ class DateType extends Type implements Versionable
         return static::getDateTime($value);
     }
 
-    public function closureToMongo(): string
-    {
-        return 'if ($value === null || $value instanceof \MongoDB\BSON\UTCDateTime) { $return = $value; } else { $datetime = \\' . static::class . '::getDateTime($value); $return = new \MongoDB\BSON\UTCDateTime($datetime); }';
-    }
-
     public function closureToPHP(): string
     {
         return 'if ($value === null) { $return = null; } else { $return = \\' . static::class . '::getDateTime($value); }';

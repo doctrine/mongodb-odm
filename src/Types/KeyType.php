@@ -12,8 +12,6 @@ use MongoDB\BSON\MinKey;
  */
 class KeyType extends Type
 {
-    use ClosureToPHP;
-
     public function convertToDatabaseValue(mixed $value): MinKey|MaxKey|null
     {
         if ($value === null) {

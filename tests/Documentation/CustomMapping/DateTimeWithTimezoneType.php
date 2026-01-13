@@ -6,7 +6,6 @@ namespace Documentation\CustomMapping;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use MongoDB\BSON\UTCDateTime;
 use RuntimeException;
@@ -16,9 +15,6 @@ use function sprintf;
 
 class DateTimeWithTimezoneType extends Type
 {
-    // This trait provides default closureToPHP used during data hydration
-    use ClosureToPHP;
-
     /** @param array{utc: UTCDateTime, tz: string} $value */
     public function convertToPHPValue($value): DateTimeImmutable
     {

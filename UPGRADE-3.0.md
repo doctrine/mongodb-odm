@@ -93,3 +93,10 @@ have been removed in favor of `Configuration::getMetadataCache()` and
 - $dm->getConfiguration()->getMetadataCacheImpl();
 + $dm->getConfiguration()->getMetadataCache();
 ```
+
+## `ClosureToPHP` in custom types
+
+The default implementation of `Type::closureToPHP` has been modified to call
+`convertToPHPValue` on the type class. This implementation was provided by
+the `ClosureToPHP` trait, which is deprecated. If you have custom types
+that use the `ClosureToPHP` trait, remove the trait.

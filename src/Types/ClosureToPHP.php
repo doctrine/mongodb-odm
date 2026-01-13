@@ -6,7 +6,11 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 use function sprintf;
 
-/** This trait will be deprecated in 3.0 as this behavior will be used by default */
+/**
+ * @deprecated Since 3.0, the default {@see Type::closureToPHP()} implementation is identical and this trait is no longer needed.
+ *
+ * @phpstan-ignore trait.unused
+ */
 trait ClosureToPHP
 {
     /** @return string Redirects to the method convertToPHPValue from child class */

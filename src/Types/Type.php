@@ -15,8 +15,8 @@ use function end;
 use function explode;
 use function gettype;
 use function is_object;
+use function sprintf;
 use function str_replace;
-use function trigger_deprecation;
 
 /**
  * The Type interface.
@@ -117,29 +117,15 @@ abstract class Type implements Stringable
     }
 
     /**
-     * Get the PHP code equivalent to {@see convertToDatabaseValue()}, used in code generator.
-     * Use variables $value for input and $return for output.
-     *
-     * @deprecated Since 2.16, will be removed in 3.0.
-     */
-    public function closureToMongo(): string
-    {
-        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::closureToMongo() is deprecated and will be removed in 3.0.');
-
-        return '$return = $value;';
-    }
-
-    /**
      * Get the PHP code equivalent to {@see convertToPHPValue()}, used in code generator.
+     * By default, it calls the convertToPHPValue from child class.
      * Use variables $value for input and $return for output.
-     *
-     * @abstract The default implementation will change in 3.0.
      */
     public function closureToPHP(): string
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.');
-
-        return '$return = $value;';
+        return sprintf('
+            $type = \%s::getType($typeIdentifier);
+            $return = $type->convertToPHPValue($value);', self::class);
     }
 
     /**

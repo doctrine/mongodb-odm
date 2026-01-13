@@ -14,8 +14,6 @@ use function substr;
  */
 class TimestampType extends Type
 {
-    use ClosureToPHP;
-
     public function convertToDatabaseValue(mixed $value): ?Timestamp
     {
         if ($value instanceof Timestamp) {

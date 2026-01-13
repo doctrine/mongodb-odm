@@ -60,26 +60,6 @@ class BinaryUuidTypeTest extends TestCase
         $type->convertToPHPValue(new Binary('invalid', Binary::TYPE_GENERIC));
     }
 
-    public function testClosureToMongo(): void
-    {
-        $type       = Type::getType(Type::UUID);
-        $uuid       = new UuidV4();
-        $stringUuid = $uuid->toRfc4122();
-        $binaryUuid = new Binary($uuid->toBinary(), Binary::TYPE_UUID);
-
-        $convertToDatabaseValue = static function ($value) use ($type) {
-            $return = null;
-            eval($type->closureToMongo());
-
-            return $return;
-        };
-
-        self::assertNull($convertToDatabaseValue(null), 'null is not converted');
-        self::assertEquals($binaryUuid, $convertToDatabaseValue($uuid), 'Uuid objects are converted to Binary objects');
-        self::assertEquals($binaryUuid, $convertToDatabaseValue($stringUuid), 'String UUIDs are converted to Binary objects');
-        self::assertSame($binaryUuid, $convertToDatabaseValue($binaryUuid), 'Binary UUIDs are returned as is');
-    }
-
     public function testClosureToPhp(): void
     {
         $type       = Type::getType(Type::UUID);

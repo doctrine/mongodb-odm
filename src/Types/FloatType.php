@@ -19,11 +19,6 @@ class FloatType extends Type implements Incrementable
         return $value !== null ? (float) $value : null;
     }
 
-    public function closureToMongo(): string
-    {
-        return '$return = (float) $value;';
-    }
-
     public function closureToPHP(): string
     {
         return '$return = (float) $value;';

@@ -23,15 +23,6 @@ class VectorTypeTest extends TestCase
         $this->assertSameTypeAndValue($expectedValue, Type::getType($name)->convertToDatabaseValue($value));
     }
 
-    #[DataProvider('providePhpVectors')]
-    public function testClosureToDatabase(string $name, mixed $value, mixed $expectedValue): void
-    {
-        $return = $this;
-        eval(Type::getType($name)->closureToMongo());
-
-        $this->assertSameTypeAndValue($expectedValue, $return);
-    }
-
     /** @return iterable<array{0: Type::VECTOR_*, 1: mixed, 2: mixed}> */
     public static function providePhpVectors(): iterable
     {
@@ -107,16 +98,6 @@ class VectorTypeTest extends TestCase
         $type->convertToDatabaseValue($value);
     }
 
-    #[DataProvider('provideDatabaseValueException')]
-    public function testClosureToPHPValueException(mixed $value, string $message): void
-    {
-        $type = Type::getType(Type::VECTOR_FLOAT32);
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage($message);
-        eval($type->closureToMongo());
-    }
-
     /** @return iterable<array{0: mixed, 1: string}> */
     public static function provideDatabaseValueException(): iterable
     {
@@ -133,16 +114,6 @@ class VectorTypeTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($message);
         $type->convertToPHPValue($value);
-    }
-
-    #[DataProvider('providePHPValueException')]
-    public function testClosureToDatabaseException(mixed $value, string $message): void
-    {
-        $type = Type::getType(Type::VECTOR_FLOAT32);
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage($message);
-        eval($type->closureToPHP());
     }
 
     public static function providePHPValueException(): iterable

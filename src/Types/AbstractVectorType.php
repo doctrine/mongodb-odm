@@ -72,25 +72,6 @@ abstract class AbstractVectorType extends Type
         return $value->toArray();
     }
 
-    public function closureToMongo(): string
-    {
-        return str_replace('%%vectorType%%', $this->getVectorType()->name, <<<'PHP'
-            if ($value === null) {
-                $return = null;
-            } elseif (\is_array($value)) {
-                $return = \MongoDB\BSON\Binary::fromVector($value, \MongoDB\BSON\VectorType::%%vectorType%%);
-            } elseif (! $value instanceof \MongoDB\BSON\Binary) {
-                throw new InvalidArgumentException(sprintf('Invalid data type %s received for vector field, expected null, array or MongoDB\BSON\Binary', get_debug_type($value)));
-            } elseif ($value->getType() !== \MongoDB\BSON\Binary::TYPE_VECTOR) {
-                throw new InvalidArgumentException(sprintf('Invalid binary data of type %d received for vector field, expected binary type %d', $value->getType(), \MongoDB\BSON\Binary::TYPE_VECTOR));
-            } elseif ($value->getVectorType() !== \MongoDB\BSON\VectorType::%%vectorType%%) {
-                throw new \InvalidArgumentException(sprintf('Invalid binary vector data of vector type %s received for vector field, expected vector type %%vectorType%%', $value->getVectorType()->name));
-            } else {
-                $return = $value;
-            }
-PHP);
-    }
-
     public function closureToPHP(): string
     {
         return str_replace('%%vectorType%%', $this->getVectorType()->name, <<<'PHP'

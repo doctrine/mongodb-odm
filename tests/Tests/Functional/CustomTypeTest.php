@@ -8,7 +8,6 @@ use DateTime;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
 use MongoDB\BSON\UTCDateTime;
@@ -92,22 +91,10 @@ class CustomTypeTest extends BaseTestCase
         $databaseValue = Type::convertPHPToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
     }
-
-    public function testNotOverridingClosureToPHPIsDeprecated(): void
-    {
-        $type = Type::getType('custom_type_without_closure_to_php');
-        $this->expectUserDeprecationMessage('Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.');
-
-        $code = $type->closureToPHP();
-
-        self::assertSame('$return = $value;', $code);
-    }
 }
 
 class DateCollectionType extends Type
 {
-    use ClosureToPHP;
-
     /**
      * Method called by PersistenceBuilder
      *
@@ -147,15 +134,6 @@ class DateCollectionType extends Type
 
         return $value;
     }
-
-    /**
-     * Method never called
-     */
-    public function closureToMongo(): string
-    {
-        // todo: microseconds o.O
-        return '$return = array_map(function($v) { if ($v instanceof \MongoDB\BSON\UTCDateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDB\BSON\UTCDateTime($v); }, $value);';
-    }
 }
 
 class CustomTypeException extends Exception
@@ -188,8 +166,6 @@ class Language
 
 class LanguageType extends Type
 {
-    use ClosureToPHP;
-
     /** @return array{name:string,code:string}|null */
     public function convertToDatabaseValue(mixed $value): ?array
     {

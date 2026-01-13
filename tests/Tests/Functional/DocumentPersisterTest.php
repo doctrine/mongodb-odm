@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Article;
 use Generator;
@@ -1000,8 +999,6 @@ final class DocumentPersisterCustomTypedId
 
 final class DocumentPersisterCustomIdType extends Type
 {
-    use ClosureToPHP;
-
     public function convertToDatabaseValue(mixed $value): ObjectId
     {
         if ($value instanceof ObjectId) {

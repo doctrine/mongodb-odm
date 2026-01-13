@@ -29,11 +29,6 @@ class ObjectIdType extends Type implements Versionable
         return $value !== null ? (string) $value : null;
     }
 
-    public function closureToMongo(): string
-    {
-        return '$return = new MongoDB\BSON\ObjectId($value);';
-    }
-
     public function closureToPHP(): string
     {
         return '$return = (string) $value;';
