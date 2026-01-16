@@ -59,3 +59,8 @@ implement `closureToPHP()`.
 The method `Doctrine\ODM\MongoDB\Types\Type::closureToMongo()` is not used,
 and will be removed in MongoDB ODM 3.0. Don't call this method, but use
 `convertToDatabaseValue()` instead.
+
+## `PersistentCollection` implements `Selectable`
+
+The `PersistentCollection` and all generated persistent collection classes
+implement the `Doctrine\Common\Collections\Selectable::matching()` method.
