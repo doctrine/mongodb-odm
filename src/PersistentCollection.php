@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB;
 
 use Doctrine\Common\Collections\Collection as BaseCollection;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionTrait;
 

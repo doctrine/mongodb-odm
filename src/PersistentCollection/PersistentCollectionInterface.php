@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
@@ -21,8 +22,9 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
  * @template TKey of array-key
  * @template T of object
  * @template-extends Collection<TKey, T>
+ * @template-extends Selectable<TKey, T>
  */
-interface PersistentCollectionInterface extends Collection
+interface PersistentCollectionInterface extends Collection, Selectable
 {
     /**
      * Sets the document manager and unit of work (used during merge operations).

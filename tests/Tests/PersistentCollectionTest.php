@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests;
 use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -330,6 +331,27 @@ class PersistentCollectionTest extends BaseTestCase
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->setInitialized(false);
         self::assertTrue($pcoll->isEmpty());
+    }
+
+    public function testMatchingIsForwarded(): void
+    {
+        $criteria = new Criteria();
+        $criteria->where($criteria->expr()->eq('field', 'value'));
+
+        $expectedResult = new ArrayCollection([new stdClass()]);
+
+        // ArrayCollection implements both Collection and Selectable
+        // When doctrine/collections 2.6+ is required, we can mock Collection directly
+        $collection = $this->createMock(ArrayCollection::class);
+        $collection->expects($this->once())
+            ->method('matching')
+            ->with($criteria)
+            ->willReturn($expectedResult);
+
+        $pcoll  = new PersistentCollection($collection, $this->dm, $this->uow);
+        $result = $pcoll->matching($criteria);
+
+        self::assertSame($expectedResult, $result);
     }
 
     /** @return Collection<int, object>&MockObject */
