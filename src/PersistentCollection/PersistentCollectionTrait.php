@@ -8,7 +8,6 @@ use BadMethodCallException;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\ReadableCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -28,6 +27,7 @@ use function count;
 use function get_class;
 use function is_object;
 use function method_exists;
+use function sprintf;
 
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
@@ -414,6 +414,14 @@ trait PersistentCollectionTrait
         $this->doSet($key, $value, false);
     }
 
+    /**
+     * Adds an element at the end of the collection.
+     *
+     * @param mixed $element The element to add.
+     * @phpstan-param T $element
+     *
+     * @return true The return value is kept for BC reasons, but will be void in doctrine/mongodb-odm 3.0.
+     */
     public function add($element)
     {
         return $this->doAdd($element, false);
@@ -780,7 +788,8 @@ trait PersistentCollectionTrait
         return $this->coll->reduce($func, $initial);
     }
 
-    public function matching(Criteria $criteria): ReadableCollection
+    /** @return BaseCollection<TKey, T> */
+    public function matching(Criteria $criteria): BaseCollection
     {
         $this->initialize();
 
@@ -788,6 +797,12 @@ trait PersistentCollectionTrait
             throw new LogicException('The backed collection must implement Selectable to use matching().');
         }
 
-        return $this->coll->matching($criteria);
+        $coll = $this->coll->matching($criteria);
+
+        if (! $coll instanceof BaseCollection) {
+            throw new LogicException(sprintf('The matching() method of the backed collection must return an instance of "%s".', BaseCollection::class));
+        }
+
+        return $coll;
     }
 }

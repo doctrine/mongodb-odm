@@ -341,7 +341,7 @@ class PersistentCollectionTest extends BaseTestCase
         $expectedResult = new ArrayCollection([new stdClass()]);
 
         // ArrayCollection implements both Collection and Selectable
-        // When doctrine/collections 2.6+ is required, we can mock Collection directly
+        // When doctrine/collections 3.0 is required, we can mock Collection directly
         $collection = $this->createMock(ArrayCollection::class);
         $collection->expects($this->once())
             ->method('matching')
