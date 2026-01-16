@@ -8,6 +8,7 @@ use BadMethodCallException;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ReadableCollection;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -779,7 +780,7 @@ trait PersistentCollectionTrait
         return $this->coll->reduce($func, $initial);
     }
 
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria): ReadableCollection
     {
         $this->initialize();
 
