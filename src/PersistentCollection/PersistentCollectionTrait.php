@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use BadMethodCallException;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -26,7 +25,6 @@ use function array_values;
 use function count;
 use function get_class;
 use function is_object;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -763,10 +761,6 @@ trait PersistentCollectionTrait
      */
     public function findFirst(Closure $p)
     {
-        if (! method_exists($this->coll, 'findFirst')) {
-            throw new BadMethodCallException('findFirst() is only available since doctrine/collections v2');
-        }
-
         return $this->coll->findFirst($p);
     }
 
@@ -781,10 +775,6 @@ trait PersistentCollectionTrait
      */
     public function reduce(Closure $func, $initial = null)
     {
-        if (! method_exists($this->coll, 'reduce')) {
-            throw new BadMethodCallException('reduce() is only available since doctrine/collections v2');
-        }
-
         return $this->coll->reduce($func, $initial);
     }
 
