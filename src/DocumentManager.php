@@ -255,7 +255,7 @@ class DocumentManager implements ObjectManager
     }
 
     /** Gets the metadata factory used to gather the metadata of classes. */
-    public function getMetadataFactory(): ClassmetadataFactoryInterface
+    public function getMetadataFactory(): ClassMetadataFactoryInterface
     {
         return $this->metadataFactory;
     }

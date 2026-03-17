@@ -31,6 +31,12 @@ parameters:
 			path: src/Aggregation/Builder.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Expr\:\:mergeObjects\(\) has parameter \$expressions with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Aggregation/Expr.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\:\:execute\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
 			identifier: missingType.generics
 			count: 1
