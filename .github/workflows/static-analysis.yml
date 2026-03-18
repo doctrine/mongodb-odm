@@ -48,7 +48,7 @@ jobs:
         run: "php --ri mongodb"
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
 
       - name: "Upload composer.lock as build artifact"
         uses: actions/upload-artifact@v6

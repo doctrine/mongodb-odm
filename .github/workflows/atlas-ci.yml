@@ -83,7 +83,7 @@ jobs:
         run: composer remove --no-update --dev phpbench/phpbench
 
       - name: "Install dependencies with Composer"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           dependency-versions: "highest"
           composer-options: "--prefer-dist"
