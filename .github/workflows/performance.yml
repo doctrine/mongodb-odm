@@ -57,7 +57,7 @@ jobs:
         uses: "ramsey/composer-install@v4"
 
       - name: "Upload composer.lock as build artifact"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: composer.lock-${{ matrix.php-version }}
           path: composer.lock
