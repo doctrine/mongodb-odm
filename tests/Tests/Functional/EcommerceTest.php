@@ -18,6 +18,11 @@ class EcommerceTest extends BaseTestCase
     {
         parent::setUp();
 
+        // Creating collections before inserting data helps avoid aborted transactions on sharded clusters
+        // Without this, the transaction fails because an "error from cluster data placement"
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(ConfigurableProduct::class);
+
         $currencies  = [];
         $multipliers = ['USD' => 1, 'EURO' => 1.7, 'JPN' => 0.0125];
 

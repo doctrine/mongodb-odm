@@ -39,6 +39,31 @@ use function func_get_args;
 
 class ReferencePrimerTest extends BaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Creating collections before inserting data helps avoid aborted transactions on sharded clusters
+        // Without this, the transaction fails because an "error from cluster data placement"
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(Account::class);
+        $sm->createDocumentCollection(Agent::class);
+        $sm->createDocumentCollection(BlogPost::class);
+        $sm->createDocumentCollection(Comment::class);
+        $sm->createDocumentCollection(ConfigurableProduct::class);
+        $sm->createDocumentCollection(Currency::class);
+        $sm->createDocumentCollection(StockItem::class);
+        $sm->createDocumentCollection(EmbedNamed::class);
+        $sm->createDocumentCollection(FavoritesUser::class);
+        $sm->createDocumentCollection(Reference::class);
+        $sm->createDocumentCollection(Group::class);
+        $sm->createDocumentCollection(GuestServer::class);
+        $sm->createDocumentCollection(Project::class);
+        $sm->createDocumentCollection(ReferenceUser::class);
+        $sm->createDocumentCollection(SimpleReferenceUser::class);
+        $sm->createDocumentCollection(User::class);
+    }
+
     public function testPrimeReferencesShouldRequireReferenceMapping(): void
     {
         $user = new User();
