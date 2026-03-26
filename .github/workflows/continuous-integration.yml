@@ -110,14 +110,13 @@ jobs:
             proxy: "native"
             remove-optional-dependencies: true
           # Test with a sharded cluster
-          # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
-#          - topology: "sharded_cluster"
-#            php-version: "8.2"
-#            mongodb-version: "6.0"
-#            driver-version: "stable"
-#            dependencies: "highest"
-#            symfony-version: ""
-#            proxy: "lazy-ghost"
+          - topology: "sharded_cluster"
+            php-version: "8.2"
+            mongodb-version: "6.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: ""
+            proxy: "lazy-ghost"
 
     steps:
       - name: "Checkout"
