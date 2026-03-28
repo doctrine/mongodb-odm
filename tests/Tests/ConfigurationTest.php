@@ -268,4 +268,13 @@ class ConfigurationTest extends TestCase
         $c->setTypeRegistry($typeRegistry);
         self::assertSame($typeRegistry, $c->getTypeRegistry());
     }
+
+    public function testTypeRegistryCannotBeReplacedOnceSet(): void
+    {
+        $c = new Configuration();
+        $c->setTypeRegistry(new TypeRegistry());
+
+        self::expectException(LogicException::class);
+        $c->setTypeRegistry(new TypeRegistry());
+    }
 }
