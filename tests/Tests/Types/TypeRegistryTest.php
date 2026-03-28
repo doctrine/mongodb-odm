@@ -127,4 +127,30 @@ class TypeRegistryTest extends BaseTestCase
         // @phpstan-ignore argument.type
         $registry->register('invalid_type', stdClass::class);
     }
+
+    public function testRegisterRejectsClassWithRequiredConstructorParameters(): void
+    {
+        $registry = new TypeRegistry();
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('must not have a constructor with required parameters');
+        $registry->register('my_type', TypeWithRequiredConstructor::class);
+    }
+
+    public function testRegisterAllowsClassWithInheritedNoArgConstructor(): void
+    {
+        $registry = new TypeRegistry();
+        $registry->register('my_type', TypeWithInheritedConstructor::class);
+        self::assertInstanceOf(TypeWithInheritedConstructor::class, $registry->get('my_type'));
+    }
+}
+
+class TypeWithRequiredConstructor extends IntType
+{
+    public function __construct(private string $required)
+    {
+    }
+}
+
+class TypeWithInheritedConstructor extends IntType
+{
 }

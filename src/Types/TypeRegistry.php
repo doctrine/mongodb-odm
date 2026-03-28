@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
+use ArgumentCountError;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
@@ -12,7 +13,6 @@ use Symfony\Component\Uid\Uuid;
 use function gettype;
 use function is_object;
 use function is_subclass_of;
-use function method_exists;
 use function sprintf;
 
 /**
@@ -76,12 +76,14 @@ class TypeRegistry
                 throw new InvalidArgumentException(sprintf('Type class "%s" must be a subclass of "%s".', $type, Type::class));
             }
 
-            if (method_exists($type, '__construct')) {
-                throw new InvalidArgumentException(sprintf('Type class "%s" must not have a constructor to be registered by class name. Register an instance of the class instead.', $type));
+            try {
+                $instance = new $type();
+            } catch (ArgumentCountError) { // @phpstan-ignore catch.neverThrown
+                throw new InvalidArgumentException(sprintf('Type class "%s" must not have a constructor with required parameters to be registered by class name. Register an instance of the class instead.', $type));
             }
 
-            $this->typesMap[$name] = $type;
-            unset($this->typeObjects[$name]);
+            $this->typesMap[$name]    = $type;
+            $this->typeObjects[$name] = $instance;
         }
     }
 
