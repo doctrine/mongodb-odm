@@ -575,7 +575,7 @@ final class DocumentPersister
                     $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
                 }
             } else {
-                $shardKeyQueryPart[$key] = $this->class->getFieldType($mapping['name'])->convertToDatabaseValue($data[$mapping['fieldName']]);
+                $shardKeyQueryPart[$key] = $this->class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($data[$mapping['fieldName']]);
             }
         }
 

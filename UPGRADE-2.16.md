@@ -47,25 +47,6 @@ Calling `Doctrine\ODM\MongoDB\Configuration::setProxyDir()` or
 `Doctrine\ODM\MongoDB\Configuration::getProxyDir()` is deprecated and triggers
 a deprecation notice when using native lazy objects.
 
-## `TypeRegistry` replace `Type::getType()` and `Type::hasType()`
-
-A new `Doctrine\ODM\MongoDB\Types\TypeRegistry` class has been introduced
-to manage custom types. The static methods of `Doctrine\ODM\MongoDB\Types\Type`
-are deprecated and will be removed in MongoDB ODM 3.0:
-- `Type::getType($name)` → `TypeRegistry::getType($name)`
-- `Type::hasType($name)` → `TypeRegistry::hasType($name)`
-- `Type::addType($name, $class)` → `TypeRegistry::addType($name, $class)`
-- `Type::getTypesMap()` → `TypeRegistry::getTypesMap()`
-- `Type::registerType()` → `TypeRegistry::registerType()`
-- `Type::overrideType()` → `TypeRegistry::registerType()`
-- `Type::getTypeFromPHPVariable()` → `TypeRegistry::guessTypeFromValue()`
-- 'Type::convertPHPToDatabaseValue()` → `TypeRegistry::convertToDatabaseValue()`'
-
-You can set and get the `TypeRegistry` instance from the `Doctrine\ODM\MongoDB\Configuration`
-using `getTypeRegistry()` and `setTypeRegistry()`.
-
-To access the type of mapped field, use the `ClassMetadata::getFieldType()` method.
-
 ## Override `Type::closureToPHP()` for custom type classes
 
 The default implementation of `Doctrine\ODM\MongoDB\Types\Type::closureToPHP()`
