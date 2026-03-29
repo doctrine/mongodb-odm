@@ -688,7 +688,7 @@ if (PHP_VERSION_ID >= 80400) {
     {
         if (! isset($this->typeRegistry)) {
             $this->typeRegistry = TypeRegistry::getSharedInstance();
-            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via $classMetadata->setTypeRegistry($configuration->getTypeRegistry()).');
+            trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Using ClassMetadata without a TypeRegistry is deprecated. Inject the TypeRegistry instance from the DocumentManager via $classMetadata->setTypeRegistry($configuration->getTypeRegistry()).');
         }
 
         return $this->typeRegistry;
