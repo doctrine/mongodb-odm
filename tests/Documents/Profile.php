@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Documents;
 
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 
 #[ODM\Document]
 class Profile
@@ -24,6 +26,10 @@ class Profile
     /** @var File|null */
     #[ODM\ReferenceOne(targetDocument: File::class, cascade: ['all'])]
     private $image;
+
+    /** @var UTCDateTime|DateTimeInterface|string */
+    #[ODM\Field(type: 'date')]
+    protected $deletedAt;
 
     public function setProfileId(string|ObjectId $profileId): void
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Query;
 
 use BadMethodCallException;
+use DateTime;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Profile;
@@ -243,6 +244,35 @@ class ExprTest extends BaseTestCase
             ],
             $expr->getQuery(),
             '->references() uses some keys if storeAs=dbRef is set',
+        );
+    }
+
+    public function testReferencesAndAdditionalSearch(): void
+    {
+        $profile = new Profile();
+        $profile->setProfileId(new ObjectId());
+        $this->dm->persist($profile);
+
+        $now = new DateTime();
+        $qb  = $this->dm->createQueryBuilder(User::class);
+        $qb->field('profile')->equals($profile);
+        $qb->addOr(
+            $qb->expr()->field('deletedAt')->equals(null),
+            $qb->expr()->field('deletedAt')->gte($now->getTimestamp()),
+        );
+
+        self::assertEquals(
+            [
+                'profile.$id' => $profile->getProfileId(),
+                'profile.$ref' => 'Profile',
+                '$or' => [
+                    ['deletedAt' => null],
+                    ['deletedAt' => ['$gte' => $now->getTimestamp()]],
+                ],
+
+            ],
+            $qb->getQuery()->debug('query'),
+            '->references() uses all keys if no targetDocument is set',
         );
     }
 

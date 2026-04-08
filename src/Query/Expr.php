@@ -1450,6 +1450,7 @@ class Expr
 
         $convertedQuery = [];
         foreach ($query as $key => $value) {
+            unset($fieldMetadata);
             if (is_string($key) && $classMetadata->hasAssociation($key)) {
                 $targetDocument = $classMetadata->getAssociationTargetClass($key);
 
