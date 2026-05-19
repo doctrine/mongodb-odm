@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Closure;
-use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\Exception\BulkWriteException;
 
@@ -29,9 +28,6 @@ use function spl_object_id;
  *
  * @internal
  *
- * @phpstan-type OnInsertResult Closure(?ObjectId): void
- * @phpstan-type OnUpdateResult Closure(bool, bool, ?ObjectId): void
- * @phpstan-type OnDeleteResult Closure(int): void
  * @phpstan-type PendingOp array{
  *     type: 'insertOne'|'updateOne'|'deleteOne',
  *     op: array<string, mixed>,

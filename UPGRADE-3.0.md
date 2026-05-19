@@ -60,11 +60,34 @@ to retain the functionality.
 
 ## Flush now consolidates writes per collection via `bulkWrite`
 
-`UnitOfWork::commit()` previously issued an individual `insertMany`,
-`updateOne` or `deleteOne` call per scheduled document. As of 3.0, every
-scheduled write against the same MongoDB collection is now consolidated
-into a single `Collection::bulkWrite()` call per commit phase (upserts,
-inserts, updates, deletes).
+`UnitOfWork::commit()` previously issued separate driver calls for the
+different write kinds within a single commit phase: an `insertMany` per
+class for inserts, an `updateOne` *per document* for updates and upserts,
+a `deleteOne` *per document* for removals, plus additional `updateOne`
+calls per parent for `CollectionPersister` writes that fan out from
+embedded / reference-many changes. As of 3.0, every scheduled write
+against the same MongoDB collection is consolidated into a single
+`Collection::bulkWrite()` call per commit phase, regardless of whether
+the operations are inserts, updates, deletes, or collection-change
+follow-ups.
+
+Concretely:
+
+- **Updates and deletes were one driver call per document.** Each
+  scheduled update fired its own `updateOne` and each scheduled removal
+  its own `deleteOne`. These are now folded into a single per-collection
+  `bulkWrite` per phase.
+- **`CollectionPersister` follow-up writes used to be separate.**
+  Embedded / reference-many changes on a parent document previously
+  emitted additional `updateOne` calls *after* the parent's own update.
+  Those follow-ups are now queued onto the same `bulkWrite` as the
+  parent's update when they target the same collection.
+- **Inserts were already batched by `insertMany`** and remain a single
+  command per class on the wire. The change for inserts is structural,
+  not a wire-level reduction: an insert is now appended to the same
+  per-collection `bulkWrite` that carries that collection's updates,
+  deletes, and collection-change follow-ups within the same commit
+  phase, rather than going through a dedicated `insertMany` path.
 
 The visible effects:
 
@@ -89,9 +112,11 @@ The visible effects:
   the result is broader.
 - **Command count.** Tools and tests that count emitted MongoDB
   commands (e.g. via `Doctrine\ODM\MongoDB\APM\CommandLogger`) will see
-  fewer commands per `flush()`. For example, persisting 100 documents
-  of the same class now emits one `insert` command instead of one per
-  document.
+  fewer commands per `flush()` whenever a commit touches the same
+  collection with a mix of inserts, updates, deletes, or collection-
+  change follow-ups: those now collapse to one `bulkWrite` per
+  collection per phase instead of one driver call per document or per
+  fan-out write.
 
 The internal `DocumentPersister` and `CollectionPersister` classes are
 `@internal` and `final`; their public method names are unchanged but the
