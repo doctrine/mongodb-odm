@@ -56,6 +56,17 @@ final class BulkWriteQueue
      */
     private array $pending = [];
 
+    /**
+     * Per-collection bulkWrite options accumulator. Each addInsertOne /
+     * addUpdateOne / addDeleteOne call provides the options that should be
+     * forwarded to the per-collection {@see Collection::bulkWrite()} call;
+     * the first non-empty option set wins so callers within a single class
+     * loop end up with their write concern / session / etc. applied.
+     *
+     * @var array<int, array<string, mixed>>
+     */
+    private array $bulkOptions = [];
+
     public function hasPending(): bool
     {
         foreach ($this->pending as $ops) {
@@ -71,21 +82,28 @@ final class BulkWriteQueue
     {
         $this->collections = [];
         $this->pending     = [];
+        $this->bulkOptions = [];
     }
 
     /**
      * Queue an `insertOne` op against $collection.
      *
      * @param array<string, mixed> $document       The BSON-ready insert payload.
+     * @param array<string, mixed> $bulkOptions    Options to forward to the per-collection
+     *                                            {@see Collection::bulkWrite()} call (e.g.
+     *                                            `writeConcern`, `session`). The first non-empty
+     *                                            set per collection is kept; passing the same
+     *                                            options for every op in the same class loop is
+     *                                            the expected use.
      * @param object               $sourceDocument The owning PHP document instance.
      * @param Closure|null         $onResult       Invoked as `fn(?\MongoDB\BSON\ObjectId $insertedId): void`
      *                                            after the bulkWrite for this collection returns.
      *
      * @return int Position of the op within this collection's pending batch.
      */
-    public function addInsertOne(Collection $collection, array $document, object $sourceDocument, ?Closure $onResult = null): int
+    public function addInsertOne(Collection $collection, array $document, array $bulkOptions, object $sourceDocument, ?Closure $onResult = null): int
     {
-        return $this->push($collection, [
+        return $this->push($collection, $bulkOptions, [
             'type' => 'insertOne',
             'op' => ['insertOne' => [$document]],
             'document' => $sourceDocument,
@@ -98,26 +116,28 @@ final class BulkWriteQueue
      *
      * @param array<string, mixed> $filter
      * @param array<string, mixed> $update
-     * @param array<string, mixed> $options  Driver-level updateOne options (e.g. ['upsert' => true]).
-     *                                       Only options that are valid for `bulkWrite` per-op are forwarded.
-     * @param Closure|null         $onResult Invoked as
-     *                                      `fn(int $matchedCount, int $modifiedCount, ?\MongoDB\BSON\ObjectId $upsertedId): void`
-     *                                      after the bulkWrite for this collection returns.
+     * @param array<string, mixed> $opOptions   Driver-level updateOne options (e.g. ['upsert' => true]).
+     *                                          Only options that are valid for `bulkWrite` per-op are forwarded.
+     * @param array<string, mixed> $bulkOptions Bulk-level options (see {@see addInsertOne()}).
+     * @param Closure|null         $onResult    Invoked as
+     *                                          `fn(int $matchedCount, int $modifiedCount, ?\MongoDB\BSON\ObjectId $upsertedId): void`
+     *                                          after the bulkWrite for this collection returns.
      */
     public function addUpdateOne(
         Collection $collection,
         array $filter,
         array $update,
-        array $options,
+        array $opOptions,
+        array $bulkOptions,
         object $sourceDocument,
         ?Closure $onResult = null,
     ): int {
         $op = ['updateOne' => [$filter, $update]];
-        if ($options !== []) {
-            $op['updateOne'][] = $options;
+        if ($opOptions !== []) {
+            $op['updateOne'][] = $opOptions;
         }
 
-        return $this->push($collection, [
+        return $this->push($collection, $bulkOptions, [
             'type' => 'updateOne',
             'op' => $op,
             'document' => $sourceDocument,
@@ -129,23 +149,25 @@ final class BulkWriteQueue
      * Queue a `deleteOne` op against $collection.
      *
      * @param array<string, mixed> $filter
-     * @param array<string, mixed> $options
-     * @param Closure|null         $onResult Invoked as `fn(int $deletedCount): void`
-     *                                       after the bulkWrite for this collection returns.
+     * @param array<string, mixed> $opOptions
+     * @param array<string, mixed> $bulkOptions Bulk-level options (see {@see addInsertOne()}).
+     * @param Closure|null         $onResult    Invoked as `fn(int $deletedCount): void`
+     *                                          after the bulkWrite for this collection returns.
      */
     public function addDeleteOne(
         Collection $collection,
         array $filter,
-        array $options,
+        array $opOptions,
+        array $bulkOptions,
         object $sourceDocument,
         ?Closure $onResult = null,
     ): int {
         $op = ['deleteOne' => [$filter]];
-        if ($options !== []) {
-            $op['deleteOne'][] = $options;
+        if ($opOptions !== []) {
+            $op['deleteOne'][] = $opOptions;
         }
 
-        return $this->push($collection, [
+        return $this->push($collection, $bulkOptions, [
             'type' => 'deleteOne',
             'op' => $op,
             'document' => $sourceDocument,
@@ -162,16 +184,16 @@ final class BulkWriteQueue
      * exception is re-raised — callers must mark documents as still
      * scheduled if that is the desired behavior.
      *
-     * @param array<string, mixed> $options Bulk-level options (e.g. `session`, `writeConcern`).
-     *                                      `ordered: true` is implied unless overridden.
+     * @param array<string, mixed> $options Caller-supplied bulk-level options
+     *                                      (e.g. `session`). These are merged
+     *                                      on top of the per-collection options
+     *                                      captured at push time.
      */
     public function flush(array $options = []): void
     {
         if (! $this->hasPending()) {
             return;
         }
-
-        $bulkOptions = ['ordered' => true] + $options;
 
         try {
             foreach ($this->collections as $oid => $collection) {
@@ -182,6 +204,11 @@ final class BulkWriteQueue
 
                 // Reset before issuing so that a thrown exception leaves no stale ops in the queue.
                 $this->pending[$oid] = [];
+
+                $perCollectionOptions = $this->bulkOptions[$oid] ?? [];
+                // Caller-supplied options take precedence over the per-collection options
+                // captured at push time (e.g. an enclosing transaction's session always wins).
+                $bulkOptions = ['ordered' => true] + $options + $perCollectionOptions;
 
                 $ops    = array_values(array_map(static fn (array $entry): array => $entry['op'], $pending));
                 $result = $collection->bulkWrite($ops, $bulkOptions);
@@ -226,6 +253,7 @@ final class BulkWriteQueue
             // Drop every pending op across all collections so the next attempt starts clean.
             $this->pending     = [];
             $this->collections = [];
+            $this->bulkOptions = [];
 
             throw $e;
         }
@@ -233,16 +261,25 @@ final class BulkWriteQueue
         // Successful drain — reset collection bookkeeping for the next phase / commit.
         $this->collections = [];
         $this->pending     = [];
+        $this->bulkOptions = [];
     }
 
-    /** @param PendingOp $entry */
-    private function push(Collection $collection, array $entry): int
+    /**
+     * @param array<string, mixed> $bulkOptions
+     * @param PendingOp            $entry
+     */
+    private function push(Collection $collection, array $bulkOptions, array $entry): int
     {
         $oid = spl_object_id($collection);
 
         if (! isset($this->collections[$oid])) {
             $this->collections[$oid] = $collection;
             $this->pending[$oid]     = [];
+            $this->bulkOptions[$oid] = $bulkOptions;
+        } elseif ($bulkOptions !== [] && $this->bulkOptions[$oid] === []) {
+            // First push for this collection didn't carry options; adopt the next non-empty
+            // set so the per-collection bulkWrite still respects per-class write concerns.
+            $this->bulkOptions[$oid] = $bulkOptions;
         }
 
         $index                       = isset($this->pending[$oid]) ? count($this->pending[$oid]) : 0;

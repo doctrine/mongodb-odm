@@ -272,6 +272,14 @@ final class UnitOfWork implements PropertyChangedListener
     private ?PersistenceBuilder $persistenceBuilder = null;
 
     /**
+     * Per-UnitOfWork accumulator drained by {@see doCommit()}. Both the
+     * DocumentPersister and CollectionPersister push their write ops here
+     * instead of executing them directly so that one bulkWrite is issued
+     * per target collection per commit phase.
+     */
+    private ?Persisters\BulkWriteQueue $bulkWriteQueue = null;
+
+    /**
      * Array of parent associations between embedded documents.
      *
      * @var array<int, array{0: AssociationFieldMapping, 1: object|null, 2: string}>
@@ -381,6 +389,23 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         return $this->collectionPersister;
+    }
+
+    /**
+     * Get the shared bulkWrite accumulator. The queue is created lazily and
+     * lives for the lifetime of the UnitOfWork; it is cleared at the start
+     * of every {@see doCommit()} run so a failed commit cannot leak pending
+     * ops into the next attempt.
+     *
+     * @internal
+     */
+    public function getBulkWriteQueue(): Persisters\BulkWriteQueue
+    {
+        if ($this->bulkWriteQueue === null) {
+            $this->bulkWriteQueue = new Persisters\BulkWriteQueue();
+        }
+
+        return $this->bulkWriteQueue;
     }
 
     /**
@@ -499,6 +524,11 @@ final class UnitOfWork implements PropertyChangedListener
         } finally {
             $this->commitsInProgress--;
             $this->lifecycleEventManager->clearTransactionalState();
+
+            // The queue is cleared at the start of every doCommit() but make
+            // doubly sure pending ops from a half-completed commit are dropped
+            // so the next attempt is not poisoned by stale state.
+            $this->bulkWriteQueue?->clear();
         }
     }
 
@@ -1170,7 +1200,10 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Executes all document insertions for documents of the specified type.
+     * Queue all document insertions for documents of the specified type onto
+     * the shared {@see Persisters\BulkWriteQueue}. The actual bulkWrite is
+     * issued by {@see doCommit()} after every class for the phase has been
+     * queued.
      *
      * @phpstan-param ClassMetadata<T> $class
      * @phpstan-param T[] $documents
@@ -1187,14 +1220,11 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $persister->executeInserts($options);
-
-        foreach ($documents as $document) {
-            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
-        }
     }
 
     /**
-     * Executes all document upserts for documents of the specified type.
+     * Queue all document upserts for documents of the specified type onto
+     * the shared {@see Persisters\BulkWriteQueue}.
      *
      * @phpstan-param ClassMetadata<T> $class
      * @phpstan-param T[] $documents
@@ -1211,14 +1241,12 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $persister->executeUpserts($options);
-
-        foreach ($documents as $document) {
-            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
-        }
     }
 
     /**
-     * Executes all document updates for documents of the specified type.
+     * Fires {@link Events::preUpdate} and queues each document's update via
+     * the persister. The {@link Events::postUpdate} dispatch is handled by
+     * {@see dispatchPostUpdateEvents()} after the phase's bulkWrite drains.
      *
      * @phpstan-param ClassMetadata<T> $class
      * @phpstan-param T[] $documents
@@ -1238,16 +1266,22 @@ final class UnitOfWork implements PropertyChangedListener
         foreach ($documents as $oid => $document) {
             $this->lifecycleEventManager->preUpdate($class, $document, $options['session'] ?? null);
 
-            if (! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
-                $persister->update($document, $options);
+            if (empty($this->documentChangeSets[$oid]) && ! $this->hasScheduledCollections($document)) {
+                continue;
             }
 
-            $this->lifecycleEventManager->postUpdate($class, $document, $options['session'] ?? null);
+            $persister->update($document, $options);
         }
     }
 
     /**
-     * Executes all document deletions for documents of the specified type.
+     * Queue all document deletions for documents of the specified type onto
+     * the shared {@see Persisters\BulkWriteQueue}. Local UoW bookkeeping
+     * (identifier/original data cleanup, snapshot clearing) happens in
+     * {@see dispatchPostRemoveEvents()} after the flush succeeds — clearing
+     * the identifier before flush would break {@see withTransaction()} retries
+     * because the persister cannot rebuild the delete filter on the second
+     * attempt.
      *
      * @phpstan-param ClassMetadata<T> $class
      * @phpstan-param T[] $documents
@@ -1259,11 +1293,72 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $persister = $this->getDocumentPersister($class->name);
 
-        foreach ($documents as $oid => $document) {
-            if (! $class->isEmbeddedDocument) {
-                $persister->delete($document, $options);
+        foreach ($documents as $document) {
+            if ($class->isEmbeddedDocument) {
+                continue;
             }
 
+            $persister->delete($document, $options);
+        }
+    }
+
+    /**
+     * Dispatch {@link Events::postPersist} for every document queued for the
+     * insert/upsert phase. Called by {@see doCommit()} after the per-phase
+     * bulkWrite has succeeded.
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
+     *
+     * @template T of object
+     */
+    private function dispatchPostPersistEvents(ClassMetadata $class, array $documents, array $options = []): void
+    {
+        foreach ($documents as $document) {
+            $this->lifecycleEventManager->postPersist($class, $document, $options['session'] ?? null);
+        }
+    }
+
+    /**
+     * Dispatch {@link Events::postUpdate} for every document queued for the
+     * update phase. Called by {@see doCommit()} after the per-phase
+     * bulkWrite has succeeded.
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
+     *
+     * @template T of object
+     */
+    private function dispatchPostUpdateEvents(ClassMetadata $class, array $documents, array $options = []): void
+    {
+        if ($class->isReadOnly) {
+            return;
+        }
+
+        foreach ($documents as $document) {
+            $this->lifecycleEventManager->postUpdate($class, $document, $options['session'] ?? null);
+        }
+    }
+
+    /**
+     * Drain post-removal bookkeeping and dispatch {@link Events::postRemove}
+     * for every document queued for the deletion phase. Identifier and
+     * original-data cleanup happens here (not in {@see executeDeletions()})
+     * so that a transactional commit retry — triggered by a `TransientTransactionError`
+     * inside the bulkWrite — still has the document state needed to rebuild
+     * the delete filter on the second attempt.
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T[] $documents
+     * @phpstan-param CommitOptions $options
+     *
+     * @template T of object
+     */
+    private function dispatchPostRemoveEvents(ClassMetadata $class, array $documents, array $options = []): void
+    {
+        foreach ($documents as $oid => $document) {
             unset(
                 $this->documentIdentifiers[$oid],
                 $this->originalDocumentData[$oid],
@@ -3118,25 +3213,86 @@ final class UnitOfWork implements PropertyChangedListener
     /** @phpstan-param CommitOptions $options */
     private function doCommit(array $options): void
     {
-        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpserts) as $classAndDocuments) {
+        // Start from a clean accumulator — a previous failed commit may have
+        // left it cleared, but be defensive in case external callers reused
+        // the same UoW.
+        $queue = $this->getBulkWriteQueue();
+        $queue->clear();
+
+        $flushOptions = $this->getBulkWriteFlushOptions($options);
+
+        $upsertClasses = $this->getClassesForCommitAction($this->scheduledDocumentUpserts);
+        foreach ($upsertClasses as $classAndDocuments) {
             [$class, $documents] = $classAndDocuments;
             $this->executeUpserts($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->scheduledDocumentInsertions) as $classAndDocuments) {
+        $queue->flush($flushOptions);
+
+        foreach ($upsertClasses as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->dispatchPostPersistEvents($class, $documents, $options);
+        }
+
+        $insertClasses = $this->getClassesForCommitAction($this->scheduledDocumentInsertions);
+        foreach ($insertClasses as $classAndDocuments) {
             [$class, $documents] = $classAndDocuments;
             $this->executeInserts($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->scheduledDocumentUpdates) as $classAndDocuments) {
+        $queue->flush($flushOptions);
+
+        foreach ($insertClasses as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->dispatchPostPersistEvents($class, $documents, $options);
+        }
+
+        $updateClasses = $this->getClassesForCommitAction($this->scheduledDocumentUpdates);
+        foreach ($updateClasses as $classAndDocuments) {
             [$class, $documents] = $classAndDocuments;
             $this->executeUpdates($class, $documents, $options);
         }
 
-        foreach ($this->getClassesForCommitAction($this->scheduledDocumentDeletions, true) as $classAndDocuments) {
+        $queue->flush($flushOptions);
+
+        foreach ($updateClasses as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->dispatchPostUpdateEvents($class, $documents, $options);
+        }
+
+        $deleteClasses = $this->getClassesForCommitAction($this->scheduledDocumentDeletions, true);
+        foreach ($deleteClasses as $classAndDocuments) {
             [$class, $documents] = $classAndDocuments;
             $this->executeDeletions($class, $documents, $options);
         }
+
+        $queue->flush($flushOptions);
+
+        foreach ($deleteClasses as $classAndDocuments) {
+            [$class, $documents] = $classAndDocuments;
+            $this->dispatchPostRemoveEvents($class, $documents, $options);
+        }
+    }
+
+    /**
+     * Returns the option subset that is safe to forward to the per-collection
+     * bulkWrite call drained by {@see Persisters\BulkWriteQueue::flush()}.
+     * Only the `session` and `writeConcern` keys are relevant at the bulk
+     * level; per-document write-concern overrides still flow through the
+     * persisters as today.
+     *
+     * @phpstan-param CommitOptions $options
+     *
+     * @return array<string, mixed>
+     */
+    private function getBulkWriteFlushOptions(array $options): array
+    {
+        $flushOptions = [];
+        if (isset($options['session'])) {
+            $flushOptions['session'] = $options['session'];
+        }
+
+        return $flushOptions;
     }
 
     /** @phpstan-param CommitOptions $options */

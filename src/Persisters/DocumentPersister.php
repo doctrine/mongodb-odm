@@ -32,7 +32,6 @@ use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
-use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -61,7 +60,6 @@ use function is_string;
 use function spl_object_id;
 use function sprintf;
 use function str_contains;
-use function strpos;
 use function strtolower;
 use function trigger_deprecation;
 
@@ -109,6 +107,8 @@ final class DocumentPersister
 
     private CollectionPersister $cp;
 
+    private BulkWriteQueue $bulkWriteQueue;
+
     /** @phpstan-param ClassMetadata<T> $class */
     public function __construct(
         private PersistenceBuilder $pb,
@@ -118,8 +118,9 @@ final class DocumentPersister
         private ClassMetadata $class,
         ?CriteriaMerger $cm = null,
     ) {
-        $this->cm = $cm ?: new CriteriaMerger();
-        $this->cp = $this->uow->getCollectionPersister();
+        $this->cm             = $cm ?: new CriteriaMerger();
+        $this->cp             = $this->uow->getCollectionPersister();
+        $this->bulkWriteQueue = $this->uow->getBulkWriteQueue();
 
         if ($class->isEmbeddedDocument || $class->isQueryResultDocument) {
             return;
@@ -201,9 +202,10 @@ final class DocumentPersister
             return;
         }
 
-        $inserts = [];
         $options = $this->getWriteOptions($options);
-        foreach ($this->queuedInserts as $oid => $document) {
+        assert($this->collection instanceof Collection);
+
+        foreach ($this->queuedInserts as $document) {
             $data = $this->pb->prepareInsertData($document);
 
             // Set the initial version for each insert
@@ -220,23 +222,13 @@ final class DocumentPersister
                 $data[$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
             }
 
-            $inserts[] = $data;
-        }
+            $this->bulkWriteQueue->addInsertOne($this->collection, $data, $options, $document);
 
-        try {
-            assert($this->collection instanceof Collection);
-            $this->collection->insertMany($inserts, $options);
-        } catch (DriverException $e) {
-            $this->queuedInserts = [];
-
-            throw $e;
-        }
-
-        /* All collections except for ones using addToSet have already been
-         * saved. We have left these to be handled separately to avoid checking
-         * collection for uniqueness on PHP side.
-         */
-        foreach ($this->queuedInserts as $document) {
+            /* All collections except for ones using addToSet have already been
+             * inlined in the insert payload. The remaining collection-level
+             * writes are queued here so they share the same per-collection
+             * bulkWrite as the parent insert.
+             */
             $this->handleCollections($document, $options);
         }
 
@@ -259,28 +251,25 @@ final class DocumentPersister
         }
 
         $options = $this->getWriteOptions($options);
-        foreach ($this->queuedUpserts as $oid => $document) {
-            try {
-                $this->executeUpsert($document, $options);
-                $this->handleCollections($document, $options);
-                unset($this->queuedUpserts[$oid]);
-            } catch (BulkWriteException $e) {
-                unset($this->queuedUpserts[$oid]);
+        assert($this->collection instanceof Collection);
 
-                throw $e;
-            }
+        foreach ($this->queuedUpserts as $document) {
+            $this->queueUpsert($document, $options);
+            $this->handleCollections($document, $options);
         }
+
+        $this->queuedUpserts = [];
     }
 
     /**
-     * Executes a single upsert in {@link executeUpserts}
+     * Builds the upsert payload for a single document and queues it as an
+     * updateOne op with upsert=true.
      *
      * @param array<string, mixed> $options
      */
-    private function executeUpsert(object $document, array $options): void
+    private function queueUpsert(object $document, array $options): void
     {
-        $options['upsert'] = true;
-        $criteria          = $this->getQueryForDocument($document);
+        $criteria = $this->getQueryForDocument($document);
 
         $data = $this->pb->prepareUpsertData($document);
 
@@ -317,32 +306,18 @@ final class DocumentPersister
          * an identifier as its only field. Since a document with the identifier
          * may already exist, the desired behavior is "insert if not exists" and
          * NOOP otherwise. MongoDB 2.6+ does not allow empty modifiers, so $set
-         * the identifier to the same value in our criteria.
-         *
-         * This will fail for versions before MongoDB 2.6, which require an
-         * empty $set modifier. The best we can do (without attempting to check
-         * server versions in advance) is attempt the 2.6+ behavior and retry
-         * after the relevant exception.
+         * the identifier to an empty document (which the server treats as a
+         * NOOP if the document already exists). This sidesteps the historical
+         * "Mod on _id not allowed" retry by emitting the safe payload up front.
          *
          * See: https://jira.mongodb.org/browse/SERVER-12266
          */
         if (empty($data)) {
-            $retry = true;
-            $data  = ['$set' => ['_id' => $criteria['_id']]];
+            $data = ['$set' => new stdClass()];
         }
 
         assert($this->collection instanceof Collection);
-        try {
-            $this->collection->updateOne($criteria, $data, $options);
-
-            return;
-        } catch (BulkWriteException $e) {
-            if (empty($retry) || strpos($e->getMessage(), 'Mod on _id not allowed') === false) {
-                throw $e;
-            }
-        }
-
-        $this->collection->updateOne($criteria, ['$set' => new stdClass()], $options);
+        $this->bulkWriteQueue->addUpdateOne($this->collection, $criteria, $data, ['upsert' => true], $options, $document);
     }
 
     /**
@@ -396,14 +371,28 @@ final class DocumentPersister
             $options = $this->getWriteOptions($options);
 
             assert($this->collection instanceof Collection);
-            $result = $this->collection->updateOne($query, $update, $options);
 
-            if (($this->class->isVersioned || $this->class->isLockable) && $result->getModifiedCount() !== 1) {
-                throw LockException::lockFailed($document);
-            }
+            if ($this->class->isVersioned || $this->class->isLockable) {
+                /* Versioned/lockable updates need precise per-op result inspection to
+                 * throw LockException at the right point. Bypass the queue and issue a
+                 * single-op bulkWrite so we can reason about matched/modified counts
+                 * for this exact document. The aggregate queue would only see counts
+                 * summed across every op in the batch.
+                 */
+                $result = $this->collection->bulkWrite(
+                    [['updateOne' => [$query, $update]]],
+                    ['ordered' => true] + $options,
+                );
 
-            if ($this->class->isVersioned) {
-                $this->class->propertyAccessors[$this->class->versionField]->setValue($document, $nextVersion);
+                if ($result->getModifiedCount() !== 1) {
+                    throw LockException::lockFailed($document);
+                }
+
+                if ($this->class->isVersioned) {
+                    $this->class->propertyAccessors[$this->class->versionField]->setValue($document, $nextVersion);
+                }
+            } else {
+                $this->bulkWriteQueue->addUpdateOne($this->collection, $query, $update, [], $options, $document);
             }
         }
 
@@ -437,11 +426,25 @@ final class DocumentPersister
         $options = $this->getWriteOptions($options);
 
         assert($this->collection instanceof Collection);
-        $result = $this->collection->deleteOne($query, $options);
 
-        if (($this->class->isVersioned || $this->class->isLockable) && ! $result->getDeletedCount()) {
-            throw LockException::lockFailed($document);
+        if ($this->class->isVersioned || $this->class->isLockable) {
+            /* Versioned/lockable deletes need per-op result inspection to throw
+             * LockException; issue a single-op bulkWrite so the deleted-count is
+             * unambiguously for this document.
+             */
+            $result = $this->collection->bulkWrite(
+                [['deleteOne' => [$query]]],
+                ['ordered' => true] + $options,
+            );
+
+            if (! $result->getDeletedCount()) {
+                throw LockException::lockFailed($document);
+            }
+
+            return;
         }
+
+        $this->bulkWriteQueue->addDeleteOne($this->collection, $query, [], $options, $document);
     }
 
     /**

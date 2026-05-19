@@ -25,6 +25,7 @@ use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BulkWriteResult;
 use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -571,10 +572,17 @@ class UnitOfWorkTest extends BaseTestCase
         // Force transaction config to be enabled
         $this->dm->getConfiguration()->setUseTransactionalFlush(true);
 
-        $collection = $this->createMock(MongoDBCollection::class);
+        $collection  = $this->createMock(MongoDBCollection::class);
+        $writeResult = $this->createMock(BulkWriteResult::class);
+        $writeResult->method('getInsertedIds')->willReturn([]);
+        $writeResult->method('getUpsertedIds')->willReturn([]);
+        $writeResult->method('getMatchedCount')->willReturn(0);
+        $writeResult->method('getModifiedCount')->willReturn(0);
+        $writeResult->method('getDeletedCount')->willReturn(0);
         $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->method('bulkWrite')
+            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')))
+            ->willReturn($writeResult);
 
         $documentPersister = $this->uow->getDocumentPersister(ForumUser::class);
 

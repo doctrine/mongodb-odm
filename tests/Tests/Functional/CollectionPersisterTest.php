@@ -41,6 +41,7 @@ class CollectionPersisterTest extends BaseTestCase
         $user      = $this->getTestUser('jwage');
         self::assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete($user, [$user->categories], []);
+        $this->flushBulkWriteQueue();
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertArrayNotHasKey('categories', $user, 'Test that the categories field was deleted');
@@ -52,6 +53,7 @@ class CollectionPersisterTest extends BaseTestCase
         $user      = $this->getTestUser('jwage');
         self::assertInstanceOf(PersistentCollectionInterface::class, $user->roles);
         $persister->delete($user, [$user->roles], []);
+        $this->flushBulkWriteQueue();
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertSame([], $user['roles'], 'Test that the roles field was stored as empty array');
@@ -63,6 +65,7 @@ class CollectionPersisterTest extends BaseTestCase
         $user      = $this->getTestUser('jwage');
         self::assertInstanceOf(PersistentCollectionInterface::class, $user->phonenumbers);
         $persister->delete($user, [$user->phonenumbers], []);
+        $this->flushBulkWriteQueue();
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertArrayNotHasKey('phonenumbers', $user, 'Test that the phonenumbers field was deleted');
@@ -74,6 +77,7 @@ class CollectionPersisterTest extends BaseTestCase
         $user      = $this->getTestUser('jwage');
         self::assertInstanceOf(PersistentCollectionInterface::class, $user->groups);
         $persister->delete($user, [$user->groups], []);
+        $this->flushBulkWriteQueue();
 
         $user = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertSame([], $user['groups'], 'Test that the groups field was stored as empty array');
@@ -90,6 +94,7 @@ class CollectionPersisterTest extends BaseTestCase
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             [],
         );
+        $this->flushBulkWriteQueue();
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -103,6 +108,7 @@ class CollectionPersisterTest extends BaseTestCase
             [$user->categories[0]->children, $user->categories[1]->children],
             [],
         );
+        $this->flushBulkWriteQueue();
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -125,6 +131,7 @@ class CollectionPersisterTest extends BaseTestCase
             [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
             [],
         );
+        $this->flushBulkWriteQueue();
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -142,6 +149,7 @@ class CollectionPersisterTest extends BaseTestCase
             [$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories],
             [],
         );
+        $this->flushBulkWriteQueue();
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
@@ -164,7 +172,7 @@ class CollectionPersisterTest extends BaseTestCase
 
         $this->logger->clear();
         $this->dm->flush();
-        self::assertCount(2, $this->logger, 'Modification of several embedded-many collections of one document requires two queries');
+        self::assertCount(1, $this->logger, 'Modification of several embedded-many collections of one document is consolidated into one bulkWrite');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
 
@@ -181,7 +189,7 @@ class CollectionPersisterTest extends BaseTestCase
         unset($user->categories[1]);
         $this->logger->clear();
         $this->dm->flush();
-        self::assertCount(2, $this->logger, 'Modification of embedded-many collection of one document requires two queries');
+        self::assertCount(1, $this->logger, 'Modification of embedded-many collection of one document is consolidated into one bulkWrite');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertFalse(isset($check['categories'][0]));
@@ -195,7 +203,10 @@ class CollectionPersisterTest extends BaseTestCase
         $user->phonenumbers[] = new CollectionPersisterPhonenumber('6155139185');
         $this->logger->clear();
         $this->dm->flush();
-        self::assertCount(2, $this->logger, 'Modification of embedded-many collection of one document requires two queries');
+        // Two bulkWrites: one to insert the new Phonenumber documents, one to push the
+        // references onto the User document — they target different collections so
+        // per-collection consolidation cannot reduce them further.
+        self::assertCount(2, $this->logger, 'Reference-many inserts produce one bulkWrite per collection');
 
         $check = $this->dm->getDocumentCollection(CollectionPersisterUser::class)->findOne(['username' => 'jwage']);
         self::assertCount(4, $check['phonenumbers']);
@@ -266,6 +277,17 @@ class CollectionPersisterTest extends BaseTestCase
         $pb  = new PersistenceBuilder($this->dm, $uow);
 
         return new CollectionPersister($this->dm, $pb, $uow);
+    }
+
+    /**
+     * CollectionPersister now queues writes onto the UnitOfWork's BulkWriteQueue
+     * rather than calling Collection::updateOne directly. Tests that invoke
+     * CollectionPersister::update/delete outside of a normal flush() cycle must
+     * drain the queue themselves to materialize the writes.
+     */
+    private function flushBulkWriteQueue(): void
+    {
+        $this->dm->getUnitOfWork()->getBulkWriteQueue()->flush();
     }
 
     public function testNestedEmbedManySetStrategy(): void
@@ -475,9 +497,9 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $this->dm->flush();
         self::assertCount(
-            2,
+            1,
             $this->logger,
-            'Modification of embedded-many collections of one document by "addToSet" strategy requires two queries',
+            'Modification of embedded-many collections of one document by "addToSet" strategy is consolidated into one bulkWrite',
         );
 
         self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
@@ -506,9 +528,9 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($structure);
         $this->dm->flush();
         self::assertCount(
-            2,
+            1,
             $this->logger,
-            'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries',
+            'Modification of embedded-many collections of one document by "pushAll" strategy is consolidated into one bulkWrite',
         );
 
         self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
@@ -540,9 +562,9 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($structure);
         $this->dm->flush();
         self::assertCount(
-            4,
+            1,
             $this->logger,
-            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
+            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies is consolidated into one bulkWrite',
         );
 
         self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
@@ -580,9 +602,9 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($structure);
         $this->dm->flush();
         self::assertCount(
-            5,
+            1,
             $this->logger,
-            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies requires two queries',
+            'Modification of embedded-many collections of one document by "set", "setArray" and "pushAll" strategies is consolidated into one bulkWrite',
         );
 
         self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));

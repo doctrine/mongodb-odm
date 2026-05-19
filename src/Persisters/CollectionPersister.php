@@ -43,8 +43,11 @@ use function strpos;
  */
 final class CollectionPersister
 {
+    private BulkWriteQueue $bulkWriteQueue;
+
     public function __construct(private DocumentManager $dm, private PersistenceBuilder $pb, private UnitOfWork $uow)
     {
+        $this->bulkWriteQueue = $this->uow->getBulkWriteQueue();
     }
 
     /**
@@ -445,6 +448,13 @@ final class CollectionPersister
     /**
      * Executes a query updating the given document.
      *
+     * For non-versioned parents the op is queued onto the shared
+     * {@see BulkWriteQueue} so it can be consolidated with the parent
+     * document's writes into a single per-collection bulkWrite. For
+     * versioned parents the op is issued immediately as a single-op
+     * bulkWrite so {@see LockException} can be thrown precisely against
+     * the matched-count for this exact document.
+     *
      * @param array<string, mixed> $newObj
      * @param array<string, mixed> $options
      */
@@ -459,10 +469,20 @@ final class CollectionPersister
         }
 
         $collection = $this->dm->getDocumentCollection($className);
-        $result     = $collection->updateOne($query, $newObj, $options);
-        if ($class->isVersioned && ! $result->getMatchedCount()) {
-            throw LockException::lockFailed($document);
+
+        if ($class->isVersioned) {
+            $result = $collection->bulkWrite(
+                [['updateOne' => [$query, $newObj]]],
+                ['ordered' => true] + $options,
+            );
+            if (! $result->getMatchedCount()) {
+                throw LockException::lockFailed($document);
+            }
+
+            return;
         }
+
+        $this->bulkWriteQueue->addUpdateOne($collection, $query, $newObj, [], $options, $document);
     }
 
     /**

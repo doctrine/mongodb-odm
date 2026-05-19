@@ -9,6 +9,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\BulkWriteResult;
 use MongoDB\Collection;
 use MongoDB\Driver\Exception\BulkWriteException;
+use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -38,9 +39,9 @@ final class BulkWriteQueueTest extends TestCase
         $collection = $this->createMock(Collection::class);
         $document   = new stdClass();
 
-        $queue->addInsertOne($collection, ['_id' => 1, 'name' => 'first'], $document);
-        $queue->addUpdateOne($collection, ['_id' => 1], ['$set' => ['name' => 'second']], [], $document);
-        $queue->addDeleteOne($collection, ['_id' => 1], [], $document);
+        $queue->addInsertOne($collection, ['_id' => 1, 'name' => 'first'], [], $document);
+        $queue->addUpdateOne($collection, ['_id' => 1], ['$set' => ['name' => 'second']], [], [], $document);
+        $queue->addDeleteOne($collection, ['_id' => 1], [], [], $document);
 
         $expectedOps = [
             ['insertOne' => [['_id' => 1, 'name' => 'first']]],
@@ -62,7 +63,7 @@ final class BulkWriteQueueTest extends TestCase
         $collection = $this->createMock(Collection::class);
         $document   = new stdClass();
 
-        $queue->addUpdateOne($collection, ['_id' => 1], ['$set' => ['x' => 1]], ['upsert' => true], $document);
+        $queue->addUpdateOne($collection, ['_id' => 1], ['$set' => ['x' => 1]], ['upsert' => true], [], $document);
 
         $collection->expects(self::once())
             ->method('bulkWrite')
@@ -75,6 +76,23 @@ final class BulkWriteQueueTest extends TestCase
         $queue->flush();
     }
 
+    public function testPerCollectionBulkOptionsAreForwarded(): void
+    {
+        $queue        = new BulkWriteQueue();
+        $collection   = $this->createMock(Collection::class);
+        $document     = new stdClass();
+        $writeConcern = new WriteConcern(0);
+
+        $queue->addInsertOne($collection, ['_id' => 1], ['writeConcern' => $writeConcern], $document);
+
+        $collection->expects(self::once())
+            ->method('bulkWrite')
+            ->with(self::anything(), ['ordered' => true, 'writeConcern' => $writeConcern])
+            ->willReturn($this->createWriteResultMock());
+
+        $queue->flush();
+    }
+
     public function testInsertCallbackReceivesInsertedId(): void
     {
         $queue      = new BulkWriteQueue();
@@ -82,7 +100,7 @@ final class BulkWriteQueueTest extends TestCase
         $document   = new stdClass();
         $captured   = null;
 
-        $queue->addInsertOne($collection, ['_id' => 'fixed'], $document, static function ($insertedId) use (&$captured): void {
+        $queue->addInsertOne($collection, ['_id' => 'fixed'], [], $document, static function ($insertedId) use (&$captured): void {
             $captured = $insertedId;
         });
 
@@ -106,6 +124,7 @@ final class BulkWriteQueueTest extends TestCase
             $collection,
             ['_id' => 1],
             ['$set' => ['x' => 1]],
+            [],
             [],
             $document,
             static function (int $matched, int $modified, ?ObjectId $upsertedId) use (&$captured): void {
@@ -133,6 +152,7 @@ final class BulkWriteQueueTest extends TestCase
             $collection,
             ['_id' => 1],
             [],
+            [],
             $document,
             static function (int $deletedCount) use (&$captured): void {
                 $captured = $deletedCount;
@@ -155,9 +175,9 @@ final class BulkWriteQueueTest extends TestCase
         $collectionB = $this->createMock(Collection::class);
         $document    = new stdClass();
 
-        $queue->addInsertOne($collectionA, ['_id' => 1], $document);
-        $queue->addInsertOne($collectionB, ['_id' => 2], $document);
-        $queue->addUpdateOne($collectionA, ['_id' => 1], ['$set' => ['x' => 1]], [], $document);
+        $queue->addInsertOne($collectionA, ['_id' => 1], [], $document);
+        $queue->addInsertOne($collectionB, ['_id' => 2], [], $document);
+        $queue->addUpdateOne($collectionA, ['_id' => 1], ['$set' => ['x' => 1]], [], [], $document);
 
         $collectionA->expects(self::once())
             ->method('bulkWrite')
@@ -186,7 +206,7 @@ final class BulkWriteQueueTest extends TestCase
         $collection = $this->createMock(Collection::class);
         $document   = new stdClass();
 
-        $queue->addInsertOne($collection, ['_id' => 1], $document);
+        $queue->addInsertOne($collection, ['_id' => 1], [], $document);
 
         $collection->expects(self::once())
             ->method('bulkWrite')
@@ -203,8 +223,8 @@ final class BulkWriteQueueTest extends TestCase
         $collectionB = $this->createMock(Collection::class);
         $document    = new stdClass();
 
-        $queue->addInsertOne($collectionA, ['_id' => 1], $document);
-        $queue->addInsertOne($collectionB, ['_id' => 2], $document);
+        $queue->addInsertOne($collectionA, ['_id' => 1], [], $document);
+        $queue->addInsertOne($collectionB, ['_id' => 2], [], $document);
 
         $collectionA->expects(self::once())
             ->method('bulkWrite')
@@ -228,7 +248,7 @@ final class BulkWriteQueueTest extends TestCase
         $collection = $this->createMock(Collection::class);
         $document   = new stdClass();
 
-        $queue->addInsertOne($collection, ['_id' => 1], $document);
+        $queue->addInsertOne($collection, ['_id' => 1], [], $document);
         self::assertTrue($queue->hasPending());
 
         $queue->clear();

@@ -18,9 +18,11 @@ use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\BulkWriteResult;
 use MongoDB\Collection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Constraint\Constraint;
 use ReflectionProperty;
 
 use function get_debug_type;
@@ -632,10 +634,9 @@ class DocumentPersisterTest extends BaseTestCase
 
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -653,10 +654,9 @@ class DocumentPersisterTest extends BaseTestCase
 
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalNot($this->arrayHasKey('writeConcern')),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -674,10 +674,9 @@ class DocumentPersisterTest extends BaseTestCase
 
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('updateOne')
-            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -696,10 +695,9 @@ class DocumentPersisterTest extends BaseTestCase
 
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('updateOne')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalNot($this->arrayHasKey('writeConcern')),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -718,10 +716,11 @@ class DocumentPersisterTest extends BaseTestCase
 
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+        // Two bulkWrites: one to insert, one to delete. Both should carry the write concern.
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))),
+            expectedCalls: 2,
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -742,10 +741,10 @@ class DocumentPersisterTest extends BaseTestCase
 
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalNot($this->arrayHasKey('writeConcern')),
+            expectedCalls: 2,
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -765,10 +764,9 @@ class DocumentPersisterTest extends BaseTestCase
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern(0))),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -787,10 +785,9 @@ class DocumentPersisterTest extends BaseTestCase
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalNot($this->arrayHasKey('writeConcern')),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -809,10 +806,9 @@ class DocumentPersisterTest extends BaseTestCase
         $class             = DocumentPersisterTestDocument::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
 
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+        $collection = $this->createBulkWriteCollectionMock(
+            $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern(0))),
+        );
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -822,6 +818,30 @@ class DocumentPersisterTest extends BaseTestCase
         $testDocument = new $class();
         $this->dm->persist($testDocument);
         $this->dm->flush();
+    }
+
+    /**
+     * Builds a Collection mock that expects a bulkWrite call whose options
+     * match the supplied constraint. Returns a successful BulkWriteResult so
+     * the UnitOfWork can finish without errors.
+     */
+    private function createBulkWriteCollectionMock(Constraint $optionsConstraint, int $expectedCalls = 1): Collection
+    {
+        $collection = $this->createMock(Collection::class);
+
+        $writeResult = $this->createMock(BulkWriteResult::class);
+        $writeResult->method('getInsertedIds')->willReturn([]);
+        $writeResult->method('getUpsertedIds')->willReturn([]);
+        $writeResult->method('getMatchedCount')->willReturn(1);
+        $writeResult->method('getModifiedCount')->willReturn(1);
+        $writeResult->method('getDeletedCount')->willReturn(1);
+
+        $collection->expects($this->exactly($expectedCalls))
+            ->method('bulkWrite')
+            ->with($this->isType('array'), $optionsConstraint)
+            ->willReturn($writeResult);
+
+        return $collection;
     }
 
     public function testVersionIncrementOnUpdateSuccess(): void
