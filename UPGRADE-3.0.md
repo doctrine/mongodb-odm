@@ -57,3 +57,43 @@ to retain the functionality.
 
 `Doctrine\ODM\MongoDB\Event\OnClearEventArgs`' methods `getDocumentClass` and 
 `clearsAllDocuments` have been removed.
+
+## Flush now consolidates writes per collection via `bulkWrite`
+
+`UnitOfWork::commit()` previously issued an individual `insertMany`,
+`updateOne` or `deleteOne` call per scheduled document. As of 3.0, every
+scheduled write against the same MongoDB collection is now consolidated
+into a single `Collection::bulkWrite()` call per commit phase (upserts,
+inserts, updates, deletes).
+
+The visible effects:
+
+- **Lifecycle event ordering.** Within a phase, `postPersist`,
+  `postUpdate` and `postRemove` now fire **after** the entire phase's
+  `bulkWrite` has succeeded, rather than interleaved per document.
+  Listeners that relied on observing one document's post-event before
+  another document in the same phase had been written must be reviewed.
+  The per-document `preUpdate` callback still fires *before* the
+  bulkWrite, so listeners can still mutate the change set there.
+- **`LockException` semantics.** Versioned and lockable documents still
+  raise `LockException` with the same timing as before. Internally, the
+  refactor bypasses the consolidated bulk for these documents and issues
+  a single-op `bulkWrite` per such document so the matched / modified /
+  deleted counts can be inspected precisely.
+- **Partial-failure exceptions.** A failed write surfaces as
+  `MongoDB\Driver\Exception\BulkWriteException` (with `getWriteResult()`
+  describing every op in the batch), where the 2.x ODM might have
+  surfaced the same condition through the analogous error from
+  `insertMany` / `updateOne` / `deleteOne`. The exception class and
+  hierarchy are unchanged; only the aggregation of error info inside
+  the result is broader.
+- **Command count.** Tools and tests that count emitted MongoDB
+  commands (e.g. via `Doctrine\ODM\MongoDB\APM\CommandLogger`) will see
+  fewer commands per `flush()`. For example, persisting 100 documents
+  of the same class now emits one `insert` command instead of one per
+  document.
+
+The internal `DocumentPersister` and `CollectionPersister` classes are
+`@internal` and `final`; their public method names are unchanged but the
+queueing model now lives in `Doctrine\ODM\MongoDB\Persisters\BulkWriteQueue`.
+Applications must not extend these classes.
