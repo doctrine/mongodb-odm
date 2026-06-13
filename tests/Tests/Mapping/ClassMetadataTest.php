@@ -48,6 +48,7 @@ use stdClass;
 
 use function array_merge;
 use function serialize;
+use function sprintf;
 use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
@@ -1146,6 +1147,19 @@ class ClassMetadataTest extends BaseTestCase
         self::assertSame(Granularity::Hours, $metadata->timeSeriesOptions->granularity);
         self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
         self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
+    }
+
+    public function testDeprecatedPropertyModification(): void
+    {
+        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
+
+        $this->captureDeprecationMessages(
+            static fn () => $metadata->db = 'foo',
+            $errors,
+        );
+
+        self::assertCount(1, $errors);
+        self::assertEquals(sprintf('Since doctrine/mongodb-odm 2.18: Writing to property %s::db is deprecated and will be removed in version 3.0.', ClassMetadata::class), $errors[0]);
     }
 }
 

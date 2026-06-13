@@ -43,8 +43,10 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
             $errors,
         );
 
-        self::assertCount(1, $errors);
-        self::assertSame(sprintf('Since doctrine/mongodb-odm 2.2: The "@Indexes" attribute used in class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', DeprecatedIndexesClassAnnotation::class), $errors[0]);
+        self::assertEquals(
+            [sprintf('Since doctrine/mongodb-odm 2.2: The "@Indexes" attribute used in class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', DeprecatedIndexesClassAnnotation::class)],
+            $errors,
+        );
 
         $indexes = $classMetadata->indexes;
 
@@ -62,8 +64,10 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
             $errors,
         );
 
-        self::assertCount(1, $errors);
-        self::assertSame(sprintf('Since doctrine/mongodb-odm 2.2: The "indexes" parameter in the "%s" attribute for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', Document::class, DeprecatedDocumentClassAnnotationIndexesOption::class), $errors[0]);
+        self::assertEquals(
+            [sprintf('Since doctrine/mongodb-odm 2.2: The "indexes" parameter in the "%s" attribute for class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', Document::class, DeprecatedDocumentClassAnnotationIndexesOption::class)],
+            $errors,
+        );
 
         $indexes = $classMetadata->indexes;
 
@@ -81,8 +85,10 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
             $errors,
         );
 
-        self::assertCount(1, $errors);
-        self::assertSame(sprintf('Since doctrine/mongodb-odm 2.2: The "@Indexes" attribute used in property "foo" of class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', DeprecatedIndexesPropertyAnnotation::class), $errors[0]);
+        self::assertEquals(
+            sprintf('Since doctrine/mongodb-odm 2.2: The "@Indexes" attribute used in property "foo" of class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', DeprecatedIndexesPropertyAnnotation::class),
+            $errors,
+        );
 
         $indexes = $classMetadata->indexes;
 
