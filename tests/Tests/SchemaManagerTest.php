@@ -686,7 +686,7 @@ class SchemaManagerTest extends BaseTestCase
     {
         $dbCommands = [];
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
-            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView() || $cm->isFile) {
+            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView || $cm->isFile) {
                 continue;
             }
 

@@ -295,7 +295,7 @@ final class LifecycleEventManager
 
     private function dispatchEvent(ClassMetadata $class, string $eventName, ?EventArgs $eventArgs = null): void
     {
-        if ($class->isView()) {
+        if ($class->isView) {
             return;
         }
 

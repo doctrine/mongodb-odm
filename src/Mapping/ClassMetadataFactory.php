@@ -140,7 +140,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     {
         assert($class instanceof ClassMetadata);
 
-        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView();
+        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView;
     }
 
     /** @param bool $rootEntityFound */

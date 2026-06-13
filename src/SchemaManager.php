@@ -78,7 +78,7 @@ final class SchemaManager
     public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
                 continue;
             }
 
@@ -95,7 +95,7 @@ final class SchemaManager
     public function updateIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
                 continue;
             }
 
@@ -117,7 +117,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
             throw new InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -275,7 +275,7 @@ final class SchemaManager
     public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
             throw new InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -301,7 +301,7 @@ final class SchemaManager
     public function deleteIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
                 continue;
             }
 
@@ -319,7 +319,7 @@ final class SchemaManager
     public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -332,7 +332,7 @@ final class SchemaManager
     public function createSearchIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
                 continue;
             }
 
@@ -411,7 +411,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
             throw new InvalidArgumentException('Cannot create search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
@@ -444,7 +444,7 @@ final class SchemaManager
     public function updateSearchIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
                 continue;
             }
 
@@ -466,7 +466,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
             throw new InvalidArgumentException('Cannot update search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
@@ -504,7 +504,7 @@ final class SchemaManager
     public function deleteSearchIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
                 continue;
             }
 
@@ -522,7 +522,7 @@ final class SchemaManager
     public function deleteDocumentSearchIndexes(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
             throw new InvalidArgumentException('Cannot delete search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
@@ -605,7 +605,7 @@ final class SchemaManager
     public function updateValidators(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView || $class->isFile) {
                 continue;
             }
 
@@ -621,7 +621,7 @@ final class SchemaManager
     public function updateDocumentValidator(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView || $class->isFile) {
             throw new InvalidArgumentException('Cannot update validators for files, views, mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -697,7 +697,7 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
-        if ($class->isView()) {
+        if ($class->isView) {
             $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
 
             $rootClass = $class->getRootClass();

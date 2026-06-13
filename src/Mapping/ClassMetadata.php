@@ -846,9 +846,9 @@ use const PHP_VERSION_ID;
     }
 
     /**
-     * READ-ONLY: Whether this class describes the mapping of a database view.
+     * Whether this class describes the mapping of a database view.
      */
-    private bool $isView = false;
+    public private(set) bool $isView = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a gridFS file
@@ -1112,7 +1112,7 @@ use const PHP_VERSION_ID;
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
-        if ($this->isView()) {
+        if ($this->isView) {
             return;
         }
 
@@ -2366,8 +2366,11 @@ use const PHP_VERSION_ID;
         return $this->rootClass;
     }
 
+    /** @deprecated Use the isView property instead */
     public function isView(): bool
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'The %s::isView() method is deprecated and will be removed in version 3.0. Use the isView property instead.');
+
         return $this->isView;
     }
 

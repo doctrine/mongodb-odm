@@ -78,7 +78,7 @@ abstract class AbstractRepositoryFactory implements RepositoryFactory
 
                 break;
 
-            case $metadata->isView():
+            case $metadata->isView:
                 if (! is_a($repositoryClassName, ViewRepository::class, true)) {
                     throw MappingException::invalidRepositoryClass($documentName, $repositoryClassName, ViewRepository::class);
                 }
