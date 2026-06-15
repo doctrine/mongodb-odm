@@ -27,7 +27,7 @@ jobs:
             os: "ubuntu-latest"
           # Test with ProxyManager
           - php-version: "8.1"
-            symfony-version: "6.4"
+            symfony-version: "^6.4"
             proxy: "proxy-manager"
             os: "ubuntu-latest"
 

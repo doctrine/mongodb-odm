@@ -34,7 +34,7 @@ jobs:
         dependencies:
           - "highest"
         symfony-version:
-          - "7.4"
+          - "^7.4"
         proxy:
           - "lazy-ghost"
         include:
@@ -52,7 +52,7 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "6.4"
+            symfony-version: "^6.4"
             proxy: "lazy-ghost"
           # Test with a 6.0 replica set
           - topology: "replica_set"
