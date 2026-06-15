@@ -29,7 +29,6 @@ use function current;
 use function explode;
 use function implode;
 use function in_array;
-use function interface_exists;
 use function is_numeric;
 use function iterator_to_array;
 use function libxml_clear_errors;
@@ -984,4 +983,4 @@ class XmlDriver extends FileDriver
     }
 }
 
-interface_exists(ClassMetadata::class);
+class_exists(ClassMetadata::class);
