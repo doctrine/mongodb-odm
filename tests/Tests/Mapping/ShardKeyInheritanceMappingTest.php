@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 class ShardKeyInheritanceMappingTest extends BaseTestCase
 {
@@ -44,6 +45,7 @@ class ShardKeyInheritanceMappingTest extends BaseTestCase
         $this->factory->getMetadataFor(ShardedSingleCollInheritance3::class);
     }
 
+    #[IgnoreDeprecations]
     public function testShardKeyCollectionPerClassInheritance(): void
     {
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass2::class);
@@ -52,6 +54,7 @@ class ShardKeyInheritanceMappingTest extends BaseTestCase
         self::assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
     }
 
+    #[IgnoreDeprecations]
     public function testShardKeyCollectionPerClassInheritanceOverriding(): void
     {
         $class = $this->factory->getMetadataFor(ShardedCollectionPerClass3::class);

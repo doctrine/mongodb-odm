@@ -429,6 +429,8 @@ use const PHP_VERSION_ID;
     /**
      * COLLECTION_PER_CLASS means the class will be persisted according to the rules
      * of <tt>Concrete Collection Inheritance</tt>.
+     *
+     * @deprecated since 2.17 with no replacement. Each class is already mapped to its own collection.
      */
     public const INHERITANCE_TYPE_COLLECTION_PER_CLASS = 3;
 
@@ -2121,6 +2123,8 @@ use const PHP_VERSION_ID;
 
     /**
      * Checks whether the mapped class uses the COLLECTION_PER_CLASS inheritance mapping strategy.
+     *
+     * @deprecated since 2.17 with no replacement.
      */
     public function isInheritanceTypeCollectionPerClass(): bool
     {

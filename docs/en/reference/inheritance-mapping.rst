@@ -188,6 +188,12 @@ discriminator field:
 Collection Per Class Inheritance
 --------------------------------
 
+.. deprecated:: 2.17
+
+    The ``COLLECTION_PER_CLASS`` inheritance type is deprecated with no
+    replacement. Each document class is already mapped to its own collection,
+    so you can simply remove the ``InheritanceType`` mapping.
+
 With collection per class inheritance, each document is stored in its own
 collection and contains all inherited fields:
 
