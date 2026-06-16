@@ -1021,12 +1021,6 @@ parameters:
 			path: tests/Tests/DocumentRepositoryTest.php
 
 		-
-			message: '#^Parameter \#2 \$collections of method Doctrine\\ODM\\MongoDB\\Persisters\\CollectionPersister\:\:delete\(\) expects array\<Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface\>, array\<int, array\<Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CollectionPersisterCategory\>\|Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CollectionPersisterCategory\>\> given\.$#'
-			identifier: argument.type
-			count: 3
-			path: tests/Tests/Functional/CollectionPersisterTest.php
-
-		-
 			message: '#^PHPDoc type Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildDocumentWithDiscriminator\> of property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ParentDocumentWithDiscriminator\:\:\$embeddedChildren is not covariant with PHPDoc type array\<Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildDocument\>\|Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildDocument\> of overridden property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ParentDocument\:\:\$embeddedChildren\.$#'
 			identifier: property.phpDocType
 			count: 1

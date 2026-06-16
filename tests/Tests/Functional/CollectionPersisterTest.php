@@ -13,6 +13,8 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
+use function array_map;
+
 class CollectionPersisterTest extends BaseTestCase
 {
     // This test counts executed commands and thus doesn't work with transactions
@@ -87,7 +89,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
+            $this->persistentCollections($user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -100,7 +102,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            [$user->categories[0]->children, $user->categories[1]->children],
+            $this->persistentCollections($user->categories[0]->children, $user->categories[1]->children),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -122,7 +124,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
+            $this->persistentCollections($user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -135,11 +137,9 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $firstCategoryChildren = $user->categories[0]->children;
         self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren);
-        self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren[1]->children);
-        self::assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete(
             $user,
-            [$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories],
+            $this->persistentCollections($firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -266,6 +266,20 @@ class CollectionPersisterTest extends BaseTestCase
         $pb  = new PersistenceBuilder($this->dm, $uow);
 
         return new CollectionPersister($this->dm, $pb, $uow);
+    }
+
+    /**
+     * Asserts that each managed collection is a PersistentCollection and narrows the type for the persister.
+     *
+     * @return list<PersistentCollectionInterface<array-key, object>>
+     */
+    private function persistentCollections(mixed ...$collections): array
+    {
+        return array_map(static function (mixed $collection): PersistentCollectionInterface {
+            self::assertInstanceOf(PersistentCollectionInterface::class, $collection);
+
+            return $collection;
+        }, $collections);
     }
 
     public function testNestedEmbedManySetStrategy(): void
