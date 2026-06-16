@@ -2369,7 +2369,7 @@ use const PHP_VERSION_ID;
     /** @deprecated Use the isView property instead */
     public function isView(): bool
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'The %s::isView() method is deprecated and will be removed in version 3.0. Use the isView property instead.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'The %s::isView() method is deprecated and will be removed in version 3.0. Use the isView property instead.');
 
         return $this->isView;
     }
@@ -3068,7 +3068,7 @@ use const PHP_VERSION_ID;
     {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
         if ($backtrace[1]['file'] !== __FILE__) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Writing to property %s::%s is deprecated and will be removed in version 3.0.', static::class, $property);
+            trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Writing to property %s::%s is deprecated and will be removed in version 3.0.', static::class, $property);
         }
 
         return $value;

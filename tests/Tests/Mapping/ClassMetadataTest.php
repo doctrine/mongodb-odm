@@ -1159,7 +1159,7 @@ class ClassMetadataTest extends BaseTestCase
         );
 
         self::assertCount(1, $errors);
-        self::assertEquals(sprintf('Since doctrine/mongodb-odm 2.18: Writing to property %s::db is deprecated and will be removed in version 3.0.', ClassMetadata::class), $errors[0]);
+        self::assertEquals(sprintf('Since doctrine/mongodb-odm 2.17: Writing to property %s::db is deprecated and will be removed in version 3.0.', ClassMetadata::class), $errors[0]);
     }
 }
 
