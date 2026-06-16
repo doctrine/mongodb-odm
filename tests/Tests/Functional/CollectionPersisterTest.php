@@ -506,9 +506,25 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($structure);
         $this->dm->flush();
         self::assertCount(
+            1,
+            $this->logger,
+            'Modification of sibling embedded-many collections by "pushAll" strategy is batched into one query',
+        );
+
+        // Modify the parent collection and a nested collection within one of its
+        // elements in the same flush. "pushAll" and "pushAll.0.pushAll" are a real
+        // parent/sub-path pair: pushing to both in a single update would conflict,
+        // so they must be split into two queries.
+        $structure->pushAll->add(new CollectionPersisterNestedStructure('nested7'));
+        $structure->pushAll->get(0)->pushAll->add(new CollectionPersisterNestedStructure('nested8'));
+
+        $this->logger->clear();
+        $this->dm->persist($structure);
+        $this->dm->flush();
+        self::assertCount(
             2,
             $this->logger,
-            'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries',
+            'Modification of a "pushAll" collection and a nested sub-collection requires two queries',
         );
 
         self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));
