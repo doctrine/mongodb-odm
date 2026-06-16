@@ -217,12 +217,21 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             new LoadClassMetadataEventArgs($class, $this->dm),
         );
 
-        // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
         if ($class->isChangeTrackingNotify()) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
                 '2.4',
                 'NOTIFY tracking policy used in class "%s" is deprecated. Please use DEFERRED_EXPLICIT instead.',
+                $class->name,
+            );
+        }
+
+        // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
+        if ($class->isInheritanceTypeCollectionPerClass()) {
+            trigger_deprecation(
+                'doctrine/mongodb-odm',
+                '2.17',
+                'COLLECTION_PER_CLASS inheritance type used in class "%s" is deprecated with no replacement. Remove the InheritanceType attribute/annotation: each class is already mapped to its own collection.',
                 $class->name,
             );
         }

@@ -15,7 +15,6 @@ use MongoDB\BSON\UTCDateTime;
 use function bcadd;
 
 #[ODM\Document(collection: 'users')]
-#[ODM\InheritanceType('COLLECTION_PER_CLASS')]
 class User extends BaseDocument
 {
     /** @var ObjectId|string|null */

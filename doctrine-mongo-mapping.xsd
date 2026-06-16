@@ -431,7 +431,14 @@
   <xs:simpleType name="inheritance-type">
     <xs:restriction base="xs:token">
       <xs:enumeration value="SINGLE_COLLECTION" />
-      <xs:enumeration value="COLLECTION_PER_CLASS" />
+      <xs:enumeration value="COLLECTION_PER_CLASS">
+        <xs:annotation>
+          <xs:documentation>
+            Deprecated since 2.17 with no replacement. Each class is already mapped to its own
+            collection, so the COLLECTION_PER_CLASS inheritance type can be removed.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
 
