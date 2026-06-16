@@ -89,7 +89,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            $this->persistentCollections($user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children),
+            $this->persistentCollections([$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -102,7 +102,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            $this->persistentCollections($user->categories[0]->children, $user->categories[1]->children),
+            $this->persistentCollections([$user->categories[0]->children, $user->categories[1]->children]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -124,7 +124,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            $this->persistentCollections($user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children),
+            $this->persistentCollections([$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -139,7 +139,7 @@ class CollectionPersisterTest extends BaseTestCase
         self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren);
         $persister->delete(
             $user,
-            $this->persistentCollections($firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories),
+            $this->persistentCollections([$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -271,9 +271,11 @@ class CollectionPersisterTest extends BaseTestCase
     /**
      * Asserts that each managed collection is a PersistentCollection and narrows the type for the persister.
      *
+     * @param array<mixed> $collections
+     *
      * @return list<PersistentCollectionInterface<array-key, object>>
      */
-    private function persistentCollections(mixed ...$collections): array
+    private function persistentCollections(array $collections): array
     {
         return array_map(static function (mixed $collection): PersistentCollectionInterface {
             self::assertInstanceOf(PersistentCollectionInterface::class, $collection);
