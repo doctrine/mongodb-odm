@@ -79,6 +79,13 @@ class AttributeDriverTest extends AbstractMappingDriverTestCase
         $attributeDriver->loadMetadataForClass('stdClass', $cm);
     }
 
+    public function testUnknownInheritanceTypeThrowsException(): void
+    {
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Invalid inheritance type "COLLECTION_PER_CLASS"');
+        $this->dm->getClassMetadata(AttributeDriverWithUnknownInheritanceType::class);
+    }
+
     public function testColumnWithMissingTypeDefaultsToString(): void
     {
         $cm              = new ClassMetadata(ColumnWithoutType::class);
@@ -216,6 +223,15 @@ class AttributeDriverTest extends AbstractMappingDriverTestCase
 
 #[ODM\Document]
 class ColumnWithoutType
+{
+    /** @var string|null */
+    #[ODM\Id]
+    public $id;
+}
+
+#[ODM\Document]
+#[ODM\InheritanceType('COLLECTION_PER_CLASS')]
+class AttributeDriverWithUnknownInheritanceType
 {
     /** @var string|null */
     #[ODM\Id]

@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 class ShardKeyInheritanceMappingTest extends BaseTestCase
 {
@@ -43,24 +42,6 @@ class ShardKeyInheritanceMappingTest extends BaseTestCase
     {
         $this->expectException(MappingException::class);
         $this->factory->getMetadataFor(ShardedSingleCollInheritance3::class);
-    }
-
-    #[IgnoreDeprecations]
-    public function testShardKeyCollectionPerClassInheritance(): void
-    {
-        $class = $this->factory->getMetadataFor(ShardedCollectionPerClass2::class);
-
-        self::assertTrue($class->isSharded());
-        self::assertEquals(['keys' => ['_id' => 1], 'options' => []], $class->getShardKey());
-    }
-
-    #[IgnoreDeprecations]
-    public function testShardKeyCollectionPerClassInheritanceOverriding(): void
-    {
-        $class = $this->factory->getMetadataFor(ShardedCollectionPerClass3::class);
-
-        self::assertTrue($class->isSharded());
-        self::assertEquals(['keys' => ['_id' => 'hashed'], 'options' => []], $class->getShardKey());
     }
 }
 
@@ -100,26 +81,5 @@ class ShardedSingleCollInheritance2 extends ShardedSingleCollInheritance1
 #[ODM\Document]
 #[ODM\ShardKey(keys: ['_id' => 'hashed'])]
 class ShardedSingleCollInheritance3 extends ShardedSingleCollInheritance1
-{
-}
-
-#[ODM\Document]
-#[ODM\InheritanceType('COLLECTION_PER_CLASS')]
-#[ODM\ShardKey(keys: ['_id' => 'asc'])]
-class ShardedCollectionPerClass1
-{
-    /** @var string|null */
-    #[ODM\Id]
-    private $id;
-}
-
-#[ODM\Document]
-class ShardedCollectionPerClass2 extends ShardedCollectionPerClass1
-{
-}
-
-#[ODM\Document]
-#[ODM\ShardKey(keys: ['_id' => 'hashed'])]
-class ShardedCollectionPerClass3 extends ShardedCollectionPerClass1
 {
 }

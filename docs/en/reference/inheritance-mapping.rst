@@ -3,9 +3,8 @@
 Inheritance Mapping
 ===================
 
-Doctrine currently offers two supported methods of inheritance:
-:ref:`single collection <single_collection_inheritance>` and
-:ref:`collection per class <collection_per_class_inheritance>` inheritance.
+Doctrine currently offers a single supported method of inheritance:
+:ref:`single collection <single_collection_inheritance>` inheritance.
 
 Mapped Superclasses
 -------------------
@@ -17,8 +16,7 @@ that is common to multiple document classes.
 
 Just like non-mapped classes, mapped superclasses may appear in the middle of
 an otherwise mapped inheritance hierarchy (through
-:ref:`single collection <single_collection_inheritance>` or
-:ref:`collection per class <collection_per_class_inheritance>`) inheritance.
+:ref:`single collection <single_collection_inheritance>`) inheritance.
 
 .. note::
 
@@ -182,61 +180,3 @@ discriminator field:
           <document name="Documents\Employee">
           </document>
         </doctrine-mongo-mapping>
-
-.. _collection_per_class_inheritance:
-
-Collection Per Class Inheritance
---------------------------------
-
-.. deprecated:: 2.17
-
-    The ``COLLECTION_PER_CLASS`` inheritance type is deprecated with no
-    replacement. Each document class is already mapped to its own collection,
-    so you can simply remove the ``InheritanceType`` mapping.
-
-With collection per class inheritance, each document is stored in its own
-collection and contains all inherited fields:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-
-        namespace Documents;
-
-        #[Document]
-        #[InheritanceType('COLLECTION_PER_CLASS')]
-        class Person
-        {
-            // ...
-        }
-
-        #[Document]
-        class Employee extends Person
-        {
-            // ...
-        }
-
-    .. code-block:: xml
-
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-          <document name="Documents\Person" inheritance-type="COLLECTION_PER_CLASS">
-          </document>
-        </doctrine-mongo-mapping>
-
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-          <document name="Documents\Employee">
-          </document>
-        </doctrine-mongo-mapping>
-
-A discriminator is not needed with this type of inheritance since the data is
-separated in different collections.

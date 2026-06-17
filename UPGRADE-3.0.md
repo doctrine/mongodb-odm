@@ -43,6 +43,14 @@ The `NOTIFY` change tracking policy has been removed, we suggest switching to
 and `ClassMetadata::CHANGETRACKING_NOTIFY` have been removed as well. `UnitOfWork`
 no longer implements the `PropertyChangedListener` interface.
 
+The `COLLECTION_PER_CLASS` inheritance type, deprecated in 2.17, has been
+removed. Every document class is already mapped to its own collection, so this
+type provided no additional behavior. Remove the `InheritanceType`
+attribute/annotation (or the `inheritance-type` XML attribute) from the affected
+classes. Consequentially `ClassMetadata::isInheritanceTypeCollectionPerClass()`
+and `ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS` have been removed.
+Mapping a class with this inheritance type now throws a `MappingException`.
+
 `AttributeDriver` and `AnnotationDriver` no longer extend an abstract 
 `AnnotationDriver` class defined in `doctrine/persistence` (or in ODM's 
 compatibility layer)

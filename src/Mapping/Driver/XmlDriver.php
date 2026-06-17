@@ -27,6 +27,7 @@ use function class_exists;
 use function constant;
 use function count;
 use function current;
+use function defined;
 use function explode;
 use function implode;
 use function in_array;
@@ -173,7 +174,12 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlRoot['inheritance-type'])) {
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
-            $metadata->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType));
+            $constantName    = ClassMetadata::class . '::INHERITANCE_TYPE_' . $inheritanceType;
+            if (! defined($constantName)) {
+                throw MappingException::invalidInheritanceType($className, $inheritanceType);
+            }
+
+            $metadata->setInheritanceType(constant($constantName));
         }
 
         if (isset($xmlRoot['change-tracking-policy'])) {

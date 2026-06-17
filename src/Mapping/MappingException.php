@@ -187,6 +187,11 @@ final class MappingException extends BaseMappingException
         return new self(sprintf('Shard key overriding in subclass is forbidden for single collection inheritance: %s', $subclassName));
     }
 
+    public static function invalidInheritanceType(string $className, string $inheritanceType): self
+    {
+        return new self(sprintf('Invalid inheritance type "%s" for class "%s". Only "SINGLE_COLLECTION" is supported.', $inheritanceType, $className));
+    }
+
     public static function embeddedDocumentCantHaveShardKey(string $className): self
     {
         return new self(sprintf("Embedded document can't have shard key: %s", $className));

@@ -410,14 +410,6 @@ final class ClassMetadata implements BaseClassMetadata
     public const INHERITANCE_TYPE_SINGLE_COLLECTION = 2;
 
     /**
-     * COLLECTION_PER_CLASS means the class will be persisted according to the rules
-     * of <tt>Concrete Collection Inheritance</tt>.
-     *
-     * @deprecated since 2.17 with no replacement. Each class is already mapped to its own collection.
-     */
-    public const INHERITANCE_TYPE_COLLECTION_PER_CLASS = 3;
-
-    /**
      * DEFERRED_IMPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done for all entities that are in MANAGED state at commit-time.
@@ -1934,16 +1926,6 @@ final class ClassMetadata implements BaseClassMetadata
     public function isInheritanceTypeSingleCollection(): bool
     {
         return $this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_COLLECTION;
-    }
-
-    /**
-     * Checks whether the mapped class uses the COLLECTION_PER_CLASS inheritance mapping strategy.
-     *
-     * @deprecated since 2.17 with no replacement.
-     */
-    public function isInheritanceTypeCollectionPerClass(): bool
-    {
-        return $this->inheritanceType === self::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
     }
 
     /**
