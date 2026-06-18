@@ -112,7 +112,7 @@ final class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @return mixed
      */
-    public function walkValue(Value $value)
+    public function walkValue(Value $value): mixed
     {
         return $value->getValue();
     }
