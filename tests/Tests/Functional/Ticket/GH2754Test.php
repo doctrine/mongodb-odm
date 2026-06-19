@@ -13,64 +13,76 @@ class GH2754Test extends BaseTestCase
 {
     public function testSiblingCollectionsWithSharedPrefixArePersisted(): void
     {
-        $document           = new GH2754Document();
-        $document->embedded = new GH2754Embedded();
-        $document->embedded->codes->add(new GH2754Item('a'));
-        $document->embedded->codesV2->add(new GH2754Item('b'));
-        $this->dm->persist($document);
+        $user          = new GH2754User();
+        $user->profile = new GH2754Profile();
+        $user->profile->friends->add(new GH2754Friend('alice'));
+        $user->profile->friendsPending->add(new GH2754FriendRequest('bob'));
+        $this->dm->persist($user);
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find(GH2754Document::class, $document->id);
-        self::assertNotNull($document);
+        $user = $this->dm->find(GH2754User::class, $user->id);
+        self::assertNotNull($user);
 
-        // Replace both sibling collections within the same flush. The field name "codes"
-        // is a prefix of "codesV2", which previously caused the latter to be dropped.
-        $document->embedded->codes   = new ArrayCollection([new GH2754Item('c')]);
-        $document->embedded->codesV2 = new ArrayCollection([new GH2754Item('d'), new GH2754Item('e')]);
+        // Replace both sibling collections within the same flush. The field name "friends"
+        // is a prefix of "friendsPending", which previously caused the latter to be dropped.
+        $user->profile->friends        = new ArrayCollection([new GH2754Friend('carol')]);
+        $user->profile->friendsPending = new ArrayCollection([new GH2754FriendRequest('dave'), new GH2754FriendRequest('erin')]);
         $this->dm->flush();
         $this->dm->clear();
 
-        $document = $this->dm->find(GH2754Document::class, $document->id);
-        self::assertNotNull($document);
-        self::assertCount(1, $document->embedded->codes);
-        self::assertCount(2, $document->embedded->codesV2, 'Sibling collection with prefixed name must be persisted');
-        self::assertSame('d', $document->embedded->codesV2[0]->name);
-        self::assertSame('e', $document->embedded->codesV2[1]->name);
+        $user = $this->dm->find(GH2754User::class, $user->id);
+        self::assertNotNull($user);
+        self::assertCount(1, $user->profile->friends);
+        self::assertCount(2, $user->profile->friendsPending, 'Sibling collection with prefixed name must be persisted');
+        self::assertSame('dave', $user->profile->friendsPending[0]->name);
+        self::assertSame('erin', $user->profile->friendsPending[1]->name);
     }
 }
 
 #[ODM\Document]
-class GH2754Document
+class GH2754User
 {
     /** @var string|null */
     #[ODM\Id]
     public $id;
 
-    #[ODM\EmbedOne(targetDocument: GH2754Embedded::class)]
-    public ?GH2754Embedded $embedded = null;
+    #[ODM\EmbedOne(targetDocument: GH2754Profile::class)]
+    public ?GH2754Profile $profile = null;
 }
 
 #[ODM\EmbeddedDocument]
-class GH2754Embedded
+class GH2754Profile
 {
-    /** @var Collection<int, GH2754Item> */
-    #[ODM\EmbedMany(targetDocument: GH2754Item::class)]
-    public Collection $codes;
+    /** @var Collection<int, GH2754Friend> */
+    #[ODM\EmbedMany(targetDocument: GH2754Friend::class)]
+    public Collection $friends;
 
-    /** @var Collection<int, GH2754Item> */
-    #[ODM\EmbedMany(targetDocument: GH2754Item::class)]
-    public Collection $codesV2;
+    /** @var Collection<int, GH2754FriendRequest> */
+    #[ODM\EmbedMany(targetDocument: GH2754FriendRequest::class)]
+    public Collection $friendsPending;
 
     public function __construct()
     {
-        $this->codes   = new ArrayCollection();
-        $this->codesV2 = new ArrayCollection();
+        $this->friends        = new ArrayCollection();
+        $this->friendsPending = new ArrayCollection();
     }
 }
 
 #[ODM\EmbeddedDocument]
-class GH2754Item
+class GH2754Friend
+{
+    #[ODM\Field(type: 'string')]
+    public string $name;
+
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+}
+
+#[ODM\EmbeddedDocument]
+class GH2754FriendRequest
 {
     #[ODM\Field(type: 'string')]
     public string $name;
