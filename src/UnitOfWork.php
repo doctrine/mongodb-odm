@@ -1951,6 +1951,10 @@ final class UnitOfWork implements PropertyChangedListener
 
             // Merge state of $document into existing (managed) document
             foreach ($class->reflClass->getProperties() as $nativeReflection) {
+                if ($nativeReflection->isStatic()) {
+                    continue;
+                }
+
                 $name = $nativeReflection->name;
                 $prop = $this->reflectionService->getAccessibleProperty($class->name, $name);
                 assert($prop instanceof ReflectionProperty);
