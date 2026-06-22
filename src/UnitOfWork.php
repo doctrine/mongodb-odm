@@ -767,12 +767,15 @@ final class UnitOfWork implements PropertyChangedListener
 
                 // Target object behaviors.
                 if (is_object($actualValue)) {
-                    if ($actualValue instanceof PersistentCollectionInterface && (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue))) {
-                        // consider dirty collections as changed as well
-                        continue;
+                    if (!$actualValue instanceof PersistentCollectionInterface || (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue))) {
+                          // consider dirty collections as changed as well
+                          continue;
                     }
                     // @TODO: Consider using Comparable interface to delegate
                     // object comparaisons.
+                }
+                else if ($orgValue === $actualValue) {
+                    continue;
                 }
 
                 // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
