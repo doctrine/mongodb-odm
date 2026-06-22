@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use LogicException;
-use Traversable;
 
 use function array_combine;
 use function array_diff_key;
@@ -29,6 +28,10 @@ use function sprintf;
 /**
  * Trait with methods needed to implement PersistentCollectionInterface.
  *
+ * Collection/ReadableCollection/ArrayAccess interface methods live in
+ * PersistentCollectionCompatibility so they can be typed or untyped depending
+ * on which version of doctrine/collections is installed.
+ *
  * @phpstan-import-type Hints from UnitOfWork
  * @phpstan-import-type FieldMapping from ClassMetadata
  * @template TKey of array-key
@@ -36,6 +39,7 @@ use function sprintf;
  */
 trait PersistentCollectionTrait
 {
+    /** @use PersistentCollectionCompatibility<TKey, T> */
     use PersistentCollectionCompatibility;
 
     /**
@@ -164,24 +168,6 @@ trait PersistentCollectionTrait
         $this->isDirty = true;
     }
 
-    /**
-     * Marks this collection as changed/dirty.
-     */
-    private function changed(): void
-    {
-        if ($this->isDirty) {
-            return;
-        }
-
-        $this->isDirty = true;
-
-        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
-            return;
-        }
-
-        $this->uow->scheduleForSynchronization($this->owner);
-    }
-
     public function isDirty(): bool
     {
         if ($this->isDirty) {
@@ -201,7 +187,7 @@ trait PersistentCollectionTrait
         return false;
     }
 
-    public function setDirty(bool $dirty): void
+    public function setDirty($dirty): void
     {
         $this->isDirty = $dirty;
     }
@@ -300,7 +286,7 @@ trait PersistentCollectionTrait
         return $this->dm->getClassMetadata($this->mapping['targetDocument']);
     }
 
-    public function setInitialized(bool $bool): void
+    public function setInitialized($bool): void
     {
         $this->initialized = $bool;
     }
@@ -310,193 +296,9 @@ trait PersistentCollectionTrait
         return $this->initialized;
     }
 
-    public function first(): mixed
+    public function unwrap(): BaseCollection
     {
-        $this->initialize();
-
-        return $this->coll->first();
-    }
-
-    public function last(): mixed
-    {
-        $this->initialize();
-
-        return $this->coll->last();
-    }
-
-    public function remove(string|int $key): mixed
-    {
-        return $this->doRemove($key, false);
-    }
-
-    public function removeElement(mixed $element): bool
-    {
-        $this->initialize();
-        $removed = $this->coll->removeElement($element);
-
-        if (! $removed) {
-            return $removed;
-        }
-
-        $this->changed();
-
-        return $removed;
-    }
-
-    public function containsKey(string|int $key): bool
-    {
-        $this->initialize();
-
-        return $this->coll->containsKey($key);
-    }
-
-    /** @template TMaybeContained */
-    public function contains(mixed $element): bool
-    {
-        $this->initialize();
-
-        return $this->coll->contains($element);
-    }
-
-    public function exists(Closure $p): bool
-    {
-        $this->initialize();
-
-        return $this->coll->exists($p);
-    }
-
-    /**
-     * @phpstan-return (TMaybeContained is T ? TKey|false : false)
-     *
-     * @template TMaybeContained
-     */
-    public function indexOf(mixed $element): int|string|false
-    {
-        $this->initialize();
-
-        return $this->coll->indexOf($element);
-    }
-
-    public function get(string|int $key): mixed
-    {
-        $this->initialize();
-
-        return $this->coll->get($key);
-    }
-
-    public function getKeys(): array
-    {
-        $this->initialize();
-
-        return $this->coll->getKeys();
-    }
-
-    public function getValues(): array
-    {
-        $this->initialize();
-
-        return $this->coll->getValues();
-    }
-
-    public function count(): int
-    {
-        // Workaround around not being able to directly count inverse collections anymore
-        $this->initialize();
-
-        return $this->coll->count();
-    }
-
-    public function set(string|int $key, mixed $value): void
-    {
-        $this->doSet($key, $value, false);
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->initialized ? $this->coll->isEmpty() : $this->count() === 0;
-    }
-
-    /**
-     * @phpstan-return Traversable<TKey, T>
-     */
-    public function getIterator(): Traversable
-    {
-        $this->initialize();
-
-        return $this->coll->getIterator();
-    }
-
-    public function map(Closure $func): BaseCollection
-    {
-        $this->initialize();
-
-        return $this->coll->map($func);
-    }
-
-    public function filter(Closure $p): BaseCollection
-    {
-        $this->initialize();
-
-        return $this->coll->filter($p);
-    }
-
-    public function forAll(Closure $p): bool
-    {
-        $this->initialize();
-
-        return $this->coll->forAll($p);
-    }
-
-    public function partition(Closure $p): array
-    {
-        $this->initialize();
-
-        return $this->coll->partition($p);
-    }
-
-    public function toArray(): array
-    {
-        $this->initialize();
-
-        return $this->coll->toArray();
-    }
-
-    public function clear(): void
-    {
-        if ($this->initialized && $this->isEmpty()) {
-            return;
-        }
-
-        if ($this->isOrphanRemovalEnabled()) {
-            $this->initialize();
-            foreach ($this->coll as $element) {
-                $this->uow->scheduleOrphanRemoval($element);
-            }
-        }
-
-        $this->mongoData = [];
-        $this->coll->clear();
-
-        // Nothing to do for inverse-side collections
-        if (! $this->mapping['isOwningSide']) {
-            return;
-        }
-
-        // Nothing to do if the collection was initialized but contained no data
-        if ($this->initialized && empty($this->snapshot)) {
-            return;
-        }
-
-        $this->changed();
-        $this->uow->scheduleCollectionDeletion($this);
-        $this->takeSnapshot();
-    }
-
-    public function slice(int $offset, int|null $length = null): array
-    {
-        $this->initialize();
-
-        return $this->coll->slice($offset, $length);
+        return $this->coll;
     }
 
     /**
@@ -527,64 +329,6 @@ trait PersistentCollectionTrait
         return ['coll', 'initialized', 'mongoData', 'snapshot', 'isDirty', 'hints'];
     }
 
-    /* ArrayAccess implementation */
-
-    public function offsetExists(mixed $offset): bool
-    {
-        $this->initialize();
-
-        return $this->coll->offsetExists($offset);
-    }
-
-    /**
-     * @phpstan-return T|null
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        $this->initialize();
-
-        return $this->coll->offsetGet($offset);
-    }
-
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        if (! isset($offset)) {
-            $this->doAdd($value, true);
-
-            return;
-        }
-
-        $this->doSet($offset, $value, true);
-    }
-
-    public function offsetUnset(mixed $offset): void
-    {
-        $this->doRemove($offset, true);
-    }
-
-    public function key(): int|string|null
-    {
-        return $this->coll->key();
-    }
-
-    /**
-     * Gets the element of the collection at the current iterator position.
-     */
-    public function current(): mixed
-    {
-        return $this->coll->current();
-    }
-
-    public function next(): mixed
-    {
-        return $this->coll->next();
-    }
-
-    public function unwrap(): BaseCollection
-    {
-        return $this->coll;
-    }
-
     /**
      * Cleanup internal state of cloned persistent collection.
      *
@@ -610,12 +354,44 @@ trait PersistentCollectionTrait
         $this->changed();
     }
 
+    /** @return BaseCollection<TKey, T> */
+    public function matching(Criteria $criteria): BaseCollection
+    {
+        $this->initialize();
+
+        $coll = $this->coll->matching($criteria);
+
+        if (! $coll instanceof BaseCollection) {
+            throw new LogicException(sprintf('The matching() method of the backed collection must return an instance of "%s".', BaseCollection::class));
+        }
+
+        return $coll;
+    }
+
+    /**
+     * Marks this collection as changed/dirty.
+     */
+    protected function changed(): void
+    {
+        if ($this->isDirty) {
+            return;
+        }
+
+        $this->isDirty = true;
+
+        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
+            return;
+        }
+
+        $this->uow->scheduleForSynchronization($this->owner);
+    }
+
     /**
      * Actual logic for adding an element to the collection.
      *
      * @return true
      */
-    private function doAdd(mixed $value, bool $arrayAccess): bool
+    protected function doAdd(mixed $value, bool $arrayAccess): bool
     {
         /* Initialize the collection before calling add() so this append operation
          * uses the appropriate key. Otherwise, we risk overwriting original data
@@ -644,7 +420,7 @@ trait PersistentCollectionTrait
      *      : T|true|null
      * )
      */
-    private function doRemove(mixed $offset, bool $arrayAccess): mixed
+    protected function doRemove(mixed $offset, bool $arrayAccess): mixed
     {
         $this->initialize();
         if ($arrayAccess) {
@@ -666,7 +442,7 @@ trait PersistentCollectionTrait
     /**
      * Actual logic for setting an element in the collection.
      */
-    private function doSet(mixed $offset, mixed $value, bool $arrayAccess): void
+    protected function doSet(mixed $offset, mixed $value, bool $arrayAccess): void
     {
         $arrayAccess ? $this->coll->offsetSet($offset, $value) : $this->coll->set($offset, $value);
 
@@ -684,7 +460,7 @@ trait PersistentCollectionTrait
      * Embedded documents are automatically considered as "orphan removal enabled" because they might have references
      * that require to trigger cascade remove operations.
      */
-    private function isOrphanRemovalEnabled(): bool
+    protected function isOrphanRemovalEnabled(): bool
     {
         if ($this->mapping === null) {
             return false;
@@ -704,47 +480,5 @@ trait PersistentCollectionTrait
     {
         return $this->owner && isset($this->dm) && ! empty($this->mapping['isOwningSide'])
             && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
-    }
-
-    /**
-     * @phpstan-param Closure(TKey, T):bool $p
-     *
-     * @phpstan-return T|null
-     */
-    public function findFirst(Closure $p): mixed
-    {
-        return $this->coll->findFirst($p);
-    }
-
-    /**
-     * @phpstan-param Closure(TReturn|TInitial|null, T):(TInitial|TReturn) $func
-     * @phpstan-param TInitial|null $initial
-     *
-     * @phpstan-return TReturn|TInitial|null
-     *
-     * @phpstan-template TReturn
-     * @phpstan-template TInitial
-     */
-    public function reduce(Closure $func, mixed $initial = null): mixed
-    {
-        return $this->coll->reduce($func, $initial);
-    }
-
-    /** @return BaseCollection<TKey, T> */
-    public function matching(Criteria $criteria): BaseCollection
-    {
-        $this->initialize();
-
-        if (! $this->coll instanceof Selectable) {
-            throw new LogicException('The backed collection must implement Selectable to use matching().');
-        }
-
-        $coll = $this->coll->matching($criteria);
-
-        if (! $coll instanceof BaseCollection) {
-            throw new LogicException(sprintf('The matching() method of the backed collection must return an instance of "%s".', BaseCollection::class));
-        }
-
-        return $coll;
     }
 }
