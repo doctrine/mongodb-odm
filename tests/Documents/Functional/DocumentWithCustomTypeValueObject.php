@@ -8,9 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class DocumentWithCustomTypeValueObject
 {
 
-    /** @var string|null */
     #[ODM\Id]
-    public $id;
+    public ?string $id;
 
     #[ODM\Field(type: 'custom_value_object_child')]
     public ValueObjectChild $child;
