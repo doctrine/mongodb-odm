@@ -2,11 +2,12 @@
 
 namespace Documents\Functional;
 
-class ValueObjectChild {
+class ValueObjectChild
+{
 
-  public function __construct(
-    public int $prop1,
-    public int $prop2,
-  ) {}
+    public function __construct(
+        public int $prop1,
+        public int $prop2,
+    ) {}
 
 }

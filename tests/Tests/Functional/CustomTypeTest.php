@@ -59,27 +59,27 @@ class CustomTypeTest extends BaseTestCase
 
     public function testValueObjectChangeSets(): void
     {
-      $root         = new DocumentWithCustomTypeValueObject();
-      $valueChild   = new ValueObjectChild(10, 12);
-      $root->child  = $valueChild;
+        $root         = new DocumentWithCustomTypeValueObject();
+        $valueChild   = new ValueObjectChild(10, 12);
+        $root->child  = $valueChild;
 
-      $this->uow->persist($root);
+        $this->uow->persist($root);
 
-      $this->uow->computeChangeSets();
+        $this->uow->computeChangeSets();
 
-      $changeSet = $this->uow->getDocumentChangeSet($root);
-      self::assertNotEmpty($changeSet);
+        $changeSet = $this->uow->getDocumentChangeSet($root);
+        self::assertNotEmpty($changeSet);
 
-      $this->uow->commit();
-      $valueChild->prop1 = 12;
+        $this->uow->commit();
+        $valueChild->prop1 = 12;
 
-      $root->child = $valueChild;
+        $root->child = $valueChild;
 
-      $this->uow->computeChangeSets();
-      $changeSet = $this->uow->getDocumentChangeSet($root);
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($root);
 
-      self::assertArrayHasKey('child', $changeSet);
-      self::assertEquals('12', $changeSet['child'][1]->prop1);
+        self::assertArrayHasKey('child', $changeSet);
+        self::assertEquals('12', $changeSet['child'][1]->prop1);
     }
 
     public function testConvertToDatabaseValueExpectsArray(): void
