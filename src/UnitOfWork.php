@@ -765,16 +765,14 @@ final class UnitOfWork implements PropertyChangedListener
 
                 $orgValue = $originalData[$propName] ?? null;
 
-                // skip if value has not changed
-                if ($orgValue === $actualValue) {
-                    if (! $actualValue instanceof PersistentCollectionInterface) {
-                        continue;
-                    }
-
-                    if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
-                        // consider dirty collections as changed as well
-                        continue;
-                    }
+                // Target object behaviors.
+                if (is_object($actualValue)) {
+                  if ($actualValue instanceof PersistentCollectionInterface && (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue))) {
+                    // consider dirty collections as changed as well
+                    continue;
+                  }
+                  // @TODO: Consider using Comparable interface to delegate
+                  // object comparaisons.
                 }
 
                 // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
@@ -1951,6 +1949,10 @@ final class UnitOfWork implements PropertyChangedListener
 
             // Merge state of $document into existing (managed) document
             foreach ($class->reflClass->getProperties() as $nativeReflection) {
+                if ($nativeReflection->isStatic()) {
+                    continue;
+                }
+
                 $name = $nativeReflection->name;
                 $prop = $this->reflectionService->getAccessibleProperty($class->name, $name);
                 assert($prop instanceof ReflectionProperty);

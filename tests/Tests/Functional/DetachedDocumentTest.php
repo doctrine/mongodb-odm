@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\CmsArticle;
@@ -115,4 +116,32 @@ class DetachedDocumentTest extends BaseTestCase
 
         self::assertSame('alcaeus', $cmsArticle->user->getUsername());
     }
+
+    public function testMergeIgnoresStaticProperties(): void
+    {
+        $document       = new DocumentWithStaticProperty();
+        $document->name = 'foo';
+        $this->dm->persist($document);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $document->name = 'bar';
+
+        $merged = $this->dm->merge($document);
+
+        self::assertSame('bar', $merged->name);
+        self::assertSame('staticValue', DocumentWithStaticProperty::$staticProperty);
+    }
+}
+
+#[ODM\Document]
+class DocumentWithStaticProperty
+{
+    public static string $staticProperty = 'staticValue';
+
+    #[ODM\Id]
+    public ?string $id = null;
+
+    #[ODM\Field(type: 'string')]
+    public string $name;
 }
