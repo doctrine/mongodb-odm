@@ -229,13 +229,8 @@ class Lookup extends Stage
         return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
     }
 
-    /** @throws MappingException */
     private function fromReference(string $fieldName): static
     {
-        if (! $this->class->hasReference($fieldName)) {
-            MappingException::referenceMappingNotFound($this->class->name, $fieldName);
-        }
-
         $referenceMapping  = $this->class->getFieldMapping($fieldName);
         $this->targetClass = $this->dm->getClassMetadata($referenceMapping['targetDocument']);
 

@@ -49,6 +49,13 @@ class CustomIdTest extends BaseTestCase
 
     public function testBatchInsertCustomId(): void
     {
+        // Creating collections before inserting data helps avoid aborted transactions on sharded clusters
+        // Without this, the transaction fails because an "error from cluster data placement"
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(Account::class);
+        $sm->createDocumentCollection(CustomUser::class);
+        $sm->createDocumentCollection(User::class);
+
         $account = new Account();
         $account->setName('Jon Test Account');
 
@@ -110,6 +117,13 @@ class CustomIdTest extends BaseTestCase
 
     public function testFindUser(): void
     {
+        // Creating collections before inserting data helps avoid aborted transactions on sharded clusters
+        // Without this, the transaction fails because an "error from cluster data placement"
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(Account::class);
+        $sm->createDocumentCollection(CustomUser::class);
+        $sm->createDocumentCollection(User::class);
+
         $account = new Account();
         $account->setName('Jon Test Account');
 

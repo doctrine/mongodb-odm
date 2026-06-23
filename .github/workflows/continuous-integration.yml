@@ -34,7 +34,7 @@ jobs:
         dependencies:
           - "highest"
         symfony-version:
-          - "7.4"
+          - "^7.4"
         proxy:
           - "lazy-ghost"
         include:
@@ -52,7 +52,7 @@ jobs:
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
-            symfony-version: "6.4"
+            symfony-version: "^6.4"
             proxy: "lazy-ghost"
           # Test with a 6.0 replica set
           - topology: "replica_set"
@@ -110,18 +110,17 @@ jobs:
             proxy: "native"
             remove-optional-dependencies: true
           # Test with a sharded cluster
-          # Currently disabled due to a bug where MongoDB reports "sharding status unknown"
-#          - topology: "sharded_cluster"
-#            php-version: "8.2"
-#            mongodb-version: "6.0"
-#            driver-version: "stable"
-#            dependencies: "highest"
-#            symfony-version: ""
-#            proxy: "lazy-ghost"
+          - topology: "sharded_cluster"
+            php-version: "8.2"
+            mongodb-version: "6.0"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: ""
+            proxy: "lazy-ghost"
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
         with:
           fetch-depth: 2
 

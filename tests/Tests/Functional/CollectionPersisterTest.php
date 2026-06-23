@@ -13,6 +13,8 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
+use function array_map;
+
 class CollectionPersisterTest extends BaseTestCase
 {
     // This test counts executed commands and thus doesn't work with transactions
@@ -87,7 +89,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
+            $this->assertPersistentCollections([$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -100,7 +102,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            [$user->categories[0]->children, $user->categories[1]->children],
+            $this->assertPersistentCollections([$user->categories[0]->children, $user->categories[1]->children]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -122,7 +124,7 @@ class CollectionPersisterTest extends BaseTestCase
         $this->logger->clear();
         $persister->delete(
             $user,
-            [$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children],
+            $this->assertPersistentCollections([$user->categories[0]->children[0]->children, $user->categories[0]->children[1]->children]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -134,12 +136,9 @@ class CollectionPersisterTest extends BaseTestCase
 
         $this->logger->clear();
         $firstCategoryChildren = $user->categories[0]->children;
-        self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren);
-        self::assertInstanceOf(PersistentCollectionInterface::class, $firstCategoryChildren[1]->children);
-        self::assertInstanceOf(PersistentCollectionInterface::class, $user->categories);
         $persister->delete(
             $user,
-            [$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories],
+            $this->assertPersistentCollections([$firstCategoryChildren, $firstCategoryChildren[1]->children, $user->categories]),
             [],
         );
         self::assertCount(1, $this->logger, 'Deletion of several embedded-many collections of one document requires one query');
@@ -266,6 +265,22 @@ class CollectionPersisterTest extends BaseTestCase
         $pb  = new PersistenceBuilder($this->dm, $uow);
 
         return new CollectionPersister($this->dm, $pb, $uow);
+    }
+
+    /**
+     * Asserts that each managed collection is a PersistentCollection and narrows the type for the persister.
+     *
+     * @param array<mixed> $collections
+     *
+     * @return list<PersistentCollectionInterface<array-key, object>>
+     */
+    private function assertPersistentCollections(array $collections): array
+    {
+        return array_map(static function (mixed $collection): PersistentCollectionInterface {
+            self::assertInstanceOf(PersistentCollectionInterface::class, $collection);
+
+            return $collection;
+        }, $collections);
     }
 
     public function testNestedEmbedManySetStrategy(): void
@@ -506,9 +521,25 @@ class CollectionPersisterTest extends BaseTestCase
         $this->dm->persist($structure);
         $this->dm->flush();
         self::assertCount(
+            1,
+            $this->logger,
+            'Modification of sibling embedded-many collections by "pushAll" strategy is batched into one query',
+        );
+
+        // Modify the parent collection and a nested collection within one of its
+        // elements in the same flush. "pushAll" and "pushAll.0.pushAll" are a real
+        // parent/sub-path pair: pushing to both in a single update would conflict,
+        // so they must be split into two queries.
+        $structure->pushAll->add(new CollectionPersisterNestedStructure('nested7'));
+        $structure->pushAll->get(0)->pushAll->add(new CollectionPersisterNestedStructure('nested8'));
+
+        $this->logger->clear();
+        $this->dm->persist($structure);
+        $this->dm->flush();
+        self::assertCount(
             2,
             $this->logger,
-            'Modification of embedded-many collections of one document by "pushAll" strategy requires two queries',
+            'Modification of a "pushAll" collection and a nested sub-collection requires two queries',
         );
 
         self::assertSame($structure, $this->dm->getRepository($structure::class)->findOneBy(['id' => $structure->id]));

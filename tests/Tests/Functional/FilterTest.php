@@ -25,6 +25,13 @@ class FilterTest extends BaseTestCase
     {
         parent::setUp();
 
+        // Creating collections before inserting data helps avoid aborted transactions on sharded clusters
+        // Without this, the transaction fails because an "error from cluster data placement"
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(Group::class);
+        $sm->createDocumentCollection(Profile::class);
+        $sm->createDocumentCollection(User::class);
+
         $this->ids = [];
 
         $groupA = new Group('groupA');

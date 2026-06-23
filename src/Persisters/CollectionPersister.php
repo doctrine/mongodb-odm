@@ -27,7 +27,7 @@ use function count;
 use function end;
 use function implode;
 use function sort;
-use function strpos;
+use function str_starts_with;
 
 /**
  * The CollectionPersister is responsible for persisting collections of embedded
@@ -484,7 +484,7 @@ final class CollectionPersister
             $lastUniquePath = end($uniquePaths);
             assert($lastUniquePath !== false);
 
-            if (strpos($paths[$i], $lastUniquePath) === 0) {
+            if ($paths[$i] === $lastUniquePath || str_starts_with($paths[$i], $lastUniquePath . '.')) {
                 continue;
             }
 

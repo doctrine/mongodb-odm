@@ -50,6 +50,11 @@ parameters:
         identifier: property.unusedType
         path: tests/
 
+      # PHP 8.4 native lazy objects: PHPStan infers the parameter type as never when it can prove
+      # the class is not lazy, but at runtime these are lazy proxies
+      - message: '#^Parameter \#1 \$object of method ReflectionClass<.*>::markLazyObjectAsInitialized\(\) expects never#'
+        identifier: argument.type
+
       # Requires ext-mongodb 2.2+
       - message: '#MongoDB\\BSON\\VectorType#'
       - message: '#MongoDB\\BSON\\Binary\:\:(TYPE_VECTOR|getVectorType|toArray|fromVector)#'

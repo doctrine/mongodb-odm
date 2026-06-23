@@ -466,6 +466,13 @@ class LookupTest extends BaseTestCase
 
     private function insertTestData(): void
     {
+        // Creating collections before inserting data helps avoid aborted transactions on sharded clusters
+        // Without this, the transaction fails because an "error from cluster data placement"
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(User::class);
+        $sm->createDocumentCollection(SimpleReferenceUser::class);
+        $sm->createDocumentCollection(ReferenceUser::class);
+
         $user1 = new User();
         $user1->setUsername('alcaeus');
         $user2 = new User();
