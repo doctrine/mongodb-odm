@@ -12,16 +12,12 @@ use Traversable;
 /**
  * Compatibility trait for PersistentCollection between doctrine/collections v2 and v3.
  *
- * The `add()` return type changed from bool (v2) to void (v3). All other Collection/ReadableCollection
- * methods gained type declarations in v3. Both branches are duplicated here so that the version in
- * use does not impose new type constraints on classes that extend PersistentCollection.
- *
  * @internal
  * @template TKey of array-key
  * @template T of object
  */
 if (! defined(Criteria::class . '::ASC')) {
-    // collections 3 — full type declarations required by the interface
+    // doctrine/collections 3 — full type declarations required by the interface
     /**
      * @internal
      * @template TKey of array-key
@@ -292,7 +288,7 @@ if (! defined(Criteria::class . '::ASC')) {
         }
     }
 } else {
-    // collections 2 — no doctrine/collections type declarations
+    // doctrine/collections 2 — no type declarations
     /**
      * @internal
      * @template TKey of array-key
@@ -517,7 +513,8 @@ if (! defined(Criteria::class . '::ASC')) {
         }
 
         /** @return int */
-        public function count(): int
+        #[\ReturnTypeWillChange]
+        public function count()
         {
             // Workaround around not being able to directly count inverse collections anymore
             $this->initialize();
@@ -528,7 +525,8 @@ if (! defined(Criteria::class . '::ASC')) {
         /**
          * @phpstan-return Traversable<TKey, T>
          */
-        public function getIterator(): Traversable
+        #[\ReturnTypeWillChange]
+        public function getIterator()
         {
             $this->initialize();
 
@@ -538,7 +536,8 @@ if (! defined(Criteria::class . '::ASC')) {
         /**
          * @param mixed $offset
          */
-        public function offsetExists(mixed $offset): bool
+        #[\ReturnTypeWillChange]
+        public function offsetExists($offset)
         {
             $this->initialize();
 
@@ -549,7 +548,8 @@ if (! defined(Criteria::class . '::ASC')) {
          * @param mixed $offset
          * @phpstan-return T|null
          */
-        public function offsetGet(mixed $offset): mixed
+        #[\ReturnTypeWillChange]
+        public function offsetGet($offset)
         {
             $this->initialize();
 
@@ -560,7 +560,8 @@ if (! defined(Criteria::class . '::ASC')) {
          * @param mixed $offset
          * @param mixed $value
          */
-        public function offsetSet(mixed $offset, mixed $value): void
+        #[\ReturnTypeWillChange]
+        public function offsetSet($offset, $value)
         {
             if (! isset($offset)) {
                 $this->doAdd($value, true);
@@ -574,7 +575,8 @@ if (! defined(Criteria::class . '::ASC')) {
         /**
          * @param mixed $offset
          */
-        public function offsetUnset(mixed $offset): void
+        #[\ReturnTypeWillChange]
+        public function offsetUnset($offset)
         {
             $this->doRemove($offset, true);
         }

@@ -104,33 +104,33 @@ trait PersistentCollectionTrait
      */
     private array $hints = [];
 
-    public function setDocumentManager(DocumentManager $dm): void
+    public function setDocumentManager(DocumentManager $dm)
     {
         $this->dm  = $dm;
         $this->uow = $dm->getUnitOfWork();
     }
 
-    public function setMongoData(array $mongoData): void
+    public function setMongoData(array $mongoData)
     {
         $this->mongoData = $mongoData;
     }
 
-    public function getMongoData(): array
+    public function getMongoData()
     {
         return $this->mongoData;
     }
 
-    public function setHints(array $hints): void
+    public function setHints(array $hints)
     {
         $this->hints = $hints;
     }
 
-    public function getHints(): array
+    public function getHints()
     {
         return $this->hints;
     }
 
-    public function initialize(): void
+    public function initialize()
     {
         if ($this->initialized || ! $this->mapping) {
             return;
@@ -168,7 +168,25 @@ trait PersistentCollectionTrait
         $this->isDirty = true;
     }
 
-    public function isDirty(): bool
+    /**
+     * Marks this collection as changed/dirty.
+     */
+    private function changed(): void
+    {
+        if ($this->isDirty) {
+            return;
+        }
+
+        $this->isDirty = true;
+
+        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
+            return;
+        }
+
+        $this->uow->scheduleForSynchronization($this->owner);
+    }
+
+    public function isDirty()
     {
         if ($this->isDirty) {
             return true;
@@ -187,18 +205,18 @@ trait PersistentCollectionTrait
         return false;
     }
 
-    public function setDirty($dirty): void
+    public function setDirty($dirty)
     {
         $this->isDirty = $dirty;
     }
 
-    public function setOwner(object $document, array $mapping): void
+    public function setOwner(object $document, array $mapping)
     {
         $this->owner   = $document;
         $this->mapping = $mapping;
     }
 
-    public function takeSnapshot(): void
+    public function takeSnapshot()
     {
         if ($this->mapping !== null && CollectionHelper::isList($this->mapping['strategy'])) {
             $array = $this->coll->toArray();
@@ -212,18 +230,18 @@ trait PersistentCollectionTrait
         $this->isDirty  = false;
     }
 
-    public function clearSnapshot(): void
+    public function clearSnapshot()
     {
         $this->snapshot = [];
         $this->isDirty  = $this->coll->count() !== 0;
     }
 
-    public function getSnapshot(): array
+    public function getSnapshot()
     {
         return $this->snapshot;
     }
 
-    public function getDeleteDiff(): array
+    public function getDeleteDiff()
     {
         return array_udiff_assoc(
             $this->snapshot,
@@ -232,7 +250,7 @@ trait PersistentCollectionTrait
         );
     }
 
-    public function getDeletedDocuments(): array
+    public function getDeletedDocuments()
     {
         $coll               = $this->coll->toArray();
         $loadedObjectsByOid = array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot);
@@ -241,7 +259,7 @@ trait PersistentCollectionTrait
         return array_values(array_diff_key($loadedObjectsByOid, $newObjectsByOid));
     }
 
-    public function getInsertDiff(): array
+    public function getInsertDiff()
     {
         return array_udiff_assoc(
             $this->coll->toArray(),
@@ -250,7 +268,7 @@ trait PersistentCollectionTrait
         );
     }
 
-    public function getInsertedDocuments(): array
+    public function getInsertedDocuments()
     {
         $coll               = $this->coll->toArray();
         $newObjectsByOid    = array_combine(array_map('spl_object_id', $coll), $coll);
@@ -264,12 +282,12 @@ trait PersistentCollectionTrait
         return $this->owner;
     }
 
-    public function getMapping(): array
+    public function getMapping()
     {
         return $this->mapping;
     }
 
-    public function getTypeClass(): ClassMetadata
+    public function getTypeClass()
     {
         if (! isset($this->dm)) {
             throw new MongoDBException('No DocumentManager is associated with this PersistentCollection, please set one using setDocumentManager method.');
@@ -286,17 +304,17 @@ trait PersistentCollectionTrait
         return $this->dm->getClassMetadata($this->mapping['targetDocument']);
     }
 
-    public function setInitialized($bool): void
+    public function setInitialized($bool)
     {
         $this->initialized = $bool;
     }
 
-    public function isInitialized(): bool
+    public function isInitialized()
     {
         return $this->initialized;
     }
 
-    public function unwrap(): BaseCollection
+    public function unwrap()
     {
         return $this->coll;
     }
@@ -354,44 +372,12 @@ trait PersistentCollectionTrait
         $this->changed();
     }
 
-    /** @return BaseCollection<TKey, T> */
-    public function matching(Criteria $criteria): BaseCollection
-    {
-        $this->initialize();
-
-        $coll = $this->coll->matching($criteria);
-
-        if (! $coll instanceof BaseCollection) {
-            throw new LogicException(sprintf('The matching() method of the backed collection must return an instance of "%s".', BaseCollection::class));
-        }
-
-        return $coll;
-    }
-
-    /**
-     * Marks this collection as changed/dirty.
-     */
-    protected function changed(): void
-    {
-        if ($this->isDirty) {
-            return;
-        }
-
-        $this->isDirty = true;
-
-        if (! $this->needsSchedulingForSynchronization() || $this->owner === null) {
-            return;
-        }
-
-        $this->uow->scheduleForSynchronization($this->owner);
-    }
-
     /**
      * Actual logic for adding an element to the collection.
      *
      * @return true
      */
-    protected function doAdd(mixed $value, bool $arrayAccess): bool
+    private function doAdd(mixed $value, bool $arrayAccess): bool
     {
         /* Initialize the collection before calling add() so this append operation
          * uses the appropriate key. Otherwise, we risk overwriting original data
@@ -420,7 +406,7 @@ trait PersistentCollectionTrait
      *      : T|true|null
      * )
      */
-    protected function doRemove(mixed $offset, bool $arrayAccess): mixed
+    private function doRemove(mixed $offset, bool $arrayAccess): mixed
     {
         $this->initialize();
         if ($arrayAccess) {
@@ -442,7 +428,7 @@ trait PersistentCollectionTrait
     /**
      * Actual logic for setting an element in the collection.
      */
-    protected function doSet(mixed $offset, mixed $value, bool $arrayAccess): void
+    private function doSet(mixed $offset, mixed $value, bool $arrayAccess): void
     {
         $arrayAccess ? $this->coll->offsetSet($offset, $value) : $this->coll->set($offset, $value);
 
@@ -460,7 +446,7 @@ trait PersistentCollectionTrait
      * Embedded documents are automatically considered as "orphan removal enabled" because they might have references
      * that require to trigger cascade remove operations.
      */
-    protected function isOrphanRemovalEnabled(): bool
+    private function isOrphanRemovalEnabled(): bool
     {
         if ($this->mapping === null) {
             return false;
@@ -480,5 +466,23 @@ trait PersistentCollectionTrait
     {
         return $this->owner && isset($this->dm) && ! empty($this->mapping['isOwningSide'])
             && $this->dm->getClassMetadata(get_class($this->owner))->isChangeTrackingNotify();
+    }
+
+    /** @return BaseCollection<TKey, T> */
+    public function matching(Criteria $criteria): BaseCollection
+    {
+        $this->initialize();
+
+        if (! $this->coll instanceof Selectable) {
+            throw new LogicException('The backed collection must implement Selectable to use matching().');
+        }
+
+        $coll = $this->coll->matching($criteria);
+
+        if (! $coll instanceof BaseCollection) {
+            throw new LogicException(sprintf('The matching() method of the backed collection must return an instance of "%s".', BaseCollection::class));
+        }
+
+        return $coll;
     }
 }
