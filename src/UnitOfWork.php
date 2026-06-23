@@ -767,7 +767,7 @@ final class UnitOfWork implements PropertyChangedListener
 
                 // Target object behaviors.
                 if (is_object($actualValue)) {
-                    if (!$actualValue instanceof PersistentCollectionInterface || (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue))) {
+                    if ($actualValue instanceof PersistentCollectionInterface && (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue))) {
                           // consider dirty collections as changed as well
                           continue;
                     }
