@@ -67,6 +67,7 @@
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>src/Mapping/Driver/CompatibilityAnnotationDriver.php</exclude-pattern>
+        <exclude-pattern>src/PersistentCollection/PersistentCollectionCompatibility.php</exclude-pattern>
         <exclude-pattern>src/Tools/Console/Command/CommandCompatibility.php</exclude-pattern>
         <exclude-pattern>src/Tools/Console/Command/Schema/AbstractCommandCompatibility.php</exclude-pattern>
         <exclude-pattern>src/Tools/Console/Helper/DocumentManagerHelper.php</exclude-pattern>

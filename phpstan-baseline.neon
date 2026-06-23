@@ -577,6 +577,12 @@ parameters:
 			path: src/PersistentCollection.php
 
 		-
+			message: '#^Instanceof between Doctrine\\Common\\Collections\\Collection and Doctrine\\Common\\Collections\\Selectable will always evaluate to true.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: src/PersistentCollection/PersistentCollectionTrait.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\\AbstractPersistentCollectionFactory\:\:createCollectionClass\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
 			identifier: missingType.generics
 			count: 1
