@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\PersistentCollection;
 
-use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;

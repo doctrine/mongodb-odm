@@ -7,12 +7,16 @@ namespace Doctrine\ODM\MongoDB\PersistentCollection;
 use Closure;
 use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\Common\Collections\Criteria;
+use ReturnTypeWillChange;
 use Traversable;
+
+use function defined;
 
 /**
  * Compatibility trait for PersistentCollection between doctrine/collections v2 and v3.
  *
  * @internal
+ *
  * @template TKey of array-key
  * @template T of object
  */
@@ -20,6 +24,7 @@ if (! defined(Criteria::class . '::ASC')) {
     // doctrine/collections 3 — full type declarations required by the interface
     /**
      * @internal
+     *
      * @template TKey of array-key
      * @template T of object
      */
@@ -162,6 +167,7 @@ if (! defined(Criteria::class . '::ASC')) {
 
         /**
          * @phpstan-param Closure(TKey, T):bool $p
+         *
          * @phpstan-return T|null
          */
         public function findFirst(Closure $p): mixed
@@ -172,7 +178,9 @@ if (! defined(Criteria::class . '::ASC')) {
         /**
          * @phpstan-param Closure(TReturn|TInitial|null, T):(TInitial|TReturn) $func
          * @phpstan-param TInitial|null $initial
+         *
          * @phpstan-return TReturn|TInitial|null
+         *
          * @phpstan-template TReturn
          * @phpstan-template TInitial
          */
@@ -244,9 +252,7 @@ if (! defined(Criteria::class . '::ASC')) {
             return $this->coll->count();
         }
 
-        /**
-         * @phpstan-return Traversable<TKey, T>
-         */
+        /** @phpstan-return Traversable<TKey, T> */
         public function getIterator(): Traversable
         {
             $this->initialize();
@@ -261,9 +267,7 @@ if (! defined(Criteria::class . '::ASC')) {
             return $this->coll->offsetExists($offset);
         }
 
-        /**
-         * @phpstan-return T|null
-         */
+        /** @phpstan-return T|null */
         public function offsetGet(mixed $offset): mixed
         {
             $this->initialize();
@@ -291,6 +295,7 @@ if (! defined(Criteria::class . '::ASC')) {
     // doctrine/collections 2 — no type declarations
     /**
      * @internal
+     *
      * @template TKey of array-key
      * @template T of object
      */
@@ -299,7 +304,6 @@ if (! defined(Criteria::class . '::ASC')) {
         /**
          * Adds an element at the end of the collection.
          *
-         * @param mixed $value
          * @phpstan-param T $value
          *
          * @return true The return value is kept for BC reasons, but will be void in doctrine/mongodb-odm 3.0.
@@ -438,6 +442,7 @@ if (! defined(Criteria::class . '::ASC')) {
 
         /**
          * @phpstan-param Closure(TKey, T):bool $p
+         *
          * @phpstan-return T|null
          */
         public function findFirst(Closure $p)
@@ -448,7 +453,9 @@ if (! defined(Criteria::class . '::ASC')) {
         /**
          * @phpstan-param Closure(TReturn|TInitial|null, T):(TInitial|TReturn) $func
          * @phpstan-param TInitial|null $initial
+         *
          * @phpstan-return TReturn|TInitial|null
+         *
          * @phpstan-template TReturn
          * @phpstan-template TInitial
          */
@@ -513,7 +520,7 @@ if (! defined(Criteria::class . '::ASC')) {
         }
 
         /** @return int */
-        #[\ReturnTypeWillChange]
+        #[ReturnTypeWillChange]
         public function count()
         {
             // Workaround around not being able to directly count inverse collections anymore
@@ -522,10 +529,8 @@ if (! defined(Criteria::class . '::ASC')) {
             return $this->coll->count();
         }
 
-        /**
-         * @phpstan-return Traversable<TKey, T>
-         */
-        #[\ReturnTypeWillChange]
+        /** @phpstan-return Traversable<TKey, T> */
+        #[ReturnTypeWillChange]
         public function getIterator()
         {
             $this->initialize();
@@ -533,10 +538,8 @@ if (! defined(Criteria::class . '::ASC')) {
             return $this->coll->getIterator();
         }
 
-        /**
-         * @param mixed $offset
-         */
-        #[\ReturnTypeWillChange]
+        /** @param mixed $offset */
+        #[ReturnTypeWillChange]
         public function offsetExists($offset)
         {
             $this->initialize();
@@ -546,9 +549,10 @@ if (! defined(Criteria::class . '::ASC')) {
 
         /**
          * @param mixed $offset
+         *
          * @phpstan-return T|null
          */
-        #[\ReturnTypeWillChange]
+        #[ReturnTypeWillChange]
         public function offsetGet($offset)
         {
             $this->initialize();
@@ -560,7 +564,7 @@ if (! defined(Criteria::class . '::ASC')) {
          * @param mixed $offset
          * @param mixed $value
          */
-        #[\ReturnTypeWillChange]
+        #[ReturnTypeWillChange]
         public function offsetSet($offset, $value)
         {
             if (! isset($offset)) {
@@ -572,10 +576,8 @@ if (! defined(Criteria::class . '::ASC')) {
             $this->doSet($offset, $value, true);
         }
 
-        /**
-         * @param mixed $offset
-         */
-        #[\ReturnTypeWillChange]
+        /** @param mixed $offset */
+        #[ReturnTypeWillChange]
         public function offsetUnset($offset)
         {
             $this->doRemove($offset, true);
