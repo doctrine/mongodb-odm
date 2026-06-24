@@ -59,9 +59,9 @@ class CustomTypeTest extends BaseTestCase
 
     public function testValueObjectChangeSets(): void
     {
-        $root         = new DocumentWithCustomTypeValueObject();
-        $valueChild   = new ValueObjectChild(10, 12);
-        $root->child  = $valueChild;
+        $root        = new DocumentWithCustomTypeValueObject();
+        $valueChild  = new ValueObjectChild(10, 12);
+        $root->child = $valueChild;
 
         $this->uow->persist($root);
 
@@ -71,7 +71,7 @@ class CustomTypeTest extends BaseTestCase
         self::assertNotEmpty($changeSet);
 
         $this->uow->commit();
-        $valueChild = new ValueObjectChild(12, 12);
+        $valueChild  = new ValueObjectChild(12, 12);
         $root->child = $valueChild;
 
         $this->uow->computeChangeSets();

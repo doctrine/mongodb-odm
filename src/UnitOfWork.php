@@ -771,12 +771,12 @@ final class UnitOfWork implements PropertyChangedListener
                           // consider dirty collections as changed as well
                           continue;
                     }
+
                     // If object content has not been modified, nothing to do.
                     if (spl_object_hash($actualValue) === spl_object_hash($orgValue)) {
                         continue;
                     }
-                }
-                else if ($orgValue === $actualValue) {
+                } elseif ($orgValue === $actualValue) {
                     continue;
                 }
 
