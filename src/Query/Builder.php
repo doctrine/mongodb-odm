@@ -18,6 +18,7 @@ use MongoDB\BSON\Javascript;
 use MongoDB\Builder\Pipeline;
 use MongoDB\Collection;
 use MongoDB\Driver\ReadPreference;
+use SortDirection;
 
 use function array_filter;
 use function array_key_exists;
@@ -1474,8 +1475,8 @@ class Builder
      * If sorting by multiple fields, the first argument should be an array of
      * field name (key) and order (value) pairs.
      *
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
      */
     public function sort($fieldName, $order = 1): self
     {
@@ -1483,7 +1484,9 @@ class Builder
         $fields                = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
         foreach ($fields as $fieldName => $order) {
-            if (is_string($order)) {
+            if ($order instanceof SortDirection) {
+                $order = $order === SortDirection::Ascending ? 1 : -1;
+            } elseif (is_string($order)) {
                 $order = strtolower($order) === 'asc' ? 1 : -1;
             }
 
