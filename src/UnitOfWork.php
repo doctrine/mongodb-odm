@@ -48,6 +48,7 @@ use function is_object;
 use function method_exists;
 use function preg_match;
 use function serialize;
+use function spl_object_hash;
 use function spl_object_id;
 use function sprintf;
 use function trigger_deprecation;
