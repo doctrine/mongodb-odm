@@ -2831,7 +2831,7 @@ final class UnitOfWork implements PropertyChangedListener
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
 
             if (! $class->isQueryResultDocument && ! $class->isView()) {
-                $this->originalDocumentData[$oid] = $data;
+                $this->originalDocumentData[$oid] = unserialize(serialize($data));
             }
         }
 
