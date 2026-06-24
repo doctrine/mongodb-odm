@@ -71,8 +71,7 @@ class CustomTypeTest extends BaseTestCase
         self::assertNotEmpty($changeSet);
 
         $this->uow->commit();
-        $valueChild->prop1 = 12;
-
+        $valueChild = new ValueObjectChild(12, 12);
         $root->child = $valueChild;
 
         $this->uow->computeChangeSets();
