@@ -23,6 +23,7 @@ use Documents\ForumAvatar;
 use Documents\ForumStar;
 use Documents\ForumUser;
 use Documents\Functional\NotSaved;
+use Documents\Group;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoDBCollection;
@@ -487,6 +488,25 @@ class UnitOfWorkTest extends BaseTestCase
 
         self::assertArrayHasKey('city', $changeSet);
         self::assertEquals('Nashville', $changeSet['city'][1]);
+    }
+
+    public function testDirtyReferenceManyCollectionIsDetectedAsChanged(): void
+    {
+        $group = new Group('Admins');
+        $user  = new User();
+        $this->uow->persist($group);
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        // Add a reference to the same PersistentCollection instance (orgValue === actualValue, but dirty).
+        // ReferenceMany collections are not processed through the association changeset loop,
+        // so their detection relies solely on the dirty flag in computeOrRecomputeChangeSet().
+        $user->addGroup($group);
+
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+
+        self::assertArrayHasKey('groups', $changeSet);
     }
 
     public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset(): void
