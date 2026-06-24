@@ -774,7 +774,7 @@ final class UnitOfWork implements PropertyChangedListener
                     }
 
                     // If object content has not been modified, nothing to do.
-                    if (spl_object_hash($actualValue) === spl_object_hash($orgValue)) {
+                    if (is_object($orgValue) && spl_object_hash($actualValue) === spl_object_hash($orgValue)) {
                         continue;
                     }
                 } elseif ($orgValue === $actualValue) {
