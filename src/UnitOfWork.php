@@ -771,8 +771,10 @@ final class UnitOfWork implements PropertyChangedListener
                           // consider dirty collections as changed as well
                           continue;
                     }
-                    // @TODO: Consider using Comparable interface to delegate
-                    // object comparaisons.
+                    // If object content has not been modified, nothing to do.
+                    if (spl_object_hash($actualValue) === spl_object_hash($orgValue)) {
+                        continue;
+                    }
                 }
                 else if ($orgValue === $actualValue) {
                     continue;
