@@ -48,6 +48,7 @@ use function is_object;
 use function method_exists;
 use function preg_match;
 use function serialize;
+use function spl_object_hash;
 use function spl_object_id;
 use function sprintf;
 use function trigger_deprecation;
@@ -765,16 +766,19 @@ final class UnitOfWork implements PropertyChangedListener
 
                 $orgValue = $originalData[$propName] ?? null;
 
-                // skip if value has not changed
-                if ($orgValue === $actualValue) {
-                    if (! $actualValue instanceof PersistentCollectionInterface) {
-                        continue;
+                // Target object behaviors.
+                if (is_object($actualValue)) {
+                    if ($actualValue instanceof PersistentCollectionInterface && (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue))) {
+                          // consider dirty collections as changed as well
+                          continue;
                     }
 
-                    if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
-                        // consider dirty collections as changed as well
+                    // If object content has not been modified, nothing to do.
+                    if (is_object($orgValue) && spl_object_hash($actualValue) === spl_object_hash($orgValue)) {
                         continue;
                     }
+                } elseif ($orgValue === $actualValue) {
+                    continue;
                 }
 
                 // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
@@ -2827,7 +2831,7 @@ final class UnitOfWork implements PropertyChangedListener
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
 
             if (! $class->isQueryResultDocument && ! $class->isView()) {
-                $this->originalDocumentData[$oid] = $data;
+                $this->originalDocumentData[$oid] = unserialize(serialize($data));
             }
         }
 

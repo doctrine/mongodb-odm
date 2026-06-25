@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Documents\Functional\DocumentWithCustomTypeValueObject;
+use Documents\Functional\ValueObjectChild;
 use Exception;
 use PHPUnit\Framework\Attributes\After;
 use ReflectionProperty;
@@ -30,6 +32,7 @@ class CustomTypeTest extends BaseTestCase
         Type::addType('date_collection', DateCollectionType::class);
         Type::addType(Language::class, LanguageType::class);
         Type::addType('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
+        Type::addType('custom_value_object_child', CustomValueObjectChild::class);
     }
 
     #[After]
@@ -52,6 +55,30 @@ class CustomTypeTest extends BaseTestCase
         $country = $this->dm->find(Country::class, $country->id);
 
         self::assertContainsOnlyInstancesOf(DateTime::class, $country->nationalHolidays);
+    }
+
+    public function testValueObjectChangeSets(): void
+    {
+        $root        = new DocumentWithCustomTypeValueObject();
+        $valueChild  = new ValueObjectChild(10, 12);
+        $root->child = $valueChild;
+
+        $this->uow->persist($root);
+
+        $this->uow->computeChangeSets();
+
+        $changeSet = $this->uow->getDocumentChangeSet($root);
+        self::assertNotEmpty($changeSet);
+
+        $this->uow->commit();
+        $valueChild  = new ValueObjectChild(12, 12);
+        $root->child = $valueChild;
+
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($root);
+
+        self::assertArrayHasKey('child', $changeSet);
+        self::assertEquals('12', $changeSet['child'][1]->prop1);
     }
 
     public function testConvertToDatabaseValueExpectsArray(): void
@@ -214,5 +241,9 @@ class LanguageType extends Type
 }
 
 class CustomTypeWithoutClosureToPHP extends Type
+{
+}
+
+class CustomValueObjectChild extends Type
 {
 }
