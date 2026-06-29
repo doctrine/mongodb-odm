@@ -227,7 +227,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
 
         // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-        if ($class->isInheritanceTypeCollectionPerClass()) {
+        if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
                 '2.17',

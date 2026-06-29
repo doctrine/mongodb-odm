@@ -2128,6 +2128,8 @@ use const PHP_VERSION_ID;
      */
     public function isInheritanceTypeCollectionPerClass(): bool
     {
+        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'The method %s() is deprecated with no replacement.', __FUNCTION__);
+
         return $this->inheritanceType === self::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
     }
 
