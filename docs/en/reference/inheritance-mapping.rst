@@ -3,50 +3,13 @@
 Inheritance Mapping
 ===================
 
-Doctrine currently offers a single supported method of inheritance:
-:ref:`single collection <single_collection_inheritance>` inheritance.
+Doctrine supports two approaches to inheritance:
 
-Mapped Superclasses
--------------------
-
-A mapped superclass is an abstract or concrete class that provides mapping
-information for its subclasses, but is not itself a document. Typically, the
-purpose of such a mapped superclass is to define state and mapping information
-that is common to multiple document classes.
-
-Just like non-mapped classes, mapped superclasses may appear in the middle of
-an otherwise mapped inheritance hierarchy (through
-:ref:`single collection <single_collection_inheritance>`) inheritance.
-
-.. note::
-
-    A mapped superclass cannot be a document and is not queryable.
-
-Example:
-
-.. configuration-block::
-
-    .. code-block:: php
-
-        <?php
-
-        namespace Documents;
-
-        #[MappedSuperclass]
-        abstract class BaseDocument
-        {
-        }
-
-    .. code-block:: xml
-
-        <?xml version="1.0" encoding="UTF-8"?>
-        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
-                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
-                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
-          <mapped-superclass name="Documents\BaseDocument">
-          </mapped-superclass>
-        </doctrine-mongo-mapping>
+- :ref:`Single collection <single_collection_inheritance>` inheritance, where
+  all classes in the hierarchy are stored in the same collection and a
+  discriminator field identifies each document type.
+- :ref:`Sharing common fields <sharing_common_fields>` across document classes
+  stored in different collections, using PHP inheritance or traits.
 
 .. _single_collection_inheritance:
 
@@ -180,3 +143,112 @@ discriminator field:
           <document name="Documents\Employee">
           </document>
         </doctrine-mongo-mapping>
+
+.. _sharing_common_fields:
+
+Sharing Common Fields
+---------------------
+
+To share common fields across multiple document classes stored in different
+collections, use a PHP abstract parent class or a trait. ODM reads field
+mappings from all properties of a class through reflection, whether they are
+declared in the class itself, a parent class, or a trait.
+
+Each class is stored in its own collection. Unlike :ref:`single collection
+inheritance <single_collection_inheritance>`, there is no discriminator field
+and documents are not polymorphically queryable across classes.
+
+Abstract parent class
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    namespace Documents;
+
+    abstract class BaseDocument
+    {
+        #[Field]
+        private string $createdBy;
+    }
+
+    #[Document(collection: 'articles')]
+    class Article extends BaseDocument
+    {
+        // inherits $createdBy
+    }
+
+    #[Document(collection: 'comments')]
+    class Comment extends BaseDocument
+    {
+        // inherits $createdBy
+    }
+
+PHP trait
+~~~~~~~~~
+
+.. code-block:: php
+
+    <?php
+
+    namespace Documents;
+
+    trait Timestamps
+    {
+        #[Field]
+        private DateTimeImmutable $createdAt;
+
+        #[Field]
+        private DateTimeImmutable $updatedAt;
+    }
+
+    #[Document(collection: 'articles')]
+    class Article
+    {
+        use Timestamps;
+    }
+
+    #[Document(collection: 'comments')]
+    class Comment
+    {
+        use Timestamps;
+    }
+
+Mapped Superclass
+~~~~~~~~~~~~~~~~~
+
+When using XML mapping, each class requires its own mapping file. To share
+fields from a parent class, declare it as a ``mapped-superclass`` so the driver
+knows to load its mapping file:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        namespace Documents;
+
+        #[MappedSuperclass]
+        abstract class BaseDocument
+        {
+            #[Field]
+            private string $createdBy;
+        }
+
+    .. code-block:: xml
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+          <mapped-superclass name="Documents\BaseDocument">
+            <field fieldName="createdBy" type="string" />
+          </mapped-superclass>
+        </doctrine-mongo-mapping>
+
+.. note::
+
+    A mapped superclass cannot be a document and is not queryable.
