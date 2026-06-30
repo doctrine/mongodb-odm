@@ -15,7 +15,7 @@ use Documents\User;
 
 class InheritanceTest extends BaseTestCase
 {
-    public function testCollectionPerClassInheritance(): void
+    public function testClassInheritanceWithoutInheritanceType(): void
     {
         $profile = new Profile();
         $profile->setFirstName('Jon');

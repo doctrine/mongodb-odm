@@ -25,6 +25,7 @@ use function array_replace;
 use function assert;
 use function class_exists;
 use function constant;
+use function defined;
 
 /**
  * The AttributeDriver reads the mapping metadata from attributes.
@@ -91,7 +92,12 @@ class AttributeDriver implements MappingDriver
             }
 
             if ($attribute instanceof ODM\InheritanceType) {
-                $metadata->setInheritanceType(constant(ClassMetadata::class . '::INHERITANCE_TYPE_' . $attribute->value));
+                $constantName = ClassMetadata::class . '::INHERITANCE_TYPE_' . $attribute->value;
+                if (! defined($constantName)) {
+                    throw MappingException::invalidInheritanceType($className, $attribute->value);
+                }
+
+                $metadata->setInheritanceType(constant($constantName));
             } elseif ($attribute instanceof ODM\DiscriminatorField) {
                 $metadata->setDiscriminatorField($attribute->value);
             } elseif ($attribute instanceof ODM\DiscriminatorMap) {

@@ -850,20 +850,6 @@ class ClassMetadataTest extends BaseTestCase
         $cm->setShardKey(['foo' => 'asc']);
     }
 
-    public function testSetShardKeyForClassWithCollPerClassInheritance(): void
-    {
-        $cm = new ClassMetadata('stdClass');
-        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
-            $cm,
-            ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS,
-        );
-        $cm->setShardKey(['id' => 'asc']);
-
-        $shardKey = $cm->getShardKey();
-
-        self::assertEquals(['id' => 1], $shardKey['keys']);
-    }
-
     public function testIsNotShardedIfThereIsNoShardKey(): void
     {
         $cm = new ClassMetadata('stdClass');
