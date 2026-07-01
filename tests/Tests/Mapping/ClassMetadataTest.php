@@ -1031,7 +1031,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm = new ClassMetadata('stdClass');
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage('stdClass vector search index "default" must have a vector field');
+        $this->expectExceptionMessage('stdClass vector search index "default" must have a "vector" or "autoEmbed" field');
         $cm->addSearchIndex($definition, 'default', 'vectorSearch');
     }
 
@@ -1058,6 +1058,34 @@ class ClassMetadataTest extends BaseTestCase
             [
                 'definition' => $definition,
                 'name' => 'embeddings_index',
+                'type' => 'vectorSearch',
+            ],
+        ], $cm->getSearchIndexes());
+    }
+
+    public function testAutoEmbedVectorSearchIndexDefinition(): void
+    {
+        $definition = [
+            'fields' => [
+                [
+                    'type'     => 'autoEmbed',
+                    'path'     => 'content',
+                    'modality' => ClassMetadata::VECTOR_AUTOEMBEDDING_MODALITY_TEXT,
+                    'model'    => 'voyage-4',
+                ],
+                [
+                    'type' => 'filter',
+                    'path' => 'category',
+                ],
+            ],
+        ];
+        $cm         = new ClassMetadata('stdClass');
+        $cm->addSearchIndex($definition, 'auto_embed_index', 'vectorSearch');
+
+        self::assertSame([
+            [
+                'definition' => $definition,
+                'name' => 'auto_embed_index',
                 'type' => 'vectorSearch',
             ],
         ], $cm->getSearchIndexes());

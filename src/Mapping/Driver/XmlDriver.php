@@ -772,6 +772,15 @@ class XmlDriver extends FileDriver
             $definition['fields'][] = $field;
         }
 
+        foreach ($searchIndex->{'auto-embed-field'} as $autoEmbedField) {
+            $definition['fields'][] = [
+                'type'     => 'autoEmbed',
+                'path'     => (string) $autoEmbedField['path'],
+                'modality' => (string) $autoEmbedField['modality'],
+                'model'    => (string) $autoEmbedField['model'],
+            ];
+        }
+
         foreach ($searchIndex->{'filter-field'} as $filterField) {
             $definition['fields'][] = [
                 'type' => 'filter',

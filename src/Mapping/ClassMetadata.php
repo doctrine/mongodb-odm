@@ -40,7 +40,7 @@ use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV4;
 use Symfony\Component\Uid\UuidV7;
 
-use function array_column;
+use function array_any;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -272,12 +272,14 @@ use const PHP_VERSION_ID;
  *      definition: SearchIndexDefinition|VectorSearchIndexDefinition
  * }
  * @phpstan-type VectorSearchIndexField array{
- *     type: "vector"|"filter",
+ *     type: "vector"|"filter"|"autoEmbed",
  *     path: string,
  *     numDimensions?: int,
  *     similarity?: self::VECTOR_SIMILARITY_*,
  *     quantization?: self::VECTOR_QUANTIZATION_*,
- *     hnswOptions?: array{maxEdges?: int, numEdgeCandidates?: int}
+ *     hnswOptions?: array{maxEdges?: int, numEdgeCandidates?: int},
+ *     modality?: 'text',
+ *     model?: string,
  * }
  * @phpstan-type VectorSearchIndexDefinition array{
  *     fields: list<VectorSearchIndexField>
@@ -489,6 +491,8 @@ use const PHP_VERSION_ID;
     public const VECTOR_QUANTIZATION_NONE      = 'none';
     public const VECTOR_QUANTIZATION_SCALAR    = 'scalar';
     public const VECTOR_QUANTIZATION_BINARY    = 'binary';
+
+    public const VECTOR_AUTOEMBEDDING_MODALITY_TEXT = 'text';
 
     private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
 
@@ -1310,7 +1314,7 @@ use const PHP_VERSION_ID;
             throw MappingException::emptySearchIndexDefinition($this->name, $name);
         }
 
-        if ($type === 'vectorSearch' && ! in_array('vector', array_column($definition['fields'] ?? [], 'type'), true)) {
+        if ($type === 'vectorSearch' && ! array_any($definition['fields'] ?? [], static fn (array $f) => $f['type'] === 'vector' || $f['type'] === 'autoEmbed')) {
             throw MappingException::emptyVectorSearchIndexDefinition($this->name, $name);
         }
 

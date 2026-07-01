@@ -299,7 +299,7 @@ final class MappingException extends BaseMappingException
 
     public static function emptyVectorSearchIndexDefinition(string $className, string $indexName): self
     {
-        return new self(sprintf('%s vector search index "%s" must have a vector field', $className, $indexName));
+        return new self(sprintf('%s vector search index "%s" must have a "vector" or "autoEmbed" field', $className, $indexName));
     }
 
     public static function timeSeriesFieldNotFound(string $className, string $fieldName, string $field): self

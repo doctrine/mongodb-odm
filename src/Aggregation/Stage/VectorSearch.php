@@ -26,8 +26,10 @@ use function sprintf;
  *         filter?: object,
  *         index?: string,
  *         limit?: int,
+ *         model?: string,
  *         numCandidates?: int,
  *         path?: string,
+ *         query?: string,
  *         queryVector?: Vector,
  *     }
  * }
@@ -41,8 +43,10 @@ class VectorSearch extends Stage
     private array|Expr|null $filter = null;
     private ?string $index          = null;
     private ?int $limit             = null;
+    private ?string $model          = null;
     private ?int $numCandidates     = null;
     private ?string $path           = null;
+    private ?string $query          = null;
     /** @phpstan-var Vector|null */
     private array|Binary|null $queryVector = null;
 
@@ -73,12 +77,20 @@ class VectorSearch extends Stage
             $params['limit'] = $this->limit;
         }
 
+        if ($this->model !== null) {
+            $params['model'] = $this->model;
+        }
+
         if ($this->numCandidates !== null) {
             $params['numCandidates'] = $this->numCandidates;
         }
 
         if ($this->path !== null) {
             $params['path'] = $this->persister->prepareFieldName($this->path);
+        }
+
+        if ($this->query !== null) {
+            $params['query'] = $this->query;
         }
 
         if ($this->queryVector !== null) {
@@ -117,6 +129,13 @@ class VectorSearch extends Stage
         return $this;
     }
 
+    public function model(string $model): static
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
     public function numCandidates(int $numCandidates): static
     {
         $this->numCandidates = $numCandidates;
@@ -127,6 +146,13 @@ class VectorSearch extends Stage
     public function path(string $path): static
     {
         $this->path = $path;
+
+        return $this;
+    }
+
+    public function query(string $query): static
+    {
+        $this->query = $query;
 
         return $this;
     }

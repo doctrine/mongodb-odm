@@ -69,11 +69,25 @@ class VectorSearchTest extends BaseTestCase
         self::assertSame(['$vectorSearch' => ['numCandidates' => 5]], $stage->getExpression());
     }
 
+    public function testModel(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->model('voyage-4');
+        self::assertSame(['$vectorSearch' => ['model' => 'voyage-4']], $stage->getExpression());
+    }
+
     public function testPath(): void
     {
         [$stage] = $this->createVectorSearchStage();
         $stage->path('vectorField');
         self::assertSame(['$vectorSearch' => ['path' => 'vectorField']], $stage->getExpression());
+    }
+
+    public function testQuery(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->query('semantic search text');
+        self::assertSame(['$vectorSearch' => ['query' => 'semantic search text']], $stage->getExpression());
     }
 
     public function testPathIsPrepared(): void
@@ -135,6 +149,24 @@ class VectorSearchTest extends BaseTestCase
                 'numCandidates' => 3,
                 'path' => 'vec',
                 'queryVector' => [0.1, 0.2],
+            ],
+        ], $stage->getExpression());
+    }
+
+    public function testChainingAutoEmbedOptions(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage
+            ->index('idx')
+            ->path('vec')
+            ->query('semantic search text')
+            ->model('voyage-4');
+        self::assertSame([
+            '$vectorSearch' => [
+                'index' => 'idx',
+                'model' => 'voyage-4',
+                'path' => 'vec',
+                'query' => 'semantic search text',
             ],
         ], $stage->getExpression());
     }
