@@ -658,6 +658,7 @@
   <xs:complexType name="vector-search-index">
     <xs:choice maxOccurs="unbounded">
       <xs:element name="vector-field" type="odm:vector-search-vector-field" />
+      <xs:element name="auto-embed-field" type="odm:vector-search-auto-embed-field" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="filter-field" type="odm:vector-search-filter-field" minOccurs="0" maxOccurs="unbounded" />
     </xs:choice>
 
@@ -671,6 +672,12 @@
     <xs:attribute name="quantization" type="xs:string" />
     <xs:attribute name="hnswMaxEdges" type="xs:int" />
     <xs:attribute name="hnswNumEdgeCandidates" type="xs:int" />
+  </xs:complexType>
+
+  <xs:complexType name="vector-search-auto-embed-field">
+    <xs:attribute name="path" type="xs:string" use="required" />
+    <xs:attribute name="modality" type="xs:string" use="required" />
+    <xs:attribute name="model" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:complexType name="vector-search-filter-field">

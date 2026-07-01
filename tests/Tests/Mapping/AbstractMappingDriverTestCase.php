@@ -501,6 +501,24 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
                     ],
                 ],
             ],
+            [
+                'type' => 'vectorSearch',
+                'name' => 'autoEmbedIndex',
+                'definition' => [
+                    'fields' => [
+                        [
+                            'type' => 'autoEmbed',
+                            'path' => 'content',
+                            'modality' => 'text',
+                            'model' => 'voyage-4',
+                        ],
+                        [
+                            'type' => 'filter',
+                            'path' => 'name',
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         self::assertEquals($expectedIndexes, $class->getSearchIndexes());
@@ -776,6 +794,13 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
  *   },
  *   name="embeddingIndex",
  * )
+ * @ODM\VectorSearchIndex(
+ *   fields={
+ *     {"type"="autoEmbed", "path"="content", "modality"="text", "model"="voyage-4"},
+ *     {"type"="filter", "path"="name"},
+ *   },
+ *   name="autoEmbedIndex",
+ * )
  * @ODM\ShardKey(keys={"name"="asc"},unique=true,numInitialChunks=4096)
  * @ODM\ReadPreference("primaryPreferred", tags={
  *   { "dc"="east" },
@@ -831,6 +856,21 @@ abstract class AbstractMappingDriverTestCase extends BaseTestCase
         ],
     ],
     name: 'embeddingIndex',
+)]
+#[ODM\VectorSearchIndex(
+    fields: [
+        [
+            'type' => 'autoEmbed',
+            'path' => 'content',
+            'modality' => ClassMetadata::VECTOR_AUTOEMBEDDING_MODALITY_TEXT,
+            'model' => 'voyage-4',
+        ],
+        [
+            'type' => 'filter',
+            'path' => 'name',
+        ],
+    ],
+    name: 'autoEmbedIndex',
 )]
 #[ODM\ShardKey(keys: ['name' => 'asc'], unique: true, numInitialChunks: 4096)]
 #[ODM\ReadPreference('primaryPreferred', tags: [['dc' => 'east'], ['dc' => 'west'], []])]
