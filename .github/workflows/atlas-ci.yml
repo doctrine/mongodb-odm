@@ -38,18 +38,21 @@ jobs:
           fetch-depth: 2
 
       - name: "Create MongoDB Atlas Local"
+        timeout-minutes: 5
         run: |
-          docker run --name mongodb -p 27017:27017 --detach mongodb/mongodb-atlas-local:8.2
+          docker run --name mongodb -p 27017:27017 \
+            -e VOYAGE_API_KEY=${{ secrets.VOYAGE_API_KEY }} \
+            -e EMBEDDING_PROVIDER_ENDPOINT=https://api.voyageai.com/v1/embeddings \
+            --detach mongodb/mongodb-atlas-local:preview
           until docker exec --tty mongodb mongosh --eval "db.runCommand({ ping: 1 })"; do
             sleep 1
           done
           until docker exec --tty mongodb mongosh --eval "db.createCollection('connection_test') && db.getCollection('connection_test').createSearchIndex({mappings:{dynamic: true}})"; do
             sleep 1
           done
-
-      - name: "Show MongoDB server status"
-        run: |
-          docker exec --tty mongodb mongosh --eval "db.runCommand({ serverStatus: 1 })"
+          until docker exec --tty mongodb mongosh --eval "db.runCommand({ serverStatus: 1 })"; do
+            sleep 1
+          done
 
       - name: Setup cache environment
         id: extcache

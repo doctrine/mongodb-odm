@@ -6,11 +6,15 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Documents\AutoEmbeddingArticle;
 use Documents\VectorEmbedding;
 use MongoDB\BSON\Binary;
+use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
+
+use function str_contains;
 
 #[Group('atlas')]
 class VectorSearchTest extends BaseTestCase
@@ -97,6 +101,70 @@ class VectorSearchTest extends BaseTestCase
         foreach ($results as $result) {
             $this->assertInstanceOf(VectorEmbedding::class, $result);
             $this->assertEquals('active', $result->filterField, 'Filtered results should only contain active documents');
+        }
+    }
+
+    public function testAtlasAutoEmbedding(): void
+    {
+        $schemaManager = $this->dm->getSchemaManager();
+        $schemaManager->createDocumentCollection(AutoEmbeddingArticle::class);
+
+        $doc1           = new AutoEmbeddingArticle();
+        $doc1->content  = 'MongoDB is a document-oriented NoSQL database';
+        $doc1->category = 'database';
+
+        $doc2           = new AutoEmbeddingArticle();
+        $doc2->content  = 'Atlas Vector Search enables semantic similarity queries on MongoDB';
+        $doc2->category = 'database';
+
+        // Non-matching documents — unrelated topics
+        $doc3           = new AutoEmbeddingArticle();
+        $doc3->content  = 'How to make a perfect chocolate cake at home';
+        $doc3->category = 'cooking';
+
+        $doc4           = new AutoEmbeddingArticle();
+        $doc4->content  = 'Top 10 hiking trails in the Swiss Alps';
+        $doc4->category = 'travel';
+
+        $doc5           = new AutoEmbeddingArticle();
+        $doc5->content  = 'The history of the Olympic Games from ancient Greece to today';
+        $doc5->category = 'sports';
+
+        $this->dm->persist($doc1);
+        $this->dm->persist($doc2);
+        $this->dm->persist($doc3);
+        $this->dm->persist($doc4);
+        $this->dm->persist($doc5);
+        $this->dm->flush(['writeConcern' => new WriteConcern(WriteConcern::MAJORITY)]);
+
+        try {
+            $schemaManager->createDocumentSearchIndexes(AutoEmbeddingArticle::class);
+        } catch (CommandException $e) {
+            if (str_contains($e->getMessage(), 'not registered')) {
+                $this->markTestSkipped('Autoembedding requires an Atlas cluster with a registered embedding model. Set VOYAGE_API_KEY');
+            }
+
+            throw $e;
+        }
+
+        $schemaManager->waitForSearchIndexes([AutoEmbeddingArticle::class], maxTimeMs: 120_000);
+
+        // Query with a lighter model at query time (voyage-4-lite) than the indexing model (voyage-4)
+        $results = $this->dm->createAggregationBuilder(AutoEmbeddingArticle::class)
+            ->hydrate(AutoEmbeddingArticle::class)
+            ->vectorSearch()
+                ->index('default')
+                ->path('content')
+                ->query('NoSQL document database')
+                ->model('voyage-4-lite')
+                ->numCandidates(10)
+                ->limit(2)
+            ->getAggregation()->execute()->toArray();
+
+        $this->assertCount(2, $results);
+        foreach ($results as $result) {
+            $this->assertInstanceOf(AutoEmbeddingArticle::class, $result);
+            $this->assertSame('database', $result->category, 'Expected only database-related results');
         }
     }
 

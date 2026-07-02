@@ -405,6 +405,7 @@ final class SchemaManager
      * @param class-string $documentName
      *
      * @throws InvalidArgumentException
+     * @throws CommandException if the server rejects the index definition.
      */
     public function createDocumentSearchIndexes(string $documentName): void
     {

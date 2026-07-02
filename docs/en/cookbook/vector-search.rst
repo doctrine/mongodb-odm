@@ -180,7 +180,126 @@ Notes
 - Use the aggregation builder's ``vectorSearch`` stage to query for similar vectors.
 - Doctrine ODM 2.13+ is required for vector search support.
 
+Automated Embeddings
+--------------------
 
-.. _`MongoDB Atlas Vector Search`: <https://www.mongodb.com/docs/atlas/atlas-vector-search/>
+`MongoDB Atlas Automated Embedding`_ eliminates the need to generate and store
+vector embeddings manually. Instead of a ``vector`` field type, the index uses
+an ``autoEmbed`` field that automatically embeds the content of a text field
+using a hosted embedding model (powered by `Voyage AI`_).
+
+Step 1: Define the Model
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the ``autoEmbed`` field type with the ``modality`` and ``model`` options.
+No ``numDimensions`` or ``similarity`` are required — they are inferred from the model.
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+
+        use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
+
+        #[ODM\Document]
+        #[ODM\VectorSearchIndex(
+            fields: [
+                [
+                    'type'     => 'autoEmbed',
+                    'path'     => 'content',
+                    'modality' => 'text',
+                    'model'    => 'voyage-4',
+                ],
+                ['type' => 'filter', 'path' => 'published'],
+            ],
+        )]
+        class Article
+        {
+            #[ODM\Id]
+            public ?string $id = null;
+
+            #[ODM\Field]
+            public string $content = '';
+
+            #[ODM\Field]
+            public bool $published = false;
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping
+                            http://doctrine-project.org/schemas/orm/doctrine-mongo-mapping.xsd">
+
+            <document name="Documents\Article">
+                <vector-search-indexes>
+                    <vector-search-index>
+                        <auto-embed-field path="content" modality="text" model="voyage-4" />
+                        <filter-field path="published" />
+                    </vector-search-index>
+                </vector-search-indexes>
+            </document>
+        </doctrine-mongo-mapping>
+
+Step 2: Insert Documents
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Insert documents as usual; no embedding step required.
+
+.. code-block:: php
+
+    $article = new Article();
+    $article->content   = 'MongoDB Atlas Vector Search enables semantic similarity queries.';
+    $article->published = true;
+
+    $dm->persist($article);
+    $dm->flush();
+
+Step 3: Create the Index and Wait
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: php
+
+    $schemaManager = $dm->getSchemaManager();
+    $schemaManager->createDocumentSearchIndexes(Article::class);
+    $schemaManager->waitForSearchIndexes([Article::class]);
+
+Step 4: Run a Semantic Search
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use the ``query`` method instead of ``queryVector``. The query string is
+automatically embedded at query time using the same model.
+
+.. code-block:: php
+
+    $results = $dm->createAggregationBuilder(Article::class)
+        ->vectorSearch()
+            ->index('default')
+            ->path('content')
+            ->query('semantic search NoSQL')
+            ->numCandidates(10)
+            ->limit(5)
+        ->getAggregation()->execute()->toArray();
+
+Use ``model()`` to use a compatible but lighter model at query time (e.g.
+``voyage-4-lite`` instead of ``voyage-4``), reducing query cost while keeping
+the same index:
+
+.. code-block:: php
+
+    ->vectorSearch()
+        ->query('semantic search NoSQL')
+        ->model('voyage-4-lite')
+
+.. note::
+
+    Automated embedding requires a `MongoDB Atlas`_ cluster with a registered
+    Voyage AI API key. It is not available on standalone MongoDB deployments.
+
+.. _`MongoDB Atlas Vector Search`: https://www.mongodb.com/docs/atlas/atlas-vector-search/
+.. _`MongoDB Atlas Automated Embedding`: https://www.mongodb.com/docs/vector-search/crud-embeddings/automated-embedding/
+.. _`MongoDB Atlas`: https://www.mongodb.com/atlas
 .. _`Voyage AI`: https://www.voyageai.com/
 .. _`Symfony AI`: https://symfony.com/ai

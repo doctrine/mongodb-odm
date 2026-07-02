@@ -278,7 +278,7 @@ use const PHP_VERSION_ID;
  *     similarity?: self::VECTOR_SIMILARITY_*,
  *     quantization?: self::VECTOR_QUANTIZATION_*,
  *     hnswOptions?: array{maxEdges?: int, numEdgeCandidates?: int},
- *     modality?: 'text',
+ *     modality?: self::VECTOR_AUTOEMBEDDING_MODALITY_*,
  *     model?: string,
  * }
  * @phpstan-type VectorSearchIndexDefinition array{

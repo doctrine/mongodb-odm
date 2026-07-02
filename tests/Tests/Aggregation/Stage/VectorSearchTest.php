@@ -129,6 +129,42 @@ class VectorSearchTest extends BaseTestCase
         $stage->queryVector($queryVector);
     }
 
+    public function testQueryAfterQueryVectorThrows(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->queryVector([1, 2, 3]);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot use both query() and queryVector()');
+        $stage->query('search text');
+    }
+
+    public function testQueryVectorAfterQueryThrows(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->query('search text');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot use both query() and queryVector()');
+        $stage->queryVector([1, 2, 3]);
+    }
+
+    public function testNumCandidatesAfterExactThrows(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->exact(true);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot use numCandidates() with exact(true)');
+        $stage->numCandidates(10);
+    }
+
+    public function testExactAfterNumCandidatesThrows(): void
+    {
+        [$stage] = $this->createVectorSearchStage();
+        $stage->numCandidates(10);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot use numCandidates() with exact(true)');
+        $stage->exact(true);
+    }
+
     public function testChainingAllOptions(): void
     {
         [$stage, $builder] = $this->createVectorSearchStage();
