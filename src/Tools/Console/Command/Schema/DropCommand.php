@@ -50,10 +50,19 @@ class DropCommand extends AbstractCommand
     {
         $drop = array_filter($this->dropOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 
-        // Default to the full drop order if no options were specified
-        $drop = empty($drop) ? $this->dropOrder : $drop;
+        $class = $input->getOption('class');
 
-        $class     = $input->getOption('class');
+        // Default to the full drop order if no options were specified. When
+        // --class is used, exclude DB from the default because MongoDB cannot
+        // drop only a single class's part of a database: dropping the database
+        // would also remove unrelated collections. Users who really want that
+        // behavior must pass --db explicitly.
+        if (empty($drop)) {
+            $drop = is_string($class)
+                ? array_filter($this->dropOrder, static fn (string $option): bool => $option !== self::DB)
+                : $this->dropOrder;
+        }
+
         $sm        = $this->getSchemaManager();
         $isErrored = false;
 

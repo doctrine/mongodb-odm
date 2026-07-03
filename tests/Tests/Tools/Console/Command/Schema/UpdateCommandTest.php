@@ -9,12 +9,17 @@ use Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\AbstractCommandTestCase;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\UpdateCommand;
 use Doctrine\Persistence\Mapping\Driver\ClassNames;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
+use Documents\CmsArticle;
 use Documents\Ecommerce;
 use Documents\SchemaValidated;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function array_values;
 use function class_exists;
+use function preg_grep;
+use function preg_split;
 
 class UpdateCommandTest extends AbstractCommandTestCase
 {
@@ -87,6 +92,43 @@ class UpdateCommandTest extends AbstractCommandTestCase
         $this->commandTester->execute(['--disable-validators' => true]);
         $output = $this->commandTester->getDisplay();
         self::assertStringNotContainsString('Updated validation for all classes', $output);
+    }
+
+    public function testClassScopedUpdateOrder(): void
+    {
+        $this->commandTester->execute([
+            '--class' => SchemaValidated::class,
+            '--skip-search-indexes' => true,
+        ]);
+
+        self::assertSame([
+            'Updated index(es) for Documents\SchemaValidated',
+            'Updated validation for Documents\SchemaValidated',
+        ], $this->updatedLines());
+    }
+
+    #[Group('atlas')]
+    public function testClassScopedUpdateIncludesSearchIndex(): void
+    {
+        $sm = $this->dm->getSchemaManager();
+        $sm->createDocumentCollection(CmsArticle::class);
+        $sm->createDocumentSearchIndexes(CmsArticle::class);
+
+        $this->commandTester->execute(['--class' => CmsArticle::class]);
+
+        self::assertSame([
+            'Updated index(es) for Documents\CmsArticle',
+            'Updated validation for Documents\CmsArticle',
+            'Updated search index(es) for Documents\CmsArticle',
+        ], $this->updatedLines());
+    }
+
+    /** @return list<string> */
+    private function updatedLines(): array
+    {
+        $lines = preg_split('/\R/', $this->commandTester->getDisplay()) ?: [];
+
+        return array_values(preg_grep('/^Updated /', $lines) ?: []);
     }
 
     private function createDriver(): MappingDriver
