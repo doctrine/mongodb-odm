@@ -13,9 +13,13 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
+use function count;
 use function is_numeric;
 use function is_string;
+use function sprintf;
+use function strtotime;
 
 abstract class AbstractCommand extends Command
 {
@@ -134,6 +138,113 @@ abstract class AbstractCommand extends Command
         $maxTimeMs = $input->getOption('maxTimeMs');
 
         return is_string($maxTimeMs) ? (int) $maxTimeMs : null;
+    }
+
+    /**
+     * Returns the search index wait time in milliseconds, or null when --wait was not passed.
+     *
+     * Accepts an integer number of milliseconds or a duration string parsable by
+     * strtotime() such as "30 seconds", "1minute" or "1 hour". When --wait is
+     * passed without a value, the SchemaManager default is used.
+     *
+     * @internal
+     */
+    protected function getWaitTimeMsFromInput(InputInterface $input): ?int
+    {
+        if (! $input->hasOption('wait')) {
+            return null;
+        }
+
+        $value = $input->getOption('wait');
+
+        if ($value === false) {
+            // --wait was not passed
+            return null;
+        }
+
+        if ($value === null || $value === '' || $value === true) {
+            // --wait passed with no value: fall back to SchemaManager default
+            return 10_000;
+        }
+
+        if (is_numeric($value)) {
+            $ms = (int) $value;
+            if ($ms < 1) {
+                throw new InvalidOptionException('The "--wait" option must be a positive number of milliseconds.');
+            }
+
+            return $ms;
+        }
+
+        $seconds = strtotime('+' . $value, 0);
+        if ($seconds === false || $seconds <= 0) {
+            throw new InvalidOptionException(sprintf('Invalid duration "%s" for "--wait" option. Use formats like "30 seconds", "1 minute", "1 hour" or a positive integer of milliseconds.', $value));
+        }
+
+        return $seconds * 1000;
+    }
+
+    /**
+     * Returns the list of mapped class names that define search indexes.
+     *
+     * When $documentName is provided, the list contains that class if it
+     * defines search indexes, otherwise it is empty.
+     *
+     * @internal
+     *
+     * @return list<class-string>
+     */
+    protected function getClassNamesWithSearchIndexes(?string $documentName): array
+    {
+        $factory = $this->getMetadataFactory();
+
+        if ($documentName !== null) {
+            $class = $factory->getMetadataFor($documentName);
+
+            return $class->hasSearchIndexes() ? [$class->getName()] : [];
+        }
+
+        $classNames = [];
+        foreach ($factory->getAllMetadata() as $class) {
+            if (! $class->hasSearchIndexes()) {
+                continue;
+            }
+
+            $classNames[] = $class->getName();
+        }
+
+        return $classNames;
+    }
+
+    /**
+     * Waits until search indexes are queryable for the given class (or all
+     * classes when null). Does nothing when $waitTimeMs is null or when no
+     * mapped class declares a search index.
+     *
+     * @internal
+     */
+    protected function waitForSearchIndexes(SchemaManager $sm, OutputInterface $output, ?string $documentName, ?int $waitTimeMs): void
+    {
+        if ($waitTimeMs === null) {
+            return;
+        }
+
+        $classNames = $this->getClassNamesWithSearchIndexes($documentName);
+        if (count($classNames) === 0) {
+            return;
+        }
+
+        $target = $documentName ?? 'all classes';
+
+        $output->writeln(sprintf(
+            'Waiting up to <comment>%d ms</comment> for search indexes to become ready for <info>%s</info>',
+            $waitTimeMs,
+            $target,
+        ));
+
+        $sm->waitForSearchIndexes($classNames, $waitTimeMs);
+
+        $output->writeln(sprintf('Search indexes are ready for <info>%s</info>', $target));
     }
 
     protected function getWriteConcernFromInput(InputInterface $input): ?WriteConcern

@@ -182,3 +182,47 @@ mapping:
                 <!-- ... -->
             </document>
         </doctrine-mongo-mapping>
+
+Creating and Waiting for Search Indexes
+---------------------------------------
+
+Search indexes are built asynchronously on the server: the create and update
+commands submit index definitions and return immediately, before the indexes
+are queryable. When you need the indexes to be ready before continuing (CI
+pipelines, deployment scripts, integration test seeding), use the ``--wait``
+option of ``odm:schema:create`` and ``odm:schema:update``:
+
+.. code-block:: console
+
+    $ php mongodb.php odm:schema:create --search-index --wait
+    $ php mongodb.php odm:schema:update --wait=1minute
+    $ php mongodb.php odm:schema:create --search-index --wait="30 seconds"
+    $ php mongodb.php odm:schema:create --search-index --wait=5000
+
+The option accepts a duration string parsable by ``strtotime()`` (for example
+``30 seconds``, ``1minute``, ``1 hour``) or a positive integer number of
+milliseconds. When ``--wait`` is passed without a value, a default timeout of
+10 seconds is used. The command exits with an error if the indexes are not
+queryable within the given time.
+
+The wait is skipped automatically when no mapped class declares a search
+index.
+
+From PHP, you can also wait for search indexes to become queryable using the
+:phpmethod:`SchemaManager::waitForSearchIndexes` method:
+
+.. code-block:: php
+
+    <?php
+
+    $schemaManager->createSearchIndexes();
+    $schemaManager->waitForSearchIndexes();
+
+.. note::
+
+    Waiting only reports when the index itself is queryable. When documents
+    are inserted after the index is created, there is no reliable way to
+    know when the background indexer has caught up with those inserts. If
+    your workflow needs to wait for the index to reflect a specific set of
+    documents, insert those documents **before** creating the search index,
+    then wait for the index to become queryable.

@@ -42,6 +42,7 @@ class CreateCommand extends AbstractCommand
             ->addOption(self::SEARCH_INDEX, null, InputOption::VALUE_NONE, 'Create search indexes')
             ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->addOption('background', null, InputOption::VALUE_NONE, sprintf('Create indexes in background (requires "%s" option)', self::INDEX))
+            ->addOption('wait', null, InputOption::VALUE_OPTIONAL, 'Wait until search indexes become queryable. Accepts a duration (e.g. "1minute", "1 hour", "30 seconds") or a positive number of milliseconds. Defaults to 10 seconds when passed without a value.', false)
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
@@ -54,6 +55,7 @@ class CreateCommand extends AbstractCommand
 
         $class      = $input->getOption('class');
         $background = (bool) $input->getOption('background');
+        $waitTimeMs = $this->getWaitTimeMsFromInput($input);
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -83,6 +85,10 @@ class CreateCommand extends AbstractCommand
                     self::INFLECTIONS[$option][isset($class) ? 0 : 1],
                     is_string($class) ? $class : 'all classes'
                 ));
+
+                if ($option === self::SEARCH_INDEX) {
+                    $this->waitForSearchIndexes($sm, $output, is_string($class) ? $class : null, $waitTimeMs);
+                }
             } catch (Throwable $e) {
                 $output->writeln('<error>' . $e->getMessage() . '</error>');
                 $isErrored = true;

@@ -28,6 +28,7 @@ class UpdateCommand extends AbstractCommand
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
             ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->addOption('disable-validators', null, InputOption::VALUE_NONE, 'Do not update database-level validation rules')
+            ->addOption('wait', null, InputOption::VALUE_OPTIONAL, 'Wait until search indexes become queryable. Accepts a duration (e.g. "1minute", "1 hour", "30 seconds") or a positive number of milliseconds. Defaults to 10 seconds when passed without a value.', false)
             ->setDescription('Update indexes and validation rules for your documents');
     }
 
@@ -36,6 +37,7 @@ class UpdateCommand extends AbstractCommand
         $class               = $input->getOption('class');
         $updateValidators    = ! $input->getOption('disable-validators');
         $updateSearchIndexes = ! $input->getOption('skip-search-indexes');
+        $waitTimeMs          = $this->getWaitTimeMsFromInput($input);
 
         $sm        = $this->getSchemaManager();
         $isErrored = false;
@@ -53,6 +55,8 @@ class UpdateCommand extends AbstractCommand
                 if ($updateSearchIndexes) {
                     $this->processDocumentSearchIndex($sm, $class);
                     $output->writeln(sprintf('Updated <comment>search index(es)</comment> for <info>%s</info>', $class));
+
+                    $this->waitForSearchIndexes($sm, $output, $class, $waitTimeMs);
                 }
             } else {
                 $this->processIndex($sm, $this->getMaxTimeMsFromInput($input), $this->getWriteConcernFromInput($input));
@@ -66,6 +70,8 @@ class UpdateCommand extends AbstractCommand
                 if ($updateSearchIndexes) {
                     $this->processSearchIndex($sm);
                     $output->writeln('Updated <comment>search indexes</comment> for <info>all classes</info>');
+
+                    $this->waitForSearchIndexes($sm, $output, null, $waitTimeMs);
                 }
             }
         } catch (Throwable $e) {

@@ -141,13 +141,34 @@ in search results.
     $schemaManager->createDocumentSearchIndexes(Guide::class);
 
 
-If the vector search index created after inserting documents, the index is
+If the vector search index is created after inserting documents, the index is
 marked as "READY" when all existing documents are indexed. You can wait for
 the index to be ready using the following code:
 
 .. code-block:: php
 
     $schemaManager->waitForSearchIndexes([Guide::class]);
+
+From the command line, ``odm:schema:create`` and ``odm:schema:update`` accept
+a ``--wait`` option that submits the search index definitions and waits for
+them to become queryable before returning:
+
+.. code-block:: console
+
+    $ php mongodb.php odm:schema:create --search-index --wait=1minute
+
+The value accepts a duration such as ``30 seconds``, ``1minute`` or
+``1 hour``, or a positive integer number of milliseconds. When ``--wait`` is
+passed without a value, a default timeout of 10 seconds is used.
+
+.. note::
+
+    Waiting is reliable only for indexes created before documents are
+    inserted: the "queryable" flag reports when the index itself is ready,
+    not when the background indexer has caught up with subsequent writes. If
+    you need the index to reflect a known set of documents before running
+    queries, insert those documents **before** creating the index and then
+    wait for it to become queryable.
 
 Step 5: Run a Vector Search Aggregation
 ---------------------------------------
@@ -265,6 +286,14 @@ Step 3: Create the Index and Wait
     $schemaManager = $dm->getSchemaManager();
     $schemaManager->createDocumentSearchIndexes(Article::class);
     $schemaManager->waitForSearchIndexes([Article::class]);
+
+Or from the command line, which is convenient for CI and deployment scripts
+because the initial embedding backfill for automated embeddings can take
+minutes:
+
+.. code-block:: console
+
+    $ php mongodb.php odm:schema:create --search-index --class=Article --wait=5minutes
 
 Step 4: Run a Semantic Search
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
