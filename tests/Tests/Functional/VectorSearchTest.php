@@ -149,7 +149,7 @@ class VectorSearchTest extends BaseTestCase
 
         $schemaManager->waitForSearchIndexes([AutoEmbeddingArticle::class], maxTimeMs: 120_000);
 
-        // Query with a lighter model at query time (voyage-4-lite) than the indexing model (voyage-4)
+        // Query with a lighter model (voyage-4-lite) than the indexing model (voyage-4-large); all voyage-4 embeddings are compatible
         $results = $this->dm->createAggregationBuilder(AutoEmbeddingArticle::class)
             ->hydrate(AutoEmbeddingArticle::class)
             ->vectorSearch()

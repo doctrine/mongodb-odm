@@ -209,7 +209,7 @@ No ``numDimensions`` or ``similarity`` are required — they are inferred from t
                     'type'     => 'autoEmbed',
                     'path'     => 'content',
                     'modality' => 'text',
-                    'model'    => 'voyage-4',
+                    'model'    => 'voyage-4-large',
                 ],
                 ['type' => 'filter', 'path' => 'published'],
             ],
@@ -236,7 +236,7 @@ No ``numDimensions`` or ``similarity`` are required — they are inferred from t
             <document name="Documents\Article">
                 <vector-search-indexes>
                     <vector-search-index>
-                        <auto-embed-field path="content" modality="text" model="voyage-4" />
+                        <auto-embed-field path="content" modality="text" model="voyage-4-large" />
                         <filter-field path="published" />
                     </vector-search-index>
                 </vector-search-indexes>
@@ -283,9 +283,10 @@ automatically embedded at query time using the same model.
             ->limit(5)
         ->getAggregation()->execute()->toArray();
 
-Use ``model()`` to use a compatible but lighter model at query time (e.g.
-``voyage-4-lite`` instead of ``voyage-4``), reducing query cost while keeping
-the same index:
+All models in the ``voyage-4`` series produce compatible embeddings. Use
+``model()`` to query with a lighter model (e.g. ``voyage-4-lite``) while
+indexing with a higher-quality one (e.g. ``voyage-4-large``), reducing query
+cost without changing the index:
 
 .. code-block:: php
 

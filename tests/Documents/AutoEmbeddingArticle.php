@@ -17,7 +17,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
             'type'     => 'autoEmbed',
             'path'     => 'content',
             'modality' => ClassMetadata::VECTOR_AUTOEMBEDDING_MODALITY_TEXT,
-            'model'    => 'voyage-4',
+            'model'    => 'voyage-4-large',
         ],
         ['type' => 'filter', 'path' => 'category'],
     ],
