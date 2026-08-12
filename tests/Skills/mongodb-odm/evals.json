@@ -1,0 +1,82 @@
+{
+  "skill_name": "mongodb-odm",
+  "evals": [
+    {
+      "id": 1,
+      "name": "ecommerce-mapping-and-query",
+      "prompt": "I'm building a small e-commerce app with doctrine/mongodb-odm. I need an Order document that has a reference to a Customer, an embedded ShippingAddress, and a list of embedded OrderLine items (product name, quantity, price). Write the document classes with proper attributes, then show me how to query for all orders placed by a specific customer in the last 30 days, sorted by newest first.",
+      "expected_output": "Correct #[Document]/#[EmbeddedDocument] classes using real attribute names (#[Id], #[Field], #[ReferenceOne], #[EmbedOne], #[EmbedMany]), a deliberate embed-vs-reference choice matching the prompt (Customer as reference, ShippingAddress/OrderLine as embeds), DateTimeImmutable used for dates, Collection/ArrayCollection typing for the embedded list, and a Query Builder query (not raw arrays) using field()/gte()/sort()/execute() for the 30-day filter.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "atlas-vector-search-semantic-search",
+      "prompt": "We're using doctrine/mongodb-odm on MongoDB Atlas and want to add semantic search over our Article documents. Each article has a content field. We already generate 1536-dimension embeddings for the content elsewhere. Show me how to map the embedding field, define the vector search index, and write the query to find the 5 most similar articles to a given embedding vector.",
+      "expected_output": "Uses the real #[VectorSearchIndex] attribute with fields/numDimensions/similarity/path options, stores the embedding as a plain array field (not a fictitious dedicated type), notes the Atlas-only requirement and ODM 2.13+ version, warns about the numDimensions/array-length match not being validated by ODM, and queries via the Aggregation Builder's vectorSearch() stage (index/path/queryVector/numCandidates/limit), not a raw pipeline or an invented QueryBuilder method.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "queryable-encryption-searchable-ssn",
+      "prompt": "Our Patient document (doctrine/mongodb-odm) stores a social security number and we need to encrypt it at rest using MongoDB Queryable Encryption, but we still need to be able to look up a patient by their exact SSN. How do I set this up?",
+      "expected_output": "States the Atlas/Enterprise 7.0+ prerequisite, uses the real #[Encrypt(queryType: EncryptQuery::Equality)] attribute on the SSN field, shows Configuration::setAutoEncryption()/setKmsProvider() and building the Client with driverOptions, mentions creating the collection via SchemaManager before inserting data, and does not claim support for encrypted query types beyond Equality/Range.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "hybrid-orm-odm-cross-reference",
+      "prompt": "We have an existing Symfony app using Doctrine ORM with orders stored in MySQL. We want to move our Product catalog to MongoDB using doctrine/mongodb-odm, but Orders need to reference Products. What's the right way to connect these two persistence layers?",
+      "expected_output": "Correctly states there is no native cross-layer relationship attribute between ORM and ODM, proposes storing the Product's id as a plain scalar column on the Order entity plus a manually-populated unmapped property, wires the bridge via an ORM postLoad event listener that calls DocumentManager::getReference() (with the required instanceof check since postLoad fires for every entity), and does not invent an unsupported direct-reference mapping between an ORM entity and an ODM document.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "n-plus-one-reference-priming",
+      "prompt": "I have a BlogPost document with a #[ReferenceMany] to Comment and a #[ReferenceOne] to its Author. When I load 200 BlogPost documents and loop over them to print each post's comment count and author name, my app fires hundreds of extra MongoDB queries. How do I fix this with Doctrine MongoDB ODM without hand-rolling my own caching layer?",
+      "expected_output": "Diagnoses this as the N+1 problem caused by lazily-loaded references, and fixes it with the real prime() API (e.g. field('comments')->prime(true) / field('author')->prime(true) on the query builder, or mapping-level prime on the ReferenceMany/ReferenceOne), noting that hydration must stay enabled for priming to work. Does not invent a nonexistent join/eager-load syntax borrowed from SQL ORMs.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "bidirectional-reference-inverse-side-trap",
+      "prompt": "I have a bidirectional one-to-one relationship between Cart and Customer in Doctrine MongoDB ODM. I'm trying to reassign a customer's cart by setting $customer->cart = $newCart; and calling $dm->flush(), but the change never gets saved to MongoDB. What's going on and how do I fix it?",
+      "expected_output": "Correctly identifies that $customer->cart is the inverse (mappedBy) side of the relationship, which is immutable/never persisted, and that the fix is to mutate the owning (inversedBy) side instead (e.g. $newCart->customer = $customer; $dm->flush();). Does not assume Doctrine ODM auto-synchronizes both sides of a bidirectional relationship the way some other ORMs do.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "optimistic-locking-concurrent-writes",
+      "prompt": "Two web requests might load and update the same Order document at nearly the same time, and I want to detect when that happens so I can retry instead of silently losing one update. How do I implement this with Doctrine MongoDB ODM?",
+      "expected_output": "Uses the real #[Version] attribute on a field with a Versionable-compatible type (int/decimal128/date/date_immutable/object_id), reads/locks via LockMode::OPTIMISTIC (through $dm->find() or $dm->lock()), and catches Doctrine\\ODM\\MongoDB\\LockException to detect and retry on a version mismatch. Does not substitute a generic 'use a MongoDB transaction' answer that skips Doctrine's own locking mechanism, and does not combine #[Version] with #[Id] or an unsupported type.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "atlas-search-index-over-embedded-collection",
+      "prompt": "On MongoDB Atlas with doctrine/mongodb-odm, I want full-text search over my User documents: the username (including autocomplete) and the text inside an embed-many collection of Address documents. I mapped the username property as $userName with #[Field(name: 'username')]. I tried #[SearchIndex(dynamic: true)] on User and the addresses never match. Why, and what's the correct index definition?",
+      "expected_output": "Explains that dynamic mapping does not cover embedded documents in arrays, so the addresses need an explicit static mapping with type 'embeddedDocuments' (dynamic may be set inside that sub-mapping), and that #[SearchIndex] fields must use the raw database field names ('username'), not the PHP property name ($userName), because ODM does not translate them here. Uses the real #[SearchIndex] attribute at class level with its actual options (name, dynamic, fields, analyzer), notes that search indexes may only be declared on document classes and never on embedded documents, and syncs them with odm:schema:create --search-index (distinct from --index). Does not invent a property-level #[SearchIndex] or an ODM method that builds Atlas Search indexes from mapped property names.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "single-collection-inheritance-legacy-documents",
+      "prompt": "I have a Person document in doctrine/mongodb-odm and I want Employee and Customer subclasses stored in the same MongoDB collection. The collection already holds thousands of older documents written before I introduced the subclasses, so they have no discriminator field at all, and loading them now throws. A colleague on the team says I should use #[InheritanceType('COLLECTION_PER_CLASS')] instead because it keeps each subclass cleaner - should I? How do I map this properly? Also, one of the subclasses has an optional ?string $notes field that I need to actually store as null rather than have it disappear from the document.",
+      "expected_output": "Maps single-collection inheritance with #[InheritanceType('SINGLE_COLLECTION')] plus #[DiscriminatorField] and a #[DiscriminatorMap] that lists every class sharing the collection (an unlisted class throws MappingException), and handles the legacy documents with #[DefaultDiscriminatorValue] whose value is already a key in the map. Separately identifies that a nullable PHP type does not imply the mapping option, so #[Field(type: 'string', nullable: true)] is required or null triggers $unset and the field vanishes. Rejects the colleague's COLLECTION_PER_CLASS suggestion on two grounds - it is deprecated since 2.17 with no replacement (every document class already maps to its own collection by default, so the mapping is simply removed rather than migrated), and it contradicts the stated requirement of one shared collection - does not suggest backfilling the discriminator with a raw update as the primary fix, and does not claim ODM infers the discriminator from the PHP class name for pre-existing documents.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "batch-import-memory-growth",
+      "prompt": "I'm writing a CLI import command with doctrine/mongodb-odm that reads a 500k-row CSV and creates a Product document per row. Right now I call $dm->flush() after every single row, because I wanted each product safely written before moving on. It gets slower and slower and eventually exhausts PHP's memory limit. Some rows also update Products I loaded and cached in an array earlier in the run, before I started reusing the DocumentManager. How should I structure this?",
+      "expected_output": "Diagnoses the UnitOfWork accumulating managed documents and identity-map growth, and fixes it by batching persist() calls and calling flush() once per batch (not once per row) followed by $dm->clear() to detach everything, and does not reach for the per-class $dm->clear(Product::class) argument, which is deprecated since 2.4 and unsupported in ODM 3.0. Recognises that the documents cached from before are now detached, so they must not be passed to persist() (undefined behavior) or remove() (throws) and must go through $dm->merge() using its return value rather than the original object. Explicitly tells the user to stop flushing once per row and says why - each flush is its own round trip to the server, and it does not release anything from the UnitOfWork, so per-row flushing costs throughput without bounding memory. Does not recommend flushing per row, instantiating a new DocumentManager per batch, or unsetting references as a substitute for clear().",
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "query-builder-maintenance-command-generation",
+      "prompt": "I need to write a nightly maintenance console command for our doctrine/mongodb-odm app (ODM 2.16). The main document is Account, and there is a MaintenanceJob document for the work queue. Requirements:\n\n1. Every account whose lastLoginAt is older than a 90-day cutoff gets its active flag set to false. There are hundreds of them on a typical night.\n2. For every account still active, recompute a score field from two fields already stored on the document, usage and weight, as usage * weight. I would rather the server do that arithmetic than load hundreds of documents into PHP and flush them back.\n3. The command claims one pending MaintenanceJob at a time and flips its status to running. I need the job as it looks *after* the flip, because I log the new status straight away.\n4. The summary email needs two things: the distinct plan names in alphabetical order, and the top 20 accounts by usage handed to a renderer. The renderer must not be able to accidentally persist changes back into the database - if it ever does need to save an edit, I want that to be an explicit step I write myself.\n5. Before I trust the deactivation step in production I want to see the actual filter that reaches the server, so I can check how the cutoff date is being serialized.\n\nShow me how to build this.",
+      "expected_output": "Requirement 1 uses updateMany() on the Query Builder, not updateOne() (which would touch a single document) and not a load-and-flush loop over the matched accounts. Requirement 2 uses an aggregation-pipeline update via the Query Builder's pipeline() with updateMany() so the multiplication happens server-side, and states that pipeline() is only accepted together with updateOne(), updateMany() or findAndUpdate(); it does not fabricate a way to $set one field from other fields with the plain update operators (no inc()-based arithmetic hack, no expression object passed to set() that ODM does not support). Requirement 3 uses findAndUpdate() and applies returnNew(), and states that findAndUpdate returns the document as it was *before* the update unless returnNew() is called. Requirement 4 gets the plan list with distinct('plan') and sorts the resulting array in PHP, stating that distinct() cannot be combined with sort() because MongoDB's distinct command has no server-side sort; and builds the renderer snapshot with readOnly() on the query, noting that readOnly() returns a new unmanaged instance, that it is not deep so referenced documents stay managed, and that re-attaching such a document later goes through merge() rather than persist(). Requirement 5 is answered with getQuery()->debug(), described as returning the fully prepared query actually sent to the driver with field renames, discriminators and active filters applied. Throughout, uses only real ODM API - no invented methods such as asArray(), detach(), unmanaged(), sortDistinct(), returnNewDocument() or a property-level equivalent.",
+      "files": []
+    }
+  ]
+}
