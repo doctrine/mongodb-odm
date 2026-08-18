@@ -30,7 +30,7 @@ trait ClassMetadataPropertiesTrait
      *
      * @var string
      */
-    public $bucketName;
+    public $bucketName = 'fs';
 
     /**
      * READ-ONLY: If the collection should be a fixed size.
