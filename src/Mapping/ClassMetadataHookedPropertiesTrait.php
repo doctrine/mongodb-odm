@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use ReflectionClass;
 
+/** @internal */
 trait ClassMetadataPropertiesTrait
 {
     // phpcs:disable SlevomatCodingStandard.Classes.PropertySpacing.IncorrectCountOfBlankLinesAfterProperty
