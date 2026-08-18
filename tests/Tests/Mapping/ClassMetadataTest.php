@@ -41,6 +41,7 @@ use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\Document;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use ReflectionClass;
 use ReflectionException;
@@ -1149,6 +1150,7 @@ class ClassMetadataTest extends BaseTestCase
         self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
     }
 
+    #[RequiresPhp('>= 8.4')]
     public function testDeprecatedPropertyModification(): void
     {
         $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
