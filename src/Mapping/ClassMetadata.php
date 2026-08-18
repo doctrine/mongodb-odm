@@ -304,6 +304,7 @@ if (PHP_VERSION_ID >= 80400) {
  */
 /* final */ class ClassMetadata implements BaseClassMetadata
 {
+    /** @template-use ClassMetadataPropertiesTrait<T> */
     use ClassMetadataPropertiesTrait;
 
     /* The Id generator types. */

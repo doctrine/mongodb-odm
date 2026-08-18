@@ -8,7 +8,12 @@ use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use ReflectionClass;
 
-/** @internal */
+/**
+ * @internal
+ *
+ * @template-covariant T of object
+ * @phpstan-import-type ShardKey from ClassMetadata
+ */
 trait ClassMetadataPropertiesTrait
 {
     /**
