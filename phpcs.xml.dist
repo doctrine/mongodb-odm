@@ -76,6 +76,8 @@
 
     <rule ref="Squiz.Classes.ClassFileName.NoMatch">
         <exclude-pattern>src/Tools/Console/Helper/DocumentManagerHelper.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ClassMetadataHookedPropertiesTrait.php</exclude-pattern>
+        <exclude-pattern>src/Mapping/ClassMetadataLegacyPropertiesTrait.php</exclude-pattern>
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 

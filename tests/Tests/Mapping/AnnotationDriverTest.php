@@ -87,7 +87,7 @@ class AnnotationDriverTest extends AbstractAnnotationDriverTestCase
 
         self::assertEquals(
             sprintf('Since doctrine/mongodb-odm 2.2: The "@Indexes" attribute used in property "foo" of class "%s" is deprecated. Specify all "@Index" and "@UniqueIndex" attributes on the class.', DeprecatedIndexesPropertyAnnotation::class),
-            $errors,
+            $errors[0],
         );
 
         $indexes = $classMetadata->indexes;
