@@ -19,6 +19,7 @@ use function sprintf;
 class CreateCommand extends AbstractCommand
 {
     use CommandCompatibility;
+    use SearchIndexWaitTrait;
 
     /** @var string[] */
     private array $createOrder = [self::COLLECTION, self::INDEX, self::SEARCH_INDEX];

@@ -18,6 +18,7 @@ use function sprintf;
 class UpdateCommand extends AbstractCommand
 {
     use CommandCompatibility;
+    use SearchIndexWaitTrait;
 
     private function doConfigure(): void
     {
