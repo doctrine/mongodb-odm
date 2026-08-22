@@ -201,9 +201,11 @@ option of ``odm:schema:create`` and ``odm:schema:update``:
 
 The option accepts a duration string parsable by ``strtotime()`` (for example
 ``30 seconds``, ``1minute``, ``1 hour``) or a positive integer number of
-milliseconds. When ``--wait`` is passed without a value, a default timeout of
-10 seconds is used. The command exits with an error if the indexes are not
-queryable within the given time.
+milliseconds. This is a maximum wait duration: the command returns as soon as
+the indexes are ready, without waiting out the rest of the duration. When
+``--wait`` is passed without a value, a default timeout of 5 minutes is used.
+The command exits with an error if the indexes are not queryable within the
+given time.
 
 The wait is skipped automatically when no mapped class declares a search
 index.

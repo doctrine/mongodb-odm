@@ -151,7 +151,9 @@ the index to be ready using the following code:
 
 From the command line, ``odm:schema:create`` and ``odm:schema:update`` accept
 a ``--wait`` option that submits the search index definitions and waits for
-them to become queryable before returning:
+them to become queryable before returning. The value is a maximum wait
+duration: the command returns as soon as the indexes are ready, without
+waiting out the rest of the duration.
 
 .. code-block:: console
 
@@ -159,7 +161,7 @@ them to become queryable before returning:
 
 The value accepts a duration such as ``30 seconds``, ``1minute`` or
 ``1 hour``, or a positive integer number of milliseconds. When ``--wait`` is
-passed without a value, a default timeout of 10 seconds is used.
+passed without a value, a default timeout of 5 minutes is used.
 
 .. note::
 

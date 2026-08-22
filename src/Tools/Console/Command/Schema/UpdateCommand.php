@@ -28,7 +28,7 @@ class UpdateCommand extends AbstractCommand
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Document class to process (default: all classes)')
             ->addOption('skip-search-indexes', null, InputOption::VALUE_NONE, 'Skip processing of search indexes')
             ->addOption('disable-validators', null, InputOption::VALUE_NONE, 'Do not update database-level validation rules')
-            ->addOption('wait', null, InputOption::VALUE_OPTIONAL, 'Wait until search indexes become queryable. Accepts a duration (e.g. "1minute", "1 hour", "30 seconds") or a positive number of milliseconds. Defaults to 10 seconds when passed without a value.', false)
+            ->addOption('wait', null, InputOption::VALUE_OPTIONAL, 'Wait until search indexes become queryable. Accepts a duration (e.g. "1minute", "1 hour", "30 seconds") or a positive number of milliseconds. Defaults to 5 minutes when passed without a value.', false)
             ->setDescription('Update indexes and validation rules for your documents');
     }
 

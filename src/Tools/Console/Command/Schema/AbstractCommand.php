@@ -145,7 +145,7 @@ abstract class AbstractCommand extends Command
      *
      * Accepts an integer number of milliseconds or a duration string parsable by
      * strtotime() such as "30 seconds", "1minute" or "1 hour". When --wait is
-     * passed without a value, the SchemaManager default is used.
+     * passed without a value, a default timeout of 5 minutes is used.
      *
      * @internal
      */
@@ -163,8 +163,8 @@ abstract class AbstractCommand extends Command
         }
 
         if ($value === null || $value === '' || $value === true) {
-            // --wait passed with no value: fall back to SchemaManager default
-            return 10_000;
+            // --wait passed with no value: fall back to the default timeout
+            return 300_000;
         }
 
         if (is_numeric($value)) {
