@@ -1499,7 +1499,7 @@ EOT;
 
     private function createSearchIndexCommandExceptionForOlderServers(): CommandException
     {
-        return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40234);
+        return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40324);
     }
 
     private function createIndexIterator(array $indexes = []): Iterator

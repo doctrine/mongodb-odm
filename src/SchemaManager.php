@@ -13,6 +13,7 @@ use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\ServerException;
 use MongoDB\Driver\WriteConcern;
+use MongoDB\Exception\SearchNotSupportedException;
 use MongoDB\Model\IndexInfo;
 
 use function array_column;
@@ -35,8 +36,8 @@ use function is_string;
 use function iterator_count;
 use function iterator_to_array;
 use function ksort;
+use function preg_match;
 use function sprintf;
-use function str_contains;
 use function usleep;
 
 /**
@@ -51,8 +52,6 @@ final class SchemaManager
     private const GRIDFS_CHUNKS_COLLECTION_INDEX = ['filename' => 1, 'uploadDate' => 1];
 
     private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
-    private const CODE_COMMAND_NOT_SUPPORTED        = 115;
-    private const CODE_SEARCH_NOT_ENABLED           = 31082;
 
     private const ALLOWED_MISSING_INDEX_OPTIONS = [
         'background',
@@ -341,7 +340,7 @@ final class SchemaManager
     }
 
     /**
-     * Wait until all search indexes are queryable for the given document classes.
+     * Wait until all search and vector indexes are queryable for the given document classes.
      *
      * @param list<class-string>|null $classNames List of class names to check, or null to check all mapped classes
      * @param positive-int            $maxTimeMs  Maximum time to wait in milliseconds (default: 10,000 ms)
@@ -478,6 +477,15 @@ final class SchemaManager
             /* The typeMap option can be removed when bug is fixed in the minimum required version.
              * https://jira.mongodb.org/browse/PHPLIB-1548 */
             $existingNames = array_column(iterator_to_array($collection->listSearchIndexes(['typeMap' => ['root' => 'array']])), 'name');
+        } catch (SearchNotSupportedException $e) {
+            /* If $listSearchIndexes doesn't exist, only throw if search indexes have been defined.
+             * If no search indexes are defined and the server doesn't support search indexes, there's
+             * nothing for us to do here and we can safely return */
+            if ($definedNames === []) {
+                return;
+            }
+
+            throw $e;
         } catch (CommandException $e) {
             /* If $listSearchIndexes doesn't exist, only throw if search indexes have been defined.
              * If no search indexes are defined and the server doesn't support search indexes, there's
@@ -532,6 +540,9 @@ final class SchemaManager
             /* The typeMap option can be removed when bug is fixed in the minimum required version.
              * https://jira.mongodb.org/browse/PHPLIB-1548 */
             $searchIndexes = $collection->listSearchIndexes(['typeMap' => ['root' => 'array']]);
+        } catch (SearchNotSupportedException) {
+            // If the server does not support search indexes, there are no indexes to remove in any case
+            return;
         } catch (CommandException $e) {
             // If the server does not support search indexes, there are no indexes to remove in any case
             if ($this->isSearchIndexCommandException($e)) {
@@ -1208,25 +1219,29 @@ final class SchemaManager
         return $options;
     }
 
+    /**
+     * For mongodb/mongodb < 2.2.0, check if an exception is due to the lack
+     * of Atlas Search / Vector Search support.
+     *
+     * Backported from \MongoDB\Exception\SearchNotSupportedException::isSearchNotSupportedError()
+     */
     private function isSearchIndexCommandException(CommandException $e): bool
     {
-        // MongoDB 8.0+: "Using Atlas Search Database Commands and the $listSearchIndexes aggregation stage requires additional configuration."
-        if ($e->getCode() === self::CODE_SEARCH_NOT_ENABLED) {
-            return true;
-        }
-
-        // MongoDB 6.0.7+ and 7.0+: "Search indexes are only available on Atlas"
-        if ($e->getCode() === self::CODE_COMMAND_NOT_SUPPORTED && str_contains($e->getMessage(), 'Search index')) {
-            return true;
-        }
-
-        // MongoDB 6.0.7+ and 7.0+: "$listSearchIndexes stage is only allowed on MongoDB Atlas"
-        if ($e->getMessage() === '$listSearchIndexes stage is only allowed on MongoDB Atlas') {
-            return true;
-        }
-
-        // Older server versions don't support $listSearchIndexes
-        // We don't check for an error code here as the code is not documented, and we can't rely on it
-        return str_contains($e->getMessage(), 'Unrecognized pipeline stage name: \'$listSearchIndexes\'');
+        return match ($e->getCode()) {
+            // MongoDB 8: Using Atlas Search Database Commands and the $listSearchIndexes aggregation stage requires additional configuration.
+            31082 => true,
+            // MongoDB 7: $listSearchIndexes stage is only allowed on MongoDB Atlas
+            6047401 => true,
+            // MongoDB 7-ent: Search index commands are only supported with Atlas.
+            115 => true,
+            // MongoDB 4 to 6, 7-community
+            59 => preg_match('/^no such (command|cmd): \'?(createSearchIndexes|updateSearchIndex|dropSearchIndex)\'?$/', $e->getMessage()) === 1,
+            // MongoDB 4 to 6
+            40324 => preg_match('/^Unrecognized pipeline stage name: \'?\$(listSearchIndexes|search|searchMeta|vectorSearch)\'?$/', $e->getMessage()) === 1,
+            // MongoDB 5 sharded cluster: $search not enabled! Enable Search by setting serverParameter mongotHost to a valid "host:port" string
+            7501001 => true,
+            // Not a Search error
+            default => false,
+        };
     }
 }
