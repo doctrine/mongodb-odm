@@ -93,7 +93,11 @@ class VectorSearch extends Stage
         }
 
         if ($this->queryVector !== null) {
-            $params['queryVector'] = $this->persister->convertToDatabaseValue($this->path ?? '', $this->queryVector, $this->persister->getClassMetadata());
+            // The vector is converted as a whole, not element by element, so it cannot go
+            // through DocumentPersister::convertToDatabaseValue() which recurses into arrays.
+            $params['queryVector'] = $this->persister->getClassMetadata()
+                ->getFieldType($this->path ?? '')
+                ->convertToDatabaseValue($this->queryVector);
         }
 
         return [$this->getStageName() => $params];
