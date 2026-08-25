@@ -21,6 +21,7 @@ use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -615,7 +616,7 @@ if (PHP_VERSION_ID >= 80400) {
     /** @var class-string|null */
     private ?string $rootClass;
 
-    private TypeRegistry $typeRegistry;
+    private TypeProvider $typeRegistry;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
@@ -679,12 +680,12 @@ if (PHP_VERSION_ID >= 80400) {
     /**
      * Inject the TypeRegistry instance, used for field transformation and type detection.
      */
-    public function setTypeRegistry(TypeRegistry $types): void
+    public function setTypeRegistry(TypeProvider $types): void
     {
         $this->typeRegistry = $types;
     }
 
-    private function getTypeRegistry(): TypeRegistry
+    private function getTypeRegistry(): TypeProvider
     {
         if (! isset($this->typeRegistry)) {
             $this->typeRegistry = TypeRegistry::getSharedInstance();

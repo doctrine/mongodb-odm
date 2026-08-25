@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Exception;
 use InvalidArgumentException;
@@ -23,15 +24,12 @@ class CustomTypeTest extends BaseTestCase
 {
     use CaptureDeprecationMessages;
 
-    private TypeRegistry $registry;
-
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->registry = $this->config->getTypeRegistry();
-        $this->registry->register('date_collection', new DateCollectionType());
-        $this->registry->register(Language::class, LanguageType::class);
+        $this->typeRegistry->register('date_collection', new DateCollectionType());
+        $this->typeRegistry->register(Language::class, LanguageType::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -81,11 +79,12 @@ class CustomTypeTest extends BaseTestCase
 
     public function testConvertToDatabaseValue(): void
     {
-        $lang = new Language('French', 'fr');
-        $type = $this->registry->guessTypeFromValue($lang);
+        $lang    = new Language('French', 'fr');
+        $guesser = new TypeGuesser($this->typeRegistry);
+        $type    = $guesser->guessTypeFromValue($lang);
         self::assertInstanceOf(LanguageType::class, $type);
 
-        $databaseValue = $this->registry->convertToDatabaseValue($lang);
+        $databaseValue = $guesser->convertToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
     }
 
@@ -99,12 +98,19 @@ class CustomTypeTest extends BaseTestCase
         self::assertSame(['Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.'], $deprecations);
     }
 
-    public function testConstructorNotAllowedInCustomTypeRegisteredByClassName(): void
+    public function testNoArgConstructorAllowedInCustomTypeRegisteredByClassName(): void
+    {
+        $this->typeRegistry->register('custom_with_constructor', CustomTypeWithConstructor::class);
+
+        self::assertInstanceOf(CustomTypeWithConstructor::class, $this->typeRegistry->get('custom_with_constructor'));
+    }
+
+    public function testRequiredConstructorParametersNotAllowedInCustomTypeRegisteredByClassName(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Type class "Doctrine\ODM\MongoDB\Tests\Functional\CustomTypeWithConstructor" must not have a constructor to be registered by class name. Register an instance of the class instead.');
+        $this->expectExceptionMessage('Type class "Doctrine\ODM\MongoDB\Tests\Functional\CustomTypeWithRequiredConstructor" must not have a constructor with required parameters to be registered by class name. Register an instance of the class instead.');
 
-        $this->registry->register('custom_with_constructor', CustomTypeWithConstructor::class);
+        $this->typeRegistry->register('custom_with_required_constructor', CustomTypeWithRequiredConstructor::class);
     }
 }
 
@@ -225,6 +231,13 @@ class CustomTypeWithoutClosureToPHP extends Type
 class CustomTypeWithConstructor extends Type
 {
     public function __construct()
+    {
+    }
+}
+
+class CustomTypeWithRequiredConstructor extends Type
+{
+    public function __construct(private string $required)
     {
     }
 }

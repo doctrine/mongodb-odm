@@ -12,8 +12,8 @@ class CustomMappingTest extends BaseTestCase
 {
     public function testTest(): void
     {
-        $this->config->getTypeRegistry()->register('date_with_timezone', new DateTimeWithTimezoneType());
-        $this->config->getTypeRegistry()->register('date_immutable', new DateTimeWithTimezoneType());
+        $this->typeRegistry->register('date_with_timezone', new DateTimeWithTimezoneType());
+        $this->typeRegistry->register('date_immutable', new DateTimeWithTimezoneType());
 
         $thing       = new Thing();
         $thing->date = new DateTimeImmutable('2021-01-01 00:00:00', new DateTimeZone('Africa/Tripoli'));

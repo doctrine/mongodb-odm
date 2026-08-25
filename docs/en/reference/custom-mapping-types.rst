@@ -88,20 +88,59 @@ know about it. You can create a ``TypeRegistry`` and inject it into the
 
     // in bootstrapping code
 
-    use Doctrine\ODM\MongoDB\DocumentManager;
+    use Doctrine\ODM\MongoDB\Configuration;
     use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 
-    $typeRegistry = new TypeRegistry();
+    // A registry always contains all built-in types. Types passed to the constructor are
+    // registered on top and override the built-in type of the same name.
+    $typeRegistry = new TypeRegistry([
+        'date_with_timezone' => new \My\Project\Types\DateTimeWithTimezoneType(),
+        'date_immutable' => new \My\Project\Types\DateTimeWithTimezoneType(),
+    ]);
 
-    // Adds a type. This results in an exception if type with given name is already registered
-    $typeRegistry->register('date_with_timezone', new \My\Project\Types\DateTimeWithTimezoneType());
+    // Types can also be added afterwards, by instance or by class name.
+    // Registering an existing name replaces the type, it does not throw.
+    $typeRegistry->register('date_with_timezone', \My\Project\Types\DateTimeWithTimezoneType::class);
 
-    // Overrides a type. This replaces any existing type with given name
-    $typeRegistry->register('date_immutable', new \My\Project\Types\DateTimeWithTimezoneType();
-
-    // Initialize DocumentManager with the TypeRegistry
     $config = new Configuration();
     $config->setTypeRegistry($typeRegistry);
+
+Types registered this way are scoped to the ``DocumentManager`` instances using that
+``Configuration``, so they cannot affect the rest of the application. The registry can
+only be set once on a ``Configuration``, before any metadata is loaded.
+
+``Configuration`` accepts any ``Doctrine\ODM\MongoDB\Types\TypeProvider``, so
+``TypeRegistry`` can be replaced with your own implementation. A provider only has to
+answer ``get()`` and ``has()``, and to yield its types when iterated:
+
+.. code-block:: php
+
+    <?php
+
+    foreach ($dm->getConfiguration()->getTypeRegistry() as $typeName => $type) {
+        // ...
+    }
+
+Lazy-loading types from a container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When types have their own dependencies, instantiating them all up front is wasteful.
+Pass a PSR-11 container together with a map of type names to service IDs, and each type
+is resolved on first use and then cached:
+
+.. code-block:: php
+
+    <?php
+
+    $typeRegistry = new TypeRegistry($container, [
+        'money' => 'app.odm_type.money',
+        'encrypted' => 'app.odm_type.encrypted',
+    ]);
+
+The container is never queried during construction, nor by ``has()``. Iterating the
+registry does resolve every type. The map is required whenever a container is passed:
+the registry never enumerates the container, so it cannot discover type names on its
+own. Any PSR-11 implementation works, including a Symfony service locator.
 
 As can be seen above, when registering the custom types in the configuration you
 specify a unique name for the mapping type and map that to the corresponding
@@ -187,8 +226,9 @@ Register the type in your bootstrap code::
 
 .. code-block:: php
 
-    $typeRegistry = new TypeRegistry();
-    $typeRegistry->register(Money::class, new App\MongoDB\Types\MoneyType());
+    $typeRegistry = new TypeRegistry([
+        Money::class => new App\MongoDB\Types\MoneyType(),
+    ]);
 
 By using the |FQCN| of the value object class as the type name, the type is
 automatically used when encountering a property of that class. This means you

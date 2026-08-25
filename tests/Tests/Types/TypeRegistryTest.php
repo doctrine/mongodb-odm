@@ -4,54 +4,31 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\FloatType;
 use Doctrine\ODM\MongoDB\Types\IntType;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\RawType;
+use Doctrine\ODM\MongoDB\Types\StringType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
-use Generator;
 use InvalidArgumentException;
-use MongoDB\BSON\UTCDateTime;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
-use function sprintf;
+use function iterator_to_array;
 
 class TypeRegistryTest extends BaseTestCase
 {
-    #[DataProvider('provideTypeToGuessFromValue')]
-    public function testTypeFromVariable(?string $expectedType, mixed $variable): void
+    public function testBuiltInTypesAreAvailable(): void
     {
         $registry = new TypeRegistry();
-        $type     = $registry->guessTypeFromValue($variable);
 
-        if ($expectedType === null) {
-            self::assertNull($type);
-        } elseif ($type === null) {
-            self::fail(sprintf('Type is null, expected "%s"', $expectedType));
-        } else {
-            self::assertSame($registry->get($expectedType), $type);
-        }
-    }
-
-    public static function provideTypeToGuessFromValue(): Generator
-    {
-        yield 'null' => [null, null];
-        yield 'bool' => [Type::BOOL, true];
-        yield 'int' => [Type::INT, 1];
-        yield 'float' => [Type::FLOAT, 3.14];
-        yield 'string' => [Type::STRING, 'ohai'];
-        yield 'DateTime' => [Type::DATE, new DateTime()];
-        yield 'DateTimeImmutable' => [Type::DATE_IMMUTABLE, new DateTimeImmutable()];
-        yield 'unknown object' => [
-            null,
-            new class () {
-            },
-        ];
+        self::assertTrue($registry->has(Type::STRING));
+        self::assertInstanceOf(StringType::class, $registry->get(Type::STRING));
+        self::assertSame($registry->get(Type::STRING), $registry->get(Type::STRING));
     }
 
     public function testInvalidType(): void
@@ -76,9 +53,6 @@ class TypeRegistryTest extends BaseTestCase
 
         $registry->register('my_custom_type', RawType::class);
         self::assertInstanceOf(RawType::class, $registry->get('my_custom_type'));
-
-        $map = $registry->getMap();
-        self::assertSame(RawType::class, $map['my_custom_type']);
     }
 
     public function testRegisterTypeInstance(): void
@@ -91,28 +65,17 @@ class TypeRegistryTest extends BaseTestCase
         self::assertTrue($registry->has('my_custom_type'));
         self::assertSame($typeInstance, $registry->get('my_custom_type'));
 
-        $map = $registry->getMap();
-        self::assertSame(IntType::class, $map['my_custom_type']);
-
-        // Replace it with a type by class name unsets the instance
+        // Replacing it with a type by class name unsets the instance
         $registry->register('my_custom_type', FloatType::class);
         self::assertInstanceOf(FloatType::class, $registry->get('my_custom_type'));
-
-        $map = $registry->getMap();
-        self::assertSame(FloatType::class, $map['my_custom_type']);
     }
 
-    public function testConvertToDatabaseValue(): void
+    public function testRegisterOverridesABuiltInType(): void
     {
         $registry = new TypeRegistry();
+        $registry->register(Type::STRING, new RawType());
 
-        self::assertSame(42, $registry->convertToDatabaseValue(42));
-        self::assertInstanceOf(UTCDateTime::class, $registry->convertToDatabaseValue(new DateTime()));
-
-        // Not found
-        $object = new class () {
-        };
-        self::assertSame($object, $registry->convertToDatabaseValue($object));
+        self::assertInstanceOf(RawType::class, $registry->get(Type::STRING));
     }
 
     public function testSharedInstance(): void
@@ -142,6 +105,127 @@ class TypeRegistryTest extends BaseTestCase
         $registry->register('my_type', TypeWithInheritedConstructor::class);
         self::assertInstanceOf(TypeWithInheritedConstructor::class, $registry->get('my_type'));
     }
+
+    public function testConstructorAcceptsInstancesAndClassNames(): void
+    {
+        $instance = new RawType();
+        $registry = new TypeRegistry([
+            'by_instance' => $instance,
+            'by_class' => FloatType::class,
+            Type::STRING => IntType::class,
+        ]);
+
+        self::assertSame($instance, $registry->get('by_instance'));
+        self::assertInstanceOf(FloatType::class, $registry->get('by_class'));
+        self::assertInstanceOf(IntType::class, $registry->get(Type::STRING), 'Built-in types can be overridden');
+    }
+
+    public function testConstructorRejectsServiceIdsWithoutContainer(): void
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('can only be used together with a "Psr\Container\ContainerInterface"');
+
+        new TypeRegistry([], ['my_type' => 'app.type.my_type']);
+    }
+
+    public function testConstructorRequiresServiceIdsWithContainer(): void
+    {
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('is required when passing a "Psr\Container\ContainerInterface"');
+
+        new TypeRegistry(self::createStub(ContainerInterface::class));
+    }
+
+    public function testTheContainerIsNotQueriedByHas(): void
+    {
+        $container = new InMemoryContainer(['app.type.my_type' => static fn (): RawType => self::fail('The service must not be resolved')]);
+        $registry  = new TypeRegistry($container, ['my_type' => 'app.type.my_type']);
+
+        self::assertTrue($registry->has('my_type'));
+    }
+
+    public function testTheResolvedServiceIsCached(): void
+    {
+        $container = new InMemoryContainer(['app.type.my_type' => static fn (): RawType => new RawType()]);
+        $registry  = new TypeRegistry($container, ['my_type' => 'app.type.my_type']);
+
+        self::assertSame($registry->get('my_type'), $registry->get('my_type'));
+    }
+
+    public function testContainerBackedTypeCanOverrideABuiltInType(): void
+    {
+        $instance  = new RawType();
+        $container = new InMemoryContainer(['app.type.string' => static fn (): RawType => $instance]);
+        $registry  = new TypeRegistry($container, [Type::STRING => 'app.type.string']);
+
+        self::assertSame($instance, $registry->get(Type::STRING));
+    }
+
+    public function testRegisterDiscardsAnUnresolvedServiceId(): void
+    {
+        $container = new InMemoryContainer(['app.type.my_type' => static fn (): RawType => self::fail('The service must not be resolved')]);
+        $registry  = new TypeRegistry($container, ['my_type' => 'app.type.my_type']);
+
+        $registry->register('my_type', FloatType::class);
+
+        self::assertInstanceOf(FloatType::class, $registry->get('my_type'));
+    }
+
+    public function testUnknownServiceIsReportedAsAnUnknownType(): void
+    {
+        $registry = new TypeRegistry(new InMemoryContainer([]), ['my_type' => 'app.type.missing']);
+
+        self::expectException(InvalidTypeException::class);
+        self::expectExceptionMessage('Service "app.type.missing" registered for type "my_type" was not found in the container.');
+
+        $registry->get('my_type');
+    }
+
+    public function testServiceMustResolveToAType(): void
+    {
+        $registry = new TypeRegistry(
+            new InMemoryContainer(['app.type.my_type' => static fn (): stdClass => new stdClass()]),
+            ['my_type' => 'app.type.my_type'],
+        );
+
+        self::expectException(InvalidTypeException::class);
+        self::expectExceptionMessage('must be an instance of "Doctrine\ODM\MongoDB\Types\Type", got "stdClass"');
+
+        $registry->get('my_type');
+    }
+
+    public function testIteratorYieldsEveryTypeOnce(): void
+    {
+        $instance = new RawType();
+        $registry = new TypeRegistry(
+            new InMemoryContainer(['app.type.my_type' => static fn (): RawType => $instance]),
+            ['my_type' => 'app.type.my_type', Type::STRING => 'app.type.my_type'],
+        );
+        $registry->register('other_type', FloatType::class);
+
+        $types = iterator_to_array($registry);
+
+        self::assertSame($instance, $types['my_type']);
+        self::assertSame($instance, $types[Type::STRING], 'A service may back several type names');
+        self::assertInstanceOf(FloatType::class, $types['other_type']);
+        self::assertInstanceOf(IntType::class, $types[Type::INT], 'Built-in types are yielded too');
+        self::assertCount(2 + 1 + 30 - 1, $types, 'Overridden built-in names are yielded once');
+    }
+
+    public function testIteratingPartiallyDoesNotResolveTheRemainingTypes(): void
+    {
+        $registry = new TypeRegistry(
+            new InMemoryContainer(['app.type.my_type' => static fn (): RawType => self::fail('The service must not be resolved')]),
+            ['my_type' => 'app.type.my_type'],
+        );
+        $registry->register('other_type', new FloatType());
+
+        foreach ($registry as $name => $type) {
+            self::assertSame('other_type', $name);
+
+            break;
+        }
+    }
 }
 
 class TypeWithRequiredConstructor extends IntType
@@ -153,4 +237,27 @@ class TypeWithRequiredConstructor extends IntType
 
 class TypeWithInheritedConstructor extends IntType
 {
+}
+
+final class InMemoryContainer implements ContainerInterface
+{
+    /** @param array<string, callable(): mixed> $factories */
+    public function __construct(private array $factories)
+    {
+    }
+
+    public function get(string $id): mixed
+    {
+        if (! isset($this->factories[$id])) {
+            throw new class ('Service "' . $id . '" not found.') extends InvalidArgumentException implements NotFoundExceptionInterface, ContainerExceptionInterface {
+            };
+        }
+
+        return ($this->factories[$id])();
+    }
+
+    public function has(string $id): bool
+    {
+        return isset($this->factories[$id]);
+    }
 }

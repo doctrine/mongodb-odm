@@ -21,6 +21,7 @@ use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
@@ -155,9 +156,9 @@ class Configuration
 
     private static string $version;
 
-    private ?TypeRegistry $typeRegistry = null;
+    private ?TypeProvider $typeRegistry = null;
 
-    public function setTypeRegistry(TypeRegistry $typeRegistry): void
+    public function setTypeRegistry(TypeProvider $typeRegistry): void
     {
         if ($this->typeRegistry !== null) {
             throw new LogicException('TypeRegistry is already set and cannot be changed.');
@@ -166,7 +167,7 @@ class Configuration
         $this->typeRegistry = $typeRegistry;
     }
 
-    public function getTypeRegistry(): TypeRegistry
+    public function getTypeRegistry(): TypeProvider
     {
         return $this->typeRegistry ?? TypeRegistry::getSharedInstance();
     }

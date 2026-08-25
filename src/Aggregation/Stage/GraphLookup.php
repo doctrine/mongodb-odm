@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 use LogicException;
 
@@ -258,7 +259,7 @@ class GraphLookup extends Stage
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
         }
 
-        return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue(Expr::convertExpression($expression));
+        return (new TypeGuesser($this->dm->getConfiguration()->getTypeRegistry()))->convertToDatabaseValue(Expr::convertExpression($expression));
     }
 
     private function convertTargetFieldName(string $fieldName): string

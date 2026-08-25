@@ -134,7 +134,7 @@ abstract class Type
     /**
      * Get a Type instance based on the type of the passed php variable.
      *
-     * @deprecated Use {@see TypeRegistry::guessTypeFromValue()} instead
+     * @deprecated Use {@see TypeGuesser::guessTypeFromValue()} instead
      *
      * @param mixed $variable
      */
@@ -142,11 +142,11 @@ abstract class Type
     {
         trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Type::getTypeFromPHPVariable() is deprecated without replacement.');
 
-        return TypeRegistry::getSharedInstance()->guessTypeFromValue($variable);
+        return (new TypeGuesser(TypeRegistry::getSharedInstance()))->guessTypeFromValue($variable);
     }
 
     /**
-     * @deprecated Use {@see TypeRegistry::convertToDatabaseValue()} instead
+     * @deprecated Use {@see TypeGuesser::convertToDatabaseValue()} instead
      *
      * @param mixed $value
      *
@@ -154,9 +154,9 @@ abstract class Type
      */
     public static function convertPHPToDatabaseValue($value)
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Type::convertPHPToDatabaseValue() is deprecated, use $typeRegistry->convertToDatabaseValue() instead.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Type::convertPHPToDatabaseValue() is deprecated without replacement.');
 
-        return TypeRegistry::getSharedInstance()->convertToDatabaseValue($value);
+        return (new TypeGuesser(TypeRegistry::getSharedInstance()))->convertToDatabaseValue($value);
     }
 
     /**
@@ -223,9 +223,14 @@ abstract class Type
      */
     public static function getTypesMap(): array
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Type::getTypesMap() is deprecated and will be removed in 3.0. Use TypeRegistry methods instead.');
+        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Type::getTypesMap() is deprecated and will be removed in 3.0. Iterate over the TypeRegistry instead.');
 
-        return TypeRegistry::getSharedInstance()->getMap();
+        $map = [];
+        foreach (TypeRegistry::getSharedInstance() as $name => $type) {
+            $map[$name] = $type::class;
+        }
+
+        return $map;
     }
 
     public function __toString(): string

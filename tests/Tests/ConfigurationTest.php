@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use LogicException;
 use MongoDB\Driver\Manager;
@@ -276,5 +277,15 @@ class ConfigurationTest extends TestCase
 
         self::expectException(LogicException::class);
         $c->setTypeRegistry(new TypeRegistry());
+    }
+
+    public function testAnyTypeProviderImplementationIsAccepted(): void
+    {
+        $c        = new Configuration();
+        $provider = self::createStub(TypeProvider::class);
+
+        $c->setTypeRegistry($provider);
+
+        self::assertSame($provider, $c->getTypeRegistry());
     }
 }

@@ -183,7 +183,7 @@ class TypeTest extends BaseTestCase
             self::assertInstanceOf($expectedType::class, $type, $type::class);
         }
 
-        self::assertSame(['Since doctrine/mongodb-odm 2.16: Type::getTypeFromPHPVariable() is deprecated without replacement.'], $errors);
+        self::assertSame(['Since doctrine/mongodb-odm 2.17: Type::getTypeFromPHPVariable() is deprecated without replacement.'], $errors);
     }
 
     public static function provideTypeFromPHPVariable(): Generator
@@ -235,19 +235,19 @@ class TypeTest extends BaseTestCase
         }, $errors);
 
         self::assertSame([
-            'Since doctrine/mongodb-odm 2.16: Type::hasType() is deprecated, use TypeRegistry::has() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::hasType() is deprecated, use TypeRegistry::has() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::getType() is deprecated, use TypeRegistry::get() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::getTypeFromPHPVariable() is deprecated without replacement.',
-            'Since doctrine/mongodb-odm 2.16: Type::convertPHPToDatabaseValue() is deprecated, use TypeRegistry::convertToDatabaseValue() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::addType() is deprecated, use TypeRegistry::register() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::getType() is deprecated, use TypeRegistry::get() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::registerType() is deprecated, use TypeRegistry::register() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::getType() is deprecated, use TypeRegistry::get() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::overrideType() is deprecated, use TypeRegistry::register() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::getType() is deprecated, use TypeRegistry::get() instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::getTypesMap() is deprecated and will be removed in 3.0. Use TypeRegistry methods instead.',
-            'Since doctrine/mongodb-odm 2.16: Type::overrideType() is deprecated, use TypeRegistry::register() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::hasType() is deprecated, use $typeRegistry->has() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::hasType() is deprecated, use $typeRegistry->has() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::getType() is deprecated, use $typeRegistry->get() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::getTypeFromPHPVariable() is deprecated without replacement.',
+            'Since doctrine/mongodb-odm 2.17: Type::convertPHPToDatabaseValue() is deprecated without replacement.',
+            'Since doctrine/mongodb-odm 2.17: Type::addType() is deprecated, use $typeRegistry->register() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::getType() is deprecated, use $typeRegistry->get() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::registerType() is deprecated, use $typeRegistry->register() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::getType() is deprecated, use $typeRegistry->get() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::overrideType() is deprecated, use $typeRegistry->register() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::getType() is deprecated, use $typeRegistry->get() instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::getTypesMap() is deprecated and will be removed in 3.0. Iterate over the TypeRegistry instead.',
+            'Since doctrine/mongodb-odm 2.17: Type::overrideType() is deprecated, use $typeRegistry->register() instead.',
         ], $errors);
     }
 

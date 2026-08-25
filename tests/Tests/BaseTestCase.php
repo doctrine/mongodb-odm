@@ -22,10 +22,10 @@ use MongoDB\Driver\Server;
 use MongoDB\Model\DatabaseInfo;
 use PHPUnit\Framework\TestCase;
 use ProxyManager\Proxy\LazyLoadingInterface;
-use ReflectionProperty;
 
 use function array_key_exists;
 use function array_map;
+use function assert;
 use function class_exists;
 use function count;
 use function explode;
@@ -48,6 +48,7 @@ abstract class BaseTestCase extends TestCase
     protected static ?bool $supportsTransactions;
     protected static bool $allowsTransactions = true;
     protected Configuration $config;
+    protected TypeRegistry $typeRegistry;
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
     private bool $disableFailPoints = false;
@@ -57,12 +58,14 @@ abstract class BaseTestCase extends TestCase
         $this->dm     = static::createTestDocumentManager();
         $this->config = $this->dm->getConfiguration();
         $this->uow    = $this->dm->getUnitOfWork();
+
+        $typeRegistry = $this->config->getTypeRegistry();
+        assert($typeRegistry instanceof TypeRegistry);
+        $this->typeRegistry = $typeRegistry;
     }
 
     protected function tearDown(): void
     {
-        (new ReflectionProperty(TypeRegistry::class, 'sharedInstance'))->setValue(null, null);
-
         if (! $this->dm) {
             return;
         }
@@ -111,6 +114,7 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
+        $config->setTypeRegistry(new TypeRegistry());
 
         if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
             $config->setUseNativeLazyObject(true);

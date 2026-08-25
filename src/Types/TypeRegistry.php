@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-use ArgumentCountError;
-use DateTimeImmutable;
-use DateTimeInterface;
+use Generator;
 use InvalidArgumentException;
-use Symfony\Component\Uid\Uuid;
+use IteratorAggregate;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use ReflectionClass;
 
-use function gettype;
-use function is_object;
+use function array_key_exists;
+use function array_keys;
+use function assert;
+use function get_debug_type;
 use function is_subclass_of;
 use function sprintf;
 
 /**
  * The TypeRegistry is responsible for managing the mapping types supported.
+ *
+ * @implements IteratorAggregate<string, Type>
  */
-class TypeRegistry
+final class TypeRegistry implements TypeProvider, IteratorAggregate
 {
-    /** @var array<string, class-string<Type>> The map of supported mapping types. */
-    private array $typesMap = [
+    private const BUILTIN_TYPES_MAP = [
         Type::ID => IdType::class,
         Type::INTID => IntIdType::class,
         Type::CUSTOMID => CustomIdType::class,
@@ -54,37 +58,92 @@ class TypeRegistry
         Type::VECTOR_PACKED_BIT => VectorPackedBitType::class,
     ];
 
-    /** @var array<string, Type> Cache of instantiated Type objects */
+    /** @var array<string, class-string<Type>> Types registered by class name, not instantiated yet. */
+    private array $typesMap = [];
+
+    /** @var array<string, Type> Resolved types, keyed by type name. Doubles as the resolution cache. */
     private array $typeObjects = [];
+
+    /**
+     * Map of type names to the container service IDs providing them.
+     *
+     * @var array<string, string>
+     */
+    private array $serviceIds = [];
+
+    private ?ContainerInterface $container = null;
 
     private static ?TypeRegistry $sharedInstance = null;
 
     /**
-     * Register a new type in the type map.
+     * Creates a registry pre-populated with all built-in types. Additional types passed via
+     * {@param $types} are registered on top; if a name matches a built-in type it is
+     * overridden rather than re-registered.
      *
-     * The name of the type can be a PHP class name used for automatic type detection
+     * A {@see ContainerInterface} can be passed instead of an array to lazy-load type instances
+     * from a service container. In that case, {@param $serviceIds} maps type names to the
+     * container service IDs providing them. Types are resolved on first access and cached.
+     *
+     * @param array<string, Type|class-string<Type>>|ContainerInterface $types
+     * @param array<string, string>|null                                $serviceIds Map of type names to container
+     *                                                                              service IDs. Required when passing
+     *                                                                              a container, in which case an empty
+     *                                                                              map means no types beyond the
+     *                                                                              built-in ones.
+     */
+    public function __construct(array|ContainerInterface $types = [], ?array $serviceIds = null)
+    {
+        if ($types instanceof ContainerInterface) {
+            if ($serviceIds === null) {
+                throw new InvalidArgumentException(sprintf('A map of type names to service IDs is required when passing a "%s".', ContainerInterface::class));
+            }
+
+            $this->container  = $types;
+            $this->serviceIds = $serviceIds;
+
+            return;
+        }
+
+        if ($serviceIds !== null) {
+            throw new InvalidArgumentException(sprintf('A map of type names to service IDs can only be used together with a "%s".', ContainerInterface::class));
+        }
+
+        foreach ($types as $name => $type) {
+            $this->register($name, $type);
+        }
+    }
+
+    /**
+     * Register a new type in the type map, replacing any type previously registered under that name.
+     *
+     * The name of the type can be a PHP class name used for automatic type detection.
      *
      * @param class-string<Type>|Type $type
      */
     public function register(string $name, string|Type $type): void
     {
+        // Dropping the service ID keeps an unresolved container-backed type from being
+        // instantiated only to be discarded.
+        unset($this->serviceIds[$name]);
+
         if ($type instanceof Type) {
             $this->typesMap[$name]    = $type::class;
             $this->typeObjects[$name] = $type;
-        } else {
-            if (! is_subclass_of($type, Type::class)) {
-                throw new InvalidArgumentException(sprintf('Type class "%s" must be a subclass of "%s".', $type, Type::class));
-            }
 
-            try {
-                $instance = new $type();
-            } catch (ArgumentCountError) { // @phpstan-ignore catch.neverThrown
-                throw new InvalidArgumentException(sprintf('Type class "%s" must not have a constructor with required parameters to be registered by class name. Register an instance of the class instead.', $type));
-            }
-
-            $this->typesMap[$name]    = $type;
-            $this->typeObjects[$name] = $instance;
+            return;
         }
+
+        if (! is_subclass_of($type, Type::class)) {
+            throw InvalidTypeException::invalidTypeClass($name, $type);
+        }
+
+        $constructor = (new ReflectionClass($type))->getConstructor();
+        if ($constructor !== null && $constructor->getNumberOfRequiredParameters() > 0) {
+            throw InvalidTypeException::constructorHasRequiredParameters($type);
+        }
+
+        $this->typesMap[$name] = $type;
+        unset($this->typeObjects[$name]);
     }
 
     /**
@@ -92,7 +151,10 @@ class TypeRegistry
      */
     public function has(string $name): bool
     {
-        return isset($this->typesMap[$name]);
+        return array_key_exists($name, $this->typeObjects)
+            || array_key_exists($name, $this->typesMap)
+            || array_key_exists($name, $this->serviceIds)
+            || array_key_exists($name, self::BUILTIN_TYPES_MAP);
     }
 
     /**
@@ -102,73 +164,80 @@ class TypeRegistry
      */
     public function get(string $name): Type
     {
-        if (! isset($this->typesMap[$name])) {
+        $type = $this->typeObjects[$name] ?? null;
+        if ($type !== null) {
+            return $type;
+        }
+
+        if (array_key_exists($name, $this->serviceIds)) {
+            return $this->typeObjects[$name] = $this->resolveService($name);
+        }
+
+        $class = $this->typesMap[$name] ?? self::BUILTIN_TYPES_MAP[$name] ?? null;
+        if ($class === null) {
             throw InvalidTypeException::invalidTypeName($name);
         }
 
-        return $this->typeObjects[$name] ??= new $this->typesMap[$name]();
+        return $this->typeObjects[$name] = new $class();
     }
 
     /**
-     * Determine the database representation of a value based on its PHP type.
+     * Yields every known type, keyed by type name.
+     *
+     * Types that have not been resolved yet are instantiated as they are reached, so stopping the
+     * iteration early leaves the remaining ones untouched.
+     *
+     * @return Generator<string, Type>
+     *
+     * @throws InvalidTypeException
      */
-    public function convertToDatabaseValue(mixed $value): mixed
+    public function getIterator(): Generator
     {
-        $type = $this->guessTypeFromValue($value);
+        $seen = [];
 
-        if ($type === null) {
-            return $value;
+        foreach ($this->typeObjects as $name => $type) {
+            $seen[$name] = true;
+
+            yield $name => $type;
         }
 
-        return $type->convertToDatabaseValue($value);
+        // Resolving adds to $this->typeObjects, which is why each name is tracked in $seen instead.
+        foreach ([$this->typesMap, $this->serviceIds, self::BUILTIN_TYPES_MAP] as $names) {
+            foreach (array_keys($names) as $name) {
+                if (isset($seen[$name])) {
+                    continue;
+                }
+
+                $seen[$name] = true;
+
+                yield $name => $this->get($name);
+            }
+        }
     }
 
-    /**
-     * Get a Type instance based on the type of the passed PHP variable.
-     *
-     * @internal
-     */
-    public function guessTypeFromValue(mixed $variable): ?Type
+    /** @throws InvalidTypeException */
+    private function resolveService(string $name): Type
     {
-        if (is_object($variable)) {
-            if ($variable instanceof DateTimeImmutable) {
-                return $this->get(Type::DATE_IMMUTABLE);
+        $container = $this->container;
+        assert($container !== null);
+
+        $serviceId = $this->serviceIds[$name];
+
+        try {
+            $type = $container->get($serviceId);
+        } catch (ContainerExceptionInterface $exception) {
+            if (! $container->has($serviceId)) {
+                throw InvalidTypeException::serviceNotFound($name, $serviceId, $exception);
             }
 
-            if ($variable instanceof DateTimeInterface) {
-                return $this->get(Type::DATE);
-            }
-
-            if ($variable instanceof Uuid) {
-                return $this->get(Type::UUID);
-            }
-
-            // Try the variable class as a type name
-            if ($this->has($variable::class)) {
-                return $this->get($variable::class);
-            }
-
-            return null;
+            throw $exception;
         }
 
-        return match (gettype($variable)) {
-            'integer' => $this->get(Type::INT),
-            'boolean' => $this->get(Type::BOOL),
-            'double' => $this->get(Type::FLOAT),
-            'string' => $this->get(Type::STRING),
-            default => null,
-        };
-    }
+        if (! $type instanceof Type) {
+            throw InvalidTypeException::invalidServiceType($name, $serviceId, get_debug_type($type));
+        }
 
-    /**
-     * Get the type array map which holds all registered types and the corresponding
-     * type class
-     *
-     * @return array<string, class-string<Type>>
-     */
-    public function getMap(): array
-    {
-        return $this->typesMap;
+        return $type;
     }
 
     /** @internal Do not use this method. */

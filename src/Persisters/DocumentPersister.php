@@ -24,6 +24,7 @@ use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -1102,7 +1103,7 @@ final class DocumentPersister
                 $value = $value->value;
             }
 
-            return $this->dm->getConfiguration()->getTypeRegistry()->convertToDatabaseValue($value);
+            return (new TypeGuesser($this->dm->getConfiguration()->getTypeRegistry()))->convertToDatabaseValue($value);
         }
 
         $mapping  = $class->fieldMappings[$fieldName];
