@@ -180,14 +180,7 @@ class Employee extends Person { /* ... */ }
 
 `$dm->find(Person::class, $id)` returns the correct subclass. Gotcha: an unlisted class throws `MappingException` — every class sharing the collection must be in the map. For legacy pre-discriminator data, add `#[DefaultDiscriminatorValue('person')]` (value must be a key already in the map). Gotcha: incompatible with queryable encryption's `#[Encrypt(queryType: ...)]`.
 
-**Collection-per-class inheritance** — each class gets its own collection with all inherited fields, no discriminator:
-
-```php
-#[InheritanceType('COLLECTION_PER_CLASS')]
-class Person { /* ... */ }
-```
-
-Deprecated since 2.17, with no replacement: every document class is already mapped to its own collection by default, so this `InheritanceType` mapping can simply be removed rather than migrated to something else.
+**Collection-per-class inheritance** — removed in 3.0, deprecated since 2.17, with no replacement: every document class is already mapped to its own collection by default, so the `#[InheritanceType('COLLECTION_PER_CLASS')]` mapping is simply removed rather than migrated to something else. An unknown inheritance type now throws a `MappingException`.
 
 **Sharing a collection without inheritance** — repeat the same `collection`/`discriminatorField`/`discriminatorMap` on unrelated classes; query across both via `$dm->createQuery([Article::class, Album::class])`.
 
@@ -201,7 +194,7 @@ Deprecated since 2.17, with no replacement: every document class is already mapp
 6. **Discriminator maps must list every class sharing a collection.**
 7. **`#[DefaultDiscriminatorValue]` must be a key already in the map.**
 8. **`SINGLE_COLLECTION` + queryable encryption don't mix.**
-9. **`UUID` id strategy is deprecated** — prefer `AUTO` + `uuid` field, or `CUSTOM`. **`COLLECTION_PER_CLASS` inheritance is deprecated since 2.17**, with no replacement — just remove the `InheritanceType` mapping.
+9. **`UUID` id strategy is deprecated** — prefer `AUTO` + `uuid` field, or `CUSTOM`. **`COLLECTION_PER_CLASS` inheritance is removed in 3.0** (deprecated since 2.17), with no replacement — just remove the `InheritanceType` mapping.
 10. **`#[Lock]`/`#[Version]` can't combine with `#[Id]`**; `#[Lock]` is `int`-only, `#[Version]` needs a `Versionable` type.
 11. **Lifecycle callback attributes need `#[HasLifecycleCallbacks]`** on the class or they're silently ignored.
 12. **`#[Indexes]` is deprecated** — repeat class-level `#[Index]`.

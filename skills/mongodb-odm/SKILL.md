@@ -66,7 +66,7 @@ It also accepts Atlas API service account credentials (`MDB_MCP_API_CLIENT_ID`/`
 - Use `prime()` when iterating a result set and dereferencing a reference on every row, to avoid N+1 queries.
 - Run `odm:schema:create`/`odm:schema:update` after adding/changing indexes, capped-collection options, or search/vector-search indexes — none of that happens implicitly on first insert beyond a plain collection.
 - Confirm MongoDB Atlas (or Enterprise 7.0+ for Queryable Encryption) before recommending Vector Search, Atlas Search, or Queryable Encryption.
-- **State prerequisites and deprecations in the answer itself**, not just internally: when a feature needs a minimum ODM version (e.g. `vectorSearch()` needs 2.13+, Automated Embeddings 2.17+, `pipeline()` updates 2.15+) or a specific platform, say so; when the mapping the user is reaching for is deprecated (e.g. `COLLECTION_PER_CLASS` since 2.17, the `UUID` id strategy), say that too. The user cannot see these files — an unstated prerequisite is a missing answer.
+- **State prerequisites and deprecations in the answer itself**, not just internally: when a feature needs a minimum ODM version (e.g. `vectorSearch()` needs 2.13+, Automated Embeddings 2.17+, `pipeline()` updates 2.15+) or a specific platform, say so; when the mapping the user is reaching for is deprecated or removed (e.g. `COLLECTION_PER_CLASS`, deprecated in 2.17 and removed in 3.0, or the `UUID` id strategy), say that too. The user cannot see these files — an unstated prerequisite is a missing answer.
 
 ### MUST NOT DO
 
