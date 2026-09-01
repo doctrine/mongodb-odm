@@ -8,14 +8,12 @@ use Attribute;
 
 /**
  * Loads data from a different field if the original field is not set
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD)]
-class AlsoLoad implements MappingAttribute
+final class AlsoLoad implements MappingAttribute
 {
     /** @param string|string[] $value */
-    public function __construct(public $value, public ?string $name = null)
+    public function __construct(public readonly string|array $value, public readonly ?string $name = null)
     {
     }
 }

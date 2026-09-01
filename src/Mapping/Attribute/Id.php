@@ -8,15 +8,10 @@ use Attribute;
 
 /**
  * Special field mapping to map document identifiers
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Id extends AbstractField implements MappingAttribute
+final class Id extends AbstractField implements MappingAttribute
 {
-    /** @var bool */
-    public $id = true;
-
     public function __construct(
         ?string $name = null,
         ?string $type = null,

@@ -9,11 +9,9 @@ use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 
 /**
  * Marks a document or superclass as a time series document
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class TimeSeries implements MappingAttribute
+final class TimeSeries implements MappingAttribute
 {
     public function __construct(
         public readonly string $timeField,

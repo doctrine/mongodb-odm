@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Query;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Iterator\UnrewindableIterator;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
@@ -29,13 +29,6 @@ use ReflectionProperty;
 
 class BuilderTest extends BaseTestCase
 {
-    public function testPrimeRequiresBooleanOrCallable(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->dm->createQueryBuilder(User::class)
-            ->field('groups')->prime(1);
-    }
-
     public function testReferencesGoesThroughDiscriminatorMap(): void
     {
         $f = new Feature('Smarter references');
@@ -687,9 +680,8 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => 1], $qb->debug('sort'));
     }
 
-    /** @param string|int $order */
     #[DataProvider('provideSortOrders')]
-    public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
+    public function testSortWithFieldNameAndOrder(int|string $order, int $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);
@@ -871,8 +863,7 @@ class BuilderTest extends BaseTestCase
         return new Builder($this->dm, User::class);
     }
 
-    /** @return MockObject&Expr */
-    private function getMockExpr()
+    private function getMockExpr(): Expr&MockObject
     {
         return $this->createMock(Expr::class);
     }

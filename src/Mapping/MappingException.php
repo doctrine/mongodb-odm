@@ -232,6 +232,11 @@ final class MappingException extends BaseMappingException
         return new self(sprintf("'repositoryMethod' used on '%s' in class '%s' can not be combined with skip, limit or sort.", $fieldName, $className));
     }
 
+    public static function targetDocumentCanNotBeCombinedWithDiscriminatorMap(string $className, string $fieldName): self
+    {
+        return new self(sprintf("'targetDocument' used on '%s' in class '%s' can not be combined with 'discriminatorMap'.", $fieldName, $className));
+    }
+
     public static function xmlMappingFileInvalid(string $filename, string $errorDetails): self
     {
         return new self(sprintf("The mapping file %s is invalid: \n%s", $filename, $errorDetails));

@@ -1,5 +1,9 @@
 # UPGRADE FROM 2.x to 3.0
 
+## Composer
+
+Composer version 1 is no longer supported. Please upgrade to Composer 2.
+
 ## Aggregation
 
 The new `Doctrine\ODM\MongoDB\Aggregation\Builder::getAggregation()` method
@@ -19,6 +23,11 @@ generator to generate string UUIDs. For more efficient storage of UUIDs, use the
 `Doctrine\ODM\MongoDB\Types\BinaryUuidType` type in combination with the
 `Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator` generator.
 
+## Strong typing
+
+Native type hints have been introduced throughout the codebase. As a result, several
+methods signatures have changed, including but not limited to `Types` and `Mapping` namespaces.
+
 ## Metadata
 The `Doctrine\ODM\MongoDB\Mapping\ClassMetadata` class has been marked final and
 will no longer be extendable.
@@ -26,6 +35,8 @@ will no longer be extendable.
 The `boolean`, `integer`, and `int_id` mapping types have been removed. Use the
 `bool`, `int`, and `int` types, respectively. These types behave exactly the
 same.
+
+The `Int64Type` no longer extends `IntType`.
 
 The `NOTIFY` change tracking policy has been removed, we suggest switching to
 `DEFERRED_EXPLICIT` instead. Consequentially `ClassMetadata::isChangeTrackingNotify` 
@@ -36,14 +47,27 @@ no longer implements the `PropertyChangedListener` interface.
 `AnnotationDriver` class defined in `doctrine/persistence` (or in ODM's 
 compatibility layer)
 
-## Proxy Class Name Resolution
+## Proxy Classes replaced by Native Lazy Objects
+
+The proxy system based on generated proxy classes has been replaced by
+native PHP lazy objects. The proxy classes don't exist anymore and don't
+need to be generated.
+
+The following methods have been removed from `Doctrine\ODM\MongoDB\Configuration`:
+- `setUseLazyGhostObject` and `isLazyGhostObjectEnabled`,
+- `setUseNativeLazyObject` and `isNativeLazyObjectEnabled`,
+- `setProxyDir` and `getProxyDir`,
+- `setProxyNamespace` and `getProxyNamespace`,
+- `setAutoGenerateProxyClasses` and `getAutoGenerateProxyClasses`,
+- `getProxyManagerConfiguration`,
+- `buildGhostObjectFactory`.
 
 The `Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver` interface has been
 dropped in favor of the `Doctrine\Persistence\Mapping\ProxyClassNameResolver`
 interface.
 
 The `getClassNameResolver` method in `DocumentManager` has been removed. To
-retrieve the mapped class name for any object or class string,  fetch metadata
+retrieve the mapped class name for any object or class string, fetch metadata
 for the class and read the class using `$metadata->getName()`. The metadata
 layer is aware of these proxy namespace changes and how to resolve them, so
 users should always go through the metadata layer to retrieve mapped class
@@ -57,3 +81,26 @@ to retain the functionality.
 
 `Doctrine\ODM\MongoDB\Event\OnClearEventArgs`' methods `getDocumentClass` and 
 `clearsAllDocuments` have been removed.
+
+## Remove `doctrine/cache` dependency
+
+The `doctrine/cache` library is deprecated and archived, superseded by [PSR-6](https://www.php-fig.org/psr/psr-6/).
+The methods `Configuration::getMetadataCacheImpl()` and `Configuration::setMetadataCacheImpl()`
+have been removed in favor of `Configuration::getMetadataCache()` and
+`Configuration::setMetadataCache()`, respectively.
+
+```diff
+- $dm->getConfiguration()->getMetadataCacheImpl();
++ $dm->getConfiguration()->getMetadataCache();
+```
+
+## `ClosureToPHP` in custom types
+
+The default implementation of `Type::closureToPHP` has been modified to call
+`convertToPHPValue` on the type class. This implementation was provided by
+the `ClosureToPHP` trait, which is deprecated. If you have custom types
+that use the `ClosureToPHP` trait, remove the trait.
+
+## Persistent Collections
+
+The return type of `PersistentCollection::add()` has changed from `true` to `void`.

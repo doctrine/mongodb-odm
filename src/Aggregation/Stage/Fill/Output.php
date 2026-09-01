@@ -25,13 +25,12 @@ class Output extends Stage
     /** @var array<string, array<string, mixed>> */
     private array $output = [];
 
-    public function __construct(Builder $builder, private Fill $fill)
+    public function __construct(Builder $builder, private readonly Fill $fill)
     {
         parent::__construct($builder);
     }
 
-    /** @param mixed|Expr $expression */
-    public function partitionBy($expression): Fill
+    public function partitionBy(mixed $expression): Fill
     {
         return $this->fill->partitionBy($expression);
     }
@@ -43,10 +42,10 @@ class Output extends Stage
 
     /**
      * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string           $fieldName
+     * @param int|string|null                  $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string         $fieldName
      */
-    public function sortBy($fieldName, $order = null): Fill
+    public function sortBy(array|string $fieldName, int|string|null $order = null): Fill
     {
         return $this->fill->sortBy(...func_get_args());
     }
@@ -77,8 +76,7 @@ class Output extends Stage
         return $this;
     }
 
-    /** @param mixed|Expr $expression */
-    public function value($expression): static
+    public function value(mixed $expression): static
     {
         $this->requiresCurrentField(__METHOD__);
         $this->output[$this->currentField] = [

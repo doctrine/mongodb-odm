@@ -23,10 +23,8 @@ interface SetOperators
      * The expression must resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/allElementsTrue/
-     *
-     * @param mixed|Expr $expression
      */
-    public function allElementsTrue($expression): static;
+    public function allElementsTrue(mixed $expression): static;
 
     /**
      * Evaluates an array as a set and returns true if any of the elements are
@@ -38,7 +36,7 @@ interface SetOperators
      *
      * @param mixed[]|Expr $expression
      */
-    public function anyElementTrue($expression): static;
+    public function anyElementTrue(mixed $expression): static;
 
     /**
      * Takes two sets and returns an array containing the elements that only
@@ -47,11 +45,8 @@ interface SetOperators
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setDifference/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function setDifference($expression1, $expression2): static;
+    public function setDifference(mixed $expression1, mixed $expression2): static;
 
     /**
      * Compares two or more arrays and returns true if they have the same
@@ -61,11 +56,9 @@ interface SetOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setEquals/
      *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
      */
-    public function setEquals($expression1, $expression2, ...$expressions): static;
+    public function setEquals(mixed $expression1, mixed $expression2, mixed ...$expressions): static;
 
     /**
      * Takes two or more arrays and returns an array that contains the elements
@@ -75,11 +68,9 @@ interface SetOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setIntersection/
      *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
      */
-    public function setIntersection($expression1, $expression2, ...$expressions): static;
+    public function setIntersection(mixed $expression1, mixed $expression2, mixed ...$expressions): static;
 
     /**
      * Takes two arrays and returns true when the first array is a subset of the
@@ -89,11 +80,8 @@ interface SetOperators
      * The arguments can be any valid expression as long as they each resolve to an array.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setIsSubset/
-     *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      */
-    public function setIsSubset($expression1, $expression2): static;
+    public function setIsSubset(mixed $expression1, mixed $expression2): static;
 
     /**
      * Takes two or more arrays and returns an array containing the elements
@@ -104,9 +92,7 @@ interface SetOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setUnion/
      *
-     * @param mixed|Expr $expression1
-     * @param mixed|Expr $expression2
      * @param mixed|Expr ...$expressions Additional sets
      */
-    public function setUnion($expression1, $expression2, ...$expressions): static;
+    public function setUnion(mixed $expression1, mixed $expression2, mixed ...$expressions): static;
 }

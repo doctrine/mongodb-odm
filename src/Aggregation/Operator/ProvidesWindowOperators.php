@@ -13,28 +13,28 @@ trait ProvidesWindowOperators
 {
     abstract protected function getExpr(): Expr;
 
-    public function addToSet($expression): static
+    public function addToSet(mixed $expression): static
     {
         $this->getExpr()->addToSet(...func_get_args());
 
         return $this;
     }
 
-    public function avg($expression, ...$expressions): static
+    public function avg(mixed $expression, mixed ...$expressions): static
     {
         $this->getExpr()->avg(...func_get_args());
 
         return $this;
     }
 
-    public function bottom($output, $sortBy): static
+    public function bottom(mixed $output, array $sortBy): static
     {
         $this->getExpr()->bottom(...func_get_args());
 
         return $this;
     }
 
-    public function bottomN($output, $sortBy, $n): static
+    public function bottomN(mixed $output, array $sortBy, mixed $n): static
     {
         $this->getExpr()->bottomN(...func_get_args());
 
@@ -48,14 +48,14 @@ trait ProvidesWindowOperators
         return $this;
     }
 
-    public function covariancePop($expression1, $expression2): static
+    public function covariancePop(mixed $expression1, mixed $expression2): static
     {
         $this->getExpr()->covariancePop(...func_get_args());
 
         return $this;
     }
 
-    public function covarianceSamp($expression1, $expression2): static
+    public function covarianceSamp(mixed $expression1, mixed $expression2): static
     {
         $this->getExpr()->covarianceSamp(...func_get_args());
 
@@ -69,7 +69,7 @@ trait ProvidesWindowOperators
         return $this;
     }
 
-    public function derivative($input, string $unit): static
+    public function derivative(mixed $input, string $unit): static
     {
         $this->getExpr()->derivative(...func_get_args());
 
@@ -83,91 +83,91 @@ trait ProvidesWindowOperators
         return $this;
     }
 
-    public function expMovingAvg($input, ?int $n = null, ?float $alpha = null): static
+    public function expMovingAvg(mixed $input, ?int $n = null, ?float $alpha = null): static
     {
         $this->getExpr()->expMovingAvg(...func_get_args());
 
         return $this;
     }
 
-    public function first($expression): static
+    public function first(mixed $expression): static
     {
         $this->getExpr()->first(...func_get_args());
 
         return $this;
     }
 
-    public function firstN($expression, $n): static
+    public function firstN(mixed $expression, mixed $n): static
     {
         $this->getExpr()->firstN(...func_get_args());
 
         return $this;
     }
 
-    public function integral($input, string $unit): static
+    public function integral(mixed $input, string $unit): static
     {
         $this->getExpr()->integral(...func_get_args());
 
         return $this;
     }
 
-    public function last($expression): static
+    public function last(mixed $expression): static
     {
         $this->getExpr()->last(...func_get_args());
 
         return $this;
     }
 
-    public function lastN($expression, $n): static
+    public function lastN(mixed $expression, mixed $n): static
     {
         $this->getExpr()->lastN(...func_get_args());
 
         return $this;
     }
 
-    public function linearFill($expression): static
+    public function linearFill(mixed $expression): static
     {
         $this->getExpr()->linearFill(...func_get_args());
 
         return $this;
     }
 
-    public function locf($expression): static
+    public function locf(mixed $expression): static
     {
         $this->getExpr()->locf(...func_get_args());
 
         return $this;
     }
 
-    public function max($expression, ...$expressions): static
+    public function max(mixed $expression, mixed ...$expressions): static
     {
         $this->getExpr()->max(...func_get_args());
 
         return $this;
     }
 
-    public function maxN($expression, $n): static
+    public function maxN(mixed $expression, mixed $n): static
     {
         $this->getExpr()->maxN(...func_get_args());
 
         return $this;
     }
 
-    public function min($expression, ...$expressions): static
+    public function min(mixed $expression, mixed ...$expressions): static
     {
         $this->getExpr()->min(...func_get_args());
 
         return $this;
     }
 
-    public function minN($expression, $n): static
+    public function minN(mixed $expression, mixed $n): static
     {
         $this->getExpr()->minN(...func_get_args());
 
         return $this;
     }
 
-    public function push($expression): static
+    public function push(mixed $expression): static
     {
         $this->getExpr()->push(...func_get_args());
 
@@ -181,42 +181,42 @@ trait ProvidesWindowOperators
         return $this;
     }
 
-    public function shift($output, int $by, $default = null): static
+    public function shift(mixed $output, int $by, mixed $default = null): static
     {
         $this->getExpr()->shift(...func_get_args());
 
         return $this;
     }
 
-    public function stdDevPop($expression, ...$expressions): static
+    public function stdDevPop(mixed $expression, mixed ...$expressions): static
     {
         $this->getExpr()->stdDevPop(...func_get_args());
 
         return $this;
     }
 
-    public function stdDevSamp($expression, ...$expressions): static
+    public function stdDevSamp(mixed $expression, mixed ...$expressions): static
     {
         $this->getExpr()->stdDevSamp(...func_get_args());
 
         return $this;
     }
 
-    public function sum($expression, ...$expressions): static
+    public function sum(mixed $expression, mixed ...$expressions): static
     {
         $this->getExpr()->sum(...func_get_args());
 
         return $this;
     }
 
-    public function top($output, $sortBy): static
+    public function top(mixed $output, array $sortBy): static
     {
         $this->getExpr()->top(...func_get_args());
 
         return $this;
     }
 
-    public function topN($output, $sortBy, $n): static
+    public function topN(mixed $output, array $sortBy, mixed $n): static
     {
         $this->getExpr()->topN(...func_get_args());
 

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all type aggregation pipeline operators.
  *
@@ -20,13 +18,8 @@ interface TypeOperators
      * Converts a value to a specified type.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/convert/
-     *
-     * @param mixed|Expr      $input
-     * @param mixed|Expr      $to
-     * @param mixed|Expr|null $onError
-     * @param mixed|Expr|null $onNull
      */
-    public function convert($input, $to, $onError = null, $onNull = null): static;
+    public function convert(mixed $input, mixed $to, mixed $onError = null, mixed $onNull = null): static;
 
     /**
      * Determines if the operand is an array. Returns a boolean.
@@ -34,10 +27,8 @@ interface TypeOperators
      * The <expression> can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isArray/
-     *
-     * @param mixed|Expr $expression
      */
-    public function isArray($expression): static;
+    public function isArray(mixed $expression): static;
 
     /**
      * Returns boolean true if the specified expression resolves to an integer,
@@ -45,82 +36,64 @@ interface TypeOperators
      * resolves to any other BSON type, null, or a missing field.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/isNumber/
-     *
-     * @param mixed|Expr $expression
      */
-    public function isNumber($expression): static;
+    public function isNumber(mixed $expression): static;
 
     /**
      * Converts value to a boolean.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toBool/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toBool($expression): static;
+    public function toBool(mixed $expression): static;
 
     /**
      * Converts value to a Date.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDate/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toDate($expression): static;
+    public function toDate(mixed $expression): static;
 
     /**
      * Converts value to a Decimal128.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDecimal/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toDecimal($expression): static;
+    public function toDecimal(mixed $expression): static;
 
     /**
      * Converts value to a double.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toDouble/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toDouble($expression): static;
+    public function toDouble(mixed $expression): static;
 
     /**
      * Converts value to an integer.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toInt/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toInt($expression): static;
+    public function toInt(mixed $expression): static;
 
     /**
      * Converts value to a long.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toLong/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toLong($expression): static;
+    public function toLong(mixed $expression): static;
 
     /**
      * Converts value to an ObjectId.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toObjectId/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toObjectId($expression): static;
+    public function toObjectId(mixed $expression): static;
 
     /**
      * Converts value to a string.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/toString/
-     *
-     * @param mixed|Expr $expression
      */
-    public function toString($expression): static;
+    public function toString(mixed $expression): static;
 
     /**
      * Returns a string that specifies the BSON type of the argument.
@@ -128,8 +101,6 @@ interface TypeOperators
      * The argument can be any valid expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/type/
-     *
-     * @param mixed|Expr $expression
      */
-    public function type($expression): static;
+    public function type(mixed $expression): static;
 }

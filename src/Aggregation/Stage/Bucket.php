@@ -20,10 +20,8 @@ class Bucket extends AbstractBucket
      * exclusive upper boundary for the bucket. You must specify at least two
      * boundaries. The specified values must be in ascending order and all of
      * the same type. The exception is if the values are of mixed numeric types.
-     *
-     * @param mixed $boundaries
      */
-    public function boundaries(...$boundaries): static
+    public function boundaries(mixed ...$boundaries): static
     {
         $this->boundaries = $boundaries;
 
@@ -34,10 +32,8 @@ class Bucket extends AbstractBucket
      * A literal that specifies the _id of an additional bucket that contains
      * all documents whose groupBy expression result does not fall into a bucket
      * specified by boundaries.
-     *
-     * @param mixed $default
      */
-    public function defaultBucket($default): static
+    public function defaultBucket(mixed $default): static
     {
         $this->default = $default;
 

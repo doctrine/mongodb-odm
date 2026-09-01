@@ -27,7 +27,7 @@ class UnionWith extends Stage
     /** @phpstan-var ?PipelineParamType */
     private array|Builder|Stage|null $pipeline = null;
 
-    public function __construct(Builder $builder, private DocumentManager $dm, private string $collection)
+    public function __construct(Builder $builder, private readonly DocumentManager $dm, private string $collection)
     {
         parent::__construct($builder);
 
@@ -38,11 +38,8 @@ class UnionWith extends Stage
         }
     }
 
-    /**
-     * @param array|Builder|Stage $pipeline
-     * @phpstan-param PipelineParamType $pipeline
-     */
-    public function pipeline($pipeline): static
+    /** @phpstan-param PipelineParamType $pipeline */
+    public function pipeline(array|Builder|Stage $pipeline): static
     {
         if ($pipeline instanceof Stage) {
             $this->pipeline = $pipeline->builder;

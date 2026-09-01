@@ -9,20 +9,12 @@ use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Proxy\Factory\LazyGhostProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
-use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Factory\StaticProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\CachingClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
@@ -37,11 +29,9 @@ use Throwable;
 
 use function array_search;
 use function assert;
-use function gettype;
 use function is_object;
 use function ltrim;
 use function sprintf;
-use function trigger_deprecation;
 
 /**
  * The DocumentManager class is the central access point for managing the
@@ -57,7 +47,7 @@ use function trigger_deprecation;
  */
 class DocumentManager implements ObjectManager
 {
-    public const CLIENT_TYPEMAP = ['root' => 'array', 'document' => 'array'];
+    public const array CLIENT_TYPEMAP = ['root' => 'array', 'document' => 'array'];
 
     /**
      * The Doctrine MongoDB connection instance.
@@ -92,9 +82,9 @@ class DocumentManager implements ObjectManager
     private HydratorFactory $hydratorFactory;
 
     /**
-     * The Proxy factory instance.
+     * The Lazy object factory instance.
      */
-    private ProxyFactory $proxyFactory;
+    private NativeLazyObjectFactory $lazyObjectFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
@@ -137,9 +127,6 @@ class DocumentManager implements ObjectManager
      */
     private ?FilterCollection $filterCollection = null;
 
-    /** @var ProxyClassNameResolver&ClassNameResolver  */
-    private ProxyClassNameResolver $classNameResolver;
-
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
@@ -154,31 +141,10 @@ class DocumentManager implements ObjectManager
             $this->config->getDriverOptions(),
         );
 
-        if ($this->config->isNativeLazyObjectEnabled()) {
-            $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
-                public function getRealClass(string $class): string
-                {
-                    return $class;
-                }
-
-                public function resolveClassName(string $className): string
-                {
-                    return $className;
-                }
-            };
-        } elseif ($this->config->isLazyGhostObjectEnabled()) {
-            $this->classNameResolver = new CachingClassNameResolver(new LazyGhostProxyClassNameResolver());
-        } else {
-            $this->classNameResolver = new CachingClassNameResolver(new ProxyManagerClassNameResolver($this->config));
-        }
-
         $metadataFactoryClassName = $this->config->getClassMetadataFactoryName();
         $this->metadataFactory    = new $metadataFactoryClassName();
         $this->metadataFactory->setDocumentManager($this);
         $this->metadataFactory->setConfiguration($this->config);
-        if (! $this->config->isNativeLazyObjectEnabled()) {
-            $this->metadataFactory->setProxyClassNameResolver($this->classNameResolver);
-        }
 
         $cacheDriver = $this->config->getMetadataCache();
         if ($cacheDriver) {
@@ -195,22 +161,20 @@ class DocumentManager implements ObjectManager
             $this->config->getAutoGenerateHydratorClasses(),
         );
 
-        $this->unitOfWork    = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
-        $this->schemaManager = new SchemaManager($this, $this->metadataFactory);
-        $this->proxyFactory  = match (true) {
-            $this->config->isNativeLazyObjectEnabled() => new NativeLazyObjectFactory($this),
-            $this->config->isLazyGhostObjectEnabled() => new LazyGhostProxyFactory($this, $this->config->getProxyDir(), $this->config->getProxyNamespace(), $this->config->getAutoGenerateProxyClasses()),
-            default => new StaticProxyFactory($this),
-        };
+        $this->unitOfWork        = new UnitOfWork($this, $this->eventManager, $this->hydratorFactory);
+        $this->schemaManager     = new SchemaManager($this, $this->metadataFactory);
+        $this->lazyObjectFactory = new NativeLazyObjectFactory($this);
         $this->repositoryFactory = $this->config->getRepositoryFactory();
     }
 
     /**
-     * Gets the proxy factory used by the DocumentManager to create document proxies.
+     * Gets the lazy object factory used by the DocumentManager to create document proxies.
+     *
+     * @internal
      */
-    public function getProxyFactory(): ProxyFactory
+    public function getProxyFactory(): NativeLazyObjectFactory
     {
-        return $this->proxyFactory;
+        return $this->lazyObjectFactory;
     }
 
     /**
@@ -261,19 +225,17 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Helper method to initialize a lazy loading proxy or persistent collection.
+     * Helper method to initialize a lazy object or persistent collection.
      *
      * This method is a no-op for other objects.
-     *
-     * @param object $obj
      */
-    public function initializeObject($obj): void
+    public function initializeObject(object $obj): void
     {
         $this->unitOfWork->initializeObject($obj);
     }
 
     /**
-     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     * Helper method to check whether a lazy object or persistent collection has been initialized.
      */
     public function isUninitializedObject(mixed $obj): bool
     {
@@ -310,20 +272,6 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Returns the class name resolver which is used to resolve real class names for proxy objects.
-     *
-     * @deprecated Since 2.15, the use of proxy classes is deprecated and will be removed in Doctrine ODM 3.0.
-     */
-    public function getClassNameResolver(): ClassNameResolver
-    {
-        if ($this->getConfiguration()->isNativeLazyObjectEnabled()) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.15', 'The %s() method is deprecated and will be removed in Doctrine ODM 3.0. There are no proxy classes when using native lazy objects', __METHOD__);
-        }
-
-        return $this->classNameResolver;
-    }
-
-    /**
      * Returns the metadata for a class.
      *
      * @param class-string<T> $className The class name.
@@ -332,7 +280,7 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function getClassMetadata($className): ClassMetadata
+    public function getClassMetadata(string $className): ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
@@ -451,7 +399,7 @@ class DocumentManager implements ObjectManager
      *
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
-    public function createQueryBuilder($documentName = null): Query\Builder
+    public function createQueryBuilder(array|string|null $documentName = null): Query\Builder
     {
         return new Query\Builder($this, $documentName);
     }
@@ -477,12 +425,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function persist($object): void
+    public function persist(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
         $this->unitOfWork->persist($object);
     }
@@ -497,12 +441,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function remove($object): void
+    public function remove(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
         $this->unitOfWork->remove($object);
     }
@@ -515,12 +455,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the given $object param is not an object.
      */
-    public function refresh($object): void
+    public function refresh(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
         $this->unitOfWork->refresh($object);
     }
@@ -536,12 +472,8 @@ class DocumentManager implements ObjectManager
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function detach($object): void
+    public function detach(object $object): void
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->unitOfWork->detach($object);
     }
 
@@ -557,12 +489,8 @@ class DocumentManager implements ObjectManager
      * @throws LockException
      * @throws InvalidArgumentException If the $object param is not an object.
      */
-    public function merge($object)
+    public function merge(object $object): object
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         $this->errorIfClosed();
 
         return $this->unitOfWork->merge($object);
@@ -596,7 +524,7 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function getRepository($className): ObjectRepository
+    public function getRepository(string $className): ObjectRepository
     {
         return $this->repositoryFactory->getRepository($this, $className);
     }
@@ -623,17 +551,16 @@ class DocumentManager implements ObjectManager
      * without actually loading it.
      *
      * If partial objects are allowed, this method will return a partial object that only
-     * has its identifier populated. Otherwise a proxy is returned that automatically
+     * has its identifier populated. Otherwise a lazy object is returned that automatically
      * loads itself on first access.
      *
-     * @param mixed           $identifier
      * @param class-string<T> $documentName
      *
      * @return T
      *
      * @template T of object
      */
-    public function getReference(string $documentName, $identifier): object
+    public function getReference(string $documentName, mixed $identifier): object
     {
         /** @var ClassMetadata<T> $class */
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
@@ -646,7 +573,7 @@ class DocumentManager implements ObjectManager
             return $document;
         }
 
-        $document = $this->proxyFactory->getProxy($class, $identifier);
+        $document = $this->lazyObjectFactory->getProxy($class, $identifier);
         $this->unitOfWork->registerManaged($document, $identifier, [$class->identifier => $identifier]);
 
         return $document;
@@ -669,7 +596,7 @@ class DocumentManager implements ObjectManager
      *
      * @param mixed $identifier The document identifier.
      */
-    public function getPartialReference(string $documentName, $identifier): object
+    public function getPartialReference(string $documentName, mixed $identifier): object
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
@@ -693,15 +620,12 @@ class DocumentManager implements ObjectManager
      * This is just a convenient shortcut for getRepository($documentName)->find($id).
      *
      * @param class-string<T> $className
-     * @param mixed           $id
-     * @param int             $lockMode
-     * @param int             $lockVersion
      *
      * @return T|null
      *
      * @template T of object
      */
-    public function find($className, $id, $lockMode = LockMode::NONE, $lockVersion = null): ?object
+    public function find(string $className, mixed $id, int $lockMode = LockMode::NONE, ?int $lockVersion = null): ?object
     {
         $repository = $this->getRepository($className);
         if ($repository instanceof DocumentRepository) {
@@ -716,31 +640,18 @@ class DocumentManager implements ObjectManager
      *
      * All documents that are currently managed by this DocumentManager become
      * detached.
-     *
-     * @param string|null $objectName if given, only documents of this type will get detached
      */
-    public function clear($objectName = null): void
+    public function clear(): void
     {
-        if ($objectName !== null) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.4',
-                'Calling %s() with any arguments to clear specific documents is deprecated and will not be supported in Doctrine ODM 3.0.',
-                __METHOD__,
-            );
-        }
-
-        $this->unitOfWork->clear($objectName);
+        $this->unitOfWork->clear();
     }
 
     /**
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
-     *
-     * @return void
      */
-    public function close()
+    public function close(): void
     {
         $this->clear();
         $this->closed = true;
@@ -749,18 +660,12 @@ class DocumentManager implements ObjectManager
     /**
      * Determines whether a document instance is managed in this DocumentManager.
      *
-     * @param object $object
-     *
      * @return bool TRUE if this DocumentManager currently manages the given document, FALSE otherwise.
      *
      * @throws InvalidArgumentException When the $object param is not an object.
      */
-    public function contains($object): bool
+    public function contains(object $object): bool
     {
-        if (! is_object($object)) {
-            throw new InvalidArgumentException(gettype($object));
-        }
-
         return $this->unitOfWork->isScheduledForInsert($object) ||
             $this->unitOfWork->isInIdentityMap($object) &&
             ! $this->unitOfWork->isScheduledForDelete($object);
@@ -784,7 +689,7 @@ class DocumentManager implements ObjectManager
      * @throws MappingException
      * @throws RuntimeException
      */
-    public function createReference(object $document, array $referenceMapping)
+    public function createReference(object $document, array $referenceMapping): mixed
     {
         $class = $this->getClassMetadata($document::class);
         $id    = $this->unitOfWork->getDocumentIdentifier($document);
@@ -925,7 +830,7 @@ class DocumentManager implements ObjectManager
      *
      * @return class-string
      */
-    public function getClassNameForAssociation(array $mapping, $data): string
+    public function getClassNameForAssociation(array $mapping, mixed $data): string
     {
         $discriminatorField = $mapping['discriminatorField'] ?? null;
 

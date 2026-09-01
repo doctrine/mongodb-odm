@@ -121,7 +121,7 @@ final class EncryptedFieldsMapGenerator
                 'bsonType' => match ($mapping['type']) {
                     ClassMetadata::ONE, Type::HASH => 'object',
                     ClassMetadata::MANY, Type::COLLECTION => 'array',
-                    Type::INT, Type::INTEGER => 'int',
+                    Type::INT => 'int',
                     Type::INT64 => 'long',
                     Type::FLOAT => 'double',
                     Type::DECIMAL128 => 'decimal',
@@ -130,7 +130,7 @@ final class EncryptedFieldsMapGenerator
                     Type::OBJECTID => 'objectId',
                     Type::STRING => 'string',
                     Type::BINDATA, Type::BINDATABYTEARRAY, Type::BINDATAFUNC, Type::BINDATACUSTOM, Type::BINDATAUUID, Type::BINDATAMD5, Type::BINDATAUUIDRFC4122 => 'binData',
-                    Type::BOOL, Type::BOOLEAN => 'bool',
+                    Type::BOOL => 'bool',
                     default => throw new LogicException(sprintf('Type "%s" is not supported in encrypted fields map.', $mapping['type'])),
                 },
                 'keyId' => null, // Generate the key automatically

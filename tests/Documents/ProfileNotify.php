@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 
 #[ODM\Document]
-#[ODM\ChangeTrackingPolicy('NOTIFY')]
 class ProfileNotify implements NotifyPropertyChanged
 {
     /** @var string|null */

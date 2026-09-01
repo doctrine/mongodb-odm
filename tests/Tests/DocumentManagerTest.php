@@ -8,13 +8,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Aggregation\Builder as AggregationBuilder;
 use Doctrine\ODM\MongoDB\Configuration;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
-use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\SchemaManager;
@@ -31,13 +30,13 @@ use Documents\ForumUser;
 use Documents\Tournament\Participant;
 use Documents\Tournament\ParticipantSolo;
 use Documents\User;
-use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
+use ReflectionProperty;
 use RuntimeException;
 use stdClass;
+use TypeError;
 
 class DocumentManagerTest extends BaseTestCase
 {
@@ -136,7 +135,7 @@ class DocumentManagerTest extends BaseTestCase
     #[DataProvider('dataMethodsAffectedByNoObjectArguments')]
     public function testThrowsExceptionOnNonObjectValues(string $methodName): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(TypeError::class);
         $this->dm->$methodName(null);
     }
 
@@ -250,9 +249,15 @@ class DocumentManagerTest extends BaseTestCase
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         $data    = ['type' => 'forum_user'];
 
-        $userClassMetadata                     = new ClassMetadata(ForumUser::class);
-        $userClassMetadata->discriminatorField = 'type';
-        $userClassMetadata->discriminatorMap   = ['forum_user' => ForumUser::class];
+        $userClassMetadata = new ClassMetadata(ForumUser::class);
+        new ReflectionProperty(ClassMetadata::class, 'discriminatorField')->setValue(
+            $userClassMetadata,
+            'type',
+        );
+        new ReflectionProperty(ClassMetadata::class, 'discriminatorMap')->setValue(
+            $userClassMetadata,
+            ['forum_user' => ForumUser::class],
+        );
         $this->dm->getMetadataFactory()->setMetadataFor(User::class, $userClassMetadata);
 
         self::assertEquals(ForumUser::class, $this->dm->getClassNameForAssociation($mapping, $data));
@@ -262,13 +267,6 @@ class DocumentManagerTest extends BaseTestCase
     {
         $mapping = ClassMetadataTestUtil::getFieldMapping(['targetDocument' => User::class]);
         self::assertEquals(User::class, $this->dm->getClassNameForAssociation($mapping, null));
-    }
-
-    #[IgnoreDeprecations]
-    public function testGetClassNameResolver(): void
-    {
-        $resolver = $this->dm->getClassNameResolver();
-        self::assertInstanceOf(ClassNameResolver::class, $resolver);
     }
 }
 

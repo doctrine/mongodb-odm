@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Marks a method as a postRemove lifecycle callback
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PostRemove implements MappingAttribute
+final class PostRemove implements MappingAttribute
 {
 }

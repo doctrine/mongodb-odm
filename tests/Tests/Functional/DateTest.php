@@ -37,12 +37,8 @@ class DateTest extends BaseTestCase
         self::assertEquals('09/01/1985', $user->getCreatedAt()->format('m/d/Y'));
     }
 
-    /**
-     * @param DateTime|UTCDateTime $oldValue
-     * @param DateTime|UTCDateTime $newValue
-     */
     #[DataProvider('provideEquivalentDates')]
-    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame($oldValue, $newValue): void
+    public function testDateInstanceChangeDoesNotCauseUpdateIfValueIsTheSame(DateTime|UTCDateTime $oldValue, DateTime|UTCDateTime $newValue): void
     {
         $user = new User();
         $user->setCreatedAt($oldValue);

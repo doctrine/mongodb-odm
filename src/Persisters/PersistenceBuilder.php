@@ -54,11 +54,9 @@ final class PersistenceBuilder
     /**
      * Prepares the array that is ready to be inserted to mongodb for a given object document.
      *
-     * @param object $document
-     *
      * @return array<string, mixed> $insertData
      */
-    public function prepareInsertData($document)
+    public function prepareInsertData(object $document): array
     {
         $class     = $this->dm->getClassMetadata($document::class);
         $changeset = $this->uow->getDocumentChangeSet($document);
@@ -120,11 +118,9 @@ final class PersistenceBuilder
     /**
      * Prepares the update query to update a given document object in mongodb.
      *
-     * @param object $document
-     *
      * @return array<string, mixed> $updateData
      */
-    public function prepareUpdateData($document)
+    public function prepareUpdateData(object $document): array
     {
         $class     = $this->dm->getClassMetadata($document::class);
         $changeset = $this->uow->getDocumentChangeSet($document);
@@ -230,11 +226,9 @@ final class PersistenceBuilder
     /**
      * Prepares the update query to upsert a given document object in mongodb.
      *
-     * @param object $document
-     *
      * @return array<string, mixed> $updateData
      */
-    public function prepareUpsertData($document)
+    public function prepareUpsertData(object $document): array
     {
         $class     = $this->dm->getClassMetadata($document::class);
         $changeset = $this->uow->getDocumentChangeSet($document);
@@ -323,12 +317,9 @@ final class PersistenceBuilder
      * If the document does not have an identifier and the mapping calls for a
      * simple reference, null may be returned.
      *
-     * @param object $document
      * @phpstan-param FieldMapping $referenceMapping
-     *
-     * @return array<string, mixed>|null
      */
-    public function prepareReferencedDocumentValue(array $referenceMapping, $document)
+    public function prepareReferencedDocumentValue(array $referenceMapping, object $document): mixed
     {
         return $this->dm->createReference($document, $referenceMapping);
     }
@@ -347,15 +338,13 @@ final class PersistenceBuilder
      * within this value were previously scheduled for deletion or update, they
      * will also be unscheduled.
      *
-     * @param object $embeddedDocument
-     * @param bool   $includeNestedCollections
      * @phpstan-param FieldMapping  $embeddedMapping
      *
      * @return array<string, mixed>|object
      *
      * @throws UnexpectedValueException If an unsupported associating mapping is found.
      */
-    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
+    public function prepareEmbeddedDocumentValue(array $embeddedMapping, object $embeddedDocument, bool $includeNestedCollections = false): array|object
     {
         $embeddedDocumentValue = [];
         $class                 = $this->dm->getClassMetadata($embeddedDocument::class);
@@ -466,15 +455,13 @@ final class PersistenceBuilder
     /**
      * Returns the embedded document or reference representation to be stored.
      *
-     * @param object $document
-     * @param bool   $includeNestedCollections
      * @phpstan-param FieldMapping  $mapping
      *
      * @return mixed[]|object|null
      *
      * @throws InvalidArgumentException If the mapping is neither embedded nor reference.
      */
-    public function prepareAssociatedDocumentValue(array $mapping, $document, $includeNestedCollections = false)
+    public function prepareAssociatedDocumentValue(array $mapping, object $document, bool $includeNestedCollections = false): array|object|null
     {
         if (isset($mapping['embedded'])) {
             return $this->prepareEmbeddedDocumentValue($mapping, $document, $includeNestedCollections);
@@ -491,11 +478,10 @@ final class PersistenceBuilder
      * Returns the collection representation to be stored and unschedules it afterwards.
      *
      * @param PersistentCollectionInterface<array-key, object> $coll
-     * @param bool                                             $includeNestedCollections
      *
      * @return mixed[]
      */
-    public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false)
+    public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, bool $includeNestedCollections = false): array
     {
         $mapping  = $coll->getMapping();
         $pb       = $this;

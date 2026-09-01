@@ -21,9 +21,8 @@ class IdTypeTest extends TestCase
         self::assertEquals($identifier, $type->convertToDatabaseValue((string) $identifier), 'ObjectId strings are converted to ObjectId objects');
     }
 
-    /** @param mixed $value */
     #[DataProvider('provideInvalidObjectIdConstructorArguments')]
-    public function testConvertToDatabaseValueShouldGenerateObjectIds($value): void
+    public function testConvertToDatabaseValueShouldGenerateObjectIds(mixed $value): void
     {
         $type = Type::getType('id');
 

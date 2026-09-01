@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Documents;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
 #[ODM\Document(collection: 'users_upsert_id_strategy_none')]
 #[ODM\InheritanceType('SINGLE_COLLECTION')]

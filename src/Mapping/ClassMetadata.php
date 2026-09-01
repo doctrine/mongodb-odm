@@ -17,25 +17,19 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
-use Doctrine\Persistence\Mapping\ReflectionService;
-use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use InvalidArgumentException;
 use LogicException;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
-use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionClass;
 use ReflectionEnum;
-use ReflectionMethod;
 use ReflectionNamedType;
-use ReflectionProperty;
 use Symfony\Component\Uid\UuidV1;
 use Symfony\Component\Uid\UuidV4;
 use Symfony\Component\Uid\UuidV7;
@@ -50,7 +44,6 @@ use function assert;
 use function class_exists;
 use function constant;
 use function count;
-use function debug_backtrace;
 use function enum_exists;
 use function extension_loaded;
 use function in_array;
@@ -62,16 +55,6 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
-use function trigger_deprecation;
-
-use const DEBUG_BACKTRACE_IGNORE_ARGS;
-use const PHP_VERSION_ID;
-
-if (PHP_VERSION_ID >= 80400) {
-    require_once __DIR__ . '/ClassMetadataHookedPropertiesTrait.php';
-} else {
-    require_once __DIR__ . '/ClassMetadataLegacyPropertiesTrait.php';
-}
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -298,15 +281,11 @@ if (PHP_VERSION_ID >= 80400) {
  *      keys?: ShardKeys,
  *      options?: ShardOptions
  * }
- * @final
  * @template-covariant T of object
  * @template-implements BaseClassMetadata<T>
  */
-/* final */ class ClassMetadata implements BaseClassMetadata
+final class ClassMetadata implements BaseClassMetadata
 {
-    /** @template-use ClassMetadataPropertiesTrait<T> */
-    use ClassMetadataPropertiesTrait;
-
     /* The Id generator types. */
     /**
      * AUTO means Doctrine will automatically create a new \MongoDB\BSON\ObjectId instance for us.
@@ -318,13 +297,6 @@ if (PHP_VERSION_ID >= 80400) {
      * Offers full portability.
      */
     public const GENERATOR_TYPE_INCREMENT = 2;
-
-    /**
-     * UUID means Doctrine will generate a uuid for us.
-     *
-     * @deprecated without replacement. Use a custom generator or switch to binary UUIDs.
-     */
-    public const GENERATOR_TYPE_UUID = 3;
 
     /**
      * ALNUM means Doctrine will generate Alpha-numeric string identifiers, using the INCREMENT
@@ -442,8 +414,6 @@ if (PHP_VERSION_ID >= 80400) {
     /**
      * COLLECTION_PER_CLASS means the class will be persisted according to the rules
      * of <tt>Concrete Collection Inheritance</tt>.
-     *
-     * @deprecated since 2.17 with no replacement. Each class is already mapped to its own collection.
      */
     public const INHERITANCE_TYPE_COLLECTION_PER_CLASS = 3;
 
@@ -462,15 +432,6 @@ if (PHP_VERSION_ID >= 80400) {
      * be done only for entities that were explicitly saved (through persist() or a cascade).
      */
     public const CHANGETRACKING_DEFERRED_EXPLICIT = 2;
-
-    /**
-     * NOTIFY means that Doctrine relies on the entities sending out notifications
-     * when their properties change. Such entity classes must implement
-     * the <tt>NotifyPropertyChanged</tt> interface.
-     *
-     * @deprecated
-     */
-    public const CHANGETRACKING_NOTIFY = 3;
 
     /**
      * SET means that fields will be written to the database using a $set operator
@@ -508,19 +469,92 @@ if (PHP_VERSION_ID >= 80400) {
     private const ALLOWED_GRIDFS_FIELDS = ['_id', 'chunkSize', 'filename', 'length', 'metadata', 'uploadDate'];
 
     /**
-     * READ-ONLY: The array of indexes for the document collection.
+     * The name of the mongo database the document is mapped to.
+     */
+    public private(set) ?string $db = null;
+
+    /**
+     * The name of the mongo collection the document is mapped to.
+     */
+    public private(set) ?string $collection = null;
+
+    /**
+     * The name of the GridFS bucket the document is mapped to.
+     */
+    public private(set) string $bucketName = 'fs';
+
+    /**
+     * If the collection should be a fixed size.
+     */
+    public private(set) bool $collectionCapped = false;
+
+    /**
+     * If the collection is fixed size, its size in bytes.
+     */
+    public private(set) ?int $collectionSize = null;
+
+    /**
+     * If the collection is fixed size, the maximum number of elements to store in the collection.
+     */
+    public private(set) ?int $collectionMax = null;
+
+    /**
+     * Describes how MongoDB clients route read operations to the members of a replica set.
+     */
+    public private(set) ?string $readPreference = null;
+
+    /**
+     * Associated with readPreference Allows to specify criteria so that your application can target read
+     * operations to specific members, based on custom parameters.
+     *
+     * @var array<array<string, string>>
+     */
+    public private(set) array $readPreferenceTags = [];
+
+    /**
+     * Describes the level of acknowledgement requested from MongoDB for write operations.
+     */
+    public private(set) string|int|null $writeConcern = null;
+
+    /**
+     * The field name of the document identifier.
+     */
+    public private(set) ?string $identifier = null;
+
+    /**
+     * The array of indexes for the document collection.
      *
      * @var array<array<string, mixed>>
      * @phpstan-var array<IndexMapping>
      */
-    public $indexes = [];
+    public private(set) array $indexes = [];
 
     /**
-     * READ-ONLY: The array of search indexes for the document collection.
+     * The array of search indexes for the document collection.
      *
      * @var list<SearchIndexMapping>
      */
-    public $searchIndexes = [];
+    public private(set) array $searchIndexes = [];
+
+    /**
+     * Keys and options describing shard key. Only for sharded collections.
+     *
+     * @var array<string, array>
+     * @phpstan-var ShardKey
+     */
+    public private(set) array $shardKey = [];
+
+    /**
+     * Allows users to specify a validation schema for the collection.
+     *
+     * @phpstan-var array<string, mixed>|object|null
+     */
+    private array|object|null $validator = null;
+
+    /**
+     * Determines whether to error on invalid documents or just warn about the violations but allow invalid documents to be inserted.
+     */
+    private string $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
 
     /**
      * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
@@ -528,33 +562,70 @@ if (PHP_VERSION_ID >= 80400) {
     private string $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
 
     /**
-     * READ-ONLY: The names of all subclasses (descendants).
+     * The name of the document class.
+     *
+     * @var class-string<T>|null
+     */
+    public private(set) ?string $name = null;
+
+    /**
+     * The name of the document class that is at the root of the mapped document inheritance
+     * hierarchy. If the document is not part of a mapped inheritance hierarchy this is the same
+     * as {@link $documentName}.
+     *
+     * @var class-string|null
+     */
+    public private(set) ?string $rootDocumentName = null;
+
+    /**
+     * The name of the custom repository class used for the document class.
+     * (Optional).
+     *
+     * @var class-string|null
+     */
+    public private(set) ?string $customRepositoryClassName = null;
+
+    /**
+     * The names of the parent classes (ancestors).
      *
      * @var list<class-string>
      */
-    public $subClasses = [];
+    public private(set) array $parentClasses = [];
 
     /**
-     * The ReflectionProperty instances of the mapped class.
+     * The names of all subclasses (descendants).
      *
-     * @deprecated Since 2.13, use $propertyAccessors instead.
-     *
-     * @var LegacyReflectionFields|array<ReflectionProperty>
+     * @var list<class-string>
      */
-    public $reflFields = [];
+    public private(set) array $subClasses = [];
 
     /** @var array<string, PropertyAccessors\PropertyAccessor> */
-    public array $propertyAccessors = [];
+    public private(set) array $propertyAccessors = [];
 
     /**
-     * READ-ONLY: The Id generator options.
+     * The inheritance mapping type used by the class.
+     */
+    public private(set) int $inheritanceType = self::INHERITANCE_TYPE_NONE;
+
+    /**
+     * The Id generator type used by the class.
+     */
+    public private(set) int $generatorType = self::GENERATOR_TYPE_AUTO;
+
+    /**
+     * The Id generator options.
      *
      * @var array<string, mixed>
      */
-    public $generatorOptions = [];
+    public private(set) array $generatorOptions = [];
 
     /**
-     * READ-ONLY: The field mappings of the class.
+     * The ID generator used for generating IDs for this class.
+     */
+    public private(set) ?IdGenerator $idGenerator = null;
+
+    /**
+     * The field mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
      * The mapping definition array has the following values:
@@ -569,46 +640,148 @@ if (PHP_VERSION_ID >= 80400) {
      * @var array<string, mixed>
      * @phpstan-var array<string, FieldMapping>
      */
-    public $fieldMappings = [];
+    public private(set) array $fieldMappings = [];
 
     /**
-     * READ-ONLY: The association mappings of the class.
+     * The association mappings of the class.
      * Keys are field names and values are mapping definitions.
      *
      * @var array<string, mixed>
      * @phpstan-var array<string, AssociationFieldMapping>
      */
-    public $associationMappings = [];
+    public private(set) array $associationMappings = [];
 
     /**
-     * READ-ONLY: Array of fields to also load with a given method.
+     * Array of fields to also load with a given method.
      *
      * @var array<string, mixed[]>
      */
-    public $alsoLoadMethods = [];
+    public private(set) array $alsoLoadMethods = [];
 
     /**
-     * READ-ONLY: The registered lifecycle callbacks for documents of this class.
+     * The registered lifecycle callbacks for documents of this class.
      *
      * @var array<string, list<string>>
      */
-    public $lifecycleCallbacks = [];
+    public private(set) array $lifecycleCallbacks = [];
 
     /**
-     * READ-ONLY: The discriminator map of all mapped classes in the hierarchy.
+     * The discriminator value of this class.
+     *
+     * <b>This does only apply to the JOINED and SINGLE_COLLECTION inheritance mapping strategies
+     * where a discriminator field is used.</b>
+     *
+     * @see discriminatorField
+     *
+     * @var class-string|string|int|null
+     */
+    public private(set) string|int|null $discriminatorValue = null;
+
+    /**
+     * The discriminator map of all mapped classes in the hierarchy.
      *
      * <b>This does only apply to the SINGLE_COLLECTION inheritance mapping strategy
      * where a discriminator field is used.</b>
      *
      * @see discriminatorField
      *
-     * @var array<string, class-string>
+     * @var array<string|int, class-string>
      */
-    public $discriminatorMap = [];
+    public private(set) array $discriminatorMap = [];
+
+    /**
+     * The definition of the discriminator field used in SINGLE_COLLECTION
+     * inheritance mapping.
+     */
+    public private(set) ?string $discriminatorField = null;
+
+    /**
+     * The default value for discriminatorField in case it's not set in the document
+     *
+     * @see discriminatorField
+     */
+    public private(set) string|int|null $defaultDiscriminatorValue = null;
+
+    /**
+     * Whether this class describes the mapping of a mapped superclass.
+     */
+    public private(set) bool $isMappedSuperclass = false;
+
+    /**
+     * Whether this class describes the mapping of a embedded document.
+     */
+    public private(set) bool $isEmbeddedDocument = false;
+
+    /**
+     * Whether this class describes the mapping of an aggregation result document.
+     */
+    public private(set) bool $isQueryResultDocument = false;
+
+    /**
+     * Whether this class describes the mapping of a database view.
+     */
+    public private(set) bool $isView = false;
+
+    /**
+     * Whether this class describes the mapping of a gridFS file
+     */
+    public private(set) bool $isFile = false;
+
+    /**
+     * The default chunk size in bytes for the file
+     */
+    public private(set) ?int $chunkSizeBytes = null;
+
+    /**
+     * The policy used for change-tracking on entities of this class.
+     */
+    public private(set) int $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
+
+    /**
+     * A flag for whether or not instances of this class are to be versioned
+     * with optimistic locking.
+     */
+    public private(set) bool $isVersioned = false;
+
+    /**
+     * The name of the field which is used for versioning in optimistic locking (if any).
+     */
+    public private(set) ?string $versionField = null;
+
+    /**
+     * A flag for whether or not instances of this class are to allow pessimistic
+     * locking.
+     */
+    public private(set) bool $isLockable = false;
+
+    /**
+     * The name of the field which is used for locking a document.
+     */
+    public private(set) mixed $lockField = null;
+
+    /**
+     * The ReflectionClass instance of the mapped class.
+     *
+     * @var ReflectionClass<T>
+     */
+    public private(set) ReflectionClass $reflClass;
+
+    /**
+     * A flag for whether or not this document is read-only.
+     */
+    public private(set) bool $isReadOnly = false;
+
+    /**
+     * A flag for whether or not this document has encrypted fields.
+     */
+    public private(set) bool $isEncrypted = false;
+
+    /**
+     * Stores metadata about the time series collection
+     */
+    public private(set) ?TimeSeries $timeSeriesOptions = null;
 
     private InstantiatorInterface $instantiator;
-
-    private ReflectionService $reflectionService;
 
     /** @var class-string|null */
     private ?string $rootClass;
@@ -621,11 +794,9 @@ if (PHP_VERSION_ID >= 80400) {
      */
     public function __construct(string $documentName)
     {
-        $this->name              = $documentName;
-        $this->rootDocumentName  = $documentName;
-        $this->reflectionService = new RuntimeReflectionService();
-        $this->reflClass         = new ReflectionClass($documentName);
-        $this->reflFields        = new LegacyReflectionFields($this, $this->reflectionService);
+        $this->name             = $documentName;
+        $this->rootDocumentName = $documentName;
+        $this->reflClass        = new ReflectionClass($documentName);
         $this->setCollection($this->reflClass->getShortName());
         $this->instantiator = new Instantiator();
     }
@@ -634,12 +805,8 @@ if (PHP_VERSION_ID >= 80400) {
      * Helper method to get reference id of ref* type references
      *
      * @internal
-     *
-     * @param mixed $reference
-     *
-     * @return mixed
      */
-    public static function getReferenceId($reference, string $storeAs)
+    public static function getReferenceId(mixed $reference, string $storeAs): mixed
     {
         return $storeAs === self::REFERENCE_STORE_AS_ID ? $reference : $reference[self::getReferencePrefix($storeAs) . 'id'];
     }
@@ -677,8 +844,7 @@ if (PHP_VERSION_ID >= 80400) {
         return $this->reflClass;
     }
 
-    /** @param string $fieldName */
-    public function isIdentifier($fieldName): bool
+    public function isIdentifier(string $fieldName): bool
     {
         return $this->identifier === $fieldName;
     }
@@ -725,8 +891,7 @@ if (PHP_VERSION_ID >= 80400) {
         return [$this->identifier];
     }
 
-    /** @param string $fieldName */
-    public function hasField($fieldName): bool
+    public function hasField(string $fieldName): bool
     {
         return isset($this->fieldMappings[$fieldName]);
     }
@@ -767,8 +932,7 @@ if (PHP_VERSION_ID >= 80400) {
      *
      * @param mixed[]|null $arguments
      *
-     * @throws InvalidArgumentException If document class is not this class or
-     *                                   a Proxy of this class.
+     * @throws InvalidArgumentException If the document class is not this class.
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
@@ -776,7 +940,7 @@ if (PHP_VERSION_ID >= 80400) {
             return;
         }
 
-        if (! $document instanceof $this->name) {
+        if ($this->name !== null && ! $document instanceof $this->name) {
             throw new InvalidArgumentException(sprintf('Expected document class "%s"; found: "%s"', $this->name, $document::class));
         }
 
@@ -845,7 +1009,7 @@ if (PHP_VERSION_ID >= 80400) {
      *
      * @param array<string, mixed>|string $fields Database field name(s)
      */
-    public function registerAlsoLoadMethod(string $method, $fields): void
+    public function registerAlsoLoadMethod(string $method, array|string $fields): void
     {
         $this->alsoLoadMethods[$method] = is_array($fields) ? $fields : [$fields];
     }
@@ -869,12 +1033,10 @@ if (PHP_VERSION_ID >= 80400) {
      * are only used to discern the hydration class and are not mapped to class
      * properties.
      *
-     * @param array{name?: string, fieldName?: string}|string|null $discriminatorField
-     *
      * @throws MappingException If the discriminator field conflicts with the
      *                          "name" attribute of a mapped field.
      */
-    public function setDiscriminatorField($discriminatorField): void
+    public function setDiscriminatorField(?string $discriminatorField): void
     {
         if ($this->isFile) {
             throw MappingException::discriminatorNotAllowedForGridFS($this->name);
@@ -884,21 +1046,6 @@ if (PHP_VERSION_ID >= 80400) {
             $this->discriminatorField = null;
 
             return;
-        }
-
-        // Handle array argument with name/fieldName keys for BC
-        if (is_array($discriminatorField)) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.16',
-                'Passing array to %s() is deprecated, pass string instead.',
-                __FUNCTION__,
-            );
-            if (isset($discriminatorField['name'])) {
-                $discriminatorField = $discriminatorField['name'];
-            } elseif (isset($discriminatorField['fieldName'])) {
-                $discriminatorField = $discriminatorField['fieldName'];
-            }
         }
 
         foreach ($this->fieldMappings as $fieldMapping) {
@@ -1155,13 +1302,13 @@ if (PHP_VERSION_ID >= 80400) {
     }
 
     /** @return array<string, mixed>|object|null */
-    public function getValidator()
+    public function getValidator(): array|object|null
     {
         return $this->validator;
     }
 
     /** @param array<string, mixed>|object|null $validator */
-    public function setValidator($validator): void
+    public function setValidator(array|object|null $validator): void
     {
         $this->validator = $validator;
     }
@@ -1199,16 +1346,13 @@ if (PHP_VERSION_ID >= 80400) {
 
     /**
      * Sets the write concern used by this class.
-     *
-     * @param string|int|null $writeConcern
      */
-    public function setWriteConcern($writeConcern): void
+    public function setWriteConcern(string|int|null $writeConcern): void
     {
         $this->writeConcern = $writeConcern;
     }
 
-    /** @return int|string|null */
-    public function getWriteConcern()
+    public function getWriteConcern(): string|int|null
     {
         return $this->writeConcern;
     }
@@ -1246,29 +1390,6 @@ if (PHP_VERSION_ID >= 80400) {
     }
 
     /**
-     * Whether the change tracking policy of this class is "notify".
-     *
-     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.4. Please use DEFERRED_EXPLICIT tracking
-     * policy and isChangeTrackingDeferredImplicit method to detect it.
-     */
-    public function isChangeTrackingNotify(): bool
-    {
-        return $this->changeTrackingPolicy === self::CHANGETRACKING_NOTIFY;
-    }
-
-    /**
-     * Gets the ReflectionProperties of the mapped class.
-     *
-     * @deprecated Since 2.13, use getPropertyAccessors() instead.
-     *
-     * @return array<ReflectionProperty>|LegacyReflectionFields
-     */
-    public function getReflectionProperties(): array|LegacyReflectionFields
-    {
-        return $this->reflFields;
-    }
-
-    /**
      * Gets the ReflectionProperties of the mapped class.
      *
      * @return PropertyAccessor[] An array of PropertyAccessor instances.
@@ -1276,16 +1397,6 @@ if (PHP_VERSION_ID >= 80400) {
     public function getPropertyAccessors(): array
     {
         return $this->propertyAccessors;
-    }
-
-    /**
-     * Gets a ReflectionProperty for a specific field of the mapped class.
-     *
-     * @deprecated Since 2.13, use getPropertyAccessor() instead.
-     */
-    public function getReflectionProperty(string $name): ReflectionProperty
-    {
-        return $this->reflFields[$name];
     }
 
     public function getPropertyAccessor(string $name): PropertyAccessor|null
@@ -1330,7 +1441,7 @@ if (PHP_VERSION_ID >= 80400) {
      *
      * @throws InvalidArgumentException
      */
-    public function setCollection($name): void
+    public function setCollection(array|string $name): void
     {
         if (is_array($name)) {
             if (! isset($name['name'])) {
@@ -1583,10 +1694,8 @@ if (PHP_VERSION_ID >= 80400) {
 
     /**
      * Checks whether the class has a mapped association (embed or reference) with the given field name.
-     *
-     * @param string $fieldName
      */
-    public function hasAssociation($fieldName): bool
+    public function hasAssociation(string $fieldName): bool
     {
         return $this->hasReference($fieldName) || $this->hasEmbed($fieldName);
     }
@@ -1594,10 +1703,8 @@ if (PHP_VERSION_ID >= 80400) {
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a single valued association.
-     *
-     * @param string $fieldName
      */
-    public function isSingleValuedAssociation($fieldName): bool
+    public function isSingleValuedAssociation(string $fieldName): bool
     {
         return $this->isSingleValuedReference($fieldName) || $this->isSingleValuedEmbed($fieldName);
     }
@@ -1605,10 +1712,8 @@ if (PHP_VERSION_ID >= 80400) {
     /**
      * Checks whether the class has a mapped reference or embed for the specified field and
      * is a collection valued association.
-     *
-     * @param string $fieldName
      */
-    public function isCollectionValuedAssociation($fieldName): bool
+    public function isCollectionValuedAssociation(string $fieldName): bool
     {
         return $this->isCollectionValuedReference($fieldName) || $this->isCollectionValuedEmbed($fieldName);
     }
@@ -1659,12 +1764,8 @@ if (PHP_VERSION_ID >= 80400) {
 
     /**
      * Casts the identifier to its portable PHP type.
-     *
-     * @param mixed $id
-     *
-     * @return mixed $id
      */
-    public function getPHPIdentifierValue($id)
+    public function getPHPIdentifierValue(mixed $id): mixed
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
@@ -1673,12 +1774,8 @@ if (PHP_VERSION_ID >= 80400) {
 
     /**
      * Casts the identifier to its database type.
-     *
-     * @param mixed $id
-     *
-     * @return mixed $id
      */
-    public function getDatabaseIdentifierValue($id)
+    public function getDatabaseIdentifierValue(mixed $id): mixed
     {
         $idType = $this->fieldMappings[$this->identifier]['type'];
 
@@ -1689,10 +1786,8 @@ if (PHP_VERSION_ID >= 80400) {
      * Sets the document identifier of a document.
      *
      * The value will be converted to a PHP type before being set.
-     *
-     * @param mixed $id
      */
-    public function setIdentifierValue(object $document, $id): void
+    public function setIdentifierValue(object $document, mixed $id): void
     {
         $id = $this->getPHPIdentifierValue($id);
         $this->propertyAccessors[$this->identifier]->setValue($document, $id);
@@ -1700,10 +1795,8 @@ if (PHP_VERSION_ID >= 80400) {
 
     /**
      * Gets the document identifier as a PHP type.
-     *
-     * @return mixed $id
      */
-    public function getIdentifierValue(object $document)
+    public function getIdentifierValue(object $document): mixed
     {
         return $this->propertyAccessors[$this->identifier]->getValue($document);
     }
@@ -1712,56 +1805,36 @@ if (PHP_VERSION_ID >= 80400) {
      * Since MongoDB only allows exactly one identifier field this is a proxy
      * to {@see getIdentifierValue()} and returns an array with the identifier
      * field as a key.
-     *
-     * @param object $object
      */
-    public function getIdentifierValues($object): array
+    public function getIdentifierValues(object $object): array
     {
         return [$this->identifier => $this->getIdentifierValue($object)];
     }
 
     /**
      * Get the document identifier object as a database type.
-     *
-     * @return mixed $id
      */
-    public function getIdentifierObject(object $document)
+    public function getIdentifierObject(object $document): mixed
     {
         return $this->getDatabaseIdentifierValue($this->getIdentifierValue($document));
     }
 
     /**
      * Sets the specified field to the specified value on the given document.
-     *
-     * @param mixed $value
      */
-    public function setFieldValue(object $document, string $field, $value): void
+    public function setFieldValue(object $document, string $field, mixed $value): void
     {
-        if ($document instanceof InternalProxy && ! $document->__isInitialized()) {
-            //property changes to an uninitialized proxy will not be tracked or persisted,
-            //so the proxy needs to be loaded first.
-            $document->__load();
-        } elseif ($document instanceof GhostObjectInterface && ! $document->isProxyInitialized()) {
-            $document->initializeProxy();
-        } elseif (PHP_VERSION_ID >= 80400) {
-            $this->reflClass->initializeLazyObject($document);
-        }
+        $this->reflClass->initializeLazyObject($document);
 
         $this->propertyAccessors[$field]->setValue($document, $value);
     }
 
     /**
      * Gets the specified field's value off the given document.
-     *
-     * @return mixed
      */
-    public function getFieldValue(object $document, string $field)
+    public function getFieldValue(object $document, string $field): mixed
     {
-        if ($document instanceof InternalProxy && $field !== $this->identifier && ! $document->__isInitialized()) {
-            $document->__load();
-        } elseif ($document instanceof GhostObjectInterface && $field !== $this->identifier && ! $document->isProxyInitialized()) {
-            $document->initializeProxy();
-        } elseif (PHP_VERSION_ID >= 80400 && $field !== $this->identifier && $this->reflClass->isUninitializedLazyObject($document)) {
+        if ($field !== $this->identifier) {
             $this->reflClass->initializeLazyObject($document);
         }
 
@@ -1867,13 +1940,9 @@ if (PHP_VERSION_ID >= 80400) {
 
     /**
      * Checks whether the mapped class uses the COLLECTION_PER_CLASS inheritance mapping strategy.
-     *
-     * @deprecated since 2.17 with no replacement.
      */
     public function isInheritanceTypeCollectionPerClass(): bool
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.17', 'The method %s() is deprecated with no replacement.', __FUNCTION__);
-
         return $this->inheritanceType === self::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
     }
 
@@ -1921,18 +1990,6 @@ if (PHP_VERSION_ID >= 80400) {
     public function isIdGeneratorIncrement(): bool
     {
         return $this->generatorType === self::GENERATOR_TYPE_INCREMENT;
-    }
-
-    /**
-     * Checks whether the class will generate a uuid id.
-     *
-     * @deprecated Since 2.15, the UUID id generator is deprecated. Use GENERATOR_TYPE_AUTO with the UUID type instead.
-     */
-    public function isIdGeneratorUuid(): bool
-    {
-        trigger_deprecation('doctrine/mongodb-odm', '2.15', 'The method %s() is deprecated. Use GENERATOR_TYPE_AUTO with the UUID type instead.', __FUNCTION__);
-
-        return $this->generatorType === self::GENERATOR_TYPE_UUID;
     }
 
     /**
@@ -2013,6 +2070,21 @@ if (PHP_VERSION_ID >= 80400) {
         $this->lockField = $lockField;
     }
 
+    public function setPropertyAccessor(string $name, PropertyAccessors\PropertyAccessor $accessor): void
+    {
+        $this->propertyAccessors[$name] = $accessor;
+    }
+
+    public function unsetFieldMapping(string $fieldName): void
+    {
+        unset($this->fieldMappings[$fieldName]);
+    }
+
+    public function unsetAssociationMapping(string $fieldName): void
+    {
+        unset($this->associationMappings[$fieldName]);
+    }
+
     /**
      * Marks this class as read only, no change tracking is applied to it.
      */
@@ -2026,13 +2098,8 @@ if (PHP_VERSION_ID >= 80400) {
         return $this->rootClass;
     }
 
-    /** @deprecated Use the isView property instead */
     public function isView(): bool
     {
-        if (PHP_VERSION_ID >= 80400) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.17', 'The %s::isView() method is deprecated and will be removed in version 3.0. Use the isView property instead.');
-        }
-
         return $this->isView;
     }
 
@@ -2059,6 +2126,31 @@ if (PHP_VERSION_ID >= 80400) {
         $this->timeSeriesOptions = $options;
     }
 
+    public function markAsFile(): void
+    {
+        $this->isFile = true;
+    }
+
+    public function markAsEncrypted(): void
+    {
+        $this->isEncrypted = true;
+    }
+
+    public function markAsMappedSuperclass(): void
+    {
+        $this->isMappedSuperclass = true;
+    }
+
+    public function markAsEmbeddedDocument(): void
+    {
+        $this->isEmbeddedDocument = true;
+    }
+
+    public function markAsQueryResultDocument(): void
+    {
+        $this->isQueryResultDocument = true;
+    }
+
     public function getFieldNames(): array
     {
         return array_keys($this->fieldMappings);
@@ -2069,18 +2161,13 @@ if (PHP_VERSION_ID >= 80400) {
         return array_keys($this->associationMappings);
     }
 
-    /** @param string $fieldName */
-    public function getTypeOfField($fieldName): ?string
+    public function getTypeOfField(string $fieldName): ?string
     {
         return $this->fieldMappings[$fieldName]['type'] ?? null;
     }
 
-    /**
-     * @param string $assocName
-     *
-     * @return class-string|null
-     */
-    public function getAssociationTargetClass($assocName): ?string
+    /** @return class-string|null */
+    public function getAssociationTargetClass(string $assocName): ?string
     {
         if (! isset($this->associationMappings[$assocName])) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName . "' is not an association.");
@@ -2107,14 +2194,12 @@ if (PHP_VERSION_ID >= 80400) {
         return $this->associationMappings[$assocName]['collectionClass'];
     }
 
-    /** @param string $assocName */
-    public function isAssociationInverseSide($assocName): bool
+    public function isAssociationInverseSide(string $assocName): bool
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
 
-    /** @param string $assocName */
-    public function getAssociationMappedByTargetField($assocName): string
+    public function getAssociationMappedByTargetField(string $assocName): string
     {
         throw new BadMethodCallException(__METHOD__ . '() is not implemented yet.');
     }
@@ -2254,13 +2339,7 @@ if (PHP_VERSION_ID >= 80400) {
         }
 
         if (isset($mapping['targetDocument']) && isset($mapping['discriminatorMap'])) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.2',
-                'Mapping both "targetDocument" and "discriminatorMap" on field "%s" in class "%s" is deprecated. Only one of them can be used at a time',
-                $mapping['fieldName'],
-                $this->name,
-            );
+            throw MappingException::targetDocumentCanNotBeCombinedWithDiscriminatorMap($this->name, $mapping['fieldName']);
         }
 
         if (isset($mapping['reference']) && $mapping['type'] === self::ONE) {
@@ -2344,21 +2423,6 @@ if (PHP_VERSION_ID >= 80400) {
         $this->checkDuplicateMapping($mapping);
         $this->typeRequirementsAreMet($mapping);
 
-        $deprecatedTypes = [
-            Type::BOOLEAN => Type::BOOL,
-            Type::INTEGER => Type::INT,
-            Type::INTID => Type::INT,
-        ];
-        if (isset($deprecatedTypes[$mapping['type']])) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.1',
-                'The "%s" mapping type is deprecated. Use "%s" instead.',
-                $mapping['type'],
-                $deprecatedTypes[$mapping['type']],
-            );
-        }
-
         $this->fieldMappings[$mapping['fieldName']] = $mapping;
         if (isset($mapping['association'])) {
             $this->associationMappings[$mapping['fieldName']] = $mapping;
@@ -2366,7 +2430,7 @@ if (PHP_VERSION_ID >= 80400) {
 
         $accessor = PropertyAccessorFactory::createPropertyAccessor($this->name, $mapping['fieldName']);
 
-        if (PHP_VERSION_ID >= 80400 && $accessor->getUnderlyingReflector()->isVirtual()) {
+        if ($accessor->getUnderlyingReflector()->isVirtual()) {
             throw MappingException::mappingVirtualPropertyNotAllowed($this->name, $mapping['fieldName']);
         }
 
@@ -2397,156 +2461,128 @@ if (PHP_VERSION_ID >= 80400) {
      *
      * Parts that are also NOT serialized because they cannot be properly unserialized:
      *      - reflClass (ReflectionClass)
-     *      - reflFields (ReflectionProperty array)
      *      - propertyAccessors (ReflectionProperty array)
      *
      * @return array<string, mixed> The serialized data.
      */
     public function __serialize(): array
     {
-        if (static::class !== self::class && (new ReflectionMethod($this, '__sleep'))->getDeclaringClass() !== self::class) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.16',
-                'The method __sleep() is deprecated. Implement and use %s() instead.',
-                __METHOD__,
-            );
+        $data = [
+            'fieldMappings' => $this->fieldMappings,
+            'associationMappings' => $this->associationMappings,
+            'identifier' => $this->identifier,
+            'name' => $this->name,
+            'db' => $this->db,
+            'collection' => $this->collection,
+            'readPreference' => $this->readPreference,
+            'readPreferenceTags' => $this->readPreferenceTags,
+            'writeConcern' => $this->writeConcern,
+            'rootDocumentName' => $this->rootDocumentName,
+            'generatorType' => $this->generatorType,
+            'generatorOptions' => $this->generatorOptions,
+            'idGenerator' => $this->idGenerator,
+            'indexes' => $this->indexes,
+            'shardKey' => $this->shardKey,
+            'timeSeriesOptions' => $this->timeSeriesOptions,
+        ];
+
+        // The rest of the metadata is only serialized if necessary.
+        if ($this->changeTrackingPolicy !== self::CHANGETRACKING_DEFERRED_IMPLICIT) {
+            $data['changeTrackingPolicy'] = $this->changeTrackingPolicy;
         }
 
-        $data = [];
-        foreach ($this->__sleep() as $field) {
-            $data[$field] = $this->$field;
+        if ($this->customRepositoryClassName) {
+            $data['customRepositoryClassName'] = $this->customRepositoryClassName;
+        }
+
+        if ($this->inheritanceType !== self::INHERITANCE_TYPE_NONE || $this->discriminatorField !== null) {
+            $data['inheritanceType']           = $this->inheritanceType;
+            $data['discriminatorField']        = $this->discriminatorField;
+            $data['discriminatorValue']        = $this->discriminatorValue;
+            $data['discriminatorMap']          = $this->discriminatorMap;
+            $data['defaultDiscriminatorValue'] = $this->defaultDiscriminatorValue;
+            $data['parentClasses']             = $this->parentClasses;
+            $data['subClasses']                = $this->subClasses;
+        }
+
+        if ($this->isMappedSuperclass) {
+            $data['isMappedSuperclass'] = $this->isMappedSuperclass;
+        }
+
+        if ($this->isEmbeddedDocument) {
+            $data['isEmbeddedDocument'] = $this->isEmbeddedDocument;
+        }
+
+        if ($this->isQueryResultDocument) {
+            $data['isQueryResultDocument'] = $this->isQueryResultDocument;
+        }
+
+        if ($this->isView) {
+            $data['isView']    = $this->isView;
+            $data['rootClass'] = $this->rootClass;
+        }
+
+        if ($this->isFile) {
+            $data['isFile']         = $this->isFile;
+            $data['bucketName']     = $this->bucketName;
+            $data['chunkSizeBytes'] = $this->chunkSizeBytes;
+        }
+
+        if ($this->isVersioned) {
+            $data['isVersioned']  = $this->isVersioned;
+            $data['versionField'] = $this->versionField;
+        }
+
+        if ($this->isLockable) {
+            $data['isLockable'] = $this->isLockable;
+            $data['lockField']  = $this->lockField;
+        }
+
+        if ($this->lifecycleCallbacks) {
+            $data['lifecycleCallbacks'] = $this->lifecycleCallbacks;
+        }
+
+        if ($this->collectionCapped) {
+            $data['collectionCapped'] = $this->collectionCapped;
+            $data['collectionSize']   = $this->collectionSize;
+            $data['collectionMax']    = $this->collectionMax;
+        }
+
+        if ($this->isReadOnly) {
+            $data['isReadOnly'] = $this->isReadOnly;
+        }
+
+        if ($this->validator !== null) {
+            $data['validator']        = $this->validator;
+            $data['validationAction'] = $this->validationAction;
+            $data['validationLevel']  = $this->validationLevel;
+        }
+
+        if ($this->searchIndexes) {
+            $data['searchIndexes'] = $this->searchIndexes;
+        }
+
+        if ($this->isEncrypted) {
+            $data['isEncrypted'] = $this->isEncrypted;
         }
 
         return $data;
     }
 
     /**
-     * @deprecated
+     * Restores state after unserialization.
      *
-     * @return list<string> The names of all the fields that should be serialized.
-     */
-    public function __sleep()
-    {
-        // This metadata is always serialized/cached.
-        $serialized = [
-            'fieldMappings',
-            'associationMappings',
-            'identifier',
-            'name',
-            'db',
-            'collection',
-            'readPreference',
-            'readPreferenceTags',
-            'writeConcern',
-            'rootDocumentName',
-            'generatorType',
-            'generatorOptions',
-            'idGenerator',
-            'indexes',
-            'searchIndexes',
-            'shardKey',
-            'timeSeriesOptions',
-            'isEncrypted',
-        ];
-
-        // The rest of the metadata is only serialized if necessary.
-        if ($this->changeTrackingPolicy !== self::CHANGETRACKING_DEFERRED_IMPLICIT) {
-            $serialized[] = 'changeTrackingPolicy';
-        }
-
-        if ($this->customRepositoryClassName) {
-            $serialized[] = 'customRepositoryClassName';
-        }
-
-        if ($this->inheritanceType !== self::INHERITANCE_TYPE_NONE || $this->discriminatorField !== null) {
-            $serialized[] = 'inheritanceType';
-            $serialized[] = 'discriminatorField';
-            $serialized[] = 'discriminatorValue';
-            $serialized[] = 'discriminatorMap';
-            $serialized[] = 'defaultDiscriminatorValue';
-            $serialized[] = 'parentClasses';
-            $serialized[] = 'subClasses';
-        }
-
-        if ($this->isMappedSuperclass) {
-            $serialized[] = 'isMappedSuperclass';
-        }
-
-        if ($this->isEmbeddedDocument) {
-            $serialized[] = 'isEmbeddedDocument';
-        }
-
-        if ($this->isQueryResultDocument) {
-            $serialized[] = 'isQueryResultDocument';
-        }
-
-        if ($this->isView) {
-            $serialized[] = 'isView';
-            $serialized[] = 'rootClass';
-        }
-
-        if ($this->isFile) {
-            $serialized[] = 'isFile';
-            $serialized[] = 'bucketName';
-            $serialized[] = 'chunkSizeBytes';
-        }
-
-        if ($this->isVersioned) {
-            $serialized[] = 'isVersioned';
-            $serialized[] = 'versionField';
-        }
-
-        if ($this->isLockable) {
-            $serialized[] = 'isLockable';
-            $serialized[] = 'lockField';
-        }
-
-        if ($this->lifecycleCallbacks) {
-            $serialized[] = 'lifecycleCallbacks';
-        }
-
-        if ($this->collectionCapped) {
-            $serialized[] = 'collectionCapped';
-            $serialized[] = 'collectionSize';
-            $serialized[] = 'collectionMax';
-        }
-
-        if ($this->isReadOnly) {
-            $serialized[] = 'isReadOnly';
-        }
-
-        if ($this->validator !== null) {
-            $serialized[] = 'validator';
-            $serialized[] = 'validationAction';
-            $serialized[] = 'validationLevel';
-        }
-
-        return $serialized;
-    }
-
-    /**
-     * Restores the serialized values and some state that cannot be serialized/unserialized.
-     *
-     * @param array<string, mixed> $data The serialized data.
+     * @param array<string, mixed> $data
      */
     public function __unserialize(array $data): void
     {
-        foreach ($data as $field => $value) {
-            $this->$field = $value;
+        foreach ($data as $property => $value) {
+            $this->$property = $value;
         }
 
-        $this->__wakeup();
-    }
-
-    /** @deprecated */
-    public function __wakeup(): void
-    {
         // Restore ReflectionClass and properties
-        $this->reflClass         = new ReflectionClass($this->name);
-        $this->instantiator      = new Instantiator();
-        $this->reflectionService = new RuntimeReflectionService();
-        $this->reflFields        = new LegacyReflectionFields($this, $this->reflectionService);
+        $this->reflClass    = new ReflectionClass($this->name);
+        $this->instantiator = new Instantiator();
 
         foreach ($this->fieldMappings as $field => $mapping) {
             $accessor = PropertyAccessorFactory::createPropertyAccessor($mapping['declared'] ?? $this->name, $field);
@@ -2717,22 +2753,5 @@ if (PHP_VERSION_ID >= 80400) {
         if ($options->metaField !== null && ! $this->hasField($options->metaField)) {
             throw MappingException::timeSeriesFieldNotFound($this->name, $options->metaField, 'metadata');
         }
-    }
-
-    /**
-     * @param ValueType $value
-     *
-     * @return ValueType
-     *
-     * @template ValueType
-     */
-    private function setPropertyValue(string $property, mixed $value): mixed
-    {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        if ($backtrace[1]['file'] !== __FILE__) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.17', 'Writing to property %s::%s is deprecated and will be removed in version 3.0.', static::class, $property);
-        }
-
-        return $value;
     }
 }

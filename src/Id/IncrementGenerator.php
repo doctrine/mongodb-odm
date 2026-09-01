@@ -18,23 +18,15 @@ use MongoDB\Operation\FindOneAndUpdate;
  * collection. If not specified it defaults to the name of the collection for the
  * document.
  */
-class IncrementGenerator extends AbstractIdGenerator
+class IncrementGenerator implements IdGenerator
 {
-    /** @var string|null */
-    protected $collection = null;
+    protected ?string $collection = null;
 
-    /** @var string|null */
-    protected $key = null;
+    protected ?string $key = null;
 
-    /** @var int */
-    protected $startingId = 1;
+    protected int $startingId = 1;
 
-    /**
-     * @param string $collection
-     *
-     * @return void
-     */
-    public function setCollection($collection)
+    public function setCollection(?string $collection): void
     {
         $this->collection = $collection;
     }
@@ -49,7 +41,7 @@ class IncrementGenerator extends AbstractIdGenerator
         $this->startingId = $startingId;
     }
 
-    public function generate(DocumentManager $dm, object $document)
+    public function generate(DocumentManager $dm, object $document): int|string
     {
         $className = $document::class;
         $db        = $dm->getDocumentDatabase($className);

@@ -26,8 +26,6 @@ use function count;
 use function func_get_args;
 use function in_array;
 use function is_array;
-use function is_bool;
-use function is_callable;
 use function is_string;
 use function strtolower;
 
@@ -51,11 +49,8 @@ class Builder
 
     /**
      * The current field we are operating on.
-     *
-     * @todo Change this to private once ODM requires doctrine/mongodb 1.1+
-     * @var string
      */
-    protected $currentField;
+    private string $currentField;
 
     /**
      * Whether or not to hydrate the data to documents.
@@ -106,7 +101,7 @@ class Builder
      *
      * @param string[]|string|null $documentName (optional) an array of document names, the document name, or none
      */
-    public function __construct(DocumentManager $dm, $documentName = null)
+    public function __construct(DocumentManager $dm, array|string|null $documentName = null)
     {
         $this->dm   = $dm;
         $this->expr = new Expr($dm);
@@ -117,7 +112,7 @@ class Builder
         $this->setDocumentName($documentName);
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         $this->expr = clone $this->expr;
     }
@@ -133,7 +128,7 @@ class Builder
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): self
+    public function addAnd(array|Expr $expression, array|Expr ...$expressions): self
     {
         $this->expr->addAnd(...func_get_args());
 
@@ -151,7 +146,7 @@ class Builder
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addNor($expression, ...$expressions): self
+    public function addNor(array|Expr $expression, array|Expr ...$expressions): self
     {
         $this->expr->addNor(...func_get_args());
 
@@ -169,7 +164,7 @@ class Builder
      * @param array<string, mixed>|Expr $expression
      * @param array<string, mixed>|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): self
+    public function addOr(array|Expr $expression, array|Expr ...$expressions): self
     {
         $this->expr->addOr(...func_get_args());
 
@@ -190,10 +185,8 @@ class Builder
      * @see Expr::addToSet()
      * @see https://docs.mongodb.com/manual/reference/operator/addToSet/
      * @see https://docs.mongodb.com/manual/reference/operator/each/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
-    public function addToSet($valueOrExpression): self
+    public function addToSet(mixed $valueOrExpression): self
     {
         $this->expr->addToSet($valueOrExpression);
 
@@ -252,7 +245,7 @@ class Builder
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAllClear($value): self
+    public function bitsAllClear(int|array|Binary $value): self
     {
         $this->expr->bitsAllClear($value);
 
@@ -268,7 +261,7 @@ class Builder
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAllSet($value): self
+    public function bitsAllSet(int|array|Binary $value): self
     {
         $this->expr->bitsAllSet($value);
 
@@ -284,7 +277,7 @@ class Builder
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAnyClear($value): self
+    public function bitsAnyClear(int|array|Binary $value): self
     {
         $this->expr->bitsAnyClear($value);
 
@@ -300,7 +293,7 @@ class Builder
      *
      * @param int|list<int>|Binary $value
      */
-    public function bitsAnySet($value): self
+    public function bitsAnySet(int|array|Binary $value): self
     {
         $this->expr->bitsAnySet($value);
 
@@ -380,10 +373,8 @@ class Builder
      * The $name parameter may be used to return a specific key from the
      * internal $query array property. If omitted, the entire array will be
      * returned.
-     *
-     * @return mixed
      */
-    public function debug(?string $name = null)
+    public function debug(?string $name = null): mixed
     {
         return $name !== null ? $this->query[$name] : $this->query;
     }
@@ -429,7 +420,7 @@ class Builder
      *
      * @param array<string, mixed>|Expr $expression
      */
-    public function elemMatch($expression): self
+    public function elemMatch(array|Expr $expression): self
     {
         $this->expr->elemMatch($expression);
 
@@ -440,10 +431,8 @@ class Builder
      * Specify an equality match for the current field.
      *
      * @see Expr::equals()
-     *
-     * @param mixed $value
      */
-    public function equals($value): self
+    public function equals(mixed $value): self
     {
         $this->expr->equals($value);
 
@@ -458,7 +447,7 @@ class Builder
      *
      * @param string[]|string $fieldName,...
      */
-    public function exclude($fieldName = null): self
+    public function exclude(array|string|null $fieldName = null): self
     {
         $this->query['select'] ??= [];
         $fieldNames              = is_array($fieldName) ? $fieldName : func_get_args();
@@ -543,7 +532,7 @@ class Builder
      *
      * @param array<string, mixed>|Geometry $geometry
      */
-    public function geoIntersects($geometry): self
+    public function geoIntersects(array|Geometry $geometry): self
     {
         $this->expr->geoIntersects($geometry);
 
@@ -561,7 +550,7 @@ class Builder
      *
      * @param array<string, mixed>|Geometry $geometry
      */
-    public function geoWithin($geometry): self
+    public function geoWithin(array|Geometry $geometry): self
     {
         $this->expr->geoWithin($geometry);
 
@@ -637,7 +626,7 @@ class Builder
      * @param array{int|float, int|float} $point3    Third point of the polygon
      * @param array{int|float, int|float} ...$points Additional points of the polygon
      */
-    public function geoWithinPolygon($point1, $point2, $point3, ...$points): self
+    public function geoWithinPolygon(array $point1, array $point2, array $point3, array ...$points): self
     {
         $this->expr->geoWithinPolygon(...func_get_args());
 
@@ -747,10 +736,8 @@ class Builder
      *
      * @see Expr::gt()
      * @see https://docs.mongodb.com/manual/reference/operator/gt/
-     *
-     * @param mixed $value
      */
-    public function gt($value): self
+    public function gt(mixed $value): self
     {
         $this->expr->gt($value);
 
@@ -762,10 +749,8 @@ class Builder
      *
      * @see Expr::gte()
      * @see https://docs.mongodb.com/manual/reference/operator/gte/
-     *
-     * @param mixed $value
      */
-    public function gte($value): self
+    public function gte(mixed $value): self
     {
         $this->expr->gte($value);
 
@@ -777,7 +762,7 @@ class Builder
      *
      * @param array<string, -1|1>|string $index
      */
-    public function hint($index): self
+    public function hint(array|string $index): self
     {
         $this->query['hint'] = $index;
 
@@ -823,10 +808,8 @@ class Builder
      *
      * @see Expr::inc()
      * @see https://docs.mongodb.com/manual/reference/operator/inc/
-     *
-     * @param float|int $value
      */
-    public function inc($value): self
+    public function inc(float|int $value): self
     {
         $this->expr->inc($value);
 
@@ -882,10 +865,8 @@ class Builder
      *
      * @see Expr::lt()
      * @see https://docs.mongodb.com/manual/reference/operator/lt/
-     *
-     * @param mixed $value
      */
-    public function lt($value): self
+    public function lt(mixed $value): self
     {
         $this->expr->lt($value);
 
@@ -897,10 +878,8 @@ class Builder
      *
      * @see Expr::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
-    public function lte($value): self
+    public function lte(mixed $value): self
     {
         $this->expr->lte($value);
 
@@ -912,10 +891,8 @@ class Builder
      *
      * @see Expr::max()
      * @see https://docs.mongodb.com/manual/reference/operator/update/max/
-     *
-     * @param mixed $value
      */
-    public function max($value): self
+    public function max(mixed $value): self
     {
         $this->expr->max($value);
 
@@ -937,10 +914,8 @@ class Builder
      *
      * @see Expr::min()
      * @see https://docs.mongodb.com/manual/reference/operator/update/min/
-     *
-     * @param mixed $value
      */
-    public function min($value): self
+    public function min(mixed $value): self
     {
         $this->expr->min($value);
 
@@ -952,11 +927,8 @@ class Builder
      *
      * @see Expr::mod()
      * @see https://docs.mongodb.com/manual/reference/operator/mod/
-     *
-     * @param float|int $divisor
-     * @param float|int $remainder
      */
-    public function mod($divisor, $remainder = 0): self
+    public function mod(float|int $divisor, float|int $remainder = 0): self
     {
         $this->expr->mod($divisor, $remainder);
 
@@ -970,10 +942,8 @@ class Builder
      *
      * @see Expr::mul()
      * @see https://docs.mongodb.com/manual/reference/operator/update/mul/
-     *
-     * @param float|int $value
      */
-    public function mul($value): self
+    public function mul(float|int $value): self
     {
         $this->expr->mul($value);
 
@@ -991,9 +961,8 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/near/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
      */
-    public function near($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
+    public function near(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
         $this->expr->near($x, $y, $minDistance, $maxDistance);
 
@@ -1011,9 +980,8 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/nearSphere/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
      */
-    public function nearSphere($x, $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
+    public function nearSphere(float|array|Point $x, ?float $y = null, ?float $minDistance = null, ?float $maxDistance = null): self
     {
         $this->expr->nearSphere($x, $y, $minDistance, $maxDistance);
 
@@ -1027,10 +995,8 @@ class Builder
      *
      * @see Expr::not()
      * @see https://docs.mongodb.com/manual/reference/operator/not/
-     *
-     * @param array|Expr|mixed $valueOrExpression
      */
-    public function not($valueOrExpression): self
+    public function not(mixed $valueOrExpression): self
     {
         $this->expr->not($valueOrExpression);
 
@@ -1042,10 +1008,8 @@ class Builder
      *
      * @see Expr::notEqual()
      * @see https://docs.mongodb.com/manual/reference/operator/ne/
-     *
-     * @param mixed $value
      */
-    public function notEqual($value): self
+    public function notEqual(mixed $value): self
     {
         $this->expr->notEqual($value);
 
@@ -1117,25 +1081,17 @@ class Builder
      *
      * If $primer is true or a callable is provided, referenced documents for
      * this field will loaded into UnitOfWork immediately after the query is
-     * executed. This will avoid multiple queries due to lazy initialization of
-     * Proxy objects.
+     * executed. This will avoid multiple queries due to initialization of
+     * lazy objects.
      *
      * If $primer is false, no priming will take place. That is also the default
      * behavior.
      *
      * If a custom callable is used, its signature should conform to the default
      * Closure defined in {@link ReferencePrimer::__construct()}.
-     *
-     * @param bool|callable $primer
-     *
-     * @throws InvalidArgumentException If $primer is not boolean or callable.
      */
-    public function prime($primer = true): self
+    public function prime(bool|callable $primer = true): self
     {
-        if (! is_bool($primer) && ! is_callable($primer)) {
-            throw new InvalidArgumentException('$primer is not a boolean or callable');
-        }
-
         if ($primer === false) {
             unset($this->primers[$this->currentField]);
 
@@ -1153,10 +1109,8 @@ class Builder
      *
      * @see Expr::pull()
      * @see https://docs.mongodb.com/manual/reference/operator/pull/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
-    public function pull($valueOrExpression): self
+    public function pull(mixed $valueOrExpression): self
     {
         $this->expr->pull($valueOrExpression);
 
@@ -1195,10 +1149,8 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/each/
      * @see https://docs.mongodb.com/manual/reference/operator/slice/
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
-     *
-     * @param mixed|Expr $valueOrExpression
      */
-    public function push($valueOrExpression): self
+    public function push(mixed $valueOrExpression): self
     {
         $this->expr->push($valueOrExpression);
 
@@ -1212,11 +1164,8 @@ class Builder
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Expr::range()
-     *
-     * @param mixed $start
-     * @param mixed $end
      */
-    public function range($start, $end): self
+    public function range(mixed $start, mixed $end): self
     {
         $this->expr->range($start, $end);
 
@@ -1278,7 +1227,7 @@ class Builder
      *
      * @param string[]|string $fieldName,...
      */
-    public function select($fieldName = null): self
+    public function select(array|string|null $fieldName = null): self
     {
         $this->query['select'] ??= [];
         $fieldNames              = is_array($fieldName) ? $fieldName : func_get_args();
@@ -1298,7 +1247,7 @@ class Builder
      *
      * @param array<string, mixed>|Expr $expression
      */
-    public function selectElemMatch(string $fieldName, $expression): self
+    public function selectElemMatch(string $fieldName, array|Expr $expression): self
     {
         if ($expression instanceof Expr) {
             $expression = $expression->getQuery();
@@ -1351,10 +1300,8 @@ class Builder
      *
      * @see Expr::set()
      * @see https://docs.mongodb.com/manual/reference/operator/set/
-     *
-     * @param mixed $value
      */
-    public function set($value, bool $atomic = true): self
+    public function set(mixed $value, bool $atomic = true): self
     {
         $this->expr->set($value, $atomic && $this->query['type'] !== Query::TYPE_INSERT);
 
@@ -1386,10 +1333,8 @@ class Builder
      *
      * @see Expr::setOnInsert()
      * @see https://docs.mongodb.com/manual/reference/operator/update/setOnInsert/
-     *
-     * @param mixed $value
      */
-    public function setOnInsert($value): self
+    public function setOnInsert(mixed $value): self
     {
         $this->expr->setOnInsert($value);
 
@@ -1478,7 +1423,7 @@ class Builder
      * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
      * @param int|string|SortDirection                       $order     Field order (if one field is specified)
      */
-    public function sort($fieldName, $order = 1): self
+    public function sort(array|string $fieldName, int|string|SortDirection $order = 1): self
     {
         $this->query['sort'] ??= [];
         $fields                = is_array($fieldName) ? $fieldName : [$fieldName => $order];
@@ -1543,10 +1488,8 @@ class Builder
      *
      * @see Expr::type()
      * @see https://docs.mongodb.com/manual/reference/operator/type/
-     *
-     * @param int|string $type
      */
-    public function type($type): self
+    public function type(int|string $type): self
     {
         $this->expr->type($type);
 
@@ -1601,10 +1544,8 @@ class Builder
      *
      * @see Expr::where()
      * @see https://docs.mongodb.com/manual/reference/operator/where/
-     *
-     * @param string|Javascript $javascript
      */
-    public function where($javascript): self
+    public function where(string|Javascript $javascript): self
     {
         $this->expr->where($javascript);
 
@@ -1639,7 +1580,7 @@ class Builder
     }
 
     /** @param class-string[]|class-string|null $documentName an array of document names or just one. */
-    private function setDocumentName($documentName): void
+    private function setDocumentName(array|string|null $documentName): void
     {
         if (is_array($documentName)) {
             $documentNames = $documentName;

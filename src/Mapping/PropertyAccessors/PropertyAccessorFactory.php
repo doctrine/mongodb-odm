@@ -6,8 +6,6 @@ namespace Doctrine\ODM\MongoDB\Mapping\PropertyAccessors;
 
 use ReflectionProperty;
 
-use const PHP_VERSION_ID;
-
 /** @internal */
 class PropertyAccessorFactory
 {
@@ -16,9 +14,7 @@ class PropertyAccessorFactory
     {
         $reflectionProperty = new ReflectionProperty($className, $propertyName);
 
-        $accessor = PHP_VERSION_ID >= 80400
-            ? RawValuePropertyAccessor::fromReflectionProperty($reflectionProperty)
-            : ObjectCastPropertyAccessor::fromReflectionProperty($reflectionProperty);
+        $accessor = RawValuePropertyAccessor::fromReflectionProperty($reflectionProperty);
 
         if ($reflectionProperty->hasType() && ! $reflectionProperty->getType()->allowsNull()) {
             $accessor = new TypedNoDefaultPropertyAccessor($accessor, $reflectionProperty);

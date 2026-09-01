@@ -1,15 +1,18 @@
-<?php // phpcs:ignoreFile
+<?php
 
-namespace Documents84\PropertyHooks;
+declare(strict_types=1);
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+namespace Documents\PropertyHooks;
+
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
 use ValueError;
 
 #[Document(collection: 'property_hooks_user')]
 class User
 {
+    // phpcs:disable
     #[Id]
     public ?string $id;
 
@@ -50,4 +53,5 @@ class User
             $this->language = strtolower($value);
         }
     }
+    // phpcs:enable
 }

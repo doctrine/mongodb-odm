@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation;
 
-use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Documents\User;
@@ -12,6 +11,7 @@ use Generator;
 use InvalidArgumentException;
 
 use function is_array;
+use function is_callable;
 
 trait AggregationOperatorsProviderTrait
 {
@@ -1521,17 +1521,17 @@ trait AggregationOperatorsProviderTrait
     }
 
     /**
-     * @param Closure(Expr): mixed[]|mixed[] $args
+     * @param callable(Expr): mixed[]|mixed[] $args
      *
      * @return mixed[]
      */
-    protected function resolveArgs($args): array
+    protected function resolveArgs(callable|array $args): array
     {
         if (is_array($args)) {
             return $args;
         }
 
-        if ($args instanceof Closure) {
+        if (is_callable($args)) {
             return $args($this->createExpr());
         }
 

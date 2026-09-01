@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Bucket;
 
-use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 
@@ -15,18 +14,13 @@ use function assert;
  */
 class BucketAutoOutput extends AbstractOutput
 {
-    public function __construct(Builder $builder, Stage\BucketAuto $bucket)
-    {
-        parent::__construct($builder, $bucket);
-    }
-
     /**
      * An expression to group documents by. To specify a field path, prefix the
      * field name with a dollar sign $ and enclose it in quotes.
      *
      * @param array<string, mixed>|Expr|string $expression
      */
-    public function groupBy($expression): Stage\BucketAuto
+    public function groupBy(array|Expr|string $expression): Stage\BucketAuto
     {
         assert($this->bucket instanceof Stage\BucketAuto);
 

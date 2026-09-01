@@ -22,7 +22,7 @@ class GeoNearTest extends BaseTestCase
             ->field('someField')
             ->equals('someValue');
 
-        $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
+        $stage = ['near' => [0.0, 0.0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
         self::assertSame(['$geoNear' => $stage], $geoNearStage->getExpression());
     }
 
@@ -35,13 +35,12 @@ class GeoNearTest extends BaseTestCase
             ->field('someField')
             ->equals('someValue');
 
-        $stage = ['near' => [0, 0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
+        $stage = ['near' => [0.0, 0.0], 'spherical' => false, 'distanceField' => 'distance', 'query' => ['someField' => 'someValue']];
         self::assertSame([['$geoNear' => $stage]], $builder->getPipeline());
     }
 
-    /** @param mixed $value */
     #[DataProvider('provideOptionalSettings')]
-    public function testOptionalSettings(string $field, $value): void
+    public function testOptionalSettings(string $field, mixed $value): void
     {
         $geoNearStage = new GeoNear($this->getTestAggregationBuilder(), 0, 0);
 
@@ -74,7 +73,7 @@ class GeoNearTest extends BaseTestCase
             ->limit(1);
 
         $stage = $builder->getPipeline()[0];
-        self::assertSame([0, 0], $stage['$geoNear']['near']);
+        self::assertSame([0.0, 0.0], $stage['$geoNear']['near']);
         self::assertFalse($stage['$geoNear']['spherical']);
         self::assertNull($stage['$geoNear']['distanceField']);
         self::assertEquals(new stdClass(), $stage['$geoNear']['query']);

@@ -20,7 +20,7 @@ class MoreLikeThis extends AbstractSearchOperator
     private array $like = [];
 
     /** @param array<string, mixed>|object $documents */
-    public function __construct(Search $search, DocumentPersister $persister, ...$documents)
+    public function __construct(Search $search, DocumentPersister $persister, array|object ...$documents)
     {
         parent::__construct($search, $persister);
 

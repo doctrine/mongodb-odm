@@ -11,10 +11,8 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 use function array_key_exists;
 use function chmod;
@@ -33,7 +31,6 @@ use function substr;
 use function uniqid;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_VERSION_ID;
 
 /**
  * The HydratorFactory class is responsible for instantiating a correct hydrator
@@ -451,19 +448,7 @@ EOF
             }
         }
 
-        // Skip initialization to not load any object data
-        if (PHP_VERSION_ID >= 80400) {
-            $metadata->reflClass->markLazyObjectAsInitialized($document);
-        }
-
-        if ($document instanceof InternalProxy) {
-            $document->__setInitialized(true);
-        }
-
-        // Support for legacy proxy-manager-lts
-        if ($document instanceof GhostObjectInterface) {
-            $document->setProxyInitializer(null);
-        }
+        $metadata->reflClass->markLazyObjectAsInitialized($document);
 
         $data = $this->getHydratorFor($metadata->name)->hydrate($document, $data, $hints);
 

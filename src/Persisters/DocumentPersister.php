@@ -41,7 +41,6 @@ use stdClass;
 
 use function array_combine;
 use function array_fill;
-use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -63,7 +62,6 @@ use function sprintf;
 use function str_contains;
 use function strpos;
 use function strtolower;
-use function trigger_deprecation;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -73,10 +71,7 @@ use function trigger_deprecation;
  * @template T of object = object
  *
  * @phpstan-type CommitOptions array{
- *      fsync?: bool,
- *      safe?: int,
  *      session?: ?Session,
- *      w?: int,
  *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
@@ -479,7 +474,7 @@ final class DocumentPersister
      * @todo Check identity map? loadById method? Try to guess whether
      *     $criteria is the id?
      */
-    public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
+    public function load(mixed $criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
     {
         // TODO: remove this
         if ($criteria === null || is_scalar($criteria) || $criteria instanceof ObjectId) {
@@ -921,12 +916,7 @@ final class DocumentPersister
         return $preparedFields;
     }
 
-    /**
-     * @param int|string $sort
-     *
-     * @return int|string
-     */
-    private function getSortDirection($sort)
+    private function getSortDirection(int|string|null $sort): int|string|null
     {
         switch (strtolower((string) $sort)) {
             case 'desc':
@@ -1080,12 +1070,8 @@ final class DocumentPersister
 
     /**
      * Converts a single value to its database representation based on the mapping type if possible.
-     *
-     * @param mixed $value
-     *
-     * @return mixed
      */
-    private function convertToDatabaseValue(string $fieldName, $value, ?ClassMetadata $class = null)
+    private function convertToDatabaseValue(string $fieldName, mixed $value, ?ClassMetadata $class = null): mixed
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
@@ -1157,11 +1143,9 @@ final class DocumentPersister
      * It also handles converting $fieldName to the database name if they are
      * different.
      *
-     * @param mixed $value
-     *
      * @return array<array{string, mixed}> Returns an array of tuples containing the prepared field name and value
      */
-    private function prepareQueryElement(string $originalFieldName, $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false, string $fieldNamePrefix = ''): array
+    private function prepareQueryElement(string $originalFieldName, mixed $value = null, ?ClassMetadata $class = null, bool $prepareValue = true, bool $inNewObj = false, string $fieldNamePrefix = ''): array
     {
         $class   ??= $this->class;
         $fieldName = $fieldNamePrefix . $originalFieldName;
@@ -1352,7 +1336,7 @@ final class DocumentPersister
             // Process query operators whose argument arrays need type conversion
             if (in_array($k, ['$in', '$nin', '$all']) && is_array($v)) {
                 foreach ($v as $k2 => $v2) {
-                    if ($v2 instanceof $class->name) {
+                    if ($class->name !== null && $v2 instanceof $class->name) {
                         // If a value in a query is a target document, e.g. ['referenceField' => $targetDocument],
                         // retreive id from target document and convert this id using it's type
                         $expression[$k][$k2] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v2));
@@ -1379,7 +1363,7 @@ final class DocumentPersister
                 continue;
             }
 
-            if ($v instanceof $class->name) {
+            if ($class->name !== null && $v instanceof $class->name) {
                 $expression[$k] = $class->getDatabaseIdentifierValue($class->getIdentifierValue($v));
             } else {
                 $expression[$k] = $class->getDatabaseIdentifierValue($v);
@@ -1396,10 +1380,8 @@ final class DocumentPersister
      * although it should return true for a DBRef. Rather, we're checking that
      * the value has one or more fields for a DBref. In practice, this could be
      * $elemMatch criteria for matching a DBRef.
-     *
-     * @param mixed $value
      */
-    private function hasDBRefFields($value): bool
+    private function hasDBRefFields(mixed $value): bool
     {
         if (! is_array($value) && ! is_object($value)) {
             return false;
@@ -1420,10 +1402,8 @@ final class DocumentPersister
 
     /**
      * Checks whether the value has query operators.
-     *
-     * @param mixed $value
      */
-    private function hasQueryOperators($value): bool
+    private function hasQueryOperators(mixed $value): bool
     {
         if (! is_array($value) && ! is_object($value)) {
             return false;
@@ -1563,16 +1543,6 @@ final class DocumentPersister
         }
 
         $writeOptions = array_merge($defaultOptions, $documentOptions, $options);
-        if (array_key_exists('w', $writeOptions)) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.2',
-                'The "w" option as commit option is deprecated, please pass "%s" object in "writeConcern" option.',
-                WriteConcern::class,
-            );
-            $writeOptions['writeConcern'] = new WriteConcern($writeOptions['w']);
-            unset($writeOptions['w']);
-        }
 
         return $this->isInTransaction($options)
             ? $this->uow->stripTransactionOptions($writeOptions)

@@ -19,12 +19,6 @@ parameters:
 			path: src/Aggregation/Aggregation.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Builder\:\:execute\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Aggregation/Builder.php
-
-		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$applyFilters$#'
 			identifier: parameter.notFound
 			count: 1
@@ -355,12 +349,6 @@ parameters:
 			path: src/DocumentManager.php
 
 		-
-			message: '#^Method Doctrine\\Persistence\\Event\\OnClearEventArgs\<Doctrine\\ODM\\MongoDB\\DocumentManager\>\:\:__construct\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/Event/OnClearEventArgs.php
-
-		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Hydrator\\HydratorFactory\:\:\$hydratorNamespace \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
 			identifier: property.unusedType
 			count: 1
@@ -417,24 +405,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:typeRequirementsAreMet\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
 			identifier: argument.type
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between ''Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata'' and ''Doctrine\\\\ODM\\\\MongoDB\\\\Mapping\\\\ClassMetadata'' will always evaluate to false\.$#'
-			identifier: notIdentical.alwaysFalse
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between mixed and \*NEVER\* will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: src/Mapping/ClassMetadata.php
 
@@ -499,18 +469,6 @@ parameters:
 			path: src/Mapping/Driver/XmlDriver.php
 
 		-
-			message: '#^Parameter \#1 \$initializer of method ProxyManager\\Proxy\\GhostObjectInterface\<object\>\:\:setProxyInitializer\(\) expects \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string\=, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null, \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Mapping/PropertyAccessors/ObjectCastPropertyAccessor.php
-
-		-
-			message: '#^Parameter \#1 \$initializer of method ProxyManager\\Proxy\\GhostObjectInterface\<object\>\:\:setProxyInitializer\(\) expects \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string\=, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null, \(Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<object\>\=, string, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool\)\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Mapping/PropertyAccessors/RawValuePropertyAccessor.php
-
-		-
 			message: '#^Call to function is_object\(\) with Doctrine\\Common\\Collections\\Collection will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -525,12 +483,6 @@ parameters:
 		-
 			message: '#^Call to function method_exists\(\) with Doctrine\\Common\\Collections\\Collection and ''reduce'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
-			identifier: return.void
 			count: 1
 			path: src/PersistentCollection.php
 
@@ -575,12 +527,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: src/PersistentCollection.php
-
-		-
-			message: '#^Instanceof between Doctrine\\Common\\Collections\\Collection and Doctrine\\Common\\Collections\\Selectable will always evaluate to true.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: src/PersistentCollection/PersistentCollectionTrait.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\\AbstractPersistentCollectionFactory\:\:createCollectionClass\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
@@ -727,12 +673,6 @@ parameters:
 			path: src/Persisters/DocumentPersister.php
 
 		-
-			message: '#^Parameter \#1 \$array \(non\-empty\-list\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: src/Persisters/DocumentPersister.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\PersistenceBuilder\:\:preparePersistentCollection\(\) has parameter \$mapping with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -743,42 +683,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Persisters/PersistenceBuilder.php
-
-		-
-			message: '#^Call to an undefined static method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:createLazyGhost\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: src/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Call to an undefined static method Symfony\\Component\\VarExporter\\ProxyHelper\:\:generateLazyGhost\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: src/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:createLazyInitializer\(\) has Doctrine\\ODM\\MongoDB\\DocumentNotFoundException in PHPDoc @throws tag but it''s not thrown\.$#'
-			identifier: throws.unusedType
-			count: 1
-			path: src/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:createLazyInitializer\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Proxy\\InternalProxy does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:getProxy\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Proxy\\InternalProxy does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: src/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\StaticProxyFactory\:\:createInitializer\(\) should return Closure\(ProxyManager\\Proxy\\GhostObjectInterface\<TDocument\>&TDocument\=, string\=, array\<string, mixed\>\=, Closure\|null\=, array\<string, mixed\>\=\)\: bool but returns Closure\(ProxyManager\\Proxy\\GhostObjectInterface, string, array, mixed, array\)\: true\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Proxy/Factory/StaticProxyFactory.php
 
 		-
 			message: '#^Unsafe call to private method Doctrine\\ODM\\MongoDB\\Query\\Expr\:\:convertExpression\(\) through static\:\:\.$#'
@@ -833,12 +737,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: src/Tools/Console/Command/GeneratePersistentCollectionsCommand.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Console\\Helper\\HelperInterface\:\:getDocumentManager\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Tools/Console/Command/GenerateProxiesCommand.php
 
 		-
 			message: '#^Call to an undefined method Symfony\\Component\\Console\\Helper\\HelperInterface\:\:getDocumentManager\(\)\.$#'
@@ -1027,6 +925,12 @@ parameters:
 			path: tests/Tests/DocumentRepositoryTest.php
 
 		-
+			message: '#^Parameter \#2 \$collections of method Doctrine\\ODM\\MongoDB\\Persisters\\CollectionPersister\:\:delete\(\) expects array\<Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface\>, array\<int, array\<Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CollectionPersisterCategory\>\|Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\CollectionPersisterCategory\>\> given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Tests/Functional/CollectionPersisterTest.php
+
+		-
 			message: '#^PHPDoc type Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildDocumentWithDiscriminator\> of property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ParentDocumentWithDiscriminator\:\:\$embeddedChildren is not covariant with PHPDoc type array\<Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildDocument\>\|Doctrine\\Common\\Collections\\Collection\<int, Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ChildDocument\> of overridden property Doctrine\\ODM\\MongoDB\\Tests\\Functional\\ParentDocument\:\:\$embeddedChildren\.$#'
 			identifier: property.phpDocType
 			count: 1
@@ -1075,20 +979,20 @@ parameters:
 			path: tests/Tests/Functional/QueryableEncryptionTest.php
 
 		-
-			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
+			message: '#^Parameter \$discriminatorMap of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\ReferenceOne constructor expects array\<string, class\-string\>\|null, array\<string, string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php
 
 		-
-			message: '#^Parameter \$targetDocument of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Annotations\\ReferenceOne constructor expects class\-string\|null, string given\.$#'
+			message: '#^Parameter \$targetDocument of attribute class Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\ReferenceOne constructor expects class\-string\|null, string given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Tests/Functional/TargetDocumentTest.php
 
 		-
-			message: '#^Class Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ExtendedClassMetadata extends @final class Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\.$#'
-			identifier: class.extendsFinalByPhpDoc
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<Documents\\CmsUser\>\:\:markAsEncrypted\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
 			count: 1
 			path: tests/Tests/Mapping/ClassMetadataTest.php
 
@@ -1117,22 +1021,10 @@ parameters:
 			path: tests/Tests/Query/BuilderTest.php
 
 		-
-			message: '#^Parameter \#1 \$primer of method Doctrine\\ODM\\MongoDB\\Query\\Builder\:\:prime\(\) expects bool\|\(callable\(\)\: mixed\), 1 given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Tests/Query/BuilderTest.php
-
-		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
 			count: 1
 			path: tests/Tests/Query/PipelineUpdateTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\QueryTest\:\:createCursorMock\(\) return type has no value type specified in iterable type Traversable\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/QueryTest.php
 
 		-
 			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, pipeline\?\: list\<array\<string, mixed\>\>\|MongoDB\\Builder\\Pipeline, \.\.\.\}, array\{type\: \-1\} given\.$#'
@@ -1141,38 +1033,14 @@ parameters:
 			path: tests/Tests/QueryTest.php
 
 		-
-			message: '#^Instantiated class MongoDB\\Model\\CollectionInfoCommandIterator not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
-			message: '#^Instantiated class MongoDB\\Model\\IndexInfoIteratorIterator not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createCollectionIterator\(\) has parameter \$collections with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Tests/SchemaManagerTest.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createCollectionIterator\(\) should return Iterator but returns MongoDB\\Model\\CollectionInfoCommandIterator\.$#'
-			identifier: return.type
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createIndexIterator\(\) has parameter \$indexes with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createIndexIterator\(\) should return Iterator but returns MongoDB\\Model\\IndexInfoIteratorIterator\.$#'
-			identifier: return.type
 			count: 1
 			path: tests/Tests/SchemaManagerTest.php
 

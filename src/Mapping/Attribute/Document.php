@@ -8,45 +8,22 @@ use Attribute;
 
 /**
  * Identifies a class as a document that can be stored in the database
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class Document extends AbstractDocument
+final class Document extends AbstractDocument
 {
-    /** @var string|null */
-    public $db;
-
-    /** @var string|null */
-    public $repositoryClass;
-
-    /** @var Index[] */
-    public $indexes;
-
-    /** @var bool */
-    public $readOnly;
-
-    /** @var string|null */
-    public $shardKey;
-
     /**
      * @param string|array{name: string, capped?: bool, size?: int, max?: int}|null $collection
      * @param Index[]                                                               $indexes
-     * @param int|string|null                                                       $writeConcern
      */
     public function __construct(
-        ?string $db = null,
-        public $collection = null,
-        ?string $repositoryClass = null,
-        array $indexes = [],
-        bool $readOnly = false,
-        ?string $shardKey = null,
-        public $writeConcern = null,
+        public readonly ?string $db = null,
+        public readonly string|array|null $collection = null,
+        public readonly ?string $repositoryClass = null,
+        public readonly array $indexes = [],
+        public readonly bool $readOnly = false,
+        public readonly ?string $shardKey = null,
+        public readonly int|string|null $writeConcern = null,
     ) {
-        $this->db              = $db;
-        $this->repositoryClass = $repositoryClass;
-        $this->indexes         = $indexes;
-        $this->readOnly        = $readOnly;
-        $this->shardKey        = $shardKey;
     }
 }

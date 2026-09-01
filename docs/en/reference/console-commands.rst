@@ -7,7 +7,6 @@ Console component, to ease your development process:
 - ``odm:clear-cache:metadata`` - Clear all metadata cache of the various cache drivers.
 - ``odm:query`` - Query mongodb and inspect the outputted results from your document classes.
 - ``odm:generate:hydrators`` - Generates hydrator classes for document classes.
-- ``odm:generate:proxies`` - Generates proxy classes for document classes.
 - ``odm:schema:create`` - Allows you to create databases, collections and indexes for your documents
 - ``odm:schema:drop`` - Allows you to drop databases, collections and indexes for your documents
 - ``odm:schema:update`` - Allows you to update indexes for your documents

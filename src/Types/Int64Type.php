@@ -6,13 +6,14 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 use MongoDB\BSON\Int64;
 
+use function max;
+
 /**
  * The Int64 type (long)
  */
-class Int64Type extends IntType implements Incrementable, Versionable
+class Int64Type extends Type implements Incrementable, Versionable
 {
-    /** @return Int64|null */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?Int64
     {
         if ($value instanceof Int64 || $value === null) {
             return $value;
@@ -21,8 +22,23 @@ class Int64Type extends IntType implements Incrementable, Versionable
         return new Int64($value);
     }
 
-    public function closureToMongo(): string
+    public function convertToPHPValue(mixed $value): ?int
     {
-        return '$return = new \MongoDB\BSON\Int64($value);';
+        return $value !== null ? (int) $value : null;
+    }
+
+    public function closureToPHP(): string
+    {
+        return '$return = (int) $value;';
+    }
+
+    public function diff(mixed $old, mixed $new): int
+    {
+        return (int) ($new - $old);
+    }
+
+    public function getNextVersion(mixed $current): int
+    {
+        return max(1, (int) $current + 1);
     }
 }

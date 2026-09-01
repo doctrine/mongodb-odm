@@ -6,7 +6,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
-use InvalidArgumentException;
 use LogicException;
 
 use function array_map;
@@ -43,10 +42,8 @@ class Facet extends Stage
 
     /**
      * Use the given pipeline for the current field.
-     *
-     * @param Builder|Stage $builder
      */
-    public function pipeline($builder): static
+    public function pipeline(Builder|Stage $builder): static
     {
         if (! isset($this->field)) {
             throw new LogicException(__METHOD__ . ' requires setting a current field using field().');
@@ -54,10 +51,6 @@ class Facet extends Stage
 
         if ($builder instanceof Stage) {
             $builder = $builder->builder;
-        }
-
-        if (! $builder instanceof Builder) {
-            throw new InvalidArgumentException(__METHOD__ . ' expects either an aggregation builder or an aggregation stage.');
         }
 
         $this->pipelines[$this->field] = $builder;

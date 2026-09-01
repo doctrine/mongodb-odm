@@ -16,8 +16,7 @@ use function func_get_args;
  */
 class MatchStage extends Stage
 {
-    /** @var Expr */
-    protected $query;
+    protected Expr $query;
 
     public function __construct(Builder $builder)
     {
@@ -26,7 +25,7 @@ class MatchStage extends Stage
         $this->query = $this->expr();
     }
 
-    public function __clone()
+    public function __clone(): void
     {
         $this->query = clone $this->query;
     }
@@ -43,7 +42,7 @@ class MatchStage extends Stage
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
      */
-    public function addAnd($expression, ...$expressions): static
+    public function addAnd(array|Expr $expression, array|Expr ...$expressions): static
     {
         $this->query->addAnd(...func_get_args());
 
@@ -62,7 +61,7 @@ class MatchStage extends Stage
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
      */
-    public function addNor($expression, ...$expressions): static
+    public function addNor(array|Expr $expression, array|Expr ...$expressions): static
     {
         $this->query->addNor(...func_get_args());
 
@@ -81,7 +80,7 @@ class MatchStage extends Stage
      * @param mixed[]|Expr $expression
      * @param mixed[]|Expr ...$expressions
      */
-    public function addOr($expression, ...$expressions): static
+    public function addOr(array|Expr $expression, array|Expr ...$expressions): static
     {
         $this->query->addOr(...func_get_args());
 
@@ -114,7 +113,7 @@ class MatchStage extends Stage
      *
      * @param mixed[]|Expr $expression
      */
-    public function elemMatch($expression): static
+    public function elemMatch(array|Expr $expression): static
     {
         $this->query->elemMatch($expression);
 
@@ -125,10 +124,8 @@ class MatchStage extends Stage
      * Specify an equality match for the current field.
      *
      * @see Expr::equals()
-     *
-     * @param mixed $value
      */
-    public function equals($value): static
+    public function equals(mixed $value): static
     {
         $this->query->equals($value);
 
@@ -180,7 +177,7 @@ class MatchStage extends Stage
      *
      * @param array<string, mixed>|Geometry $geometry
      */
-    public function geoIntersects($geometry): static
+    public function geoIntersects(array|Geometry $geometry): static
     {
         $this->query->geoIntersects($geometry);
 
@@ -272,7 +269,7 @@ class MatchStage extends Stage
      * @param array{int|float, int|float} $point3    Third point of the polygon
      * @param array{int|float, int|float} ...$points Additional points of the polygon
      */
-    public function geoWithinPolygon($point1, $point2, $point3, ...$points): static
+    public function geoWithinPolygon(array $point1, array $point2, array $point3, array ...$points): static
     {
         $this->query->geoWithinPolygon(...func_get_args());
 
@@ -295,10 +292,8 @@ class MatchStage extends Stage
      *
      * @see Expr::gt()
      * @see https://docs.mongodb.com/manual/reference/operator/gt/
-     *
-     * @param mixed $value
      */
-    public function gt($value): static
+    public function gt(mixed $value): static
     {
         $this->query->gt($value);
 
@@ -310,10 +305,8 @@ class MatchStage extends Stage
      *
      * @see Expr::gte()
      * @see https://docs.mongodb.com/manual/reference/operator/gte/
-     *
-     * @param mixed $value
      */
-    public function gte($value): static
+    public function gte(mixed $value): static
     {
         $this->query->gte($value);
 
@@ -362,10 +355,8 @@ class MatchStage extends Stage
      *
      * @see Expr::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
-    public function lt($value): static
+    public function lt(mixed $value): static
     {
         $this->query->lt($value);
 
@@ -377,10 +368,8 @@ class MatchStage extends Stage
      *
      * @see Expr::lte()
      * @see https://docs.mongodb.com/manual/reference/operator/lte/
-     *
-     * @param mixed $value
      */
-    public function lte($value): static
+    public function lte(mixed $value): static
     {
         $this->query->lte($value);
 
@@ -392,11 +381,8 @@ class MatchStage extends Stage
      *
      * @see Expr::mod()
      * @see https://docs.mongodb.com/manual/reference/operator/mod/
-     *
-     * @param float|int $divisor
-     * @param float|int $remainder
      */
-    public function mod($divisor, $remainder = 0): static
+    public function mod(float|int $divisor, float|int $remainder = 0): static
     {
         $this->query->mod($divisor, $remainder);
 
@@ -414,7 +400,7 @@ class MatchStage extends Stage
      *
      * @param mixed[]|Expr $expression
      */
-    public function not($expression): static
+    public function not(array|Expr $expression): static
     {
         $this->query->not($expression);
 
@@ -426,10 +412,8 @@ class MatchStage extends Stage
      *
      * @see Expr::notEqual()
      * @see https://docs.mongodb.com/manual/reference/operator/ne/
-     *
-     * @param mixed $value
      */
-    public function notEqual($value): static
+    public function notEqual(mixed $value): static
     {
         $this->query->notEqual($value);
 
@@ -458,11 +442,8 @@ class MatchStage extends Stage
      * and $lt criteria on the upper bound. The upper bound is not inclusive.
      *
      * @see Expr::range()
-     *
-     * @param mixed $start
-     * @param mixed $end
      */
-    public function range($start, $end): static
+    public function range(mixed $start, mixed $end): static
     {
         $this->query->range($start, $end);
 
@@ -511,10 +492,8 @@ class MatchStage extends Stage
      *
      * @see Expr::type()
      * @see https://docs.mongodb.com/manual/reference/operator/type/
-     *
-     * @param int|string $type
      */
-    public function type($type): static
+    public function type(int|string $type): static
     {
         $this->query->type($type);
 

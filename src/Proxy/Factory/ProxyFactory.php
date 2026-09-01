@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Proxy\Factory;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
+/** @internal */
 interface ProxyFactory
 {
     /** @param ClassMetadata<object>[] $classes */
@@ -15,12 +16,11 @@ interface ProxyFactory
      * Gets a reference proxy instance for the entity of the given type and identified by
      * the given identifier.
      *
-     * @param mixed $identifier
      * @phpstan-param ClassMetadata<T> $metadata
      *
      * @return T
      *
      * @template T of object
      */
-    public function getProxy(ClassMetadata $metadata, $identifier): object;
+    public function getProxy(ClassMetadata $metadata, mixed $identifier): object;
 }

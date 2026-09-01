@@ -8,17 +8,11 @@ use Attribute;
 
 /**
  * Specifies the change tracking policy for a document
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class ChangeTrackingPolicy implements MappingAttribute
+final class ChangeTrackingPolicy implements MappingAttribute
 {
-    /** @var string */
-    public $value;
-
-    public function __construct(string $value)
+    public function __construct(public readonly string $value)
     {
-        $this->value = $value;
     }
 }

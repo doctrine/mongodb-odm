@@ -8,7 +8,6 @@ use GeoJson\Geometry\LineString;
 use GeoJson\Geometry\MultiPolygon;
 use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
-use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 
 interface CompoundSearchOperatorInterface extends SupportsCompoundableSearchOperators
@@ -25,24 +24,20 @@ interface CompoundSearchOperatorInterface extends SupportsCompoundableSearchOper
 
     public function embeddedDocument(string $path = ''): EmbeddedDocument&CompoundSearchOperatorInterface;
 
-    /** @param string|int|float|ObjectId|UTCDateTime|null $value */
-    public function equals(string $path = '', $value = null): Equals&CompoundSearchOperatorInterface;
+    public function equals(string $path = '', mixed $value = null): Equals&CompoundSearchOperatorInterface;
 
     public function exists(string $path): Exists&CompoundSearchOperatorInterface;
 
     /** @param LineString|Point|Polygon|MultiPolygon|array<string, mixed>|null $geometry */
-    public function geoShape($geometry = null, string $relation = '', string ...$path): GeoShape&CompoundSearchOperatorInterface;
+    public function geoShape(LineString|Point|Polygon|MultiPolygon|array|null $geometry = null, string $relation = '', string ...$path): GeoShape&CompoundSearchOperatorInterface;
 
     public function geoWithin(string ...$path): GeoWithin&CompoundSearchOperatorInterface;
 
     /** @param array<string, mixed>|object $documents */
-    public function moreLikeThis(...$documents): MoreLikeThis&CompoundSearchOperatorInterface;
+    public function moreLikeThis(array|object ...$documents): MoreLikeThis&CompoundSearchOperatorInterface;
 
-    /**
-     * @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin
-     * @param int|float|null                                        $pivot
-     */
-    public function near($origin = null, $pivot = null, string ...$path): Near&CompoundSearchOperatorInterface;
+    /** @param int|float|UTCDateTime|array<string, mixed>|Point|null $origin */
+    public function near(int|float|UTCDateTime|array|Point|null $origin = null, int|float|null $pivot = null, string ...$path): Near&CompoundSearchOperatorInterface;
 
     public function phrase(): Phrase&CompoundSearchOperatorInterface;
 

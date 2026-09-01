@@ -183,7 +183,7 @@ the life-time of their registered documents.
    ``onClear`` - The onClear event occurs after the UnitOfWork has had
    its state cleared.
 -
-   ``documentNotFound`` - The documentNotFound event occurs when a proxy object
+   ``documentNotFound`` - The documentNotFound event occurs when a lazy object
    could not be initialized. This event is not a lifecycle callback.
 -
    ``postCollectionLoad`` - The postCollectionLoad event occurs just after
@@ -616,14 +616,9 @@ Define the ``EventTest`` class with a ``onClear()`` method:
     {
         public function onClear(\Doctrine\ODM\MongoDB\Event\OnClearEventArgs $eventArgs): void
         {
-            $class = $eventArgs->getDocumentClass();
             $dm = $eventArgs->getDocumentManager();
             $uow = $dm->getUnitOfWork();
 
-            // Check if event clears all documents.
-            if ($eventArgs->clearsAllDocuments()) {
-                // do something
-            }
             // do something
         }
     }
@@ -649,7 +644,7 @@ Define the ``EventTest`` class with a ``documentNotFound()`` method:
     {
         public function documentNotFound(\Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs $eventArgs): void
         {
-            $proxy = $eventArgs->getObject();
+            $document = $eventArgs->getObject();
             $identifier = $eventArgs->getIdentifier();
             // do something
             // To prevent the documentNotFound exception from being thrown, call the disableException() method:

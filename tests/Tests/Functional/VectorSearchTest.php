@@ -13,6 +13,7 @@ use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
+use ReflectionProperty;
 
 use function str_contains;
 
@@ -168,16 +169,19 @@ class VectorSearchTest extends BaseTestCase
         }
     }
 
-    #[RequiresPhpExtension('mongodb', '>= 2.2')]
+    #[RequiresPhpExtension('mongodb', '>= 2.2.0')]
     public function testAtlasVectorSearchWithBinaryType(): void
     {
         $cm = $this->dm->getClassMetadata(VectorEmbedding::class);
 
-        $cm->fieldMappings['vectorFloat']['type'] = Type::VECTOR_FLOAT32;
-        $cm->fieldMappings['vectorInt']['type']   = Type::VECTOR_INT8;
+        $fieldMappings                        = $cm->fieldMappings;
+        $fieldMappings['vectorFloat']['type'] = Type::VECTOR_FLOAT32;
+        $fieldMappings['vectorInt']['type']   = Type::VECTOR_INT8;
+
+        new ReflectionProperty($cm, 'fieldMappings')->setValue($cm, $fieldMappings);
 
         // Change the collection name to avoid conflicts with asynchronous index building
-        $cm->collection .= '_binary_type';
+        new ReflectionProperty($cm, 'collection')->setValue($cm, $cm->collection . '_binary_type');
 
         $this->testAtlasVectorSearch();
 

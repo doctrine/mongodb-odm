@@ -8,11 +8,9 @@ use Attribute;
 
 /**
  * Must be set on a document class to instruct Doctrine to check for lifecycle
- * callback annotations on public methods.
- *
- * @final
+ * callback attributes on public methods.
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class HasLifecycleCallbacks implements MappingAttribute
+final class HasLifecycleCallbacks implements MappingAttribute
 {
 }

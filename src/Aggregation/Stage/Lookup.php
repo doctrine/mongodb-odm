@@ -52,7 +52,7 @@ class Lookup extends Stage
 
     private bool $excludeLocalAndForeignField = false;
 
-    public function __construct(Builder $builder, string $from, private DocumentManager $dm, private ClassMetadata $class)
+    public function __construct(Builder $builder, string $from, private readonly DocumentManager $dm, private readonly ClassMetadata $class)
     {
         parent::__construct($builder);
 
@@ -195,7 +195,7 @@ class Lookup extends Stage
      * @param Builder|Stage|array<array<string, mixed>> $pipeline
      * @phpstan-param PipelineParamType $pipeline
      */
-    public function pipeline($pipeline): static
+    public function pipeline(Builder|Stage|array $pipeline): static
     {
         if ($pipeline instanceof Stage) {
             $this->pipeline = $pipeline->builder;

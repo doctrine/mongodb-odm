@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\Persistence\Mapping\Driver\FileLocator;
 use DOMDocument;
 use InvalidArgumentException;
 use LibXMLError;
@@ -50,9 +51,9 @@ use function trim;
  */
 class XmlDriver extends FileDriver
 {
-    public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
+    public const string DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
-    private const DEFAULT_GRIDFS_MAPPINGS = [
+    private const array DEFAULT_GRIDFS_MAPPINGS = [
         'length' => [
             'name' => 'length',
             'type' => 'int',
@@ -75,14 +76,13 @@ class XmlDriver extends FileDriver
         ],
     ];
 
-    /** @param string|null $fileExtension */
-    public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
+    public function __construct(string|array|FileLocator $locator, ?string $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
         parent::__construct($locator, $fileExtension);
     }
 
     // phpcs:disable SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-    public function loadMetadataForClass($className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
+    public function loadMetadataForClass(string $className, \Doctrine\Persistence\Mapping\ClassMetadata $metadata): void
     {
         assert($metadata instanceof ClassMetadata);
         $xmlRoot = $this->getElement($className);
@@ -96,14 +96,14 @@ class XmlDriver extends FileDriver
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null,
             );
-            $metadata->isMappedSuperclass = true;
+            $metadata->markAsMappedSuperclass();
         } elseif ($xmlRoot->getName() === 'embedded-document') {
-            $metadata->isEmbeddedDocument = true;
+            $metadata->markAsEmbeddedDocument();
             if (isset($xmlRoot->encrypt)) {
-                $metadata->isEncrypted = true;
+                $metadata->markAsEncrypted();
             }
         } elseif ($xmlRoot->getName() === 'query-result-document') {
-            $metadata->isQueryResultDocument = true;
+            $metadata->markAsQueryResultDocument();
         } elseif ($xmlRoot->getName() === 'view') {
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
@@ -120,7 +120,7 @@ class XmlDriver extends FileDriver
 
             $metadata->markViewOf($rootClass);
         } elseif ($xmlRoot->getName() === 'gridfs-file') {
-            $metadata->isFile = true;
+            $metadata->markAsFile();
 
             if (isset($xmlRoot['chunk-size-bytes'])) {
                 $metadata->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);
@@ -827,10 +827,8 @@ class XmlDriver extends FileDriver
      * Special strings "false", "true", and "null" are converted to their
      * respective values. Numeric strings are cast to int or float depending on
      * whether they contain decimal separators or not.
-     *
-     * @return scalar|null
      */
-    private function convertXMLElementValue(string $value)
+    private function convertXMLElementValue(string $value): string|bool|int|float|null
     {
         $value = trim($value);
 
@@ -904,7 +902,7 @@ class XmlDriver extends FileDriver
         return [(string) $xmlReadPreference['mode'], $tags];
     }
 
-    protected function loadMappingFile($file): array
+    protected function loadMappingFile(string $file): array
     {
         $result = [];
 

@@ -6,7 +6,7 @@
                   http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
 
     <document name="TestDocuments\UserCustomIdGenerator" db="documents" collection="users">
-        <id strategy="custom">
+        <id strategy="custom" type="custom_id">
             <generator-option name="class" value="TestDocuments\CustomIdGenerator"/>
             <generator-option name="someOption" value="some-option"/>
         </id>

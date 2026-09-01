@@ -8,17 +8,11 @@ use Attribute;
 
 /**
  * Specify a field name to store a discriminator value
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class DiscriminatorField implements MappingAttribute
+final class DiscriminatorField implements MappingAttribute
 {
-    /** @var string */
-    public $value;
-
-    public function __construct(string $value)
+    public function __construct(public readonly string $value)
     {
-        $this->value = $value;
     }
 }

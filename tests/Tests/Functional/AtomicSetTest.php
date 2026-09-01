@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Book;
 use Documents\Chapter;
@@ -92,7 +92,7 @@ class AtomicSetTest extends BaseTestCase
 
     /** @param mixed[]|ArrayCollection<int, mixed>|null $clearWith */
     #[DataProvider('provideAtomicCollectionUnset')]
-    public function testAtomicCollectionUnset($clearWith): void
+    public function testAtomicCollectionUnset(array|ArrayCollection|null $clearWith): void
     {
         $user                 = new AtomicSetUser('Maciej');
         $user->phonenumbers[] = new Phonenumber('12345678');

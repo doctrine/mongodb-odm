@@ -8,18 +8,12 @@ use Attribute;
 
 /**
  * Specify a map of discriminator values and classes
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-class DiscriminatorMap implements MappingAttribute
+final class DiscriminatorMap implements MappingAttribute
 {
-    /** @var array<class-string> */
-    public $value;
-
     /** @param array<class-string> $value */
-    public function __construct(array $value)
+    public function __construct(public readonly array $value)
     {
-        $this->value = $value;
     }
 }

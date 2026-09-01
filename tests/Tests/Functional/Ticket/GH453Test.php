@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function array_values;
@@ -227,20 +227,17 @@ class GH453Test extends BaseTestCase
         $this->assertBsonArray($doc->id, 'referenceManyAddToSet');
     }
 
-    /** @param mixed $documentId */
-    private function assertBsonArray($documentId, string $fieldName): void
+    private function assertBsonArray(mixed $documentId, string $fieldName): void
     {
         $this->assertBsonType(4, $documentId, $fieldName);
     }
 
-    /** @param mixed $documentId */
-    private function assertBsonObject($documentId, string $fieldName): void
+    private function assertBsonObject(mixed $documentId, string $fieldName): void
     {
         $this->assertBsonType(3, $documentId, $fieldName);
     }
 
-    /** @param mixed $documentId */
-    private function assertBsonType(int $bsonType, $documentId, string $fieldName): void
+    private function assertBsonType(int $bsonType, mixed $documentId, string $fieldName): void
     {
         $criteria = ['_id' => $documentId];
 
@@ -254,29 +251,17 @@ class GH453Test extends BaseTestCase
         self::assertNotNull($this->dm->getRepository(GH453Document::class)->findOneBy($criteria));
     }
 
-    /**
-     * @param mixed $expectedValue
-     * @param mixed $documentId
-     */
-    private function assertBsonArrayAndValue($expectedValue, $documentId, string $fieldName): void
+    private function assertBsonArrayAndValue(mixed $expectedValue, mixed $documentId, string $fieldName): void
     {
         $this->assertBsonTypeAndValue(4, $expectedValue, $documentId, $fieldName);
     }
 
-    /**
-     * @param mixed $expectedValue
-     * @param mixed $documentId
-     */
-    private function assertBsonObjectAndValue($expectedValue, $documentId, string $fieldName): void
+    private function assertBsonObjectAndValue(mixed $expectedValue, mixed $documentId, string $fieldName): void
     {
         $this->assertBsonTypeAndValue(3, $expectedValue, $documentId, $fieldName);
     }
 
-    /**
-     * @param mixed $expectedValue
-     * @param mixed $documentId
-     */
-    private function assertBsonTypeAndValue(int $bsonType, $expectedValue, $documentId, string $fieldName): void
+    private function assertBsonTypeAndValue(int $bsonType, mixed $expectedValue, mixed $documentId, string $fieldName): void
     {
         if ($bsonType === 4) {
             $expectedValue = array_values((array) $expectedValue);

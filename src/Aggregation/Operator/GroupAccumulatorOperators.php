@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all accumulator aggregation pipeline operators.
  *
@@ -20,19 +18,15 @@ interface GroupAccumulatorOperators extends CustomOperators
      * Returns an array of unique expression values for each group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/addToSet/
-     *
-     * @param mixed|Expr $expression
      */
-    public function addToSet($expression): static;
+    public function addToSet(mixed $expression): static;
 
     /**
      * Returns the average value of numeric values. Ignores non-numeric values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/avg/
-     *
-     * @param mixed|Expr $expression
      */
-    public function avg($expression): static;
+    public function avg(mixed $expression): static;
 
     /**
      * Returns the bottom element within a group according to the specified sort
@@ -40,10 +34,9 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottom/
      *
-     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
      */
-    public function bottom($output, $sortBy): static;
+    public function bottom(mixed $output, array $sortBy): static;
 
     /**
      * Returns the n bottom elements within a group according to the specified
@@ -51,11 +44,9 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/bottomN/
      *
-     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
-     * @param mixed|Expr                $n
      */
-    public function bottomN($output, $sortBy, $n): static;
+    public function bottomN(mixed $output, array $sortBy, mixed $n): static;
 
     /**
      * Returns the number of documents in a group.
@@ -70,10 +61,8 @@ interface GroupAccumulatorOperators extends CustomOperators
      * a defined order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/first/
-     *
-     * @param mixed|Expr $expression
      */
-    public function first($expression): static;
+    public function first(mixed $expression): static;
 
     /**
      * Returns the value that results from applying an expression to the first n
@@ -81,11 +70,8 @@ interface GroupAccumulatorOperators extends CustomOperators
      * a defined order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/firstN/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr $n
      */
-    public function firstN($expression, $n): static;
+    public function firstN(mixed $expression, mixed $n): static;
 
     /**
      * Returns the value that results from applying an expression to the last
@@ -93,10 +79,8 @@ interface GroupAccumulatorOperators extends CustomOperators
      * a defined order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/last/
-     *
-     * @param mixed|Expr $expression
      */
-    public function last($expression): static;
+    public function last(mixed $expression): static;
 
     /**
      * Returns the value that results from applying an expression to the last n
@@ -104,96 +88,73 @@ interface GroupAccumulatorOperators extends CustomOperators
      * a defined order.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/lastN/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr $n
      */
-    public function lastN($expression, $n): static;
+    public function lastN(mixed $expression, mixed $n): static;
 
     /**
      * Returns the highest expression value for each group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/max/
-     *
-     * @param mixed|Expr $expression
      */
-    public function max($expression): static;
+    public function max(mixed $expression): static;
 
     /**
      * Returns the highest n expression values for each group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/maxN/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr $n
      */
-    public function maxN($expression, $n): static;
+    public function maxN(mixed $expression, mixed $n): static;
 
     /**
      * Returns a document created by combining the input documents for each
      * group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mergeObjects/
-     *
-     * @param mixed|Expr $expression
      */
-    public function mergeObjects($expression): static;
+    public function mergeObjects(mixed $expression): static;
 
     /**
      * Returns the lowest expression value for each group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/min/
-     *
-     * @param mixed|Expr $expression
      */
-    public function min($expression): static;
+    public function min(mixed $expression): static;
 
     /**
      * Returns the lowest n expression values for each group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/minN/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr $n
      */
-    public function minN($expression, $n): static;
+    public function minN(mixed $expression, mixed $n): static;
 
     /**
      * Returns an array of expression values for documents in each group.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/push/
-     *
-     * @param mixed|Expr $expression
      */
-    public function push($expression): static;
+    public function push(mixed $expression): static;
 
     /**
      * Returns the population standard deviation of the input values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevPop/
-     *
-     * @param mixed|Expr $expression
      */
-    public function stdDevPop($expression): static;
+    public function stdDevPop(mixed $expression): static;
 
     /**
      * Returns the sample standard deviation of the input values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/stdDevSamp/
-     *
-     * @param mixed|Expr $expression
      */
-    public function stdDevSamp($expression): static;
+    public function stdDevSamp(mixed $expression): static;
 
     /**
      * Calculates the collective sum of numeric values. Ignores non-numeric
      * values.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sum/
-     *
-     * @param mixed|Expr $expression
      */
-    public function sum($expression): static;
+    public function sum(mixed $expression): static;
 
     /**
      * Returns the top element within a group according to the specified sort
@@ -201,10 +162,9 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/top/
      *
-     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
      */
-    public function top($output, $sortBy): static;
+    public function top(mixed $output, array $sortBy): static;
 
     /**
      * Returns the n top elements within a group according to the specified sort
@@ -212,9 +172,7 @@ interface GroupAccumulatorOperators extends CustomOperators
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/topN/
      *
-     * @param mixed|Expr                $output
      * @param array<string, int|string> $sortBy
-     * @param mixed|Expr                $n
      */
-    public function topN($output, $sortBy, $n): static;
+    public function topN(mixed $output, array $sortBy, mixed $n): static;
 }

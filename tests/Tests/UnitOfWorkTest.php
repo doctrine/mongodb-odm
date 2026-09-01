@@ -6,16 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests;
 
 use Closure;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use Doctrine\Persistence\NotifyPropertyChanged;
-use Doctrine\Persistence\PropertyChangedListener;
 use Documents\Address;
 use Documents\File;
 use Documents\FileWithoutMetadata;
@@ -30,7 +26,6 @@ use MongoDB\Collection as MongoDBCollection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionProperty;
 use Throwable;
 
@@ -40,20 +35,6 @@ use function sprintf;
 
 class UnitOfWorkTest extends BaseTestCase
 {
-    /** Clear by class name is deprecated */
-    #[IgnoreDeprecations]
-    public function testPartialClear(): void
-    {
-        $user   = new ForumUser();
-        $avatar = new ForumAvatar();
-        $this->uow->persist($avatar);
-        $this->uow->persist($user);
-
-        $this->uow->clear(ForumUser::class);
-        self::assertFalse($this->uow->isScheduledForInsert($user));
-        self::assertTrue($this->uow->isScheduledForInsert($avatar));
-    }
-
     public function testIsDocumentScheduled(): void
     {
         $class = $this->dm->getClassMetadata(ForumUser::class);
@@ -594,7 +575,7 @@ class UnitOfWorkTest extends BaseTestCase
         $collection = $this->createMock(MongoDBCollection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $documentPersister = $this->uow->getDocumentPersister(ForumUser::class);
 
@@ -643,124 +624,6 @@ class ParentAssociationTest
     public function __construct(string $name)
     {
         $this->name = $name;
-    }
-}
-
-#[ODM\Document]
-#[ODM\ChangeTrackingPolicy('NOTIFY')]
-class NotifyChangedDocument implements NotifyPropertyChanged
-{
-    /** @var PropertyChangedListener[] */
-    private $_listeners = [];
-
-    /** @var int|null */
-    #[ODM\Id(type: 'int', strategy: 'none')]
-    private $id;
-
-    /** @var string|null */
-    #[ODM\Field(type: 'string')]
-    private $data;
-
-    /** @var Collection<int, NotifyChangedRelatedItem> */
-    #[ODM\ReferenceMany(targetDocument: NotifyChangedRelatedItem::class)]
-    private $items;
-
-    /** @var mixed */
-    private $transient; // not persisted
-
-    public function __construct()
-    {
-        $this->items = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getData(): ?string
-    {
-        return $this->data;
-    }
-
-    public function setData(string $data): void
-    {
-        if ($data === $this->data) {
-            return;
-        }
-
-        $this->onPropertyChanged('data', $this->data, $data);
-        $this->data = $data;
-    }
-
-    /** @return Collection<int, NotifyChangedRelatedItem> */
-    public function getItems(): Collection
-    {
-        return $this->items;
-    }
-
-    /** @param mixed $value */
-    public function setTransient($value): void
-    {
-        if ($value === $this->transient) {
-            return;
-        }
-
-        $this->onPropertyChanged('transient', $this->transient, $value);
-        $this->transient = $value;
-    }
-
-    public function addPropertyChangedListener(PropertyChangedListener $listener): void
-    {
-        $this->_listeners[] = $listener;
-    }
-
-    /**
-     * @param mixed $oldValue
-     * @param mixed $newValue
-     */
-    protected function onPropertyChanged(string $propName, $oldValue, $newValue): void
-    {
-        foreach ($this->_listeners as $listener) {
-            $listener->propertyChanged($this, $propName, $oldValue, $newValue);
-        }
-    }
-}
-
-#[ODM\Document]
-class NotifyChangedRelatedItem
-{
-    /** @var int|null */
-    #[ODM\Id(type: 'int', strategy: 'none')]
-    private $id;
-
-    /** @var NotifyChangedDocument|null */
-    #[ODM\ReferenceOne(targetDocument: NotifyChangedDocument::class)]
-    private $owner;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getOwner(): ?NotifyChangedDocument
-    {
-        return $this->owner;
-    }
-
-    public function setOwner(NotifyChangedDocument $owner): void
-    {
-        $this->owner = $owner;
     }
 }
 

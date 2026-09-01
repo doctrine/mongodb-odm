@@ -15,14 +15,12 @@ use MongoDB\BSON\UTCDateTime;
  * Defines an encrypted field mapping.
  *
  * @see https://www.mongodb.com/docs/manual/core/queryable-encryption/fundamentals/encrypt-and-query/#configure-encrypted-fields-for-optimal-search-and-storage
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-class Encrypt implements MappingAttribute
+final class Encrypt implements MappingAttribute
 {
-    public int|float|Int64|Decimal128|UTCDateTime|null $min;
-    public int|float|Int64|Decimal128|UTCDateTime|null $max;
+    public readonly int|float|Int64|Decimal128|UTCDateTime|null $min;
+    public readonly int|float|Int64|Decimal128|UTCDateTime|null $max;
 
     /**
      * @param EncryptQuery|null $queryType  Set the query type for the field, null if not queryable.
@@ -32,13 +30,13 @@ class Encrypt implements MappingAttribute
      * @param positive-int|null $contention
      */
     public function __construct(
-        public ?EncryptQuery $queryType = null,
+        public readonly ?EncryptQuery $queryType = null,
         int|float|Int64|Decimal128|UTCDateTime|DateTimeInterface|null $min = null,
         int|float|Int64|Decimal128|UTCDateTime|DateTimeInterface|null $max = null,
-        public ?int $sparsity = null,
-        public ?int $precision = null,
-        public ?int $trimFactor = null,
-        public ?int $contention = null,
+        public readonly ?int $sparsity = null,
+        public readonly ?int $precision = null,
+        public readonly ?int $trimFactor = null,
+        public readonly ?int $contention = null,
     ) {
         $this->min = $min instanceof DateTimeInterface ? new UTCDateTime($min) : $min;
         $this->max = $max instanceof DateTimeInterface ? new UTCDateTime($max) : $max;

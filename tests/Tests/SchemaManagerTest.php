@@ -38,11 +38,7 @@ use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
 use MongoDB\Model\CollectionInfo;
-use MongoDB\Model\CollectionInfoCommandIterator;
-use MongoDB\Model\CollectionInfoIterator;
 use MongoDB\Model\IndexInfo;
-use MongoDB\Model\IndexInfoIterator;
-use MongoDB\Model\IndexInfoIteratorIterator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Constraint\ArrayHasKey;
@@ -50,6 +46,8 @@ use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
+use ReflectionProperty;
 
 use function array_count_values;
 use function array_key_exists;
@@ -57,7 +55,6 @@ use function array_map;
 use function assert;
 use function implode;
 use function in_array;
-use function interface_exists;
 
 /**
  * @phpstan-import-type IndexMapping from ClassMetadata
@@ -95,7 +92,7 @@ class SchemaManagerTest extends BaseTestCase
     /** @var array<Collection&MockObject> */
     private array $documentCollections = [];
 
-    /** @var array<Bucket&MockObject> */
+    /** @var array<Bucket&Stub> */
     private array $documentBuckets = [];
 
     /** @var array<Database&MockObject> */
@@ -107,8 +104,8 @@ class SchemaManagerTest extends BaseTestCase
     {
         parent::setUp();
 
-        $client   = $this->createMock(Client::class);
-        $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createMock(EventManager::class));
+        $client   = $this->createStub(Client::class);
+        $this->dm = DocumentManager::create($client, $this->dm->getConfiguration(), $this->createStub(EventManager::class));
 
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
             if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument) {
@@ -116,7 +113,7 @@ class SchemaManagerTest extends BaseTestCase
             }
 
             if ($cm->isFile) {
-                $this->documentBuckets[$cm->getBucketName()] = $this->getMockBucket();
+                $this->documentBuckets[$cm->getBucketName()] = $this->getBucketStub();
             } else {
                 $this->documentCollections[$cm->getCollection()] = $this->getMockCollection($cm->getCollection());
             }
@@ -775,10 +772,10 @@ EOT;
     #[DataProvider('getWriteOptions')]
     public function testCreateDocumentCollection(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
-        $cm                   = $this->dm->getClassMetadata(CmsArticle::class);
-        $cm->collectionCapped = true;
-        $cm->collectionSize   = 1048576;
-        $cm->collectionMax    = 32;
+        $cm = $this->dm->getClassMetadata(CmsArticle::class);
+        new ReflectionProperty(ClassMetadata::class, 'collectionCapped')->setValue($cm, true);
+        new ReflectionProperty(ClassMetadata::class, 'collectionSize')->setValue($cm, 1048576);
+        new ReflectionProperty(ClassMetadata::class, 'collectionMax')->setValue($cm, 32);
 
         $options = [
             'capped' => true,
@@ -1432,30 +1429,27 @@ EOT;
         return ($cm->getDatabase() ?: $this->dm->getConfiguration()->getDefaultDB()) ?: 'doctrine';
     }
 
-    /** @return Bucket&MockObject */
-    private function getMockBucket()
+    private function getBucketStub(): Bucket&Stub
     {
-        $mock = $this->createMock(Bucket::class);
+        $mock = $this->createStub(Bucket::class);
         $mock->method('getFilesCollection')->willReturn($this->getMockCollection());
         $mock->method('getChunksCollection')->willReturn($this->getMockCollection());
 
         return $mock;
     }
 
-    /** @return Collection&MockObject */
-    private function getMockCollection(?string $name = null)
+    private function getMockCollection(?string $name = null): Collection&MockObject
     {
         $collection = $this->createMock(Collection::class);
-        $collection->method('getCollectionName')->willReturnCallback(static fn () => $name);
+        $collection->expects($this->atLeast(0))->method('getCollectionName')->willReturnCallback(static fn () => $name);
 
         return $collection;
     }
 
-    /** @return Database&MockObject */
-    private function getMockDatabase()
+    private function getMockDatabase(): Database&MockObject
     {
         $db = $this->createMock(Database::class);
-        $db->method('getCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
+        $db->expects($this->atLeast(0))->method('getCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
         $db->method('selectGridFSBucket')->willReturnCallback(fn (array $options) => $this->documentBuckets[$options['bucketName']]);
         $db->method('listCollections')->willReturnCallback(function () {
             $collections = [];
@@ -1504,10 +1498,6 @@ EOT;
 
     private function createIndexIterator(array $indexes = []): Iterator
     {
-        if (interface_exists(IndexInfoIterator::class)) {
-            return new IndexInfoIteratorIterator(new ArrayIterator($indexes));
-        }
-
         return new ArrayIterator(array_map(
             static fn (array $indexInfo) => new IndexInfo($indexInfo),
             $indexes,
@@ -1516,10 +1506,6 @@ EOT;
 
     private function createCollectionIterator(array $collections = []): Iterator
     {
-        if (interface_exists(CollectionInfoIterator::class)) {
-            return new CollectionInfoCommandIterator(new ArrayIterator($collections));
-        }
-
         return new ArrayIterator(array_map(
             static fn (array $collectionInfo) => new CollectionInfo($collectionInfo),
             $collections,

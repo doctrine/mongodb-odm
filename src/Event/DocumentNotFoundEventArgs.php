@@ -13,23 +13,21 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
 {
     private bool $disableException = false;
 
-    public function __construct(object $document, DocumentManager $dm, private mixed $identifier)
+    public function __construct(object $document, DocumentManager $dm, private readonly mixed $identifier)
     {
         parent::__construct($document, $dm);
     }
 
     /**
      * Retrieve associated identifier.
-     *
-     * @return mixed
      */
-    public function getIdentifier()
+    public function getIdentifier(): mixed
     {
         return $this->identifier;
     }
 
     /**
-     * Indicates whether the proxy initialization exception is disabled.
+     * Indicates whether the lazy object initialization exception is disabled.
      */
     public function isExceptionDisabled(): bool
     {
@@ -39,7 +37,7 @@ final class DocumentNotFoundEventArgs extends LifecycleEventArgs
     /**
      * Disable the throwing of an exception
      *
-     * This method indicates to the proxy initializer that the missing document
+     * This method indicates to the lazy object initializer that the missing document
      * has been handled and no exception should be thrown. This can't be reset.
      */
     public function disableException(bool $disableException = true): void

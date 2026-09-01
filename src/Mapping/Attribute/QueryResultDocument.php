@@ -6,8 +6,7 @@ namespace Doctrine\ODM\MongoDB\Mapping\Attribute;
 
 use Attribute;
 
-/** @final */
 #[Attribute(Attribute::TARGET_CLASS)]
-class QueryResultDocument extends AbstractDocument
+final class QueryResultDocument extends AbstractDocument
 {
 }

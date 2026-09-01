@@ -8,53 +8,20 @@ use Attribute;
 
 /**
  * Identifies a class as a GridFS file that can be stored in the database
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class File extends AbstractDocument
+final class File extends AbstractDocument
 {
-    /** @var string|null */
-    public $db;
-
-    /** @var string|null */
-    public $bucketName;
-
-    /** @var string|null */
-    public $repositoryClass;
-
-    /** @var Index[] */
-    public $indexes;
-
-    /** @var bool bool */
-    public $readOnly;
-
-    /** @var string|null */
-    public $shardKey;
-
-    /** @var int|null */
-    public $chunkSizeBytes;
-
-    /**
-     * @param Index[]         $indexes
-     * @param string|int|null $writeConcern
-     */
+    /** @param Index[] $indexes */
     public function __construct(
-        ?string $db = null,
-        ?string $bucketName = null,
-        ?string $repositoryClass = null,
-        array $indexes = [],
-        bool $readOnly = false,
-        ?string $shardKey = null,
-        public $writeConcern = null,
-        ?int $chunkSizeBytes = null,
+        public readonly ?string $db = null,
+        public readonly ?string $bucketName = null,
+        public readonly ?string $repositoryClass = null,
+        public readonly array $indexes = [],
+        public readonly bool $readOnly = false,
+        public readonly ?string $shardKey = null,
+        public readonly string|int|null $writeConcern = null,
+        public readonly ?int $chunkSizeBytes = null,
     ) {
-        $this->db              = $db;
-        $this->bucketName      = $bucketName;
-        $this->repositoryClass = $repositoryClass;
-        $this->indexes         = $indexes;
-        $this->readOnly        = $readOnly;
-        $this->shardKey        = $shardKey;
-        $this->chunkSizeBytes  = $chunkSizeBytes;
     }
 }

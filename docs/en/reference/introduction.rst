@@ -330,10 +330,9 @@ class. Before we can instantiate a ``DocumentManager``, we need to construct the
     $config = new Configuration();
 
 Next, we'll specify some essential configuration options. The following assumes
-that we will store generated proxy and hydrator classes in the ``Proxies/`` and
-``Hydrators/`` directories, respectively. Additionally, we'll define a default
-database name to use for document classes that do not specify a database in
-their mapping.
+that we will store generated hydrator classes in the ``Hydrators/`` directory.
+Additionally, we'll define a default database name to use for document classes
+that do not specify a database in their mapping.
 
 .. code-block:: php
 
@@ -341,20 +340,9 @@ their mapping.
 
     // ...
 
-    $config->setProxyDir(__DIR__ . '/Proxies');
-    $config->setProxyNamespace('Proxies');
     $config->setHydratorDir(__DIR__ . '/Hydrators');
     $config->setHydratorNamespace('Hydrators');
     $config->setDefaultDB('doctrine_odm');
-
-    spl_autoload_register($config->getProxyManagerConfiguration()->getProxyAutoloader());
-
-.. note::
-
-    The last call to ``spl_autoload_register`` is necessary to autoload generated
-    proxy classes. Without this, the proxy library would re-generate proxy
-    classes for every request. See the `tuning for production`_ chapter in
-    ProxyManager's documentation.
 
 The easiest way to define mappings for our document classes is with attributes.
 We'll need to specify an attribute driver in our configuration (with one or
@@ -395,8 +383,6 @@ The final ``bootstrap.php`` file should look like this:
     require_once $file;
 
     $config = new Configuration();
-    $config->setProxyDir(__DIR__ . '/Proxies');
-    $config->setProxyNamespace('Proxies');
     $config->setHydratorDir(__DIR__ . '/Hydrators');
     $config->setHydratorNamespace('Hydrators');
     $config->setDefaultDB('doctrine_odm');
@@ -435,5 +421,4 @@ please create separate clients for your application and ODM.
 
 .. _MongoDB: https://www.mongodb.com/
 .. _Composer: http://getcomposer.org/
-.. _tuning for production: https://ocramius.github.io/ProxyManager/docs/tuning-for-production.html
 .. _official PHP manual: https://www.php.net/mongodb.installation

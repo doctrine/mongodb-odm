@@ -10,63 +10,10 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * Specifies a one-to-many relationship to a different document
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class ReferenceMany extends AbstractField implements MappingAttribute
+final class ReferenceMany extends AbstractField implements MappingAttribute
 {
-    /** @var bool */
-    public $reference = true;
-
-    /** @var string */
-    public $storeAs;
-
-    /** @var string|null */
-    public $targetDocument;
-
-    /** @var string|null */
-    public $discriminatorField;
-
-    /** @var array<string, class-string>|null */
-    public $discriminatorMap;
-
-    /** @var string|null */
-    public $defaultDiscriminatorValue;
-
-    /** @var bool|null */
-    public $orphanRemoval;
-
-    /** @var string|null */
-    public $inversedBy;
-
-    /** @var string|null */
-    public $mappedBy;
-
-    /** @var string|null */
-    public $repositoryMethod;
-
-    /** @var array<string, string|int> */
-    public $sort;
-
-    /** @var array<string, mixed> */
-    public $criteria;
-
-    /** @var int|null */
-    public $limit;
-
-    /** @var int|null */
-    public $skip;
-
-    /** @var string|null */
-    public $collectionClass;
-
-    /** @var string[] */
-    public $prime;
-
-    /** @var bool */
-    public $storeEmptyArray;
-
     /**
      * @param array<string, class-string>|null $discriminatorMap
      * @param string[]|string|null             $cascade
@@ -80,41 +27,24 @@ class ReferenceMany extends AbstractField implements MappingAttribute
         array $options = [],
         string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         bool $notSaved = false,
-        string $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF,
-        ?string $targetDocument = null,
-        ?string $discriminatorField = null,
-        ?array $discriminatorMap = null,
-        ?string $defaultDiscriminatorValue = null,
-        public $cascade = null,
-        ?bool $orphanRemoval = null,
-        ?string $inversedBy = null,
-        ?string $mappedBy = null,
-        ?string $repositoryMethod = null,
-        array $sort = [],
-        array $criteria = [],
-        ?int $limit = null,
-        ?int $skip = null,
-        ?string $collectionClass = null,
-        array $prime = [],
-        bool $storeEmptyArray = false,
+        public readonly string $storeAs = ClassMetadata::REFERENCE_STORE_AS_DB_REF,
+        public readonly ?string $targetDocument = null,
+        public readonly ?string $discriminatorField = null,
+        public readonly ?array $discriminatorMap = null,
+        public readonly ?string $defaultDiscriminatorValue = null,
+        public readonly array|string|null $cascade = null,
+        public readonly ?bool $orphanRemoval = null,
+        public readonly ?string $inversedBy = null,
+        public readonly ?string $mappedBy = null,
+        public readonly ?string $repositoryMethod = null,
+        public readonly array $sort = [],
+        public readonly array $criteria = [],
+        public readonly ?int $limit = null,
+        public readonly ?int $skip = null,
+        public readonly ?string $collectionClass = null,
+        public readonly array $prime = [],
+        public readonly bool $storeEmptyArray = false,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
-
-        $this->storeAs                   = $storeAs;
-        $this->targetDocument            = $targetDocument;
-        $this->discriminatorField        = $discriminatorField;
-        $this->discriminatorMap          = $discriminatorMap;
-        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
-        $this->orphanRemoval             = $orphanRemoval;
-        $this->inversedBy                = $inversedBy;
-        $this->mappedBy                  = $mappedBy;
-        $this->repositoryMethod          = $repositoryMethod;
-        $this->sort                      = $sort;
-        $this->criteria                  = $criteria;
-        $this->limit                     = $limit;
-        $this->skip                      = $skip;
-        $this->collectionClass           = $collectionClass;
-        $this->prime                     = $prime;
-        $this->storeEmptyArray           = $storeEmptyArray;
     }
 }

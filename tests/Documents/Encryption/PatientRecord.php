@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Documents\Encryption;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
 
 #[ODM\EmbeddedDocument]

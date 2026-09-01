@@ -6,15 +6,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\LegacyReflectionFields;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
@@ -41,27 +39,23 @@ use Generator;
 use InvalidArgumentException;
 use MongoDB\BSON\Document;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use stdClass;
 
 use function array_merge;
 use function serialize;
-use function sprintf;
 use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
 
         // Test initial state
-        self::assertInstanceOf(LegacyReflectionFields::class, $cm->getReflectionProperties());
         self::assertEmpty($cm->getPropertyAccessors());
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
@@ -89,7 +83,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm->setValidator(Document::fromJSON($validatorJson)->toPHP());
         $cm->setValidationAction(ClassMetadata::SCHEMA_VALIDATION_ACTION_WARN);
         $cm->setValidationLevel(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF);
-        $cm->isEncrypted = true;
+        $cm->markAsEncrypted(true);
         $cm->addSearchIndex(['mappings' => ['fields' => ['title' => ['type' => 'string']]]], 'custom_name');
         self::assertIsArray($cm->getFieldMapping('phonenumbers'));
         self::assertCount(1, $cm->fieldMappings);
@@ -99,7 +93,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm         = unserialize($serialized);
 
         // Check state
-        self::assertInstanceOf(LegacyReflectionFields::class, $cm->getReflectionProperties());
+        self::assertInstanceOf(ClassMetadata::class, $cm);
         self::assertNotEmpty($cm->getPropertyAccessors());
         self::assertInstanceOf(ReflectionClass::class, $cm->reflClass);
         self::assertEquals(CmsUser::class, $cm->name);
@@ -126,23 +120,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_OFF, $cm->getValidationLevel());
         self::assertTrue($cm->isEncrypted);
         self::assertSame([['definition' => ['mappings' => ['fields' => ['title' => ['type' => 'string']]]], 'name' => 'custom_name', 'type' => 'search']], $cm->getSearchIndexes());
-    }
-
-    public function testExtendingClassMetadata(): void
-    {
-        $cm = new ExtendedClassMetadata(CmsUser::class);
-        $cm->setCollection('custom_collection');
-        $cm->customProperty = 'some_value';
-
-        $serialized = $this->captureDeprecationMessages(static fn () => serialize($cm), $deprecations);
-        $cm         = unserialize($serialized);
-
-        self::assertInstanceOf(ExtendedClassMetadata::class, $cm);
-        self::assertSame(CmsUser::class, $cm->name);
-        self::assertSame('custom_collection', $cm->getCollection());
-        self::assertSame('some_value', $cm->customProperty);
-
-        self::assertSame(['Since doctrine/mongodb-odm 2.16: The method __sleep() is deprecated. Implement and use Doctrine\ODM\MongoDB\Mapping\ClassMetadata::__serialize() instead.'], $deprecations);
     }
 
     public function testOwningSideAndInverseSide(): void
@@ -430,11 +407,11 @@ class ClassMetadataTest extends BaseTestCase
     {
         $document = new ClassMetadata(CmsUser::class);
 
-        $embeddedDocument                     = new ClassMetadata(CmsUser::class);
-        $embeddedDocument->isEmbeddedDocument = true;
+        $embeddedDocument = new ClassMetadata(CmsUser::class);
+        $embeddedDocument->markAsEmbeddedDocument();
 
-        $mappedSuperclass                     = new ClassMetadata(CmsUser::class);
-        $mappedSuperclass->isMappedSuperclass = true;
+        $mappedSuperclass = new ClassMetadata(CmsUser::class);
+        $mappedSuperclass->markAsMappedSuperclass();
 
         return [
             'document' => [$document],
@@ -683,9 +660,8 @@ class ClassMetadataTest extends BaseTestCase
         ]);
     }
 
-    /** @param mixed $value */
     #[DataProvider('provideRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort')]
-    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, $value): void
+    public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, mixed $value): void
     {
         $cm = new ClassMetadata('stdClass');
 
@@ -732,8 +708,8 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm                     = new ClassMetadata($object::class);
-        $cm->isEmbeddedDocument = true;
+        $cm = new ClassMetadata($object::class);
+        $cm->markAsEmbeddedDocument();
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('atomicSet collection strategy can be used only in top level document, used in');
@@ -752,8 +728,8 @@ class ClassMetadataTest extends BaseTestCase
             public $many;
         };
 
-        $cm                     = new ClassMetadata($object::class);
-        $cm->isEmbeddedDocument = true;
+        $cm = new ClassMetadata($object::class);
+        new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument')->setValue($cm, true);
 
         $mapping = $cm->mapField([
             'fieldName' => 'many',
@@ -773,8 +749,8 @@ class ClassMetadataTest extends BaseTestCase
             'strategy' => ClassMetadata::STORAGE_STRATEGY_ATOMIC_SET,
         ]);
 
-        $cm                     = new ClassMetadata('stdClass');
-        $cm->isEmbeddedDocument = true;
+        $cm = new ClassMetadata('stdClass');
+        new ReflectionProperty(ClassMetadata::class, 'isEmbeddedDocument')->setValue($cm, true);
         $this->expectException(MappingException::class);
         $cm->mapField($config);
     }
@@ -848,8 +824,11 @@ class ClassMetadataTest extends BaseTestCase
 
     public function testSetShardKeyForClassWithSingleCollectionInheritance(): void
     {
-        $cm                  = new ClassMetadata('stdClass');
-        $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
+        $cm = new ClassMetadata('stdClass');
+        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
+            $cm,
+            ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION,
+        );
         $cm->setShardKey(['id' => 'asc']);
 
         $shardKey = $cm->getShardKey();
@@ -861,7 +840,10 @@ class ClassMetadataTest extends BaseTestCase
     {
         $cm = new ClassMetadata('stdClass');
         $cm->setShardKey(['id' => 'asc']);
-        $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION;
+        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
+            $cm,
+            ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION,
+        );
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Shard key overriding in subclass is forbidden for single collection inheritance');
@@ -870,8 +852,11 @@ class ClassMetadataTest extends BaseTestCase
 
     public function testSetShardKeyForClassWithCollPerClassInheritance(): void
     {
-        $cm                  = new ClassMetadata('stdClass');
-        $cm->inheritanceType = ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS;
+        $cm = new ClassMetadata('stdClass');
+        new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
+            $cm,
+            ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS,
+        );
         $cm->setShardKey(['id' => 'asc']);
 
         $shardKey = $cm->getShardKey();
@@ -896,8 +881,8 @@ class ClassMetadataTest extends BaseTestCase
 
     public function testEmbeddedDocumentCantHaveShardKey(): void
     {
-        $cm                     = new ClassMetadata('stdClass');
-        $cm->isEmbeddedDocument = true;
+        $cm = new ClassMetadata('stdClass');
+        $cm->markAsEmbeddedDocument();
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Embedded document can\'t have shard key: stdClass');
         $cm->setShardKey(['id' => 'asc']);
@@ -973,8 +958,8 @@ class ClassMetadataTest extends BaseTestCase
             public $contentType;
         };
 
-        $cm         = new ClassMetadata($object::class);
-        $cm->isFile = true;
+        $cm = new ClassMetadata($object::class);
+        $cm->markAsFile();
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessageMatches("#^Field 'contentType' in class '.+' is not a valid field for GridFS documents. You should move it to an embedded metadata document.$#");
@@ -1149,20 +1134,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
         self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
     }
-
-    #[RequiresPhp('>= 8.4')]
-    public function testDeprecatedPropertyModification(): void
-    {
-        $metadata = $this->dm->getClassMetadata(TimeSeriesTestDocument::class);
-
-        $this->captureDeprecationMessages(
-            static fn () => $metadata->db = 'foo',
-            $errors,
-        );
-
-        self::assertCount(1, $errors);
-        self::assertEquals(sprintf('Since doctrine/mongodb-odm 2.17: Writing to property %s::db is deprecated and will be removed in version 3.0.', ClassMetadata::class), $errors[0]);
-    }
 }
 
 /** @template-extends DocumentRepository<self> */
@@ -1203,15 +1174,4 @@ class TimeSeriesTestDocument
 
     #[ODM\Field]
     public string $metadata;
-}
-
-class ExtendedClassMetadata extends ClassMetadata
-{
-    public string $customProperty;
-
-    /** @return list<string> */
-    public function __sleep(): array
-    {
-        return array_merge(parent::__sleep(), ['customProperty']);
-    }
 }

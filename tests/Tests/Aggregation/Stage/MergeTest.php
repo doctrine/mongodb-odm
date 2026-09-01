@@ -83,7 +83,7 @@ class MergeTest extends BaseTestCase
 
     /** @param array<array<string, mixed>>|callable $pipeline */
     #[DataProvider('providePipeline')]
-    public function testStageWithPipeline($pipeline): void
+    public function testStageWithPipeline(array|callable $pipeline): void
     {
         if (is_callable($pipeline)) {
             $pipeline = $pipeline($this->dm->createAggregationBuilder(SimpleReferenceUser::class));

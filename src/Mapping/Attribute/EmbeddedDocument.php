@@ -8,18 +8,12 @@ use Attribute;
 
 /**
  * Identifies a class as a document that can be embedded but not stored by itself
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class EmbeddedDocument extends AbstractDocument
+final class EmbeddedDocument extends AbstractDocument
 {
-    /** @var Index[] */
-    public $indexes;
-
     /** @param Index[] $indexes */
-    public function __construct(array $indexes = [])
+    public function __construct(public readonly array $indexes = [])
     {
-        $this->indexes = $indexes;
     }
 }

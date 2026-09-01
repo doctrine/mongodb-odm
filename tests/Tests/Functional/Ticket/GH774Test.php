@@ -36,11 +36,7 @@ class GH774Test extends BaseTestCase
 
 abstract class GH774AbstractThread
 {
-    /**
-     * @ODM\Id
-     *
-     * @var string|null
-     */
+    /** @var string|null */
     public $id;
 
     /** @var string|null */

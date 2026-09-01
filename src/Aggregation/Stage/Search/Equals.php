@@ -6,8 +6,6 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\UTCDateTime;
 
 /**
  * @internal
@@ -22,8 +20,7 @@ class Equals extends AbstractSearchOperator implements ScoredSearchOperator
 
     private mixed $value;
 
-    /** @param string|int|float|ObjectId|UTCDateTime|null $value */
-    public function __construct(Search $search, DocumentPersister $persister, string $path = '', $value = null)
+    public function __construct(Search $search, DocumentPersister $persister, string $path = '', mixed $value = null)
     {
         parent::__construct($search, $persister);
 
@@ -39,8 +36,7 @@ class Equals extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /** @param string|int|float|ObjectId|UTCDateTime|null $value */
-    public function value($value): static
+    public function value(mixed $value): static
     {
         $this->value = $value;
 

@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Marks a method as a preRemove lifecycle callback
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PreRemove implements MappingAttribute
+final class PreRemove implements MappingAttribute
 {
 }

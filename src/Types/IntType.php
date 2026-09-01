@@ -11,21 +11,14 @@ use function max;
  */
 class IntType extends Type implements Incrementable, Versionable
 {
-    /** @return int|null */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?int
     {
         return $value !== null ? (int) $value : null;
     }
 
-    /** @return int|null */
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): ?int
     {
         return $value !== null ? (int) $value : null;
-    }
-
-    public function closureToMongo(): string
-    {
-        return '$return = (int) $value;';
     }
 
     public function closureToPHP(): string
@@ -33,14 +26,12 @@ class IntType extends Type implements Incrementable, Versionable
         return '$return = (int) $value;';
     }
 
-    /** @return int */
-    public function diff($old, $new)
+    public function diff(mixed $old, mixed $new): int
     {
-        return $new - $old;
+        return (int) ($new - $old);
     }
 
-    /** @return int */
-    public function getNextVersion($current)
+    public function getNextVersion(mixed $current): int
     {
         return max(1, (int) $current + 1);
     }

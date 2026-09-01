@@ -37,7 +37,7 @@ class ExprTest extends BaseTestCase
     #[DataProvider('provideTrigonometryExpressionOperators')]
     #[DataProvider('provideTypeExpressionOperators')]
     #[DataProvider('provideWindowExpressionOperators')]
-    public function testGenericOperator(array $expected, string $operator, $args): void
+    public function testGenericOperator(array $expected, string $operator, array|Closure $args): void
     {
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);
@@ -68,7 +68,7 @@ class ExprTest extends BaseTestCase
     #[DataProvider('provideTrigonometryExpressionOperators')]
     #[DataProvider('provideTypeExpressionOperators')]
     #[DataProvider('provideWindowExpressionOperators')]
-    public function testGenericOperatorWithField(array $expected, string $operator, $args): void
+    public function testGenericOperatorWithField(array $expected, string $operator, array|Closure $args): void
     {
         $expr = $this->createExpr();
         $args = $this->resolveArgs($args);

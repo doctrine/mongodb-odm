@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use DateTimeInterface;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
-use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Exception;
+use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\After;
 use ReflectionProperty;
 
@@ -21,8 +21,6 @@ use function is_array;
 
 class CustomTypeTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     public function setUp(): void
     {
         parent::setUp();
@@ -93,26 +91,16 @@ class CustomTypeTest extends BaseTestCase
         $databaseValue = Type::convertPHPToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
     }
-
-    public function testNotOverridingClosureToPHPIsDeprecated(): void
-    {
-        $type = Type::getType('custom_type_without_closure_to_php');
-
-        $code = $this->captureDeprecationMessages(static fn () => $type->closureToPHP(), $deprecations);
-
-        self::assertSame('$return = $value;', $code);
-        self::assertSame(['Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.'], $deprecations);
-    }
 }
 
 class DateCollectionType extends Type
 {
-    use ClosureToPHP;
-
     /**
      * Method called by PersistenceBuilder
+     *
+     * @return UTCDateTime[]
      */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?array
     {
         if ($value === null) {
             return null;
@@ -129,7 +117,8 @@ class DateCollectionType extends Type
         return $value;
     }
 
-    public function convertToPHPValue($value)
+    /** @return DateTimeInterface[] */
+    public function convertToPHPValue(mixed $value): ?array
     {
         if ($value === null) {
             return null;
@@ -144,15 +133,6 @@ class DateCollectionType extends Type
         $value = array_map(static fn ($date) => $converter->convertToPHPValue($date), array_values($value));
 
         return $value;
-    }
-
-    /**
-     * Method never called
-     */
-    public function closureToMongo(): string
-    {
-        // todo: microseconds o.O
-        return '$return = array_map(function($v) { if ($v instanceof \MongoDB\BSON\UTCDateTime) { $v = $v->getTimestamp(); } else if (is_string($v)) { $v = strtotime($v); } return new \MongoDB\BSON\UTCDateTime($v); }, $value);';
     }
 }
 
@@ -186,10 +166,8 @@ class Language
 
 class LanguageType extends Type
 {
-    use ClosureToPHP;
-
     /** @return array{name:string,code:string}|null */
-    public function convertToDatabaseValue($value): ?array
+    public function convertToDatabaseValue(mixed $value): ?array
     {
         if ($value === null) {
             return null;
@@ -201,7 +179,7 @@ class LanguageType extends Type
     }
 
     /** @param array{name:string,code:string}|null $value */
-    public function convertToPHPValue($value): ?Language
+    public function convertToPHPValue(mixed $value): ?Language
     {
         if ($value === null) {
             return null;

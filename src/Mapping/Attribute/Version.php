@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Specifies a field to use for optimistic locking
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Version implements MappingAttribute
+final class Version implements MappingAttribute
 {
 }

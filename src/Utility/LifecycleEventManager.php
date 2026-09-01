@@ -30,7 +30,7 @@ final class LifecycleEventManager
     /** @var array<int, array<string, true>> */
     private array $transactionalEvents = [];
 
-    public function __construct(private DocumentManager $dm, private UnitOfWork $uow, private EventManager $evm)
+    public function __construct(private readonly DocumentManager $dm, private readonly UnitOfWork $uow, private readonly EventManager $evm)
     {
     }
 
@@ -47,14 +47,10 @@ final class LifecycleEventManager
         $this->session                  = $session;
     }
 
-    /**
-     * @param mixed $id
-     *
-     * @return bool Returns whether the exceptionDisabled flag was set
-     */
-    public function documentNotFound(object $proxy, $id): bool
+    /** @return bool Returns whether the exceptionDisabled flag was set */
+    public function documentNotFound(object $document, mixed $id): bool
     {
-        $eventArgs = new DocumentNotFoundEventArgs($proxy, $this->dm, $id);
+        $eventArgs = new DocumentNotFoundEventArgs($document, $this->dm, $id);
         $this->evm->dispatchEvent(Events::documentNotFound, $eventArgs);
 
         return $eventArgs->isExceptionDisabled();

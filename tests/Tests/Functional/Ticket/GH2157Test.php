@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\ODM\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class GH2157Test extends BaseTestCase

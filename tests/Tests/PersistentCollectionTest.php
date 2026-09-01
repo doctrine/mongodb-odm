@@ -295,7 +295,7 @@ class PersistentCollectionTest extends BaseTestCase
     public function testRemoveIsForwarded(): void
     {
         $collection = $this->getMockCollection();
-        $collection->expects($this->once())->method('remove')->willReturn(2);
+        $collection->expects($this->once())->method('remove')->willReturn(null);
         $pcoll = new PersistentCollection($collection, $this->dm, $this->uow);
         $pcoll->remove(0);
         self::assertTrue($pcoll->isDirty());
@@ -355,7 +355,7 @@ class PersistentCollectionTest extends BaseTestCase
     }
 
     /** @return Collection<int, object>&MockObject */
-    private function getMockCollection()
+    private function getMockCollection(): Collection&MockObject
     {
         return $this->createMock(Collection::class);
     }

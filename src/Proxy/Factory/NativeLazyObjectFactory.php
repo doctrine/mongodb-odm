@@ -18,8 +18,6 @@ use WeakMap;
 use function array_key_exists;
 use function count;
 
-use const PHP_VERSION_ID;
-
 /** @internal */
 class NativeLazyObjectFactory implements ProxyFactory
 {
@@ -35,10 +33,6 @@ class NativeLazyObjectFactory implements ProxyFactory
     public function __construct(
         DocumentManager $documentManager,
     ) {
-        if (PHP_VERSION_ID < 80400) {
-            throw new LogicException('Native lazy objects require PHP 8.4 or higher.');
-        }
-
         $this->unitOfWork            = $documentManager->getUnitOfWork();
         $this->lifecycleEventManager = new LifecycleEventManager($documentManager, $this->unitOfWork, $documentManager->getEventManager());
     }
@@ -50,7 +44,7 @@ class NativeLazyObjectFactory implements ProxyFactory
         return count($classes);
     }
 
-    public function getProxy(ClassMetadata $metadata, $identifier): object
+    public function getProxy(ClassMetadata $metadata, mixed $identifier): object
     {
         $proxy = $metadata->reflClass->newLazyGhost(function (object $object) use (
             $identifier,

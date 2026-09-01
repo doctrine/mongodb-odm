@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
 use Doctrine\ODM\MongoDB\SchemaManager;
-use Doctrine\ODM\MongoDB\Tools\Console\Command\CommandCompatibility;
 use MongoDB\Driver\WriteConcern;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,9 +16,9 @@ use function array_filter;
 use function is_string;
 use function sprintf;
 
+#[AsCommand('odm:schema:create')]
 class CreateCommand extends AbstractCommand
 {
-    use CommandCompatibility;
     use SearchIndexWaitTrait;
 
     /** @var string[] */
@@ -31,7 +31,7 @@ class CreateCommand extends AbstractCommand
         self::SEARCH_INDEX => ['search index(es)', 'search indexes'],
     ];
 
-    private function doConfigure(): void
+    protected function configure(): void
     {
         parent::configure();
 
@@ -47,7 +47,7 @@ class CreateCommand extends AbstractCommand
             ->setDescription('Create databases, collections and indexes for your documents');
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $create = array_filter($this->createOrder, static fn (string $option): bool => (bool) $input->getOption($option));
 
@@ -99,22 +99,22 @@ class CreateCommand extends AbstractCommand
         return $isErrored ? 255 : 0;
     }
 
-    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->createDocumentCollection($document, $maxTimeMs, $writeConcern);
     }
 
-    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $sm->createCollections($maxTimeMs, $writeConcern);
     }
 
-    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $sm->ensureDocumentIndexes($document, $maxTimeMs, $writeConcern, $background);
     }
 
-    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false)
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern, bool $background = false): void
     {
         $sm->ensureIndexes($maxTimeMs, $writeConcern, $background);
     }
@@ -127,20 +127,5 @@ class CreateCommand extends AbstractCommand
     protected function processSearchIndex(SchemaManager $sm): void
     {
         $sm->createSearchIndexes();
-    }
-
-    /** @return void */
-    protected function processDocumentProxy(SchemaManager $sm, string $document)
-    {
-        $classMetadata = $this->getMetadataFactory()->getMetadataFor($document);
-
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses([$classMetadata]);
-    }
-
-    /** @return void */
-    protected function processProxy(SchemaManager $sm)
-    {
-        $metadatas = $this->getMetadataFactory()->getAllMetadata();
-        $this->getDocumentManager()->getProxyFactory()->generateProxyClasses($metadatas);
     }
 }

@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
@@ -127,7 +127,7 @@ class GH1775Post extends GH1775MetaDocument
     }
 
     /** @return Collection<int, GH1775Image> */
-    public function getImages()
+    public function getImages(): Collection
     {
         return $this->images;
     }

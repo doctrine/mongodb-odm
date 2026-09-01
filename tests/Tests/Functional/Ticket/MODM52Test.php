@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 use function count;
@@ -36,7 +36,7 @@ class MODM52Test extends BaseTestCase
     }
 }
 
-/** @ODM\MappedSuperClass */
+
 class MODM52Container
 {
     /** @var string|null */
@@ -58,7 +58,7 @@ class MODM52Container
     }
 
     /** @return Collection<int, MODM52Embedded>|array<MODM52Embedded> */
-    public function getItems()
+    public function getItems(): Collection|array
     {
         return $this->items;
     }

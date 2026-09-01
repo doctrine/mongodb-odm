@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Tools;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tools\ResolveTargetDocumentListener;
@@ -77,8 +77,7 @@ class ResolveTargetDocumentListenerTest extends BaseTestCase
 
 interface ResolveTargetInterface
 {
-    /** @return mixed */
-    public function getId();
+    public function getId(): mixed;
 }
 
 interface TargetInterface extends ResolveTargetInterface

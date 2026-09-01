@@ -44,7 +44,7 @@ class EnumPropertyAccessor implements PropertyAccessor
      *
      * @return ($enum is BackedEnum ? (string|int) : (string[]|int[]))
      */
-    private function fromEnum($enum) // phpcs:ignore
+    private function fromEnum(BackedEnum|array $enum):string|int|array // phpcs:ignore
     {
         if (is_array($enum)) {
             return array_map(static function (BackedEnum $enum) {
@@ -60,7 +60,7 @@ class EnumPropertyAccessor implements PropertyAccessor
      *
      * @return ($value is int|string|BackedEnum ? BackedEnum : BackedEnum[])
      */
-    private function toEnum($value): BackedEnum|array
+    private function toEnum(BackedEnum|array|string|int $value): BackedEnum|array
     {
         if ($value instanceof BackedEnum) {
             return $value;

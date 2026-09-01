@@ -12,7 +12,7 @@ use function sprintf;
 /** @internal */
 trait CompoundedSearchOperatorTrait
 {
-    public function __construct(private Compound $compound, private Closure $addOperator, ...$args)
+    public function __construct(private readonly Compound $compound, private readonly Closure $addOperator, mixed ...$args)
     {
         if (! $this instanceof CompoundSearchOperatorInterface) {
             throw new LogicException(sprintf('Can only use %s on classes extending %s.', self::class, CompoundSearchOperatorInterface::class));

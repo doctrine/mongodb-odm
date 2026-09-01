@@ -24,7 +24,7 @@ final class CriteriaMerger
      *
      * @return array<string, mixed>
      */
-    public function merge(...$criterias): array
+    public function merge(array ...$criterias): array
     {
         $nonEmptyCriterias = array_values(array_filter($criterias, static fn (array $criteria) => ! empty($criteria)));
 

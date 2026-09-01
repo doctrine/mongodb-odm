@@ -200,9 +200,8 @@ The above would output the following:
     (
         [id:Entities\Order:private] => 53
         [productId:Entities\Order:private] => 4c74a1868ead0ed7a9000000
-        [product:Entities\Order:private] => Proxies\DocumentsProductProxy Object
+        [product:Entities\Order:private] => Entities\Product Object
             (
-                [__isInitialized__] => 1
                 [id:Documents\Product:private] => 4c74a1868ead0ed7a9000000
                 [title:Documents\Product:private] => Test Product
             )

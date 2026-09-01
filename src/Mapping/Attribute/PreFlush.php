@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Marks a method as a preFlush lifecycle callback
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PreFlush implements MappingAttribute
+final class PreFlush implements MappingAttribute
 {
 }

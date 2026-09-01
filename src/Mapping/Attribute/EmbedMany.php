@@ -10,33 +10,10 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 
 /**
  * Embeds multiple documents
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class EmbedMany extends AbstractField implements MappingAttribute
+final class EmbedMany extends AbstractField implements MappingAttribute
 {
-    /** @var bool */
-    public $embedded = true;
-
-    /** @var string|null */
-    public $targetDocument;
-
-    /** @var string|null */
-    public $discriminatorField;
-
-    /** @var array<string, class-string>|null */
-    public $discriminatorMap;
-
-    /** @var string|null */
-    public $defaultDiscriminatorValue;
-
-    /** @var string|null */
-    public $collectionClass;
-
-    /** @var bool */
-    public $storeEmptyArray;
-
     /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         ?string $name = null,
@@ -44,20 +21,13 @@ class EmbedMany extends AbstractField implements MappingAttribute
         array $options = [],
         string $strategy = CollectionHelper::DEFAULT_STRATEGY,
         bool $notSaved = false,
-        ?string $targetDocument = null,
-        ?string $discriminatorField = null,
-        ?array $discriminatorMap = null,
-        ?string $defaultDiscriminatorValue = null,
-        ?string $collectionClass = null,
-        bool $storeEmptyArray = false,
+        public readonly ?string $targetDocument = null,
+        public readonly ?string $discriminatorField = null,
+        public readonly ?array $discriminatorMap = null,
+        public readonly ?string $defaultDiscriminatorValue = null,
+        public readonly ?string $collectionClass = null,
+        public readonly bool $storeEmptyArray = false,
     ) {
         parent::__construct($name, ClassMetadata::MANY, $nullable, $options, $strategy, $notSaved);
-
-        $this->targetDocument            = $targetDocument;
-        $this->discriminatorField        = $discriminatorField;
-        $this->discriminatorMap          = $discriminatorMap;
-        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
-        $this->collectionClass           = $collectionClass;
-        $this->storeEmptyArray           = $storeEmptyArray;
     }
 }

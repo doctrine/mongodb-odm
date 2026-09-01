@@ -8,9 +8,8 @@ use Attribute;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 
-/** @final */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class ChunkSize extends AbstractField implements MappingAttribute
+final class ChunkSize extends AbstractField implements MappingAttribute
 {
     public function __construct()
     {

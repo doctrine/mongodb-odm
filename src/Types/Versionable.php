@@ -13,8 +13,6 @@ interface Versionable
      * Calculates next version.
      *
      * @param mixed $current version currently in use, null if not versioned yet (i.e. first version)
-     *
-     * @return mixed
      */
-    public function getNextVersion($current);
+    public function getNextVersion(mixed $current): mixed;
 }

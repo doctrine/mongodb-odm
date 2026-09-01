@@ -20,10 +20,8 @@ interface MiscOperators
      * Allows any expression to be used as a field value.
      *
      * @see https://docs.mongodb.com/manual/meta/aggregation-quick-reference/#aggregation-expressions
-     *
-     * @param mixed|Expr $value
      */
-    public function expression($value): static;
+    public function expression(mixed $value): static;
 
     /**
      * Binds variables for use in the specified expression, and returns the
@@ -34,26 +32,22 @@ interface MiscOperators
      * @param mixed|Expr $vars Assignment block for the variables accessible in the in expression. To assign a variable, specify a string for the variable name and assign a valid expression for the value.
      * @param mixed|Expr $in   the expression to evaluate
      */
-    public function let($vars, $in): static;
+    public function let(mixed $vars, mixed $in): static;
 
     /**
      * Returns a value without parsing. Use for values that the aggregation
      * pipeline may interpret as an expression.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/literal/
-     *
-     * @param mixed|Expr $value
      */
-    public function literal($value): static;
+    public function literal(mixed $value): static;
 
     /**
      * Returns the metadata associated with a document in a pipeline operations.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/meta/
-     *
-     * @param mixed|Expr $metaDataKeyword
      */
-    public function meta($metaDataKeyword): static;
+    public function meta(mixed $metaDataKeyword): static;
 
     /**
      * Returns a random float between 0 and 1 each time it is called.

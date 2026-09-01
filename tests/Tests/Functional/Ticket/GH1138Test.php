@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class GH1138Test extends BaseTestCase

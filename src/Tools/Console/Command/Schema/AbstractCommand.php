@@ -19,12 +19,15 @@ use function is_string;
 
 abstract class AbstractCommand extends Command
 {
-    use AbstractCommandCompatibility;
+    public const string DB           = 'db';
+    public const string COLLECTION   = 'collection';
+    public const string INDEX        = 'index';
+    public const string SEARCH_INDEX = 'search-index';
 
-    public const DB           = 'db';
-    public const COLLECTION   = 'collection';
-    public const INDEX        = 'index';
-    public const SEARCH_INDEX = 'search-index';
+    protected function configure(): void
+    {
+        $this->configureCommonOptions();
+    }
 
     private function configureCommonOptions(): void
     {
@@ -35,62 +38,38 @@ abstract class AbstractCommand extends Command
             ->addOption('journal', null, InputOption::VALUE_REQUIRED, 'An optional journal option for the write concern that will be used for all schema operations. Using this option without a w option will cause an exception to be thrown.');
     }
 
-    /**
-     * @return void
-     *
-     * @throws BadMethodCallException
-     */
-    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    /** @throws BadMethodCallException */
+    protected function processDocumentCollection(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         throw new BadMethodCallException('This command does not support collections');
     }
 
-    /**
-     * @return void
-     *
-     * @throws BadMethodCallException
-     */
-    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    /** @throws BadMethodCallException */
+    protected function processCollection(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         throw new BadMethodCallException('This command does not support collections');
     }
 
-    /**
-     * @return void
-     *
-     * @throws BadMethodCallException
-     */
-    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    /** @throws BadMethodCallException */
+    protected function processDocumentDb(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         throw new BadMethodCallException('This command does not support databases');
     }
 
-    /**
-     * @return void
-     *
-     * @throws BadMethodCallException
-     */
-    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    /** @throws BadMethodCallException */
+    protected function processDb(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         throw new BadMethodCallException('This command does not support databases');
     }
 
-    /**
-     * @return void
-     *
-     * @throws BadMethodCallException
-     */
-    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    /** @throws BadMethodCallException */
+    protected function processDocumentIndex(SchemaManager $sm, string $document, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         throw new BadMethodCallException('This command does not support indexes');
     }
 
-    /**
-     * @return void
-     *
-     * @throws BadMethodCallException
-     */
-    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern)
+    /** @throws BadMethodCallException */
+    protected function processIndex(SchemaManager $sm, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         throw new BadMethodCallException('This command does not support indexes');
     }
@@ -111,20 +90,17 @@ abstract class AbstractCommand extends Command
         throw new BadMethodCallException('This command does not support search indexes');
     }
 
-    /** @return SchemaManager */
-    protected function getSchemaManager()
+    protected function getSchemaManager(): SchemaManager
     {
         return $this->getDocumentManager()->getSchemaManager();
     }
 
-    /** @return DocumentManager */
-    protected function getDocumentManager()
+    protected function getDocumentManager(): DocumentManager
     {
         return $this->getHelper('documentManager')->getDocumentManager();
     }
 
-    /** @return ClassMetadataFactoryInterface */
-    protected function getMetadataFactory()
+    protected function getMetadataFactory(): ClassMetadataFactoryInterface
     {
         return $this->getDocumentManager()->getMetadataFactory();
     }

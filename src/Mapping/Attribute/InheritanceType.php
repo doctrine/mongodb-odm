@@ -8,17 +8,11 @@ use Attribute;
 
 /**
  * Specifies which inheritance type to use for a document
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class InheritanceType implements MappingAttribute
+final class InheritanceType implements MappingAttribute
 {
-    /** @var string */
-    public $value;
-
-    public function __construct(string $value)
+    public function __construct(public readonly string $value)
     {
-        $this->value = $value;
     }
 }

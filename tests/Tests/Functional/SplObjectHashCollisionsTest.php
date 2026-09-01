@@ -6,17 +6,16 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use ReflectionObject;
 
 class SplObjectHashCollisionsTest extends BaseTestCase
 {
     /** @param callable(DocumentManager, object=): void $f */
     #[DataProvider('provideParentAssociationsIsCleared')]
-    public function testParentAssociationsIsCleared(callable $f): void
+    public function testParentAssociationsIsCleared(callable $f, int $leftover): void
     {
         $d         = new SplColDoc();
         $d->one    = new SplColEmbed('d.one.v1');
@@ -66,17 +65,6 @@ class SplObjectHashCollisionsTest extends BaseTestCase
                 1,
             ],
         ];
-    }
-
-    #[IgnoreDeprecations]
-    public function testParentAssociationsLeftoverPartialClear(): void
-    {
-        $this->testParentAssociationsLeftover(
-            static function (DocumentManager $dm): void {
-                $dm->clear(SplColDoc::class);
-            },
-            1,
-        );
     }
 
     private function expectCount(string $prop, int $expected): void

@@ -8,10 +8,7 @@ use LogicException;
 use MongoDB\Driver\Monitoring\CommandFailedEvent;
 use MongoDB\Driver\Monitoring\CommandStartedEvent;
 use MongoDB\Driver\Monitoring\CommandSucceededEvent;
-use MongoDB\Driver\Server;
 use Throwable;
-
-use function method_exists;
 
 final class Command
 {
@@ -44,8 +41,7 @@ final class Command
         return $instance;
     }
 
-    /** @param CommandSucceededEvent|CommandFailedEvent $finishedEvent */
-    private static function checkRequestIds(CommandStartedEvent $startedEvent, $finishedEvent): void
+    private static function checkRequestIds(CommandStartedEvent $startedEvent, CommandSucceededEvent|CommandFailedEvent $finishedEvent): void
     {
         if ($startedEvent->getRequestId() !== $finishedEvent->getRequestId()) {
             throw new LogicException('Cannot create APM command for events with different request IDs');
@@ -70,16 +66,6 @@ final class Command
     public function getRequestId(): string
     {
         return $this->startedEvent->getRequestId();
-    }
-
-    /** @deprecated This method is failing with MongoDB Extension v2.0+, use getHost and getPort instead. */
-    public function getServer(): Server
-    {
-        if (! method_exists($this->finishedEvent, 'getServer')) {
-            throw new LogicException('getServer() is not available in MongoDB Extension v2.0+');
-        }
-
-        return $this->finishedEvent->getServer();
     }
 
     public function getPort(): int

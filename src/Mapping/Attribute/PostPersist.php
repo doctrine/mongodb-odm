@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Marks a method as a postPersist lifecycle callback
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PostPersist implements MappingAttribute
+final class PostPersist implements MappingAttribute
 {
 }

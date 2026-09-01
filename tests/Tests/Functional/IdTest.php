@@ -6,9 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use DateTime;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Id\UuidGenerator;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
@@ -22,35 +20,11 @@ use function get_class;
 use function gettype;
 use function is_object;
 use function md5;
-use function serialize;
 use function sprintf;
 use function ucfirst;
-use function unserialize;
 
 class IdTest extends BaseTestCase
 {
-    public function testUuidId(): void
-    {
-        $user = new UuidUser('Jonathan H. Wage');
-        $this->dm->persist($user);
-        $this->dm->flush();
-        $id = $user->id;
-
-        $this->dm->clear();
-        $check1 = $this->dm->getRepository(UuidUser::class)->findOneBy(['id' => $id]);
-        self::assertNotNull($check1);
-
-        $check2 = $this->dm->createQueryBuilder(UuidUser::class)
-            ->field('id')->equals($id)->getQuery()->getSingleResult();
-        self::assertNotNull($check2);
-        self::assertSame($check1, $check2);
-
-        $check3 = $this->dm->createQueryBuilder(UuidUser::class)
-            ->field('name')->equals('Jonathan H. Wage')->getQuery()->getSingleResult();
-        self::assertNotNull($check3);
-        self::assertSame($check2, $check3);
-    }
-
     public function testAlnumIdChars(): void
     {
         $user = new AlnumCharsUser('Jonathan H. Wage');
@@ -146,26 +120,8 @@ class IdTest extends BaseTestCase
         self::assertEquals(4, $user2->embedded[1]->id);
     }
 
-    public function testIdGeneratorInstance(): void
-    {
-        $class = $this->dm->getClassMetadata(UuidUser::class);
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        self::assertEquals(['salt' => 'test'], $class->generatorOptions);
-        self::assertInstanceOf(UuidGenerator::class, $class->idGenerator);
-        self::assertEquals('test', $class->idGenerator->getSalt());
-
-        $serialized = serialize($class);
-        $class      = unserialize($serialized);
-
-        self::assertEquals(ClassMetadata::GENERATOR_TYPE_UUID, $class->generatorType);
-        self::assertEquals(['salt' => 'test'], $class->generatorOptions);
-        self::assertInstanceOf(UuidGenerator::class, $class->idGenerator);
-        self::assertEquals('test', $class->idGenerator->getSalt());
-    }
-
-    /** @param int|float $user2Id */
     #[DataProvider('provideEqualButNotIdenticalIds')]
-    public function testEqualButNotIdenticalIds(string $user1Id, $user2Id): void
+    public function testEqualButNotIdenticalIds(string $user1Id, int|float $user2Id): void
     {
         self::assertNotSame($user1Id, $user2Id);
 
@@ -206,12 +162,8 @@ class IdTest extends BaseTestCase
         ];
     }
 
-    /**
-     * @param mixed $id
-     * @param mixed $expected
-     */
     #[DataProvider('getTestIdTypesAndStrategiesData')]
-    public function testIdTypesAndStrategies(string $type, string $strategy, $id = null, $expected = null, ?string $expectedMongoType = null): void
+    public function testIdTypesAndStrategies(string $type, string $strategy, mixed $id = null, mixed $expected = null, ?string $expectedMongoType = null): void
     {
         $className = $this->createIdTestClass($type, $strategy);
 
@@ -293,7 +245,6 @@ class IdTest extends BaseTestCase
 
             // bin
             ['bin', 'none', 'test-data', 'test-data', Binary::class],
-            ['bin', 'uuid', null, null, Binary::class],
             ['bin_func', 'none', 'test-data', 'test-data', Binary::class],
             ['bin_bytearray', 'none', 'test-data', 'test-data', Binary::class],
             ['bin_uuid', 'none', 'TestTestTestTest', 'TestTestTestTest', Binary::class],
@@ -367,7 +318,7 @@ class IdTest extends BaseTestCase
                 <<<'PHP'
                 namespace %s;
 
-                use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+                use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
                 #[ODM\Document]
                 class %s
@@ -389,23 +340,6 @@ class IdTest extends BaseTestCase
         }
 
         return $className;
-    }
-}
-
-#[ODM\Document]
-class UuidUser
-{
-    /** @var string|null */
-    #[ODM\Id(strategy: 'uuid', options: ['salt' => 'test'])]
-    public $id;
-
-    /** @var string */
-    #[ODM\Field(name: 't', type: 'string')]
-    public $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
     }
 }
 

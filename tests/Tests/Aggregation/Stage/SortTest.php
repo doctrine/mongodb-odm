@@ -19,7 +19,7 @@ class SortTest extends BaseTestCase
      * @phpstan-param SortShape $expectedSort
      */
     #[DataProvider('provideSortOptions')]
-    public function testStage(array $expectedSort, $field, ?string $order = null): void
+    public function testStage(array $expectedSort, string|array $field, ?string $order = null): void
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
@@ -31,7 +31,7 @@ class SortTest extends BaseTestCase
      * @phpstan-param SortShape $expectedSort
      */
     #[DataProvider('provideSortOptions')]
-    public function testFromBuilder(array $expectedSort, $field, ?string $order = null): void
+    public function testFromBuilder(array $expectedSort, string|array $field, ?string $order = null): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);

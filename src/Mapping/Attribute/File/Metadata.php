@@ -9,41 +9,20 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute\AbstractField;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\MappingAttribute;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
-/** @final */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Metadata extends AbstractField implements MappingAttribute
+final class Metadata extends AbstractField implements MappingAttribute
 {
-    /** @var bool */
-    public $embedded = true;
-
-    /** @var string|null */
-    public $targetDocument;
-
-    /** @var string|null */
-    public $discriminatorField;
-
-    /** @var array<string, class-string>|null */
-    public $discriminatorMap;
-
-    /** @var string|null */
-    public $defaultDiscriminatorValue;
-
     /** @param array<string, class-string>|null $discriminatorMap */
     public function __construct(
         bool $nullable = false,
         array $options = [],
         ?string $strategy = null,
         bool $notSaved = false,
-        ?string $targetDocument = null,
-        ?string $discriminatorField = null,
-        ?array $discriminatorMap = null,
-        ?string $defaultDiscriminatorValue = null,
+        public readonly ?string $targetDocument = null,
+        public readonly ?string $discriminatorField = null,
+        public readonly ?array $discriminatorMap = null,
+        public readonly ?string $defaultDiscriminatorValue = null,
     ) {
         parent::__construct('metadata', ClassMetadata::ONE, $nullable, $options, $strategy, $notSaved);
-
-        $this->targetDocument            = $targetDocument;
-        $this->discriminatorField        = $discriminatorField;
-        $this->discriminatorMap          = $discriminatorMap;
-        $this->defaultDiscriminatorValue = $defaultDiscriminatorValue;
     }
 }

@@ -12,5 +12,5 @@ use GeoJson\Geometry\Polygon;
 interface SupportsGeoShapeOperator
 {
     /** @param LineString|Point|Polygon|MultiPolygon|array<string, mixed>|null $geometry */
-    public function geoShape($geometry = null, string $relation = '', string ...$path): GeoShape;
+    public function geoShape(LineString|Point|Polygon|MultiPolygon|array|null $geometry = null, string $relation = '', string ...$path): GeoShape;
 }

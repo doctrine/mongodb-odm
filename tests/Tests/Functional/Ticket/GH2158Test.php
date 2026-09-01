@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class GH2158Test extends BaseTestCase
@@ -15,7 +15,7 @@ class GH2158Test extends BaseTestCase
         $this->dm->persist($obj);
         $this->dm->flush();
 
-        self::assertEquals($this->dm->find(GH2158Abstract::class, $obj->getId()), $obj);
+        self::assertSame($obj, $this->dm->find(GH2158Abstract::class, $obj->getId()));
     }
 }
 

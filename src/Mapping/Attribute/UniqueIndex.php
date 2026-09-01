@@ -8,18 +8,16 @@ use Attribute;
 
 /**
  * Specifies a unique index on a field
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
-class UniqueIndex extends AbstractIndex implements MappingAttribute
+final class UniqueIndex extends AbstractIndex implements MappingAttribute
 {
     public function __construct(
         array $keys = [],
         ?string $name = null,
         ?bool $background = null,
         ?int $expireAfterSeconds = null,
-        $order = null,
+        int|string|null $order = null,
         bool $sparse = false,
         array $options = [],
         array $partialFilterExpression = [],

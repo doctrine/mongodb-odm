@@ -28,19 +28,12 @@ Introduction to Attributes
 --------------------------
 
 `PHP attributes <https://www.php.net/language.attributes.overview>`_
-are a PHP 8+ feature that provides a native way to add metadata to classes,
-methods, properties, and other language constructs. They replace doctrine
-annotations by offering a standardized approach to metadata, eliminating
-the need for the separate parsing library required by annotations.
+provide a native way to add metadata to classes, methods, properties, and other
+language constructs.
 
 In this documentation we follow the `PER Coding Style <https://www.php-fig.org/per/coding-style/#12-attributes>`_
 for attributes. We use named arguments for attributes as the names of their
 constructor arguments are covered by Doctrine Backward-Compatibility promise.
-
-.. note::
-
-    Doctrine Annotations are deprecated. You can migrate to PHP Attributes
-    automatically `using Rector <https://getrector.com/blog/how-to-upgrade-annotations-to-attributes>`_.
 
 Persistent classes
 ------------------
@@ -285,18 +278,11 @@ object ID. The available strategies are:
 - ``ALNUM`` - Generates an alpha-numeric string (based on an incrementing value).
 - ``CUSTOM`` - Defers generation to an implementation of ``IdGenerator`` specified in the ``class`` option.
 - ``INCREMENT`` - Uses another collection to auto increment an integer identifier.
-- ``UUID`` - Generates a UUID identifier (deprecated).
 - ``NONE`` - Do not generate any identifier. ID must be manually set.
 
 When using the ``AUTO`` strategy in combination with a UUID identifier, the generator can create UUIDs of type 1, type 4,
 and type 7 automatically. For all other UUID types, assign the identifier manually in combination with the ``NONE``
 strategy.
-
-.. note::
-
-    The ``UUID`` generator is deprecated, as it stores UUIDs as strings. It is recommended to use the ``AUTO`` strategy
-    with a ``uuid`` type identifier field instead. If you need to keep generating string UUIDs, you can use the
-    ``CUSTOM`` strategy with your own generator.
 
 Here is an example how to manually set a string identifier for your documents:
 
@@ -313,7 +299,7 @@ Here is an example how to manually set a string identifier for your documents:
         #[ODM\Document]
         class MyPersistentClass
         {
-            #[ODM\Id(strategy: 'NONE', type: 'string')]
+            #[ODM\Id(strategy: 'NONE')]
             public string $id;
 
             //...

@@ -8,10 +8,8 @@ use Attribute;
 
 /**
  * Marks a method as a preLoad lifecycle callback
- *
- * @final
  */
 #[Attribute(Attribute::TARGET_METHOD)]
-class PreLoad implements MappingAttribute
+final class PreLoad implements MappingAttribute
 {
 }

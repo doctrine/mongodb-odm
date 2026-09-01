@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -81,9 +81,8 @@ class FunctionalTest extends BaseTestCase
         ];
     }
 
-    /** @param ObjectId|string $id */
     #[DataProvider('provideUpsertObjects')]
-    public function testUpsertObject(string $className, $id, string $discriminator): void
+    public function testUpsertObject(string $className, ObjectId|string $id, string $discriminator): void
     {
         $user           = new $className();
         $user->id       = (string) $id;

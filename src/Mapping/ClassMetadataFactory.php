@@ -16,7 +16,6 @@ use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\ObjectIdGenerator;
 use Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator;
-use Doctrine\ODM\MongoDB\Id\UuidGenerator;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -28,10 +27,7 @@ use function assert;
 use function get_class_methods;
 use function in_array;
 use function interface_exists;
-use function trigger_deprecation;
 use function ucfirst;
-
-use const PHP_VERSION_ID;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -87,8 +83,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         $this->initialized = true;
     }
 
-    /** @param string $className */
-    protected function onNotFoundMetadata($className): ?ClassMetadata
+    protected function onNotFoundMetadata(string $className): ?ClassMetadata
     {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return null;
@@ -101,17 +96,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         return $eventArgs->getFoundMetadata();
     }
 
-    /**
-     * @deprecated
-     *
-     * @param string $namespaceAlias
-     * @param string $simpleClassName
-     */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName): string
-    {
-        return $this->config->getDocumentNamespace($namespaceAlias) . '\\' . $simpleClassName;
-    }
-
     protected function getDriver(): MappingDriver
     {
         return $this->driver;
@@ -119,10 +103,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
-        if (PHP_VERSION_ID < 80400) {
-            return;
-        }
-
         foreach ($class->propertyAccessors as $propertyAccessor) {
             $property = $propertyAccessor->getUnderlyingReflector();
 
@@ -143,8 +123,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView;
     }
 
-    /** @param bool $rootEntityFound */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents = []): void
+    protected function doLoadMetadata(ClassMetadataInterface $class, ?ClassMetadataInterface $parent, bool $rootEntityFound, array $nonSuperclassParents = []): void
     {
         assert($class instanceof ClassMetadata);
         if ($parent instanceof ClassMetadata) {
@@ -171,7 +150,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             }
 
             if ($parent->isFile) {
-                $class->isFile = true;
+                $class->markAsFile();
+
                 $class->setBucketName($parent->bucketName);
 
                 if ($parent->chunkSizeBytes !== null) {
@@ -216,25 +196,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             Events::loadClassMetadata,
             new LoadClassMetadataEventArgs($class, $this->dm),
         );
-
-        if ($class->isChangeTrackingNotify()) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.4',
-                'NOTIFY tracking policy used in class "%s" is deprecated. Please use DEFERRED_EXPLICIT instead.',
-                $class->name,
-            );
-        }
-
-        // phpcs:ignore SlevomatCodingStandard.ControlStructures.EarlyExit.EarlyExitNotUsed
-        if ($class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_COLLECTION_PER_CLASS) {
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.17',
-                'COLLECTION_PER_CLASS inheritance type used in class "%s" is deprecated with no replacement. Remove the InheritanceType attribute/annotation: each class is already mapped to its own collection.',
-                $class->name,
-            );
-        }
     }
 
     /**
@@ -249,7 +210,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
     }
 
-    protected function newClassMetadataInstance($className): ClassMetadata
+    protected function newClassMetadataInstance(string $className): ClassMetadata
     {
         return new ClassMetadata($className);
     }
@@ -301,14 +262,6 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
                 $class->setIdGenerator($incrementGenerator);
                 break;
-            case ClassMetadata::GENERATOR_TYPE_UUID:
-                $uuidGenerator = new UuidGenerator();
-                if (isset($idGenOptions['salt'])) {
-                    $uuidGenerator->setSalt((string) $idGenOptions['salt']);
-                }
-
-                $class->setIdGenerator($uuidGenerator);
-                break;
             case ClassMetadata::GENERATOR_TYPE_ALNUM:
                 $alnumGenerator = new AlnumGenerator();
                 if (isset($idGenOptions['pad'])) {
@@ -358,7 +311,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
      */
     private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass): void
     {
-        foreach ($parentClass->fieldMappings as $fieldName => $mapping) {
+        foreach ($parentClass->fieldMappings as $mapping) {
             if (! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
                 $mapping['inherited'] = $parentClass->name;
             }
@@ -371,7 +324,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
         }
 
         foreach ($parentClass->propertyAccessors as $name => $field) {
-            $subClass->propertyAccessors[$name] = $field;
+            $subClass->setPropertyAccessor($name, $field);
         }
     }
 

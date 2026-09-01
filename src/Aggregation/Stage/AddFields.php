@@ -11,9 +11,8 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
  *
  * @phpstan-import-type OperatorExpression from Expr
  * @phpstan-type AddFieldsStageExpression array{"$addFields": array<string, OperatorExpression|mixed>}
- * @final
  */
-class AddFields extends Operator
+final class AddFields extends Operator
 {
     /** @return AddFieldsStageExpression */
     public function getExpression(): array

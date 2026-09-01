@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation;
 
+use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\IterableResult;
-use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
@@ -24,26 +24,23 @@ use function gettype;
 use function is_array;
 use function is_bool;
 use function sprintf;
-use function trigger_deprecation;
 
 /**
  * Fluent interface for building aggregation pipelines.
  *
- * @phpstan-import-type SortShape from Sort
+ * @phpstan-import-type SortDirectionKeywords from Sort
+ * @phpstan-import-type SortMetaKeywords from Search
+ * @phpstan-import-type SortMeta from Search
+ * @phpstan-import-type SortShape from Search
  * @phpstan-type StageExpression array<string, mixed>
  * @phpstan-type PipelineExpression list<StageExpression>
  */
 class Builder
 {
     /**
-     * The DocumentManager instance for this query
-     */
-    private DocumentManager $dm;
-
-    /**
      * The ClassMetadata instance.
      */
-    private ClassMetadata $class;
+    private readonly ClassMetadata $class;
 
     /** @var class-string */
     private ?string $hydrationClass = null;
@@ -51,7 +48,7 @@ class Builder
     /**
      * The Collection instance.
      */
-    private Collection $collection;
+    private readonly Collection $collection;
 
     /** @var Stage[] */
     private array $stages = [];
@@ -63,9 +60,8 @@ class Builder
      *
      * @param class-string $documentName
      */
-    public function __construct(DocumentManager $dm, string $documentName)
+    public function __construct(private readonly DocumentManager $dm, string $documentName)
     {
-        $this->dm         = $dm;
         $this->class      = $this->dm->getClassMetadata($documentName);
         $this->collection = $this->dm->getDocumentCollection($documentName);
     }
@@ -170,26 +166,6 @@ class Builder
         return $this->addStage($stage);
     }
 
-    /**
-     * Executes the aggregation pipeline
-     *
-     * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
-     *
-     * @param array<string, mixed> $options
-     */
-    public function execute(array $options = []): Iterator
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.2',
-            'Using "%s" is deprecated. Please use "%s::getAggregation()" instead.',
-            __METHOD__,
-            self::class,
-        );
-
-        return $this->getAggregation($options)->getIterator();
-    }
-
     public function expr(): Expr
     {
         return new Expr($this->dm, $this->class);
@@ -234,9 +210,8 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/geoNear/
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
      */
-    public function geoNear($x, $y = null): Stage\GeoNear
+    public function geoNear(float|array|Point $x, ?float $y = null): Stage\GeoNear
     {
         $stage = new Stage\GeoNear($this, $x, $y);
 
@@ -513,7 +488,7 @@ class Builder
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceRoot($expression = null): Stage\ReplaceRoot
+    public function replaceRoot(string|array|Expr|null $expression = null): Stage\ReplaceRoot
     {
         $stage = new Stage\ReplaceRoot($this, $this->dm, $this->class, $expression);
 
@@ -533,7 +508,7 @@ class Builder
      * @param string|mixed[]|Expr|null $expression Optional. A replacement expression that
      * resolves to a document.
      */
-    public function replaceWith($expression = null): Stage\ReplaceWith
+    public function replaceWith(string|array|Expr|null $expression = null): Stage\ReplaceWith
     {
         $stage = new Stage\ReplaceWith($this, $this->dm, $this->class, $expression);
 
@@ -627,10 +602,11 @@ class Builder
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|null                                        $order     Field order (if one field is specified)
+     * @param int|string|array|null                                  $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string $fieldName Field name or array of field/order pairs
+     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
-    public function sort($fieldName, $order = null): Stage\Sort
+    public function sort(array|string $fieldName, int|string|array|null $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage

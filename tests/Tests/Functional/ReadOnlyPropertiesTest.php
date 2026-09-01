@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
-use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
+use Doctrine\ODM\MongoDB\Mapping\Attribute\ReferenceOne;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class ReadOnlyPropertiesTest extends BaseTestCase
 {
     public function testReadOnlyDocument(): void
     {
-        $configuration = $this->dm->getConfiguration();
-        if (! $configuration->isNativeLazyObjectEnabled() && ! $configuration->isLazyGhostObjectEnabled()) {
-            $this->markTestSkipped('Read-only properties are not supported by the legacy Proxy Manager. https://github.com/FriendsOfPHP/proxy-manager-lts/issues/26');
-        }
-
         $document           = new ReadOnlyProperties('Test Name');
         $document->onlyRead = new ReadOnlyProperties('Nested Name');
         $this->dm->persist($document);

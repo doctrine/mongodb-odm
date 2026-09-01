@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class MappedSuperclassTest extends BaseTestCase
@@ -53,14 +53,12 @@ class MappedSuperclassBase
     #[ODM\ReferenceOne(targetDocument: MappedSuperclassRelated1::class)]
     private $mappedRelated1;
 
-    /** @param int|string $val */
-    public function setMapped1($val): void
+    public function setMapped1(int|string $val): void
     {
         $this->mapped1 = $val;
     }
 
-    /** @return int|string|null */
-    public function getMapped1()
+    public function getMapped1(): int|string|null
     {
         return $this->mapped1;
     }

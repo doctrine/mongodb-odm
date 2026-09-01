@@ -8,56 +8,48 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
+use Stringable;
 use Symfony\Component\Uid\Uuid;
 
 use function end;
 use function explode;
 use function gettype;
 use function is_object;
+use function sprintf;
 use function str_replace;
-use function trigger_deprecation;
 
 /**
  * The Type interface.
  */
-abstract class Type
+abstract class Type implements Stringable
 {
-    public const ID                 = 'id';
-    public const CUSTOMID           = 'custom_id';
-    public const BOOL               = 'bool';
-    public const INT                = 'int';
-    public const INT64              = 'int64';
-    public const FLOAT              = 'float';
-    public const STRING             = 'string';
-    public const DATE               = 'date';
-    public const DATE_IMMUTABLE     = 'date_immutable';
-    public const KEY                = 'key';
-    public const TIMESTAMP          = 'timestamp';
-    public const BINDATA            = 'bin';
-    public const BINDATAFUNC        = 'bin_func';
-    public const BINDATABYTEARRAY   = 'bin_bytearray';
-    public const BINDATAUUID        = 'bin_uuid';
-    public const BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
-    public const BINDATAMD5         = 'bin_md5';
-    public const BINDATACUSTOM      = 'bin_custom';
-    public const HASH               = 'hash';
-    public const COLLECTION         = 'collection';
-    public const OBJECTID           = 'object_id';
-    public const RAW                = 'raw';
-    public const DECIMAL128         = 'decimal128';
-    public const UUID               = 'uuid';
-    public const VECTOR_FLOAT32     = 'vector_float32';
-    public const VECTOR_INT8        = 'vector_int8';
-    public const VECTOR_PACKED_BIT  = 'vector_packed_bit';
-
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
-    public const INTID = 'int_id';
-
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::INT instead */
-    public const INTEGER = 'integer';
-
-    /** @deprecated const was deprecated in doctrine/mongodb-odm 2.1 and will be removed in 3.0. Use Type::BOOL instead */
-    public const BOOLEAN = 'boolean';
+    public const string ID                 = 'id';
+    public const string CUSTOMID           = 'custom_id';
+    public const string BOOL               = 'bool';
+    public const string INT                = 'int';
+    public const string INT64              = 'int64';
+    public const string FLOAT              = 'float';
+    public const string STRING             = 'string';
+    public const string DATE               = 'date';
+    public const string DATE_IMMUTABLE     = 'date_immutable';
+    public const string KEY                = 'key';
+    public const string TIMESTAMP          = 'timestamp';
+    public const string BINDATA            = 'bin';
+    public const string BINDATAFUNC        = 'bin_func';
+    public const string BINDATABYTEARRAY   = 'bin_bytearray';
+    public const string BINDATAUUID        = 'bin_uuid';
+    public const string BINDATAUUIDRFC4122 = 'bin_uuid_rfc4122';
+    public const string BINDATAMD5         = 'bin_md5';
+    public const string BINDATACUSTOM      = 'bin_custom';
+    public const string HASH               = 'hash';
+    public const string COLLECTION         = 'collection';
+    public const string OBJECTID           = 'object_id';
+    public const string RAW                = 'raw';
+    public const string DECIMAL128         = 'decimal128';
+    public const string UUID               = 'uuid';
+    public const string VECTOR_FLOAT32     = 'vector_float32';
+    public const string VECTOR_INT8        = 'vector_int8';
+    public const string VECTOR_PACKED_BIT  = 'vector_packed_bit';
 
     /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
     private static array $typeObjects = [];
@@ -65,12 +57,9 @@ abstract class Type
     /** @var array<string, class-string> The map of supported doctrine mapping types. */
     private static array $typesMap = [
         self::ID => Types\IdType::class,
-        self::INTID => Types\IntIdType::class,
         self::CUSTOMID => Types\CustomIdType::class,
         self::BOOL => Types\BooleanType::class,
-        self::BOOLEAN => Types\BooleanType::class,
         self::INT => Types\IntType::class,
-        self::INTEGER => Types\IntType::class,
         self::INT64 => Types\Int64Type::class,
         self::FLOAT => Types\FloatType::class,
         self::STRING => Types\StringType::class,
@@ -109,7 +98,7 @@ abstract class Type
      *
      * @return mixed The database representation of the value.
      */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): mixed
     {
         return $value;
     }
@@ -122,35 +111,21 @@ abstract class Type
      *
      * @return mixed The PHP representation of the value.
      */
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): mixed
     {
         return $value;
     }
 
     /**
-     * Get the PHP code equivalent to {@see convertToDatabaseValue()}, used in code generator.
-     * Use variables $value for input and $return for output.
-     *
-     * @deprecated Since 2.16, will be removed in 3.0.
-     */
-    public function closureToMongo(): string
-    {
-        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Type::closureToMongo() is deprecated and will be removed in 3.0.');
-
-        return '$return = $value;';
-    }
-
-    /**
      * Get the PHP code equivalent to {@see convertToPHPValue()}, used in code generator.
+     * By default, it calls the convertToPHPValue from child class.
      * Use variables $value for input and $return for output.
-     *
-     * @abstract The default implementation will change in 3.0.
      */
     public function closureToPHP(): string
     {
-        trigger_deprecation('doctrine/mongodb-odm', '2.16', 'The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.');
-
-        return '$return = $value;';
+        return sprintf('
+            $type = \%s::getType($typeIdentifier);
+            $return = $type->convertToPHPValue($value);', self::class);
     }
 
     /**
@@ -177,10 +152,8 @@ abstract class Type
 
     /**
      * Get a Type instance based on the type of the passed php variable.
-     *
-     * @param mixed $variable
      */
-    public static function getTypeFromPHPVariable($variable): ?Type
+    public static function getTypeFromPHPVariable(mixed $variable): ?Type
     {
         if (is_object($variable)) {
             if ($variable instanceof DateTimeImmutable) {
@@ -212,12 +185,7 @@ abstract class Type
         };
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    public static function convertPHPToDatabaseValue($value)
+    public static function convertPHPToDatabaseValue(mixed $value): mixed
     {
         $type = self::getTypeFromPHPVariable($value);
         if ($type !== null) {

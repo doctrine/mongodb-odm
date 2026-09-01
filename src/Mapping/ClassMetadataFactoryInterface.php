@@ -7,7 +7,6 @@ namespace Doctrine\ODM\MongoDB\Mapping;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\Mapping\ClassMetadataFactory;
-use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -32,11 +31,4 @@ interface ClassMetadataFactoryInterface extends ClassMetadataFactory
      * Sets the document manager owning the factory.
      */
     public function setDocumentManager(DocumentManager $dm): void;
-
-    /**
-     * Sets a resolver for real class names of a proxy.
-     *
-     * @deprecated This method is deprecated and will be removed in Doctrine ODM 3.0.
-     */
-    public function setProxyClassNameResolver(ProxyClassNameResolver $resolver): void;
 }

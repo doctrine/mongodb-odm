@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Documents;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 #[ODM\View(rootClass: CmsUser::class, repositoryClass: UserNameRepository::class, view: 'user-name')]

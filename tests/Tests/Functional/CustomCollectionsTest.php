@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection;
@@ -16,7 +16,6 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Documents\File;
 use Documents\ProfileNotify;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use stdClass;
 
 use function assert;
@@ -149,9 +148,7 @@ class CustomCollectionsTest extends BaseTestCase
         self::assertEquals($e1, $d->coll[1]);
     }
 
-    /** @see ClassMetadata::CHANGETRACKING_NOTIFY */
-    #[IgnoreDeprecations]
-    public function testModifyingCollectionInChangeTrackingNotifyDocument(): void
+    public function testModifyingCollection(): void
     {
         $repository = $this->dm->getRepository(File::class);
         assert($repository instanceof GridFSRepository);

@@ -185,15 +185,11 @@ instance. Read more about setting up the Doctrine MongoDB ODM in the
     require_once __DIR__ . '/vendor/autoload.php';
 
     $config = new Configuration();
-    $config->setProxyDir(__DIR__ . '/generated/proxies');
-    $config->setProxyNamespace('Proxies');
     $config->setHydratorDir(__DIR__ . '/generated/hydrators');
     $config->setHydratorNamespace('Hydrators');
     $config->setMetadataDriverImpl(AttributeDriver::create(__DIR__ . '/src'));
 
     $dm = DocumentManager::create(config: $config);
-
-    spl_autoload_register($config->getProxyManagerConfiguration()->getProxyAutoloader());
 
 Usage
 -----

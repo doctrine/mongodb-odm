@@ -15,7 +15,7 @@ use function is_array;
 class CollectionType extends Type
 {
     /** @return list<mixed>|null */
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ?array
     {
         if ($value !== null && ! is_array($value)) {
             throw MongoDBException::invalidValueForType('Collection', ['array', 'null'], $value);
@@ -25,7 +25,7 @@ class CollectionType extends Type
     }
 
     /** @return list<mixed>|null */
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): ?array
     {
         return $value !== null ? array_values($value) : null;
     }

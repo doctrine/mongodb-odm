@@ -8,10 +8,9 @@ use Closure;
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Documents\Article;
 use Generator;
@@ -635,7 +634,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+            ->with($this->isArray(), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -656,7 +655,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -677,7 +676,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+            ->with($this->isArray(), $this->isArray(), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -699,7 +698,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('updateOne')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -721,7 +720,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
+            ->with($this->isArray(), $this->logicalAnd($this->arrayHasKey('writeConcern'), $this->containsEqual(new WriteConcern($writeConcern))));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -745,7 +744,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('deleteOne')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -768,7 +767,7 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
+            ->with($this->isArray(), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
@@ -790,34 +789,12 @@ class DocumentPersisterTest extends BaseTestCase
         $collection = $this->createMock(Collection::class);
         $collection->expects($this->once())
             ->method('insertMany')
-            ->with($this->isType('array'), $this->logicalNot($this->arrayHasKey('writeConcern')));
+            ->with($this->isArray(), $this->logicalNot($this->arrayHasKey('writeConcern')));
 
         $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
         $reflectionProperty->setValue($documentPersister, $collection);
 
         $this->dm->getConfiguration()->setDefaultCommitOptions(['writeConcern' => new WriteConcern(1)]);
-
-        $testDocument = new $class();
-        $this->dm->persist($testDocument);
-        $this->dm->flush();
-    }
-
-    public function testDefaultWriteConcernIsRespectedBackwardCompatibility(): void
-    {
-        $this->skipTestIfTransactionalFlushEnabled();
-
-        $class             = DocumentPersisterTestDocument::class;
-        $documentPersister = $this->uow->getDocumentPersister($class);
-
-        $collection = $this->createMock(Collection::class);
-        $collection->expects($this->once())
-            ->method('insertMany')
-            ->with($this->isType('array'), $this->equalTo(['writeConcern' => new WriteConcern(0)]));
-
-        $reflectionProperty = new ReflectionProperty($documentPersister, 'collection');
-        $reflectionProperty->setValue($documentPersister, $collection);
-
-        $this->dm->getConfiguration()->setDefaultCommitOptions(['w' => 0]);
 
         $testDocument = new $class();
         $this->dm->persist($testDocument);
@@ -1022,9 +999,7 @@ final class DocumentPersisterCustomTypedId
 
 final class DocumentPersisterCustomIdType extends Type
 {
-    use ClosureToPHP;
-
-    public function convertToDatabaseValue($value)
+    public function convertToDatabaseValue(mixed $value): ObjectId
     {
         if ($value instanceof ObjectId) {
             return $value;
@@ -1037,7 +1012,7 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
-    public function convertToPHPValue($value)
+    public function convertToPHPValue(mixed $value): DocumentPersisterCustomTypedId
     {
         if ($value instanceof DocumentPersisterCustomTypedId) {
             return $value;
@@ -1050,8 +1025,7 @@ final class DocumentPersisterCustomIdType extends Type
         throw self::createException($value);
     }
 
-    /** @param mixed $value */
-    private static function createException($value): InvalidArgumentException
+    private static function createException(mixed $value): InvalidArgumentException
     {
         return new InvalidArgumentException(
             sprintf(

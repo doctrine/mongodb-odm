@@ -34,11 +34,8 @@ class GeoNear extends MatchStage
 
     private ?bool $uniqueDocs = null;
 
-    /**
-     * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
-     */
-    public function __construct(Builder $builder, $x, $y = null)
+    /** @param float|array<string, mixed>|Point $x */
+    public function __construct(Builder $builder, float|array|Point $x, ?float $y = null)
     {
         parent::__construct($builder);
 
@@ -138,9 +135,8 @@ class GeoNear extends MatchStage
      * used, the "spherical" option will default to true.
      *
      * @param float|array<string, mixed>|Point $x
-     * @param float                            $y
      */
-    public function near($x, $y = null): static
+    public function near(float|array|Point $x, ?float $y = null): static
     {
         if ($x instanceof Point) {
             $x = $x->jsonSerialize();

@@ -25,11 +25,6 @@ final class ConfigurationException extends Exception
         return new self('No metadata driver was configured. Please set a metadata driver implementation in your configuration.');
     }
 
-    public static function proxyDirMissing(): self
-    {
-        return new self('No proxy directory was configured. Please set a target directory first!');
-    }
-
     public static function clientEncryptionOptionsNotSet(): self
     {
         return new self('MongoDB client encryption options are not set in configuration');

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
@@ -12,9 +12,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 class RawTypeTest extends BaseTestCase
 {
-    /** @param mixed $value */
     #[DataProvider('getTestRawTypeData')]
-    public function testRawType($value): void
+    public function testRawType(mixed $value): void
     {
         $test      = new RawType();
         $test->raw = $value;

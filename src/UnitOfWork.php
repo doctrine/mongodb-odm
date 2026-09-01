@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -28,7 +27,6 @@ use InvalidArgumentException;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
-use ProxyManager\Proxy\GhostObjectInterface;
 use ReflectionProperty;
 use Throwable;
 use UnexpectedValueException;
@@ -36,7 +34,6 @@ use UnexpectedValueException;
 use function array_diff_key;
 use function array_filter;
 use function array_intersect_key;
-use function array_key_exists;
 use function array_merge;
 use function assert;
 use function call_user_func;
@@ -50,9 +47,6 @@ use function preg_match;
 use function serialize;
 use function spl_object_id;
 use function sprintf;
-use function trigger_deprecation;
-
-use const PHP_VERSION_ID;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -67,9 +61,6 @@ use const PHP_VERSION_ID;
  * }
  * @phpstan-type Hints array<int, mixed>
  * @phpstan-type CommitOptions array{
- *      fsync?: bool,
- *      safe?: int,
- *      w?: int,
  *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
@@ -79,30 +70,28 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * A document is in MANAGED state when its persistence is managed by a DocumentManager.
      */
-    public const STATE_MANAGED = 1;
+    public const int STATE_MANAGED = 1;
 
     /**
      * A document is new if it has just been instantiated (i.e. using the "new" operator)
      * and is not (yet) managed by a DocumentManager.
      */
-    public const STATE_NEW = 2;
+    public const int STATE_NEW = 2;
 
     /**
      * A detached document is an instance with a persistent identity that is not
      * (or no longer) associated with a DocumentManager (and a UnitOfWork).
      */
-    public const STATE_DETACHED = 3;
+    public const int STATE_DETACHED = 3;
 
     /**
      * A removed document instance is an instance with a persistent identity,
      * associated with a DocumentManager, whose persistent state has been
      * deleted (or is scheduled for deletion).
      */
-    public const STATE_REMOVED = 4;
+    public const int STATE_REMOVED = 4;
 
-    /** @internal */
-    public const DEPRECATED_WRITE_OPTIONS = ['fsync', 'safe', 'w'];
-    private const TRANSACTION_OPTIONS     = [
+    private const array TRANSACTION_OPTIONS = [
         'maxCommitTimeMS' => 1,
         'readConcern' => 1,
         'readPreference' => 1,
@@ -414,19 +403,6 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function commit(array $options = []): void
     {
-        foreach (self::DEPRECATED_WRITE_OPTIONS as $deprecatedOption) {
-            if (! array_key_exists($deprecatedOption, $options)) {
-                continue;
-            }
-
-            trigger_deprecation(
-                'doctrine/mongodb-odm',
-                '2.6',
-                'The "%s" commit option is deprecated.',
-                $deprecatedOption,
-            );
-        }
-
         // Raise preFlush
         $this->evm->dispatchEvent(Events::preFlush, new Event\PreFlushEventArgs($this->dm));
 
@@ -736,13 +712,8 @@ final class UnitOfWork implements PropertyChangedListener
 
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
-            $originalData           = $this->originalDocumentData[$oid];
-            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-            if ($isChangeTrackingNotify && ! $recompute && isset($this->documentChangeSets[$oid])) {
-                $changeSet = $this->documentChangeSets[$oid];
-            } else {
-                $changeSet = [];
-            }
+            $originalData = $this->originalDocumentData[$oid];
+            $changeSet    = [];
 
             $gridFSMetadataProperty = null;
 
@@ -794,10 +765,6 @@ final class UnitOfWork implements PropertyChangedListener
                     }
 
                     $changeSet[$propName] = [$orgValue, $actualValue];
-                    continue;
-                }
-
-                if ($isChangeTrackingNotify) {
                     continue;
                 }
 
@@ -939,7 +906,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             foreach ($documentsToProcess as $document) {
-                // Ignore uninitialized proxy objects
+                // Ignore uninitialized lazy objects
                 if ($this->isUninitializedObject($document)) {
                     continue;
                 }
@@ -968,19 +935,11 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @throws InvalidArgumentException
      */
-    private function computeAssociationChanges(object $parentDocument, array $assoc, $value): void
+    private function computeAssociationChanges(object $parentDocument, array $assoc, mixed $value): void
     {
         $isNewParentDocument   = isset($this->scheduledDocumentInsertions[spl_object_id($parentDocument)]);
         $class                 = $this->dm->getClassMetadata($parentDocument::class);
         $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
-
-        if ($value instanceof InternalProxy && ! $value->__isInitialized()) {
-            return;
-        }
-
-        if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
-            return;
-        }
 
         if ($value instanceof PersistentCollectionInterface && $value->isDirty() && $value->getOwner() !== null && ($assoc['isOwningSide'] || isset($assoc['embedded']))) {
             if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
@@ -1099,7 +1058,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function recomputeSingleDocumentChangeSet(ClassMetadata $class, object $document): void
     {
-        // Ignore uninitialized proxy objects
+        // Ignore uninitialized lazy objects
         if ($this->isUninitializedObject($document)) {
             return;
         }
@@ -1629,7 +1588,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @template T of object
      */
-    public function getById($id, ClassMetadata $class): object
+    public function getById(mixed $id, ClassMetadata $class): object
     {
         if (! $class->identifier) {
             throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
@@ -1649,7 +1608,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
      *
-     * @return mixed The found document or FALSE.
+     * @return object|false The found document or FALSE.
      * @phpstan-return T|false
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
@@ -1658,7 +1617,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @ phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
-    public function tryGetById($id, ClassMetadata $class)
+    public function tryGetById(mixed $id, ClassMetadata $class): object|false
     {
         if (! $class->identifier) {
             throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
@@ -1717,10 +1676,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Checks whether an identifier exists in the identity map.
      *
      * @internal
-     *
-     * @param mixed $id
      */
-    public function containsId($id, string $rootClassName): bool
+    public function containsId(mixed $id, string $rootClassName): bool
     {
         return isset($this->identityMap[$rootClassName][serialize($id)]);
     }
@@ -1839,7 +1796,7 @@ final class UnitOfWork implements PropertyChangedListener
         $visited[$oid] = $document; // mark visited
 
         /* Cascade first, because scheduleForDelete() removes the entity from
-         * the identity map, which can cause problems when a lazy Proxy has to
+         * the identity map, which can cause problems when a lazy object has to
          * be initialized for the cascade operation.
          */
         $this->cascadeRemove($document, $visited);
@@ -2033,21 +1990,10 @@ final class UnitOfWork implements PropertyChangedListener
                             if (! $managedCol->isEmpty() && $managedCol !== $mergeCol) {
                                 $managedCol->unwrap()->clear();
                                 $managedCol->setDirty(true);
-
-                                if ($assoc2['isOwningSide'] && $class->isChangeTrackingNotify()) {
-                                    $this->scheduleForSynchronization($managedCopy);
-                                }
                             }
                         }
                     }
                 }
-
-                if (! $class->isChangeTrackingNotify()) {
-                    continue;
-                }
-
-                // Just treat all properties as changed, there is no other choice.
-                $this->propertyChanged($managedCopy, $name, null, $prop->getValue($managedCopy));
             }
 
             if ($class->isChangeTrackingDeferredExplicit()) {
@@ -2403,41 +2349,26 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      */
-    public function clear(?string $documentName = null): void
+    public function clear(): void
     {
-        if ($documentName === null) {
-            $this->identityMap                  =
-            $this->documentIdentifiers          =
-            $this->originalDocumentData         =
-            $this->documentChangeSets           =
-            $this->documentStates               =
-            $this->scheduledForSynchronization  =
-            $this->scheduledDocumentInsertions  =
-            $this->scheduledDocumentUpserts     =
-            $this->scheduledDocumentUpdates     =
-            $this->scheduledDocumentDeletions   =
-            $this->scheduledCollectionUpdates   =
-            $this->scheduledCollectionDeletions =
-            $this->parentAssociations           =
-            $this->embeddedDocumentsRegistry    =
-            $this->orphanRemovals               =
-            $this->hasScheduledCollections      = [];
+        $this->identityMap                  =
+        $this->documentIdentifiers          =
+        $this->originalDocumentData         =
+        $this->documentChangeSets           =
+        $this->documentStates               =
+        $this->scheduledForSynchronization  =
+        $this->scheduledDocumentInsertions  =
+        $this->scheduledDocumentUpserts     =
+        $this->scheduledDocumentUpdates     =
+        $this->scheduledDocumentDeletions   =
+        $this->scheduledCollectionUpdates   =
+        $this->scheduledCollectionDeletions =
+        $this->parentAssociations           =
+        $this->embeddedDocumentsRegistry    =
+        $this->orphanRemovals               =
+        $this->hasScheduledCollections      = [];
 
-            $event = new Event\OnClearEventArgs($this->dm);
-        } else {
-            $visited = [];
-            foreach ($this->identityMap as $className => $documents) {
-                if ($className !== $documentName) {
-                    continue;
-                }
-
-                foreach ($documents as $document) {
-                    $this->doDetach($document, $visited);
-                }
-            }
-
-            $event = new Event\OnClearEventArgs($this->dm, $documentName);
-        }
+        $event = new Event\OnClearEventArgs($this->dm);
 
         $this->evm->dispatchEvent(Events::onClear, $event);
     }
@@ -2789,15 +2720,7 @@ final class UnitOfWork implements PropertyChangedListener
             $document = $this->identityMap[$class->name][$serializedId];
             $oid      = spl_object_id($document);
             if ($this->isUninitializedObject($document)) {
-                if ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
-                    $class->reflClass->markLazyObjectAsInitialized($document);
-                } elseif ($document instanceof InternalProxy) {
-                    $document->__setInitialized(true);
-                } elseif ($document instanceof GhostObjectInterface) {
-                    $document->setProxyInitializer(null);
-                } else {
-                    throw new \RuntimeException(sprintf('Expected uninitialized proxy or ghost object from class "%s"', $document::class));
-                }
+                $class->reflClass->markLazyObjectAsInitialized($document);
 
                 $overrideLocalValues = true;
                 if ($document instanceof NotifyPropertyChanged) {
@@ -2892,10 +2815,8 @@ final class UnitOfWork implements PropertyChangedListener
      * Sets a property value of the original data array of a document.
      *
      * @internal
-     *
-     * @param mixed $value
      */
-    public function setOriginalDocumentProperty(int $oid, string $property, $value): void
+    public function setOriginalDocumentProperty(int $oid, string $property, mixed $value): void
     {
         $this->originalDocumentData[$oid][$property] = $value;
     }
@@ -2905,7 +2826,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @return mixed The identifier value
      */
-    public function getDocumentIdentifier(object $document)
+    public function getDocumentIdentifier(object $document): mixed
     {
         return $this->documentIdentifiers[spl_object_id($document)] ?? null;
     }
@@ -2953,7 +2874,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @param mixed                $id   The identifier values.
      * @param array<string, mixed> $data
      */
-    public function registerManaged(object $document, $id, array $data): void
+    public function registerManaged(object $document, mixed $id, array $data): void
     {
         $oid   = spl_object_id($document);
         $class = $this->dm->getClassMetadata($document::class);
@@ -2989,7 +2910,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @param mixed  $oldValue     The old value of the property.
      * @param mixed  $newValue     The new value of the property.
      */
-    public function propertyChanged($sender, $propertyName, $oldValue, $newValue): void
+    public function propertyChanged(object $sender, string $propertyName, mixed $oldValue, mixed $newValue): void
     {
         $oid   = spl_object_id($sender);
         $class = $this->dm->getClassMetadata($sender::class);
@@ -3072,36 +2993,29 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Helper method to initialize a lazy loading proxy or persistent collection.
+     * Helper method to initialize a lazy object or persistent collection.
      *
      * @internal
      */
     public function initializeObject(object $obj): void
     {
-        if ($obj instanceof InternalProxy && $obj->__isInitialized() === false) {
-            $obj->__load();
-        } elseif ($obj instanceof GhostObjectInterface && $obj->isProxyInitialized() === false) {
-            $obj->initializeProxy();
-        } elseif ($obj instanceof PersistentCollectionInterface) {
+        if ($obj instanceof PersistentCollectionInterface) {
             $obj->initialize();
-        } elseif (PHP_VERSION_ID >= 80400) {
+        } else {
             $this->dm->getClassMetadata($obj::class)->reflClass->initializeLazyObject($obj);
         }
     }
 
     /**
-     * Helper method to check whether a lazy loading proxy or persistent collection has been initialized.
+     * Helper method to check whether a lazy object or persistent collection has been initialized.
      *
      * @internal
      */
     public function isUninitializedObject(object $obj): bool
     {
         return match (true) {
-            $obj instanceof InternalProxy => ! $obj->__isInitialized(),
-            $obj instanceof GhostObjectInterface => ! $obj->isProxyInitialized(),
             $obj instanceof PersistentCollectionInterface => ! $obj->isInitialized(),
-            $this->dm->getConfiguration()->isNativeLazyObjectEnabled() => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
-            default => false
+            default => $this->dm->getClassMetadata($obj::class)->reflClass->isUninitializedLazyObject($obj),
         };
     }
 

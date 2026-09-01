@@ -27,7 +27,7 @@ class ResolveTargetDocumentListener implements EventSubscriber
     /** @var array<class-string, array{targetDocument: class-string}> */
     private array $resolveTargetDocuments = [];
 
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return [
             Events::loadClassMetadata,
@@ -52,12 +52,8 @@ class ResolveTargetDocumentListener implements EventSubscriber
         return ltrim($className, '\\');
     }
 
-    /**
-     * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
-     */
-    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    /** @internal this is an event callback, and should not be called directly */
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args): void
     {
         if (! array_key_exists($args->getClassName(), $this->resolveTargetDocuments)) {
             return;
@@ -94,8 +90,8 @@ class ResolveTargetDocumentListener implements EventSubscriber
         $newMapping['fieldName'] = $mapping['fieldName'];
 
         // clear reference case of duplicate exception
-        unset($classMetadata->fieldMappings[$mapping['fieldName']]);
-        unset($classMetadata->associationMappings[$mapping['fieldName']]);
+        $classMetadata->unsetFieldMapping($mapping['fieldName']);
+        $classMetadata->unsetAssociationMapping($mapping['fieldName']);
 
         switch ($mapping['association']) {
             case ClassMetadata::REFERENCE_ONE:

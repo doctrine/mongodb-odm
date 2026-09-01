@@ -22,7 +22,7 @@ class Out extends Stage
     /** @phpstan-var OutputCollection */
     private array|string $out;
 
-    public function __construct(Builder $builder, string $collection, private DocumentManager $dm)
+    public function __construct(Builder $builder, string $collection, private readonly DocumentManager $dm)
     {
         parent::__construct($builder);
 
@@ -36,11 +36,8 @@ class Out extends Stage
         ];
     }
 
-    /**
-     * @param string|array $collection
-     * @phpstan-param OutputCollection $collection
-     */
-    public function out($collection): Stage\Out
+    /** @phpstan-param OutputCollection $collection */
+    public function out(string|array $collection): Stage\Out
     {
         if (is_array($collection)) {
             $this->out = $collection;

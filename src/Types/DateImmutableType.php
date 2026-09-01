@@ -6,15 +6,13 @@ namespace Doctrine\ODM\MongoDB\Types;
 
 use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use RuntimeException;
 
 use function sprintf;
 
 class DateImmutableType extends DateType
 {
-    /** @return DateTimeImmutable */
-    public static function getDateTime($value): DateTimeInterface
+    public static function getDateTime(mixed $value): DateTimeImmutable
     {
         $datetime = parent::getDateTime($value);
 
@@ -33,12 +31,7 @@ class DateImmutableType extends DateType
         ));
     }
 
-    /**
-     * @param mixed $current
-     *
-     * @return DateTimeInterface
-     */
-    public function getNextVersion($current)
+    public function getNextVersion(mixed $current): DateTimeImmutable
     {
         return new DateTimeImmutable();
     }

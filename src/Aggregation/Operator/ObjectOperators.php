@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Aggregation\Operator;
 
-use Doctrine\ODM\MongoDB\Aggregation\Expr;
-
 /**
  * Interface containing all object aggregation pipeline operators.
  *
@@ -22,21 +20,15 @@ interface ObjectOperators
      * $$CURRENT.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/getField/
-     *
-     * @param mixed|Expr $field
-     * @param mixed|Expr $input
      */
-    public function getField($field, $input = null): static;
+    public function getField(mixed $field, mixed $input = null): static;
 
     /**
      * Combines multiple documents into a single document.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/mergeObjects/
-     *
-     * @param mixed|Expr $expression
-     * @param mixed|Expr ...$expressions
      */
-    public function mergeObjects($expression, ...$expressions): static;
+    public function mergeObjects(mixed $expression, mixed ...$expressions): static;
 
     /**
      * Converts a document to an array. The return array contains an element for
@@ -46,19 +38,13 @@ interface ObjectOperators
      *      The v field contains the value of the field in the original document.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/objectToArray/
-     *
-     * @param mixed|Expr $object
      */
-    public function objectToArray($object): static;
+    public function objectToArray(mixed $object): static;
 
     /**
      * Adds, updates, or removes a specified field in a document.
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/setField/
-     *
-     * @param mixed|Expr $field
-     * @param mixed|Expr $input
-     * @param mixed|Expr $value
      */
-    public function setField($field, $input, $value): static;
+    public function setField(mixed $field, mixed $input, mixed $value): static;
 }

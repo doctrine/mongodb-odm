@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\DocumentNotFoundEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Cart;
 use Documents\DocumentWithStaticProperty;
@@ -18,12 +17,10 @@ use MongoDB\Client;
 use MongoDB\Collection;
 use MongoDB\Database;
 use PHPUnit\Framework\MockObject\MockObject;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 class ProxyFactoryTest extends BaseTestCase
 {
-    /** @var Client|MockObject */
-    private Client $client;
+    private Client&MockObject $client;
 
     public function testProxyInitializeWithException(): void
     {
@@ -85,14 +82,8 @@ class ProxyFactoryTest extends BaseTestCase
         $proxy = $this->dm->getReference(DocumentWithUnmappedProperties::class, '123');
         self::assertTrue(self::isLazyObject($proxy));
 
-        // Disable initializer so we can access properties without initialising the object
-        if ($proxy instanceof InternalProxy) {
-            $proxy->__setInitialized(true);
-        } elseif ($proxy instanceof GhostObjectInterface) {
-            $proxy->setProxyInitializer(null);
-        } elseif ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
-            $this->dm->getClassMetadata($proxy::class)->getReflectionClass()->markLazyObjectAsInitialized($proxy);
-        }
+        // Disable initializer so we can access properties without initializing the object
+        $this->dm->getClassMetadata($proxy::class)->getReflectionClass()->markLazyObjectAsInitialized($proxy);
 
         self::assertSame('bar', $proxy->foo);
     }
@@ -103,13 +94,7 @@ class ProxyFactoryTest extends BaseTestCase
         self::assertTrue(self::isLazyObject($proxy));
 
         // Disable initializer so we can access properties without initialising the object
-        if ($proxy instanceof InternalProxy) {
-            $proxy->__setInitialized(true);
-        } elseif ($proxy instanceof GhostObjectInterface) {
-            $proxy->setProxyInitializer(null);
-        } elseif ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
-            $this->dm->getClassMetadata($proxy::class)->getReflectionClass()->markLazyObjectAsInitialized($proxy);
-        }
+        $this->dm->getClassMetadata($proxy::class)->getReflectionClass()->markLazyObjectAsInitialized($proxy);
 
         self::assertSame('bar', $proxy::$foo);
     }
