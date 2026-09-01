@@ -26,8 +26,10 @@ use function sprintf;
  *         filter?: object,
  *         index?: string,
  *         limit?: int,
+ *         model?: string,
  *         numCandidates?: int,
  *         path?: string,
+ *         query?: string,
  *         queryVector?: Vector,
  *     }
  * }
@@ -41,8 +43,10 @@ class VectorSearch extends Stage
     private array|Expr|null $filter = null;
     private ?string $index          = null;
     private ?int $limit             = null;
+    private ?string $model          = null;
     private ?int $numCandidates     = null;
     private ?string $path           = null;
+    private ?string $query          = null;
     /** @phpstan-var Vector|null */
     private array|Binary|null $queryVector = null;
 
@@ -73,12 +77,20 @@ class VectorSearch extends Stage
             $params['limit'] = $this->limit;
         }
 
+        if ($this->model !== null) {
+            $params['model'] = $this->model;
+        }
+
         if ($this->numCandidates !== null) {
             $params['numCandidates'] = $this->numCandidates;
         }
 
         if ($this->path !== null) {
             $params['path'] = $this->persister->prepareFieldName($this->path);
+        }
+
+        if ($this->query !== null) {
+            $params['query'] = $this->query;
         }
 
         if ($this->queryVector !== null) {
@@ -88,14 +100,23 @@ class VectorSearch extends Stage
         return [$this->getStageName() => $params];
     }
 
+    /** Whether to run an exact nearest neighbor search instead of approximate. Cannot be used with numCandidates. */
     public function exact(bool $exact): static
     {
+        if ($exact && $this->numCandidates !== null) {
+            throw new InvalidArgumentException('Cannot use numCandidates() with exact(true) in the same $vectorSearch stage.');
+        }
+
         $this->exact = $exact;
 
         return $this;
     }
 
-    /** @phpstan-param array<string, mixed>|Expr $filter */
+    /**
+     * MQL match expression to pre-filter documents before the vector search.
+     *
+     * @phpstan-param array<string, mixed>|Expr $filter
+     */
     public function filter(array|Expr $filter): static
     {
         $this->filter = $filter;
@@ -103,6 +124,7 @@ class VectorSearch extends Stage
         return $this;
     }
 
+    /** Name of the vector search index to use. */
     public function index(string $index): static
     {
         $this->index = $index;
@@ -110,6 +132,7 @@ class VectorSearch extends Stage
         return $this;
     }
 
+    /** Maximum number of documents to return. */
     public function limit(int $limit): static
     {
         $this->limit = $limit;
@@ -117,13 +140,27 @@ class VectorSearch extends Stage
         return $this;
     }
 
+    /** Embedding model used to embed the query string. Must be compatible with the index model. */
+    public function model(string $model): static
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    /** Number of nearest neighbors to consider. Higher values improve accuracy at the cost of latency. Must be >= limit. */
     public function numCandidates(int $numCandidates): static
     {
+        if ($this->exact === true) {
+            throw new InvalidArgumentException('Cannot use numCandidates() with exact(true) in the same $vectorSearch stage.');
+        }
+
         $this->numCandidates = $numCandidates;
 
         return $this;
     }
 
+    /** Field path containing the vector embeddings to search. */
     public function path(string $path): static
     {
         $this->path = $path;
@@ -131,9 +168,29 @@ class VectorSearch extends Stage
         return $this;
     }
 
-    /** @phpstan-param Vector $queryVector */
+    /** Text query automatically embedded at query time using the model configured in the index. */
+    public function query(string $query): static
+    {
+        if ($this->queryVector !== null) {
+            throw new InvalidArgumentException('Cannot use both query() and queryVector() in the same $vectorSearch stage.');
+        }
+
+        $this->query = $query;
+
+        return $this;
+    }
+
+    /**
+     * Raw vector for manual similarity search, when embeddings are generated outside of MongoDB.
+     *
+     * @phpstan-param Vector $queryVector
+     */
     public function queryVector(array|Binary $queryVector): static
     {
+        if ($this->query !== null) {
+            throw new InvalidArgumentException('Cannot use both query() and queryVector() in the same $vectorSearch stage.');
+        }
+
         if ($queryVector === []) {
             throw new InvalidArgumentException('Query vector cannot be an empty array.');
         }

@@ -690,6 +690,12 @@ This attribute must appear on the top-most class in an
 :ref:`inheritance hierarchy <inheritance_mapping>`. ``SINGLE_COLLECTION`` and
 ``COLLECTION_PER_CLASS`` are currently supported.
 
+.. note::
+
+    ``COLLECTION_PER_CLASS`` is deprecated since 2.17 with no replacement. Each
+    document class is already mapped to its own collection, so you can remove the
+    ``InheritanceType`` mapping.
+
 Examples:
 
 .. code-block:: php

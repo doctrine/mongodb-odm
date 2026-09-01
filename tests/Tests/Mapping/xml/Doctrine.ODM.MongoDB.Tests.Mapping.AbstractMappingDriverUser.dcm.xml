@@ -66,6 +66,10 @@
                 <filter-field path="name" />
                 <filter-field path="email" />
             </vector-search-index>
+            <vector-search-index name="autoEmbedIndex">
+                <auto-embed-field path="content" modality="text" model="voyage-4" />
+                <filter-field path="name" />
+            </vector-search-index>
         </vector-search-indexes>
         <reference-one target-document="Doctrine\ODM\MongoDB\Tests\Mapping\Address" field="address">
             <cascade>

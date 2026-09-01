@@ -2,6 +2,12 @@ version: '3.8'
 
 services:
   mongodb-atlas-local:
-    image: mongodb/mongodb-atlas-local
+    image: mongodb/mongodb-atlas-local:preview
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY:-}
+      - EMBEDDING_PROVIDER_ENDPOINT=${EMBEDDING_PROVIDER_ENDPOINT:-https://api.voyageai.com/v1/embeddings}
     ports:
       - "27018:27017"

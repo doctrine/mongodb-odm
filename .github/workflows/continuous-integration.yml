@@ -38,7 +38,7 @@ jobs:
           - dependencies: "lowest"
             php-version: "8.4"
             mongodb-version: "6.0"
-            driver-version: "2.1.0"
+            driver-version: "2.2.0"
             topology: "server"
             symfony-version: ""
           # Test with Symfony 6.4
@@ -86,7 +86,7 @@ jobs:
           key: "extcache-v1"
 
       - name: Cache extensions
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.extcache.outputs.dir }}
           key: ${{ steps.extcache.outputs.key }}
@@ -123,7 +123,7 @@ jobs:
           SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
 
       - name: "Install latest Python version"
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.13'
 

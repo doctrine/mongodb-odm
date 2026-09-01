@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\SchemaException;
 use Doctrine\ODM\MongoDB\SchemaManager;
+use Documents\AutoEmbeddingArticle;
 use Documents\BaseDocument;
 use Documents\CmsAddress;
 use Documents\CmsArticle;
@@ -52,6 +53,7 @@ use function array_count_values;
 use function array_key_exists;
 use function array_map;
 use function assert;
+use function implode;
 use function in_array;
 
 /**
@@ -76,6 +78,7 @@ class SchemaManagerTest extends BaseTestCase
 
     /** @var array<class-string, list<string>> */
     private array $searchIndexedClasses = [
+        AutoEmbeddingArticle::class => ['default'],
         CmsAddress::class => ['default'],
         CmsArticle::class => ['search_articles'],
         VectorEmbedding::class => ['default', 'vector_int'],
@@ -388,6 +391,24 @@ class SchemaManagerTest extends BaseTestCase
         $this->schemaManager->deleteDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
     }
 
+    public function testSearchIndexedClassesIsComplete(): void
+    {
+        $missing = [];
+        foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
+            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isFile) {
+                continue;
+            }
+
+            if (! $cm->hasSearchIndexes() || array_key_exists($cm->name, $this->searchIndexedClasses)) {
+                continue;
+            }
+
+            $missing[] = $cm->name;
+        }
+
+        self::assertEmpty($missing, 'The following document classes have search indexes but are missing from $searchIndexedClasses: ' . implode(', ', $missing));
+    }
+
     public function testCreateSearchIndexes(): void
     {
         $searchIndexesPerCollectionName = [];
@@ -662,7 +683,7 @@ class SchemaManagerTest extends BaseTestCase
     {
         $dbCommands = [];
         foreach ($this->dm->getMetadataFactory()->getAllMetadata() as $cm) {
-            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView() || $cm->isFile) {
+            if ($cm->isMappedSuperclass || $cm->isEmbeddedDocument || $cm->isQueryResultDocument || $cm->isView || $cm->isFile) {
                 continue;
             }
 
@@ -1472,7 +1493,7 @@ EOT;
 
     private function createSearchIndexCommandExceptionForOlderServers(): CommandException
     {
-        return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40234);
+        return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40324);
     }
 
     private function createIndexIterator(array $indexes = []): Iterator
