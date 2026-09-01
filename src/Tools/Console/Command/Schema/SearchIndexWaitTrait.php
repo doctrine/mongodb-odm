@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tools\Console\Command\Schema;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,6 +18,9 @@ use function strtotime;
 /** @internal */
 trait SearchIndexWaitTrait
 {
+    /** @return ClassMetadataFactoryInterface */
+    abstract protected function getMetadataFactory();
+
     /**
      * Returns the search index wait time in milliseconds, or null when --wait was not passed.
      *

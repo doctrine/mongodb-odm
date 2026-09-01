@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Tools\Console\Command\Schema;
 
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Tools\Console\Command\Schema\SearchIndexWaitTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -22,12 +23,23 @@ class SearchIndexWaitTraitTest extends TestCase
     {
         parent::setUp();
 
-        $this->subject = new class {
+        $metadataFactory = $this->createStub(ClassMetadataFactoryInterface::class);
+
+        $this->subject = new class ($metadataFactory) {
             use SearchIndexWaitTrait;
+
+            public function __construct(private ClassMetadataFactoryInterface $metadataFactory)
+            {
+            }
 
             public function getWaitTimeMs(StringInput $input): ?int
             {
                 return $this->getWaitTimeMsFromInput($input);
+            }
+
+            protected function getMetadataFactory(): ClassMetadataFactoryInterface
+            {
+                return $this->metadataFactory;
             }
         };
     }
