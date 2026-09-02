@@ -2021,6 +2021,46 @@ if (PHP_VERSION_ID >= 80400) {
         $this->isReadOnly = true;
     }
 
+    /**
+     * Marks this class as a mapped superclass.
+     */
+    public function markAsMappedSuperclass(): void
+    {
+        $this->isMappedSuperclass = true;
+    }
+
+    /**
+     * Marks this class as an embedded document.
+     */
+    public function markAsEmbeddedDocument(): void
+    {
+        $this->isEmbeddedDocument = true;
+    }
+
+    /**
+     * Marks this class as a query result document.
+     */
+    public function markAsQueryResultDocument(): void
+    {
+        $this->isQueryResultDocument = true;
+    }
+
+    /**
+     * Marks this class as a GridFS file.
+     */
+    public function markAsFile(): void
+    {
+        $this->isFile = true;
+    }
+
+    /**
+     * Marks this class as containing encrypted fields.
+     */
+    public function markAsEncrypted(): void
+    {
+        $this->isEncrypted = true;
+    }
+
     public function getRootClass(): ?string
     {
         return $this->rootClass;

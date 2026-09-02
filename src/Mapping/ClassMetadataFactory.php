@@ -171,7 +171,7 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
             }
 
             if ($parent->isFile) {
-                $class->isFile = true;
+                $class->markAsFile();
                 $class->setBucketName($parent->bucketName);
 
                 if ($parent->chunkSizeBytes !== null) {

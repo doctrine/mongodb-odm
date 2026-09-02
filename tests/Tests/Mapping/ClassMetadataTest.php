@@ -24,11 +24,15 @@ use Documents\Account;
 use Documents\Address;
 use Documents\Album;
 use Documents\Bars\Bar;
+use Documents\BaseCategory;
+use Documents\BlogTagAggregation;
 use Documents\Card;
 use Documents\CmsGroup;
 use Documents\CmsUser;
 use Documents\CustomCollection;
 use Documents\CustomRepository\Repository;
+use Documents\Encryption\ClientCard;
+use Documents\FileWithoutMetadata;
 use Documents\SpecialUser;
 use Documents\Suit;
 use Documents\SuitInt;
@@ -1162,6 +1166,23 @@ class ClassMetadataTest extends BaseTestCase
 
         self::assertCount(1, $errors);
         self::assertEquals(sprintf('Since doctrine/mongodb-odm 2.17: Writing to property %s::db is deprecated and will be removed in version 3.0.', ClassMetadata::class), $errors[0]);
+    }
+
+    /** @param class-string<object> $className */
+    #[RequiresPhp('>= 8.4')]
+    #[TestWith([Address::class])]
+    #[TestWith([BaseCategory::class])]
+    #[TestWith([BlogTagAggregation::class])]
+    #[TestWith([FileWithoutMetadata::class])]
+    #[TestWith([ClientCard::class])]
+    public function testLoadingMetadataDoesNotTriggerDeprecation(string $className): void
+    {
+        $this->captureDeprecationMessages(
+            fn () => $this->dm->getClassMetadata($className),
+            $errors,
+        );
+
+        self::assertSame([], $errors);
     }
 }
 

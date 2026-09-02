@@ -96,14 +96,14 @@ class XmlDriver extends FileDriver
             $metadata->setCustomRepositoryClass(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null,
             );
-            $metadata->isMappedSuperclass = true;
+            $metadata->markAsMappedSuperclass();
         } elseif ($xmlRoot->getName() === 'embedded-document') {
-            $metadata->isEmbeddedDocument = true;
+            $metadata->markAsEmbeddedDocument();
             if (isset($xmlRoot->encrypt)) {
-                $metadata->isEncrypted = true;
+                $metadata->markAsEncrypted();
             }
         } elseif ($xmlRoot->getName() === 'query-result-document') {
-            $metadata->isQueryResultDocument = true;
+            $metadata->markAsQueryResultDocument();
         } elseif ($xmlRoot->getName() === 'view') {
             if (isset($xmlRoot['repository-class'])) {
                 $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
@@ -120,7 +120,7 @@ class XmlDriver extends FileDriver
 
             $metadata->markViewOf($rootClass);
         } elseif ($xmlRoot->getName() === 'gridfs-file') {
-            $metadata->isFile = true;
+            $metadata->markAsFile();
 
             if (isset($xmlRoot['chunk-size-bytes'])) {
                 $metadata->setChunkSizeBytes((int) $xmlRoot['chunk-size-bytes']);

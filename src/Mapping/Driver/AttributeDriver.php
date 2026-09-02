@@ -156,7 +156,7 @@ class AttributeDriver implements MappingDriver
                     $metadata->setValidationLevel($attribute->level);
                 }
             } elseif ($attribute instanceof ODM\Encrypt) {
-                $metadata->isEncrypted = true;
+                $metadata->markAsEncrypted();
             }
         }
 
@@ -165,11 +165,11 @@ class AttributeDriver implements MappingDriver
         }
 
         if ($documentAttribute instanceof ODM\MappedSuperclass) {
-            $metadata->isMappedSuperclass = true;
+            $metadata->markAsMappedSuperclass();
         } elseif ($documentAttribute instanceof ODM\EmbeddedDocument) {
-            $metadata->isEmbeddedDocument = true;
+            $metadata->markAsEmbeddedDocument();
         } elseif ($documentAttribute instanceof ODM\QueryResultDocument) {
-            $metadata->isQueryResultDocument = true;
+            $metadata->markAsQueryResultDocument();
         } elseif ($documentAttribute instanceof ODM\View) {
             if (! $documentAttribute->rootClass) {
                 throw MappingException::viewWithoutRootClass($className);
@@ -181,7 +181,7 @@ class AttributeDriver implements MappingDriver
 
             $metadata->markViewOf($documentAttribute->rootClass);
         } elseif ($documentAttribute instanceof ODM\File) {
-            $metadata->isFile = true;
+            $metadata->markAsFile();
 
             if ($documentAttribute->chunkSizeBytes !== null) {
                 $metadata->setChunkSizeBytes($documentAttribute->chunkSizeBytes);
