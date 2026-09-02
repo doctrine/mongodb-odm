@@ -46,8 +46,11 @@ use ReflectionClass;
 use ReflectionException;
 use stdClass;
 
+use function array_filter;
 use function array_merge;
+use function array_values;
 use function serialize;
+use function str_contains;
 use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
@@ -1146,6 +1149,26 @@ class ClassMetadataTest extends BaseTestCase
         self::assertSame(Granularity::Hours, $metadata->timeSeriesOptions->granularity);
         self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
         self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
+    }
+
+    /**
+     * The mapping drivers write metadata properties directly, so deprecating
+     * these writes requires a replacement API first. Loading the whole test
+     * suite mapping must not report a single property write.
+     */
+    public function testLoadingAllMetadataDoesNotDeprecatePropertyWrites(): void
+    {
+        $this->captureDeprecationMessages(
+            fn () => $this->dm->getMetadataFactory()->getAllMetadata(),
+            $errors,
+        );
+
+        $propertyWrites = array_filter(
+            $errors,
+            static fn (string $error): bool => str_contains($error, 'Writing to property'),
+        );
+
+        self::assertSame([], array_values($propertyWrites));
     }
 }
 
