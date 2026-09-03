@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Tests\Query\Filter\Filter;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\Mapping\Driver\FileClassLocator;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -24,6 +25,7 @@ use ProxyManager\Proxy\LazyLoadingInterface;
 
 use function array_key_exists;
 use function array_map;
+use function assert;
 use function class_exists;
 use function count;
 use function explode;
@@ -45,14 +47,21 @@ abstract class BaseTestCase extends TestCase
 {
     protected static ?bool $supportsTransactions;
     protected static bool $allowsTransactions = true;
+    protected Configuration $config;
+    protected TypeRegistry $typeRegistry;
     protected ?DocumentManager $dm;
     protected UnitOfWork $uow;
     private bool $disableFailPoints = false;
 
     protected function setUp(): void
     {
-        $this->dm  = static::createTestDocumentManager();
-        $this->uow = $this->dm->getUnitOfWork();
+        $this->dm     = static::createTestDocumentManager();
+        $this->config = $this->dm->getConfiguration();
+        $this->uow    = $this->dm->getUnitOfWork();
+
+        $typeRegistry = $this->config->getTypeRegistry();
+        assert($typeRegistry instanceof TypeRegistry);
+        $this->typeRegistry = $typeRegistry;
     }
 
     protected function tearDown(): void
@@ -105,6 +114,7 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
+        $config->setTypeRegistry(new TypeRegistry());
 
         if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
             $config->setUseNativeLazyObject(true);

@@ -26,7 +26,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Operator\WindowOperators;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use LogicException;
 
 use function array_filter;
@@ -1122,7 +1122,7 @@ class Expr implements
         }
 
         // Convert PHP types to MongoDB types for everything else
-        return Type::convertPHPToDatabaseValue($expression);
+        return (new TypeGuesser($this->dm->getConfiguration()->getTypeRegistry()))->convertToDatabaseValue($expression);
     }
 
     private function getDocumentPersister(): DocumentPersister

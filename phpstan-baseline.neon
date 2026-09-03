@@ -1265,3 +1265,15 @@ parameters:
 			identifier: staticMethod.impossibleType
 			count: 1
 			path: tests/Tests/Types/BinaryUuidTypeTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\FloatType'' and Doctrine\\ODM\\MongoDB\\Types\\StringType will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Tests/Types/TypeTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\IntType'' and \*NEVER\* will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Tests/Types/TypeTest.php

@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Expr;
-use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Decimal128;
@@ -94,7 +93,11 @@ class VectorSearch extends Stage
         }
 
         if ($this->queryVector !== null) {
-            $params['queryVector'] = Type::getType($this->persister->getClassMetadata()->fieldMappings[$this->path ?? '']['type'] ?? Type::RAW)->convertToDatabaseValue($this->queryVector);
+            // The vector is converted as a whole, not element by element, so it cannot go
+            // through DocumentPersister::convertToDatabaseValue() which recurses into arrays.
+            $params['queryVector'] = $this->persister->getClassMetadata()
+                ->getFieldType($this->path ?? '')
+                ->convertToDatabaseValue($this->queryVector);
         }
 
         return [$this->getStageName() => $params];

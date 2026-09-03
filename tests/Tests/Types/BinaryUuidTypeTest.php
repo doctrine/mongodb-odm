@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\BinaryUuidType;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +15,7 @@ class BinaryUuidTypeTest extends TestCase
 {
     public function testConvertToDatabaseValue(): void
     {
-        $type       = Type::getType(Type::UUID);
+        $type       = new BinaryUuidType();
         $uuid       = new UuidV4();
         $stringUuid = $uuid->toRfc4122();
         $binaryUuid = new Binary($uuid->toBinary(), Binary::TYPE_UUID);
@@ -28,7 +28,7 @@ class BinaryUuidTypeTest extends TestCase
 
     public function testConvertInvalidUuid(): void
     {
-        $type = Type::getType(Type::UUID);
+        $type = new BinaryUuidType();
 
         $this->expectException(InvalidArgumentException::class);
         $type->convertToDatabaseValue('invalid');
@@ -36,7 +36,7 @@ class BinaryUuidTypeTest extends TestCase
 
     public function testConvertToPHPValue(): void
     {
-        $type       = Type::getType(Type::UUID);
+        $type       = new BinaryUuidType();
         $uuid       = new UuidV4();
         $binaryUuid = new Binary($uuid->toBinary(), Binary::TYPE_UUID);
 
@@ -46,7 +46,7 @@ class BinaryUuidTypeTest extends TestCase
 
     public function testConvertInvalidBinaryUuid(): void
     {
-        $type = Type::getType(Type::UUID);
+        $type = new BinaryUuidType();
 
         $this->expectException(InvalidArgumentException::class);
         $type->convertToPHPValue(new Binary('invalid', Binary::TYPE_UUID));
@@ -54,7 +54,7 @@ class BinaryUuidTypeTest extends TestCase
 
     public function testConvertInvalidBinary(): void
     {
-        $type = Type::getType(Type::UUID);
+        $type = new BinaryUuidType();
 
         $this->expectException(Throwable::class);
         $type->convertToPHPValue(new Binary('invalid', Binary::TYPE_GENERIC));
@@ -62,7 +62,7 @@ class BinaryUuidTypeTest extends TestCase
 
     public function testClosureToMongo(): void
     {
-        $type       = Type::getType(Type::UUID);
+        $type       = new BinaryUuidType();
         $uuid       = new UuidV4();
         $stringUuid = $uuid->toRfc4122();
         $binaryUuid = new Binary($uuid->toBinary(), Binary::TYPE_UUID);
@@ -82,7 +82,7 @@ class BinaryUuidTypeTest extends TestCase
 
     public function testClosureToPhp(): void
     {
-        $type       = Type::getType(Type::UUID);
+        $type       = new BinaryUuidType();
         $uuid       = new UuidV4();
         $binaryUuid = new Binary($uuid->toBinary(), Binary::TYPE_UUID);
 

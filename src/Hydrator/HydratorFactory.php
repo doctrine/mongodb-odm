@@ -12,7 +12,6 @@ use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -28,9 +27,12 @@ use function mkdir;
 use function rename;
 use function rtrim;
 use function sprintf;
+use function str_contains;
 use function str_replace;
 use function substr;
+use function trigger_deprecation;
 use function uniqid;
+use function var_export;
 
 use const DIRECTORY_SEPARATOR;
 use const PHP_VERSION_ID;
@@ -196,7 +198,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $this->closureToPHP($class, $mapping['fieldName']),
                 );
             } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(
@@ -219,7 +221,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $this->closureToPHP($class, $mapping['fieldName']),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(
@@ -475,5 +477,20 @@ EOF
         $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
 
         return $data;
+    }
+
+    private function closureToPHP(ClassMetadata $class, string $fieldName): string
+    {
+        $code = $class->getFieldType($fieldName)->closureToPHP();
+
+        if (str_contains($code, '$typeIdentifier')) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using $typeIdentifier in Type::closureToPHP() is deprecated and will be removed in Doctrine ODM 3.0');
+        }
+
+        return str_replace(
+            '$fieldName',
+            var_export($fieldName, true),
+            $code,
+        );
     }
 }

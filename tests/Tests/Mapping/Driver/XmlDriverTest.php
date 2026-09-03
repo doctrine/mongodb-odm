@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\XmlDriver;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use MongoDB\BSON\Document;
 use TestDocuments\AlsoLoadDocument;
 use TestDocuments\CustomIdGenerator;
@@ -102,6 +103,7 @@ class XmlDriverTest extends AbstractDriverTestCase
     public function testAlsoLoadFieldMapping(): void
     {
         $classMetadata = new ClassMetadata(AlsoLoadDocument::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(AlsoLoadDocument::class, $classMetadata);
 
         self::assertEquals([
