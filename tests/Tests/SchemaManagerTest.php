@@ -1260,6 +1260,106 @@ EOT;
                 'mongoIndex' => ['expireAfterSeconds' => 86400],
                 'documentIndex' => ['options' => ['expireAfterSeconds' => 86400]],
             ],
+            // bucketSize option
+            'bucketSizeOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['bucketSize' => 16],
+                'documentIndex' => [],
+            ],
+            'bucketSizeInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['bucketSize' => 8],
+                'documentIndex' => ['options' => ['bucketSize' => 16]],
+            ],
+            'bucketSizeInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['bucketSize' => 16],
+                'documentIndex' => ['options' => ['bucketSize' => 16]],
+            ],
+            // hidden option
+            'hiddenOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['hidden' => true],
+                'documentIndex' => [],
+            ],
+            'hiddenOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['hidden' => true]],
+            ],
+            'hiddenInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['hidden' => false],
+                'documentIndex' => ['options' => ['hidden' => true]],
+            ],
+            'hiddenInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['hidden' => true],
+                'documentIndex' => ['options' => ['hidden' => true]],
+            ],
+            // collation option
+            'collationOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
+                'documentIndex' => [],
+            ],
+            'collationOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 2]]],
+            ],
+            'collationInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 1]]],
+            ],
+            'collationInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 2]]],
+            ],
+            // wildcardProjection option
+            'wildcardProjectionOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['wildcardProjection' => ['a' => 1, 'b' => 1]],
+                'documentIndex' => [],
+            ],
+            'wildcardProjectionOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['wildcardProjection' => ['a' => 1, 'b' => 1]]],
+            ],
+            'wildcardProjectionInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['wildcardProjection' => ['a' => 1, 'b' => 1]],
+                'documentIndex' => ['options' => ['wildcardProjection' => ['a' => 1]]],
+            ],
+            'wildcardProjectionInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['wildcardProjection' => ['a' => 1, 'b' => 1]],
+                'documentIndex' => ['options' => ['wildcardProjection' => ['a' => 1, 'b' => 1]]],
+            ],
+            // storageEngine option
+            'storageEngineOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]],
+                'documentIndex' => [],
+            ],
+            'storageEngineOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]]],
+            ],
+            'storageEngineInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]],
+                'documentIndex' => ['options' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=snappy']]]],
+            ],
+            'storageEngineInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]],
+                'documentIndex' => ['options' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]]],
+            ],
             // index name autogenerated
             'indexNameAutogenerated' => [
                 'expected' => true,
@@ -1287,11 +1387,26 @@ EOT;
                 'mongoIndex' => ['background' => true],
                 'documentIndex' => ['options' => ['background' => true]],
             ],
-            // 2dsphereIndexVersion index options
+            // 2dsphereIndexVersion option
             '2dsphereIndexVersionOptionsDifferent' => [
                 'expected' => true,
                 'mongoIndex' => ['2dsphereIndexVersion' => 3],
                 'documentIndex' => [],
+            ],
+            '2dsphereIndexVersionOnlyInDocumentIndex' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['2dsphereIndexVersion' => 3]],
+            ],
+            '2dsphereIndexVersionInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['2dsphereIndexVersion' => 3],
+                'documentIndex' => ['options' => ['2dsphereIndexVersion' => 2]],
+            ],
+            '2dsphereIndexVersionInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['2dsphereIndexVersion' => 3],
+                'documentIndex' => ['options' => ['2dsphereIndexVersion' => 3]],
             ],
         ];
     }
