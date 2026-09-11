@@ -117,6 +117,17 @@ jobs:
             dependencies: "highest"
             symfony-version: ""
             proxy: "lazy-ghost"
+          # Test against Community Server 8.2, which introduces vector search
+          # and auto-embedding support (PHPORM-472). Vector search needs the
+          # search engine, enabled via mongodb-atlas-local (local-atlas mode).
+          - topology: "server"
+            php-version: "8.4"
+            mongodb-version: "8.2"
+            driver-version: "stable"
+            dependencies: "highest"
+            symfony-version: ""
+            proxy: "native"
+            local-atlas: "true"
 
     steps:
       - name: "Checkout"
@@ -180,9 +191,25 @@ jobs:
         with:
           version: ${{ matrix.mongodb-version }}
           topology: ${{ matrix.topology }}
+          # matrix.local-atlas is only set for the 8.2 entry; an empty string
+          # is treated as false by the action, so do not default it to 'false'
+          # (a non-empty string would be read as truthy and enable local-atlas).
+          local-atlas: ${{ matrix.local-atlas }}
 
       - name: "Run PHPUnit"
         run: "vendor/bin/phpunit --exclude-group=atlas ${{ matrix.dependencies == 'lowest' && '--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice' || '' }}"
+        env:
+          DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
+          USE_LAZY_GHOST_OBJECT: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}
+          USE_NATIVE_LAZY_OBJECT: ${{ matrix.proxy == 'native' && '1' || '0' }}
+          CRYPT_SHARED_LIB_PATH: ${{ steps.setup-mongodb.outputs.crypt-shared-lib-path }}
+
+      # Run the vector-search tests on Community Server 8.2 (local-atlas), where the
+      # search engine is enabled. They are excluded from the run above by the
+      # "atlas" group, so select them explicitly here.
+      - name: "Run vector search tests"
+        if: ${{ matrix.local-atlas == 'true' }}
+        run: "vendor/bin/phpunit --group vector-search"
         env:
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
           USE_LAZY_GHOST_OBJECT: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}
