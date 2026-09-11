@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use OutOfRangeException;
+use SortDirection;
 use stdClass;
 use TypeError;
 
@@ -626,15 +627,15 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
-     * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|null                                        $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection|array<string, string>>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection|null                                        $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string $fieldName Field name or array of field/order pairs
      */
     public function sort($fieldName, $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
         // fixme: move to sort stage
-        $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields));
+        $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields, ['textScore']));
 
         return $this->addStage($stage);
     }

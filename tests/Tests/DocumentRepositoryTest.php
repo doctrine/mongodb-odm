@@ -15,6 +15,7 @@ use Documents\Phonenumber;
 use Documents\SubProject;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
+use SortDirection;
 
 use const DOCTRINE_MONGODB_DATABASE;
 
@@ -205,5 +206,38 @@ class DocumentRepositoryTest extends BaseTestCase
         $this->dm->flush();
         self::assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'ASC']));
         self::assertSame($george, $this->dm->getRepository(User::class)->findOneBy([], ['username' => 'DESC']));
+    }
+
+    public function testFindByWithEnumSort(): void
+    {
+        $george = new User();
+        $george->setUsername('George');
+        $andy = new User();
+        $andy->setUsername('Andy');
+        $this->dm->persist($george);
+        $this->dm->persist($andy);
+        $this->dm->flush();
+
+        $ascending = $this->dm->getRepository(User::class)->findBy([], ['username' => SortDirection::Ascending]);
+        self::assertSame($andy, $ascending[0]);
+        self::assertSame($george, $ascending[1]);
+
+        $descending = $this->dm->getRepository(User::class)->findBy([], ['username' => SortDirection::Descending]);
+        self::assertSame($george, $descending[0]);
+        self::assertSame($andy, $descending[1]);
+    }
+
+    public function testFindOneByWithEnumSort(): void
+    {
+        $george = new User();
+        $george->setUsername('George');
+        $andy = new User();
+        $andy->setUsername('Andy');
+        $this->dm->persist($george);
+        $this->dm->persist($andy);
+        $this->dm->flush();
+
+        self::assertSame($andy, $this->dm->getRepository(User::class)->findOneBy([], ['username' => SortDirection::Ascending]));
+        self::assertSame($george, $this->dm->getRepository(User::class)->findOneBy([], ['username' => SortDirection::Descending]));
     }
 }
