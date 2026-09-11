@@ -932,9 +932,10 @@ final class SchemaManager
      *
      *   (a) Key/direction pairs differ or are not in the same order
      *   (b) Sparse or unique options differ
-     *   (c) Geospatial options differ (bits, max, min)
+     *   (c) Geospatial options differ (bits, max, min, bucketSize, 2dsphereIndexVersion)
      *   (d) The partialFilterExpression differs
      *   (e) The expireAfterSeconds option differs
+     *   (f) The hidden, collation, wildcardProjection or storageEngine options differ
      *
      * The background option is only relevant to index creation and is not
      * considered.
@@ -960,7 +961,7 @@ final class SchemaManager
             return false;
         }
 
-        foreach (['bits', 'max', 'min'] as $option) {
+        foreach (['bits', 'max', 'min', 'bucketSize', '2dsphereIndexVersion', 'hidden', 'collation', 'wildcardProjection', 'storageEngine'] as $option) {
             if (
                 isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
                 $mongoIndexOptions[$option] !== $documentIndexOptions[$option]
@@ -969,9 +970,6 @@ final class SchemaManager
             }
         }
 
-        /* A TTL index reports expireAfterSeconds on both sides, so a changed retention window is
-         * not caught by indexOptionsAreMissing(). Comparing the values covers the option being
-         * added or removed as well. */
         if (
             ($mongoIndexOptions['expireAfterSeconds'] ?? null) !== ($documentIndexOptions['expireAfterSeconds'] ?? null)
         ) {
