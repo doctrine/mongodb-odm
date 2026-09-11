@@ -6,14 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
 use function array_values;
 use function get_class;
 
 class MODM116Test extends BaseTestCase
 {
-    #[IgnoreDeprecations]
     public function testIssue(): void
     {
         $parent = new MODM116Parent();
@@ -42,7 +40,6 @@ class MODM116Test extends BaseTestCase
 }
 
 #[ODM\Document]
-#[ODM\InheritanceType('COLLECTION_PER_CLASS')]
 class MODM116Parent
 {
     /** @var string|null */
