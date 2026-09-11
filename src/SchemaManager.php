@@ -501,8 +501,33 @@ final class SchemaManager
             $collection->dropSearchIndex($name);
         }
 
+        $missingSearchIndexes = [];
+
         foreach ($searchIndexes as $searchIndex) {
+            /* updateSearchIndex fails on an index that does not exist yet, so a defined index the
+             * collection does not have has to be created rather than updated. */
+            if (! in_array($searchIndex['name'], $existingNames, true)) {
+                $missingSearchIndexes[] = $searchIndex;
+
+                continue;
+            }
+
             $collection->updateSearchIndex($searchIndex['name'], $searchIndex['definition']);
+        }
+
+        if (empty($missingSearchIndexes)) {
+            return;
+        }
+
+        $createdNames = $collection->createSearchIndexes($missingSearchIndexes);
+
+        /* createSearchIndexes builds indexes asynchronously but still reports
+         * the names of created indexes. Report an error if any defined names
+         * were not created. */
+        $unprocessedNames = array_diff(array_column($missingSearchIndexes, 'name'), $createdNames);
+
+        if (! empty($unprocessedNames)) {
+            throw SchemaException::missingSearchIndex($class->name, $unprocessedNames);
         }
     }
 

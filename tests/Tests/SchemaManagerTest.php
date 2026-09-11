@@ -51,6 +51,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 
+use function array_column;
 use function array_count_values;
 use function array_key_exists;
 use function array_map;
@@ -568,6 +569,56 @@ class SchemaManagerTest extends BaseTestCase
             ->expects($this->once())
             ->method('updateSearchIndex')
             ->with('search_articles', $this->anything());
+        $collection
+            ->expects($this->never())
+            ->method('createSearchIndexes');
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testUpdateDocumentSearchIndexesCreatesMissingSearchIndexes(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willReturn(new ArrayIterator([['name' => 'foo']]));
+        $collection
+            ->expects($this->once())
+            ->method('dropSearchIndex')
+            ->with('foo');
+        $collection
+            ->expects($this->never())
+            ->method('updateSearchIndex');
+        $collection
+            ->expects($this->once())
+            ->method('createSearchIndexes')
+            ->willReturnCallback(function (array $indexes): array {
+                $this->assertSame(['search_articles'], array_column($indexes, 'name'));
+
+                return ['search_articles'];
+            });
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testUpdateDocumentSearchIndexesMissingIndexNotCreatedError(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willReturn(new ArrayIterator([]));
+        $collection
+            ->expects($this->once())
+            ->method('createSearchIndexes')
+            ->with($this->anything())
+            ->willReturn([]);
+
+        $this->expectException(SchemaException::class);
+        $this->expectExceptionMessage('The document class "Documents\CmsArticle" is missing the following search index(es): "search_articles"');
 
         $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
     }
