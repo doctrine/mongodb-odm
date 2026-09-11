@@ -11,15 +11,17 @@ use Documents\VectorEmbedding;
 use MongoDB\BSON\Binary;
 use MongoDB\Driver\Exception\CommandException;
 use MongoDB\Driver\WriteConcern;
+use MongoDB\Exception\SearchNotSupportedException;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 
 use function str_contains;
 
 #[Group('atlas')]
+#[Group('vector-search')]
 class VectorSearchTest extends BaseTestCase
 {
-    public function testAtlasVectorSearch(): void
+    public function testVectorSearch(): void
     {
         // Create the collection by ensuring the schema
         $schemaManager = $this->dm->getSchemaManager();
@@ -50,7 +52,11 @@ class VectorSearchTest extends BaseTestCase
         $this->dm->flush(['writeConcern' => new WriteConcern(WriteConcern::MAJORITY)]);
 
         // Index must be created after data insertion, so the index status is not immediately "READY"
-        $schemaManager->createDocumentSearchIndexes(VectorEmbedding::class);
+        try {
+            $schemaManager->createDocumentSearchIndexes(VectorEmbedding::class);
+        } catch (SearchNotSupportedException) {
+            $this->markTestSkipped('Vector search requires a server with search support (Community Server 8.2+ or Atlas)');
+        }
 
         // Wait for the search index to be ready (Atlas Local needs time to build the index)
         $schemaManager->waitForSearchIndexes([VectorEmbedding::class]);
@@ -104,7 +110,7 @@ class VectorSearchTest extends BaseTestCase
         }
     }
 
-    public function testAtlasAutoEmbedding(): void
+    public function testAutoEmbedding(): void
     {
         $schemaManager = $this->dm->getSchemaManager();
         $schemaManager->createDocumentCollection(AutoEmbeddingArticle::class);
@@ -139,9 +145,11 @@ class VectorSearchTest extends BaseTestCase
 
         try {
             $schemaManager->createDocumentSearchIndexes(AutoEmbeddingArticle::class);
+        } catch (SearchNotSupportedException) {
+            $this->markTestSkipped('Auto-embedding requires a server with search support (Community Server 8.2+ or Atlas)');
         } catch (CommandException $e) {
             if (str_contains($e->getMessage(), 'not registered')) {
-                $this->markTestSkipped('Autoembedding requires an Atlas cluster with a registered embedding model. Set VOYAGE_API_KEY');
+                $this->markTestSkipped('Auto-embedding requires a registered embedding model. Set VOYAGE_API_KEY');
             }
 
             throw $e;
@@ -169,7 +177,7 @@ class VectorSearchTest extends BaseTestCase
     }
 
     #[RequiresPhpExtension('mongodb', '>= 2.2')]
-    public function testAtlasVectorSearchWithBinaryType(): void
+    public function testVectorSearchWithBinaryType(): void
     {
         $cm = $this->dm->getClassMetadata(VectorEmbedding::class);
 
@@ -179,7 +187,7 @@ class VectorSearchTest extends BaseTestCase
         // Change the collection name to avoid conflicts with asynchronous index building
         $cm->collection .= '_binary_type';
 
-        $this->testAtlasVectorSearch();
+        $this->testVectorSearch();
 
         // Ensure that the vectors are stored in as binary vectors
         $doc = $this->dm->getDocumentCollection(VectorEmbedding::class)->findOne(['filterField' => 'active']);
