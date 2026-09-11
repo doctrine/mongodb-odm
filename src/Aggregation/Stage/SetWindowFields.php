@@ -8,16 +8,15 @@ use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields\Output;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
+use SortDirection;
 
 use function is_array;
-use function is_string;
-use function strtolower;
 
 /**
- * @phpstan-import-type SortDirectionKeywords from Sort
  * @phpstan-import-type OperatorExpression from Expr
- * @phpstan-type SortDirection int|SortDirectionKeywords
- * @phpstan-type SortShape array<string, SortDirection>
+ * @phpstan-import-type SortOrder from Sort
+ * @phpstan-type SortShape array<string, SortOrder>
  * @phpstan-type SetWindowFieldsStageExpression array{
  *     "$setWindowFields": object{
  *         partitionBy?: string|OperatorExpression,
@@ -51,22 +50,16 @@ class SetWindowFields extends Stage
     }
 
     /**
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string           $fieldName
-     * @phpstan-param SortDirection|null         $order
+     * @phpstan-param SortOrder|null             $order
      */
     public function sortBy($fieldName, $order = null): static
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
-        foreach ($fields as $fieldName => $order) {
-            if (is_string($order)) {
-                $order = strtolower($order) === 'asc' ? 1 : -1;
-            }
-
-            $this->sortBy[$fieldName] = $order;
-        }
+        $this->sortBy = SortHelper::normalizeSortDirections($fields);
 
         return $this;
     }

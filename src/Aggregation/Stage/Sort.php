@@ -6,19 +6,18 @@ namespace Doctrine\ODM\MongoDB\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
+use SortDirection;
 
-use function in_array;
 use function is_array;
-use function is_string;
-use function strtolower;
 
 /**
  * Fluent interface for adding a $sort stage to an aggregation pipeline.
  *
- * @phpstan-type SortMetaKeywords "textScore"|"indexKey"
- * @phpstan-type SortDirectionKeywords "asc"|"desc"
- * @phpstan-type SortMeta array{"$meta": SortMetaKeywords}
- * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords>
+ * @phpstan-import-type SortDirectionKeywords from SortHelper
+ * @phpstan-import-type SortMeta from SortHelper
+ * @phpstan-import-type SortOrder from SortHelper
+ * @phpstan-import-type SortShape from SortHelper
  * @phpstan-type SortStageExpression array{
  *     "$sort": array<string, int|SortMeta>
  * }
@@ -30,29 +29,17 @@ class Sort extends Stage
 
     /**
      * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                                             $order     Field order (if one field is specified)
+     * @param int|string|SortDirection                               $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string                        $fieldName
-     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
+     * @phpstan-param SortMeta|SortOrder|null                 $order
      */
     public function __construct(Builder $builder, $fieldName, $order = null)
     {
         parent::__construct($builder);
 
-        $allowedMetaSort = ['textScore'];
-
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
-        foreach ($fields as $fieldName => $order) {
-            if (is_string($order)) {
-                if (in_array($order, $allowedMetaSort, true)) {
-                    $order = ['$meta' => $order];
-                } else {
-                    $order = strtolower($order) === 'asc' ? 1 : -1;
-                }
-            }
-
-            $this->sort[$fieldName] = $order;
-        }
+        $this->sort = SortHelper::normalizeSortDirections($fields, ['textScore']);
     }
 
     /** @phpstan-return SortStageExpression */

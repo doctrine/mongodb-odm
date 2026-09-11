@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use SortDirection;
 
 /** @phpstan-import-type SortShape from Sort */
 class SortTest extends BaseTestCase
@@ -15,11 +16,11 @@ class SortTest extends BaseTestCase
     use AggregationTestTrait;
 
     /**
-     * @param string|array<string, string> $field
+     * @param string|array<string, int|string|SortDirection> $field
      * @phpstan-param SortShape $expectedSort
      */
     #[DataProvider('provideSortOptions')]
-    public function testStage(array $expectedSort, $field, ?string $order = null): void
+    public function testStage(array $expectedSort, string|array $field, int|string|SortDirection|null $order = null): void
     {
         $sortStage = new Sort($this->getTestAggregationBuilder(), $field, $order);
 
@@ -27,11 +28,11 @@ class SortTest extends BaseTestCase
     }
 
     /**
-     * @param string|array<string, string> $field
+     * @param string|array<string, int|string|SortDirection> $field
      * @phpstan-param SortShape $expectedSort
      */
     #[DataProvider('provideSortOptions')]
-    public function testFromBuilder(array $expectedSort, $field, ?string $order = null): void
+    public function testFromBuilder(array $expectedSort, string|array $field, int|string|SortDirection|null $order = null): void
     {
         $builder = $this->getTestAggregationBuilder();
         $builder->sort($field, $order);
@@ -54,6 +55,15 @@ class SortTest extends BaseTestCase
             'multipleFields' => [
                 ['field' => -1, 'otherField' => 1],
                 ['field' => 'desc', 'otherField' => 'asc'],
+            ],
+            'singleFieldEnumSeparated' => [
+                ['field' => -1],
+                'field',
+                SortDirection::Descending,
+            ],
+            'singleFieldEnumCombined' => [
+                ['field' => 1],
+                ['field' => SortDirection::Ascending],
             ],
             'sortMeta' => [
                 ['field' => ['$meta' => 'textScore'], 'invalidField' => -1],

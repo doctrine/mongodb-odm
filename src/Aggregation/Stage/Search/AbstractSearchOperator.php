@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use SortDirection;
 
 use function array_map;
 use function is_array;
@@ -48,10 +49,10 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
     }
 
     /**
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string $fieldName
-     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string                                      $fieldName
+     * @phpstan-param int|SortMeta|SortDirectionKeywords|SortDirection|null $order
      */
     public function sort($fieldName, $order = null): Search
     {
