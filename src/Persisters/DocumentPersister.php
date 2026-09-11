@@ -27,6 +27,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
@@ -37,6 +38,7 @@ use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
+use SortDirection;
 use stdClass;
 
 use function array_combine;
@@ -62,7 +64,6 @@ use function spl_object_id;
 use function sprintf;
 use function str_contains;
 use function strpos;
-use function strtolower;
 use function trigger_deprecation;
 
 /**
@@ -466,9 +467,9 @@ final class DocumentPersister
      * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
      * be used to match an _id value.
      *
-     * @param array<string, mixed>|scalar|ObjectId|null            $criteria Query criteria
-     * @param array<string, int|string|array<string, string>>|null $sort
-     * @param T|null                                               $document
+     * @param array<string, mixed>|scalar|ObjectId|null                          $criteria Query criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
+     * @param T|null                                                             $document
      * @phpstan-param SortShape|null $sort
      * @phpstan-param Hints $hints
      *
@@ -516,8 +517,8 @@ final class DocumentPersister
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array<string, mixed>           $criteria
-     * @param array<string, int|string>|null $sort
+     * @param array<string, mixed>                         $criteria
+     * @param array<string, int|string|SortDirection>|null $sort
      */
     public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
@@ -922,42 +923,21 @@ final class DocumentPersister
     }
 
     /**
-     * @param int|string $sort
-     *
-     * @return int|string
-     */
-    private function getSortDirection($sort)
-    {
-        switch (strtolower((string) $sort)) {
-            case 'desc':
-                return -1;
-
-            case 'asc':
-                return 1;
-        }
-
-        return $sort;
-    }
-
-    /**
      * Prepare a sort specification array by converting keys to MongoDB field
      * names and changing direction strings to int.
      *
-     * @param array<string, int|string|array<string, string>> $fields
+     * @param array<string, int|string|SortDirection|array<string, string>> $fields
+     * @param list<string>                                                  $allowedMetaSort
      * @phpstan-param SortShape $fields
      *
      * @phpstan-return array<string, -1|1|SortMeta>
      */
-    public function prepareSort(array $fields): array
+    public function prepareSort(array $fields, array $allowedMetaSort = []): array
     {
         $sortFields = [];
 
-        foreach ($fields as $key => $value) {
-            if (is_array($value)) {
-                $sortFields[$this->prepareFieldName($key)] = $value;
-            } else {
-                $sortFields[$this->prepareFieldName($key)] = $this->getSortDirection($value);
-            }
+        foreach (SortHelper::normalizeSortDirections($fields, $allowedMetaSort) as $key => $value) {
+            $sortFields[$this->prepareFieldName($key)] = $value;
         }
 
         return $sortFields;

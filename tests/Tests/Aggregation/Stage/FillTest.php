@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use SortDirection;
 
 class FillTest extends BaseTestCase
 {
@@ -74,6 +75,32 @@ class FillTest extends BaseTestCase
         $fillStage
             ->partitionByFields('field1', 'field2')
             ->sortBy(['field1' => 'asc', 'field2' => 'desc'])
+            ->output()
+                ->field('foo')->locf();
+
+        self::assertEquals(
+            [
+                '$fill' => (object) [
+                    'partitionByFields' => ['field1', 'field2'],
+                    'sortBy' => (object) [
+                        'field1' => 1,
+                        'field2' => -1,
+                    ],
+                    'output' => (object) [
+                        'foo' => ['method' => 'locf'],
+                    ],
+                ],
+            ],
+            $fillStage->getExpression(),
+        );
+    }
+
+    public function testStageWithEnumSort(): void
+    {
+        $fillStage = new Fill($this->getTestAggregationBuilder());
+        $fillStage
+            ->partitionByFields('field1', 'field2')
+            ->sortBy(['field1' => SortDirection::Ascending, 'field2' => SortDirection::Descending])
             ->output()
                 ->field('foo')->locf();
 

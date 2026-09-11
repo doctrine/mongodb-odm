@@ -20,6 +20,7 @@ use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Constraint\IsInstanceOf;
+use SortDirection;
 
 use function array_combine;
 use function array_map;
@@ -1186,6 +1187,27 @@ class SearchTest extends BaseTestCase
 
         self::assertEquals(
             ['$search' => (object) array_merge($baseExpected, $expectedOperator)],
+            $searchStage->getExpression(),
+        );
+    }
+
+    public function testSortWithEnumDirection(): void
+    {
+        $searchStage = $this->createSearchStage();
+        $searchStage
+            ->index('my_search_index')
+            ->sort(['date' => SortDirection::Descending, 'bar' => SortDirection::Ascending]);
+
+        self::assertEquals(
+            [
+                '$search' => (object) [
+                    'index' => 'my_search_index',
+                    'sort' => (object) [
+                        'date' => -1,
+                        'bar' => 1,
+                    ],
+                ],
+            ],
             $searchStage->getExpression(),
         );
     }
