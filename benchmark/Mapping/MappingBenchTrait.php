@@ -25,8 +25,6 @@ use const PHP_VERSION_ID;
  */
 trait MappingBenchTrait
 {
-    private const DEFAULT_MONGODB_SERVER = 'mongodb://localhost:27017';
-
     private function createDocumentManager(bool $withMetadataCache = false): DocumentManager
     {
         $config = new Configuration();
@@ -52,7 +50,7 @@ trait MappingBenchTrait
         }
 
         $client = new Client(
-            getenv('DOCTRINE_MONGODB_SERVER') ?: self::DEFAULT_MONGODB_SERVER,
+            getenv('DOCTRINE_MONGODB_SERVER') ?: 'mongodb://localhost:27017',
             [],
             ['typeMap' => ['root' => 'array', 'document' => 'array']],
         );
