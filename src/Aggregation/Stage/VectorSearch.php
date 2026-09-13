@@ -39,7 +39,9 @@ class VectorSearch extends Stage
     /** @see Binary::TYPE_VECTOR introduced in ext-mongodb 2.2 */
     private const BINARY_TYPE_VECTOR = 9;
 
-    private ?bool $exact            = null;
+    private ?bool $exact = null;
+
+    /** @var array<string, mixed>|Expr|null */
     private array|Expr|null $filter = null;
     private ?string $index          = null;
     private ?int $limit             = null;

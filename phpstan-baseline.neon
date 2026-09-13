@@ -7,60 +7,6 @@ parameters:
 			path: src/Aggregation/Builder.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Expr\:\:mergeObjects\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Expr.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:avg\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:max\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:mergeObjects\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:min\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:stdDevPop\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:stdDevSamp\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Bucket\\AbstractOutput\:\:sum\(\) has parameter \$expressions with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Bucket/AbstractOutput.php
-
-		-
-			message: '#^Class Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Fill has type alias FillStageExpression with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Fill.php
-
-		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
 			identifier: argument.templateType
 			count: 1
@@ -85,196 +31,10 @@ parameters:
 			path: src/Aggregation/Stage/Out.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedAutocomplete\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedAutocomplete.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEmbeddedDocument\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedEmbeddedDocument.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedEquals\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedEquals.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedExists\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedExists.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoShape\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedGeoShape.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedGeoWithin\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedGeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedMoreLikeThis\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedMoreLikeThis.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedNear\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedNear.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedPhrase\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedPhrase.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedQueryString\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedQueryString.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRange\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedRange.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedRegex\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedRegex.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedText\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedText.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Compound\\CompoundedWildcard\:\:__construct\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Aggregation/Stage/Search/Compound/CompoundedWildcard.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoShape\:\:__construct\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoShape.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoShape\:\:geometry\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoShape.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoShape\:\:\$geometry type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoShape.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:box\(\) has parameter \$bottomLeft with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:box\(\) has parameter \$topRight with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:circle\(\) has parameter \$center with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:convertGeometry\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:convertGeometry\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:geometry\(\) has parameter \$geometry with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:\$geometry type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Near\:\:__construct\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/Near.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Near\:\:origin\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/Near.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Near\:\:\$origin type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/Search/Near.php
-
-		-
-			message: '#^Class Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith has type alias PipelineParamType with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/UnionWith.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith\:\:pipeline\(\) has parameter \$pipeline with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/UnionWith.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith\:\:\$pipeline type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/UnionWith.php
-
-		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
 			identifier: argument.templateType
 			count: 1
 			path: src/Aggregation/Stage/UnionWith.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\VectorSearch\:\:\$filter type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/VectorSearch.php
 
 		-
 			message: '#^Return type \(Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\) of method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getMetadataFactory\(\) should be compatible with return type \(Doctrine\\Persistence\\Mapping\\ClassMetadataFactory\<Doctrine\\Persistence\\Mapping\\ClassMetadata\<object\>\>\) of method Doctrine\\Persistence\\ObjectManager\:\:getMetadataFactory\(\)$#'
@@ -293,12 +53,6 @@ parameters:
 			identifier: arguments.count
 			count: 1
 			path: src/Event/OnClearEventArgs.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\Attribute\\SearchIndex\:\:__construct\(\) has parameter \$fields with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: src/Mapping/Attribute/SearchIndex.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:mapField\(\) should return array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\} but returns array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}\.$#'
@@ -363,12 +117,6 @@ parameters:
 		-
 			message: '#^Match expression does not handle remaining value\: string$#'
 			identifier: match.unhandled
-			count: 1
-			path: src/Mapping/Driver/XmlDriver.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\XmlDriver\:\:getSearchIndexFieldDefinition\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: src/Mapping/Driver/XmlDriver.php
 
@@ -557,12 +305,6 @@ parameters:
 			identifier: argument.templateType
 			count: 3
 			path: src/Utility/LifecycleEventManager.php
-
-		-
-			message: '#^Method Documents\\Encryption\\Client\:\:__construct\(\) has parameter \$clientCards with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Documents/Encryption/Client.php
 
 		-
 			message: '#^Parameter \#1 \$builder of method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Facet\:\:pipeline\(\) expects Doctrine\\ODM\\MongoDB\\Aggregation\\Builder\|Doctrine\\ODM\\MongoDB\\Aggregation\\Stage, stdClass given\.$#'

@@ -25,9 +25,10 @@ class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
     private array $path      = [];
     private string $relation = '';
 
+    /** @var LineString|Point|Polygon|MultiPolygon|array<mixed>|null */
     private LineString|Point|Polygon|MultiPolygon|array|null $geometry = null;
 
-    /** @param LineString|Point|Polygon|MultiPolygon|array|null $geometry */
+    /** @param LineString|Point|Polygon|MultiPolygon|array<mixed>|null $geometry */
     public function __construct(Search $search, DocumentPersister $persister, $geometry = null, string $relation = '', string ...$path)
     {
         parent::__construct($search, $persister);
@@ -52,7 +53,7 @@ class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /** @param LineString|Point|Polygon|MultiPolygon|array|null $geometry */
+    /** @param LineString|Point|Polygon|MultiPolygon|array<mixed>|null $geometry */
     public function geometry($geometry): static
     {
         $this->geometry = $geometry;

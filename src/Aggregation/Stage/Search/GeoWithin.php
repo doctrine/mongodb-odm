@@ -25,6 +25,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     private ?object $box    = null;
     private ?object $circle = null;
 
+    /** @var array<mixed>|MultiPolygon|Polygon|null */
     private array|MultiPolygon|Polygon|null $geometry = null;
 
     public function __construct(Search $search, DocumentPersister $persister, string ...$path)
@@ -42,8 +43,8 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array|Point $bottomLeft
-     * @param array|Point $topRight
+     * @param array<mixed>|Point $bottomLeft
+     * @param array<mixed>|Point $topRight
      */
     public function box($bottomLeft, $topRight): static
     {
@@ -56,8 +57,8 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array|Point $center
-     * @param int|float   $radius
+     * @param array<mixed>|Point $center
+     * @param int|float           $radius
      */
     public function circle($center, $radius): static
     {
@@ -69,7 +70,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /** @param Polygon|MultiPolygon|array $geometry */
+    /** @param Polygon|MultiPolygon|array<mixed> $geometry */
     public function geometry($geometry): static
     {
         $this->geometry = $geometry;
@@ -101,7 +102,11 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this->appendScore($params);
     }
 
-    /** @param array|Geometry $geometry */
+    /**
+     * @param array<mixed>|Geometry $geometry
+     *
+     * @return array<mixed>
+     */
     private function convertGeometry($geometry): array
     {
         if (! $geometry instanceof Geometry) {

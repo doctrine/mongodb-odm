@@ -680,6 +680,7 @@ class XmlDriver extends FileDriver
         $class->addSearchIndex($definition, $name);
     }
 
+    /** @return array<string, mixed> */
     private function getSearchIndexFieldDefinition(SimpleXMLElement $field): array
     {
         $fieldDefinition = [];
