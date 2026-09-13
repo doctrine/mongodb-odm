@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Iterator;
 use BadMethodCallException;
 use IteratorAggregate;
 
+/** @template-extends IteratorAggregate<mixed, mixed> */
 interface IterableResult extends IteratorAggregate
 {
     /**
@@ -17,6 +18,8 @@ interface IterableResult extends IteratorAggregate
     /**
      * Executes the operation and returns a result iterator. If the operation
      * did not yield an iterator, this method will throw
+     *
+     * @return Iterator<mixed>
      *
      * @throws BadMethodCallException if the operation did not yield an iterator.
      */

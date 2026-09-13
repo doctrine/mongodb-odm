@@ -41,6 +41,8 @@ abstract class Stage
      * @deprecated This method was deprecated in doctrine/mongodb-odm 2.2. Please use getAggregation() instead.
      *
      * @param array<string, mixed> $options
+     *
+     * @return Iterator<array<string, mixed>|object>
      */
     public function execute(array $options = []): Iterator
     {

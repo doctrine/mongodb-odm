@@ -518,6 +518,8 @@ final class DocumentPersister
      *
      * @param array<string, mixed>           $criteria
      * @param array<string, int|string>|null $sort
+     *
+     * @return Iterator<T>
      */
     public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
@@ -586,6 +588,8 @@ final class DocumentPersister
 
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
+     *
+     * @return Iterator<T>
      */
     private function wrapCursor(CursorInterface $baseCursor): Iterator
     {
@@ -654,6 +658,8 @@ final class DocumentPersister
 
     /**
      * Loads a PersistentCollection data. Used in the initialize() method.
+     *
+     * @param PersistentCollectionInterface<array-key, object> $collection
      */
     public function loadCollection(PersistentCollectionInterface $collection): void
     {
@@ -678,6 +684,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadEmbedManyCollection(PersistentCollectionInterface $collection): void
     {
         $embeddedDocuments = $collection->getMongoData();
@@ -718,6 +725,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection): void
     {
         $hints      = $collection->getHints();
@@ -806,6 +814,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection): void
     {
         $query    = $this->createReferenceManyInverseSideQuery($collection);
@@ -817,6 +826,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection): Query
     {
         $hints   = $collection->getHints();
@@ -864,6 +874,7 @@ final class DocumentPersister
         return $qb->getQuery();
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection): void
     {
         $cursor    = $this->createReferenceManyWithRepositoryMethodCursor($collection);
@@ -878,6 +889,11 @@ final class DocumentPersister
         }
     }
 
+    /**
+     * @param PersistentCollectionInterface<array-key, object> $collection
+     *
+     * @return Iterator<object>
+     */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection): Iterator
     {
         $mapping          = $collection->getMapping();
@@ -1577,6 +1593,7 @@ final class DocumentPersister
             : $writeOptions;
     }
 
+    /** @param array<string, mixed> $options */
     private function isInTransaction(array $options): bool
     {
         if (! isset($options['session'])) {

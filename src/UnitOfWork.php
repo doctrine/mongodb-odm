@@ -3105,7 +3105,13 @@ final class UnitOfWork implements PropertyChangedListener
         };
     }
 
-    /** @internal */
+    /**
+     * @internal
+     *
+     * @phpstan-param CommitOptions $options
+     *
+     * @phpstan-return CommitOptions
+     */
     public function stripTransactionOptions(array $options): array
     {
         return array_diff_key(
@@ -3153,7 +3159,11 @@ final class UnitOfWork implements PropertyChangedListener
         return $this->dm->getConfiguration()->isTransactionalFlushEnabled();
     }
 
-    /** @phpstan-param CommitOptions $options */
+    /**
+     * @phpstan-param CommitOptions $options
+     *
+     * @phpstan-return CommitOptions
+     */
     private function getTransactionOptions(array $options): array
     {
         return array_intersect_key(
@@ -3171,6 +3181,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @see https://github.com/mongodb/mongo-php-library/blob/1.17.0/src/Operation/WithTransaction.php
      * @see https://github.com/mongodb/specifications/blob/master/source/transactions-convenient-api/transactions-convenient-api.rst#pseudo-code
+     *
+     * @phpstan-param CommitOptions $transactionOptions
      */
     private function withTransaction(Session $session, callable $callback, array $transactionOptions = []): void
     {
