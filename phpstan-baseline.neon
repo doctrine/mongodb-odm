@@ -151,36 +151,6 @@ parameters:
 			path: src/Mapping/PropertyAccessors/RawValuePropertyAccessor.php
 
 		-
-			message: '#^PHPDoc tag @var for property Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:\$hints with type Doctrine\\ODM\\MongoDB\\PersistentCollection\\Hints is incompatible with native type array\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^PHPDoc tag @var for property Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:\$mapping with type Doctrine\\ODM\\MongoDB\\PersistentCollection\\FieldMapping\|null is not subtype of native type array\|null\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:\$hints has unknown class Doctrine\\ODM\\MongoDB\\PersistentCollection\\Hints as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:\$mapping has unknown class Doctrine\\ODM\\MongoDB\\PersistentCollection\\FieldMapping as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
-			identifier: argument.templateType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
 			message: '#^Instanceof between Doctrine\\Common\\Collections\\Collection and Doctrine\\Common\\Collections\\Selectable will always evaluate to true.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
