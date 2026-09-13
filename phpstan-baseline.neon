@@ -511,24 +511,6 @@ parameters:
 			path: src/Mapping/PropertyAccessors/RawValuePropertyAccessor.php
 
 		-
-			message: '#^Call to function is_object\(\) with Doctrine\\Common\\Collections\\Collection will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^Call to function method_exists\(\) with Doctrine\\Common\\Collections\\Collection and ''findFirst'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
-			message: '#^Call to function method_exists\(\) with Doctrine\\Common\\Collections\\Collection and ''reduce'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/PersistentCollection.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
 			identifier: return.void
 			count: 1
@@ -653,12 +635,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: src/Persisters/CollectionPersister.php
-
-		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Persisters/DocumentPersister.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\DocumentPersister\:\:createReferenceManyInverseSideQuery\(\) has parameter \$collection with generic interface Doctrine\\ODM\\MongoDB\\PersistentCollection\\PersistentCollectionInterface but does not specify its types\: TKey, T$#'
@@ -801,12 +777,6 @@ parameters:
 		-
 			message: '#^Property Doctrine\\ODM\\MongoDB\\Query\\Query\:\:\$iterator with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
 			identifier: missingType.generics
-			count: 1
-			path: src/Query/Query.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between array\<int\<0, max\>\|string, mixed\>\|bool\|int\|MongoDB\\Builder\\Pipeline\|MongoDB\\Driver\\ReadPreference\|string and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
 			count: 1
 			path: src/Query/Query.php
 

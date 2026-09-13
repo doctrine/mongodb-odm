@@ -894,8 +894,6 @@ final class DocumentPersister
             $primers         = array_combine($mapping['prime'], array_fill(0, count($mapping['prime']), true));
             $class           = $this->dm->getClassMetadata($mapping['targetDocument']);
 
-            assert(is_array($primers));
-
             $cursor = new PrimingIterator($cursor, $class, $referencePrimer, $primers, $collection->getHints());
         }
 
