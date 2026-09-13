@@ -25,6 +25,8 @@ use function assert;
 #[Iterations(5)]
 final class LoadDocumentBench extends BaseBench
 {
+    private const NUMBER_OF_ADDITIONAL_USERS = 25;
+
     private static ObjectId $userId;
 
     public function init(): void
@@ -52,6 +54,15 @@ final class LoadDocumentBench extends BaseBench
         $user->addGroup($group2);
 
         $this->getDocumentManager()->persist($user);
+
+        for ($i = 0; $i < self::NUMBER_OF_ADDITIONAL_USERS; $i++) {
+            $additionalUser = new User();
+            $additionalUser->setUsername('user' . $i);
+            $additionalUser->setCreatedAt(new DateTimeImmutable());
+
+            $this->getDocumentManager()->persist($additionalUser);
+        }
+
         $this->getDocumentManager()->flush();
 
         $this->getDocumentManager()->clear();
@@ -84,6 +95,32 @@ final class LoadDocumentBench extends BaseBench
         $this->loadDocument()->getGroups()->forAll(static function (int $key, Group $group) {
             return $group->getName() !== null;
         });
+    }
+
+    public function benchLoadDocumentFromIdentityMap(): void
+    {
+        // Warm the identity map, then load again without an intervening
+        // clear() so the second call hits UnitOfWork::tryGetById().
+        $this->loadDocument();
+        $this->loadDocument();
+    }
+
+    public function benchLoadDocumentByQuery(): void
+    {
+        $this->getDocumentManager()->clear();
+        $this->getDocumentManager()->getRepository(User::class)->findOneBy(['username' => 'alcaeus']);
+    }
+
+    public function benchLoadCollectionOfDocuments(): void
+    {
+        $this->getDocumentManager()->clear();
+        $this->getDocumentManager()->getRepository(User::class)->findBy([]);
+    }
+
+    public function benchLoadReferenceManyCollectionInitialization(): void
+    {
+        $this->getDocumentManager()->clear();
+        $this->loadDocument()->getGroups()->count();
     }
 
     private function loadDocument(): User
