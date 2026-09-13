@@ -91,18 +91,6 @@ parameters:
 			path: src/Aggregation/Stage/Fill.php
 
 		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\GraphLookup\:\:\$from \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
-			identifier: property.unusedType
-			count: 1
-			path: src/Aggregation/Stage/GraphLookup.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\GraphLookup\:\:\$startWith \(array\<mixed\>\|Doctrine\\ODM\\MongoDB\\Aggregation\\Expr\|string\|null\) is never assigned null so it can be removed from the property type\.$#'
-			identifier: property.unusedType
-			count: 1
-			path: src/Aggregation/Stage/GraphLookup.php
-
-		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
 			identifier: argument.templateType
 			count: 1
@@ -113,12 +101,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: src/Aggregation/Stage/Lookup.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Merge\:\:\$whenMatched \(''fail''\|''keepExisting''\|''merge''\|''replace''\|Doctrine\\ODM\\MongoDB\\Aggregation\\Builder\|Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\|list\<array\<string, mixed\>\>\|null\) is never assigned Doctrine\\ODM\\MongoDB\\Aggregation\\Stage so it can be removed from the property type\.$#'
-			identifier: property.unusedType
-			count: 1
-			path: src/Aggregation/Stage/Merge.php
 
 		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
@@ -277,12 +259,6 @@ parameters:
 			path: src/Aggregation/Stage/Search/GeoWithin.php
 
 		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\GeoWithin\:\:\$relation is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Aggregation/Stage/Search/GeoWithin.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Near\:\:__construct\(\) has parameter \$origin with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -301,12 +277,6 @@ parameters:
 			path: src/Aggregation/Stage/Search/Near.php
 
 		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\Search\\Range\:\:\$includeUpperBound is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Aggregation/Stage/Search/Range.php
-
-		-
 			message: '#^Class Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith has type alias PipelineParamType with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -315,12 +285,6 @@ parameters:
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith\:\:pipeline\(\) has parameter \$pipeline with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: src/Aggregation/Stage/UnionWith.php
-
-		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\\UnionWith\:\:\$pipeline \(array\|Doctrine\\ODM\\MongoDB\\Aggregation\\Builder\|Doctrine\\ODM\\MongoDB\\Aggregation\\Stage\|null\) is never assigned Doctrine\\ODM\\MongoDB\\Aggregation\\Stage so it can be removed from the property type\.$#'
-			identifier: property.unusedType
 			count: 1
 			path: src/Aggregation/Stage/UnionWith.php
 
@@ -361,12 +325,6 @@ parameters:
 			path: src/Event/OnClearEventArgs.php
 
 		-
-			message: '#^Property Doctrine\\ODM\\MongoDB\\Hydrator\\HydratorFactory\:\:\$hydratorNamespace \(string\|null\) is never assigned null so it can be removed from the property type\.$#'
-			identifier: property.unusedType
-			count: 1
-			path: src/Hydrator/HydratorFactory.php
-
-		-
 			message: '#^Interface Doctrine\\ODM\\MongoDB\\Iterator\\IterableResult extends generic interface IteratorAggregate but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
@@ -383,18 +341,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Mapping/Attribute/SearchIndex.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:addInheritedAssociationMapping\(\) has Doctrine\\ODM\\MongoDB\\Mapping\\MappingException in PHPDoc @throws tag but it''s not thrown\.$#'
-			identifier: throws.unusedType
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:getBucketName\(\) never returns null so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: src/Mapping/ClassMetadata.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:mapField\(\) should return array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\} but returns array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}\.$#'
@@ -509,12 +455,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/PropertyAccessors/RawValuePropertyAccessor.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:add\(\) with return type void returns true but should not return anything\.$#'
-			identifier: return.void
-			count: 1
-			path: src/PersistentCollection.php
 
 		-
 			message: '#^PHPDoc tag @var for property Doctrine\\ODM\\MongoDB\\PersistentCollection\:\:\$hints with type Doctrine\\ODM\\MongoDB\\PersistentCollection\\Hints is incompatible with native type array\.$#'
@@ -703,12 +643,6 @@ parameters:
 			path: src/Persisters/DocumentPersister.php
 
 		-
-			message: '#^Parameter \#1 \$array \(non\-empty\-list\) of array_values is already a list, call has no effect\.$#'
-			identifier: arrayValues.list
-			count: 1
-			path: src/Persisters/DocumentPersister.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Persisters\\PersistenceBuilder\:\:preparePersistentCollection\(\) has parameter \$mapping with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -733,12 +667,6 @@ parameters:
 			path: src/Proxy/Factory/LazyGhostProxyFactory.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:createLazyInitializer\(\) has Doctrine\\ODM\\MongoDB\\DocumentNotFoundException in PHPDoc @throws tag but it''s not thrown\.$#'
-			identifier: throws.unusedType
-			count: 1
-			path: src/Proxy/Factory/LazyGhostProxyFactory.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Proxy\\Factory\\LazyGhostProxyFactory\:\:createLazyInitializer\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Proxy\\InternalProxy does not specify its types\: T$#'
 			identifier: missingType.generics
 			count: 1
@@ -755,12 +683,6 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: src/Proxy/Factory/StaticProxyFactory.php
-
-		-
-			message: '#^Unsafe call to private method Doctrine\\ODM\\MongoDB\\Query\\Expr\:\:convertExpression\(\) through static\:\:\.$#'
-			identifier: staticClassAccess.privateMethod
-			count: 3
-			path: src/Query/Expr.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Query\\Query\:\:getIterator\(\) return type with generic interface Doctrine\\ODM\\MongoDB\\Iterator\\Iterator does not specify its types\: TValue$#'
@@ -845,12 +767,6 @@ parameters:
 			identifier: deadCode.unreachable
 			count: 1
 			path: src/Types/DateImmutableType.php
-
-		-
-			message: '#^Unsafe call to private method Doctrine\\ODM\\MongoDB\\Types\\DateType\:\:craftDateTime\(\) through static\:\:\.$#'
-			identifier: staticClassAccess.privateMethod
-			count: 1
-			path: src/Types/DateType.php
 
 		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\UnitOfWork\:\:getTransactionOptions\(\) return type has no value type specified in iterable type array\.$#'
@@ -1019,12 +935,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: tests/Tests/Functional/DiscriminatorsDefaultValueTest.php
-
-		-
-			message: '#^Expression "\$groups\[0\]" on a separate line does not do anything\.$#'
-			identifier: expr.resultUnused
-			count: 1
-			path: tests/Tests/Functional/FunctionalTest.php
 
 		-
 			message: '#^Access to an undefined property MongoDB\\Model\\BSONDocument\:\:\$patientId\.$#'

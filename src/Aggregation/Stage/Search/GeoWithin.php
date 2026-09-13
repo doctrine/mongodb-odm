@@ -21,10 +21,9 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     use ScoredSearchOperatorTrait;
 
     /** @var list<string> */
-    private array $path      = [];
-    private string $relation = '';
-    private ?object $box     = null;
-    private ?object $circle  = null;
+    private array $path     = [];
+    private ?object $box    = null;
+    private ?object $circle = null;
 
     private array|MultiPolygon|Polygon|null $geometry = null;
 

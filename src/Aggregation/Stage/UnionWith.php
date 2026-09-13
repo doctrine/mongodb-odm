@@ -24,8 +24,8 @@ use InvalidArgumentException;
  */
 class UnionWith extends Stage
 {
-    /** @phpstan-var ?PipelineParamType */
-    private array|Builder|Stage|null $pipeline = null;
+    /** @phpstan-var PipelineExpression|Builder|null */
+    private array|Builder|null $pipeline = null;
 
     public function __construct(Builder $builder, private DocumentManager $dm, private string $collection)
     {

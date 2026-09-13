@@ -175,8 +175,6 @@ EOPHP;
      *
      * @return Closure(InternalProxy&T, array<string, mixed>):void
      *
-     * @throws DocumentNotFoundException
-     *
      * @template T of object
      */
     private function createLazyInitializer(ClassMetadata $classMetadata, DocumentPersister $persister): Closure

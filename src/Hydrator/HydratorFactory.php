@@ -61,7 +61,7 @@ final class HydratorFactory
     /**
      * The namespace that contains all hydrator classes.
      */
-    private ?string $hydratorNamespace;
+    private string $hydratorNamespace;
 
     /**
      * The directory that contains all hydrator classes.

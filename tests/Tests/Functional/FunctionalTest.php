@@ -910,7 +910,7 @@ class FunctionalTest extends BaseTestCase
 
         // Issue is collection must be initialized
         $groups = $user->getGroups();
-        $groups[0]; // initialize collection
+        $groups->offsetGet(0); // initialize collection
 
         // reffectively remove two of the groups
         //$user->getGroups()->clear();

@@ -42,8 +42,8 @@ class Merge extends Stage
     /** @var array<string, mixed|Expr> */
     private array $let = [];
 
-    /** @phpstan-var WhenMatchedParamType */
-    private string|array|Builder|Stage|null $whenMatched = null;
+    /** @phpstan-var WhenMatchedType|Builder|null */
+    private string|array|Builder|null $whenMatched = null;
 
     private ?string $whenNotMatched = null;
 
