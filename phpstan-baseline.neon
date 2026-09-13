@@ -313,80 +313,8 @@ parameters:
 			path: tests/Tests/Aggregation/Stage/FacetTest.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\ProjectTest\:\:testAccumulatorsWithMultipleArguments\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: tests/Tests/Aggregation/Stage/ProjectTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\ProjectTest\:\:testAccumulatorsWithMultipleArguments\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/ProjectTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchCompoundOperators\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SearchTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchEmbeddedDocumentOperators\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SearchTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperators\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SearchTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperatorsWithSearchAfter\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SearchTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperatorsWithSearchBefore\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SearchTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SearchTest\:\:testSearchOperatorsWithSort\(\) has parameter \$expectedOperator with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SearchTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SetWindowFieldsTest\:\:testOperators\(\) has parameter \$args with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SetWindowFieldsTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Aggregation\\Stage\\SetWindowFieldsTest\:\:testOperators\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Aggregation/Stage/SetWindowFieldsTest.php
-
-		-
 			message: '#^Constant DOCTRINE_MONGODB_SERVER not found\.$#'
 			identifier: constant.notFound
-			count: 1
-			path: tests/Tests/BaseTestCase.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\BaseTestCase\:\:assertArraySubset\(\) has parameter \$array with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/BaseTestCase.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\BaseTestCase\:\:assertArraySubset\(\) has parameter \$subset with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Tests/BaseTestCase.php
 
@@ -469,30 +397,6 @@ parameters:
 			path: tests/Tests/Mapping/ClassMetadataTest.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ClassMetadataTest\:\:testEmptyVectorSearchIndexDefinition\(\) has parameter \$definition with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Mapping/ClassMetadataTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Mapping\\ClassMetadataTest\:\:testSearchIndexDefinition\(\) has parameter \$definition with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Mapping/ClassMetadataTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Query\\BuilderTest\:\:testExclude\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Query/BuilderTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\Query\\BuilderTest\:\:testSelect\(\) has parameter \$expected with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Query/BuilderTest.php
-
-		-
 			message: '#^Parameter \#1 \$primer of method Doctrine\\ODM\\MongoDB\\Query\\Builder\:\:prime\(\) expects bool\|\(callable\(\)\: mixed\), 1 given\.$#'
 			identifier: argument.type
 			count: 1
@@ -503,12 +407,6 @@ parameters:
 			identifier: deadCode.unreachable
 			count: 1
 			path: tests/Tests/Query/PipelineUpdateTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\QueryTest\:\:createCursorMock\(\) return type has no value type specified in iterable type Traversable\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/QueryTest.php
 
 		-
 			message: '#^Parameter \#4 \$query of class Doctrine\\ODM\\MongoDB\\Query\\Query constructor expects array\{distinct\?\: string, hint\?\: array\<string, \-1\|1\>\|string, limit\?\: int, maxTimeMS\?\: int, multiple\?\: bool, new\?\: bool, newObj\?\: array\<string, mixed\>, pipeline\?\: list\<array\<string, mixed\>\>\|MongoDB\\Builder\\Pipeline, \.\.\.\}, array\{type\: \-1\} given\.$#'
@@ -529,20 +427,8 @@ parameters:
 			path: tests/Tests/SchemaManagerTest.php
 
 		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createCollectionIterator\(\) has parameter \$collections with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createCollectionIterator\(\) should return Iterator but returns MongoDB\\Model\\CollectionInfoCommandIterator\.$#'
 			identifier: return.type
-			count: 1
-			path: tests/Tests/SchemaManagerTest.php
-
-		-
-			message: '#^Method Doctrine\\ODM\\MongoDB\\Tests\\SchemaManagerTest\:\:createIndexIterator\(\) has parameter \$indexes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Tests/SchemaManagerTest.php
 
@@ -585,48 +471,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadataFactoryInterface\:\:wakeupReflection\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:__construct\(\) has parameter \$classNames with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:doLoadMetadata\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:doLoadMetadata\(\) has parameter \$parent with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:getAllMetadata\(\) return type with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:initializeReflection\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:isEntity\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
-			count: 1
-			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
-
-		-
-			message: '#^Method Doctrine\\Persistence\\Mapping\\AbstractClassMetadataFactory@anonymous/tests/Tests/Tools/EncryptedFieldsMapGeneratorTest\.php\:212\:\:wakeupReflection\(\) has parameter \$class with generic interface Doctrine\\Persistence\\Mapping\\ClassMetadata but does not specify its types\: T$#'
-			identifier: missingType.generics
 			count: 1
 			path: tests/Tests/Tools/EncryptedFieldsMapGeneratorTest.php
 

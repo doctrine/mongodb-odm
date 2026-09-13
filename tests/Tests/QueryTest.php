@@ -626,6 +626,7 @@ class QueryTest extends BaseTestCase
         return $this->createMock(Collection::class);
     }
 
+    /** @return CursorInterface|Traversable<mixed, mixed> */
     private function createCursorMock(): CursorInterface|Traversable
     {
         return $this->createMock(

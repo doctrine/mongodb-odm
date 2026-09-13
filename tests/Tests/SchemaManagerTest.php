@@ -1638,6 +1638,7 @@ EOT;
         return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40324);
     }
 
+    /** @param array<array<string, mixed>> $indexes */
     private function createIndexIterator(array $indexes = []): Iterator
     {
         if (interface_exists(IndexInfoIterator::class)) {
@@ -1650,6 +1651,7 @@ EOT;
         ));
     }
 
+    /** @param array<array<string, mixed>> $collections */
     private function createCollectionIterator(array $collections = []): Iterator
     {
         if (interface_exists(CollectionInfoIterator::class)) {
