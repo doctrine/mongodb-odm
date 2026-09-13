@@ -789,6 +789,22 @@ class SearchTest extends BaseTestCase
             },
         ];
 
+        yield 'Range with mixed bound inclusivity' => [
+            'expectedOperator' => [
+                'range' => (object) [
+                    'path' => ['field1', 'field2'],
+                    'gt' => 5,
+                    'lte' => 10,
+                ],
+            ],
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
+                return $stage->range()
+                    ->path('field1', 'field2')
+                    ->gt(5)
+                    ->lte(10);
+            },
+        ];
+
         yield 'Range with boost score' => [
             'expectedOperator' => [
                 'range' => (object) [

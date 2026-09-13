@@ -45,7 +45,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
     public function lt($value): static
     {
         $this->lt                = $value;
-        $this->includeLowerBound = false;
+        $this->includeUpperBound = false;
 
         return $this;
     }
@@ -54,7 +54,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
     public function lte($value): static
     {
         $this->lt                = $value;
-        $this->includeLowerBound = true;
+        $this->includeUpperBound = true;
 
         return $this;
     }
@@ -81,7 +81,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
         }
 
         if ($this->lt !== null) {
-            $name          = $this->includeLowerBound ? 'lte' : 'lt';
+            $name          = $this->includeUpperBound ? 'lte' : 'lt';
             $params->$name = $this->lt;
         }
 
