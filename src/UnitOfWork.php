@@ -16,9 +16,9 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use Doctrine\Persistence\Mapping\ReflectionService;
@@ -41,7 +41,6 @@ use function array_key_exists;
 use function array_merge;
 use function assert;
 use function call_user_func;
-use function count;
 use function get_class;
 use function in_array;
 use function is_array;
@@ -117,30 +116,6 @@ final class UnitOfWork implements PropertyChangedListener
         'readPreference' => 1,
         'writeConcern' => 1,
     ];
-
-    /**
-     * The identity map holds references to all managed documents.
-     *
-     * Documents are grouped by their class name, and then indexed by the
-     * serialized string of their database identifier field or, if the class
-     * has no identifier, the SPL object hash. Serializing the identifier allows
-     * differentiation of values that may be equal (via type juggling) but not
-     * identical.
-     *
-     * Since all classes in a hierarchy must share the same identifier set,
-     * we always take the root class name of the hierarchy.
-     *
-     * @var array<class-string, array<string, object>>
-     */
-    private array $identityMap = [];
-
-    /**
-     * Map of all identifiers of managed documents.
-     * Keys are object ids (spl_object_id).
-     *
-     * @var array<int, mixed>
-     */
-    private array $documentIdentifiers = [];
 
     /**
      * Map of document changes. Keys are object ids (spl_object_id).
@@ -903,7 +878,7 @@ final class UnitOfWork implements PropertyChangedListener
         $this->computeScheduleUpsertsChangeSets();
 
         // Compute changes for other MANAGED documents. Change tracking policies take effect here.
-        foreach ($this->identityMap as $className => $documents) {
+        foreach ($this->dm->getIdentityMap() as $className => $documents) {
             $class = $this->dm->getClassMetadata($className);
             if ($class->isEmbeddedDocument || $class->isView()) {
                 /* we do not want to compute changes to embedded documents up front
@@ -1117,8 +1092,9 @@ final class UnitOfWork implements PropertyChangedListener
     private function persistNew(ClassMetadata $class, object $document): void
     {
         $this->lifecycleEventManager->prePersist($class, $document);
-        $oid    = spl_object_id($document);
-        $upsert = false;
+        $oid         = spl_object_id($document);
+        $objectState = $this->dm->getOrCreateObjectState($document);
+        $upsert      = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
             $upsert  = ! $class->isEmbeddedDocument && ! $class->timeSeriesOptions && $idValue !== null;
@@ -1143,13 +1119,13 @@ final class UnitOfWork implements PropertyChangedListener
                 $class->setIdentifierValue($document, $idValue);
             }
 
-            $this->documentIdentifiers[$oid] = $idValue;
+            $objectState->identifier = $idValue;
         } else {
             // this is for embedded documents without identifiers
-            $this->documentIdentifiers[$oid] = $oid;
+            $objectState->identifier = $oid;
         }
 
-        $this->dm->getOrCreateObjectState($document)->state = PersistenceState::Managed;
+        $objectState->state = PersistenceState::Managed;
 
         if ($upsert) {
             $this->scheduleForUpsert($class, $document);
@@ -1248,12 +1224,11 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $persister = $this->getDocumentPersister($class->name);
 
-        foreach ($documents as $oid => $document) {
+        foreach ($documents as $document) {
             if (! $class->isEmbeddedDocument) {
                 $persister->delete($document, $options);
             }
 
-            unset($this->documentIdentifiers[$oid]);
             $this->dm->removeObjectState($document);
 
             // Clear snapshot information for any referenced PersistentCollection
@@ -1307,7 +1282,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $this->scheduledDocumentInsertions[$oid] = $document;
 
-        if (! isset($this->documentIdentifiers[$oid])) {
+        if ($this->dm->getObjectState($document)?->identifier === null) {
             return;
         }
 
@@ -1347,8 +1322,8 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document can not be scheduled for upsert twice.');
         }
 
-        $this->scheduledDocumentUpserts[$oid] = $document;
-        $this->documentIdentifiers[$oid]      = $class->getIdentifierValue($document);
+        $this->scheduledDocumentUpserts[$oid]                    = $document;
+        $this->dm->getOrCreateObjectState($document)->identifier = $class->getIdentifierValue($document);
         $this->addToIdentityMap($document);
     }
 
@@ -1378,7 +1353,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function scheduleForUpdate(object $document): void
     {
         $oid = spl_object_id($document);
-        if (! isset($this->documentIdentifiers[$oid])) {
+        if ($this->dm->getObjectState($document)?->identifier === null) {
             throw new InvalidArgumentException('Document has no identity.');
         }
 
@@ -1424,11 +1399,12 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function scheduleForDelete(object $document, bool $isView = false): void
     {
-        $oid = spl_object_id($document);
+        $oid   = spl_object_id($document);
+        $class = $this->dm->getClassMetadata($document::class);
 
         if (isset($this->scheduledDocumentInsertions[$oid])) {
-            if ($this->isInIdentityMap($document)) {
-                $this->removeFromIdentityMap($document);
+            if ($this->dm->isInIdentityMap($class, $document)) {
+                $this->dm->removeFromIdentityMap($class, $document);
             }
 
             unset($this->scheduledDocumentInsertions[$oid]);
@@ -1436,11 +1412,11 @@ final class UnitOfWork implements PropertyChangedListener
             return; // document has not been persisted yet, so nothing more to do.
         }
 
-        if (! $this->isInIdentityMap($document)) {
+        if (! $this->dm->isInIdentityMap($class, $document)) {
             return; // ignore
         }
 
-        $this->removeFromIdentityMap($document);
+        $this->dm->removeFromIdentityMap($class, $document);
         $this->dm->getOrCreateObjectState($document)->state = PersistenceState::Removed;
 
         if (isset($this->scheduledDocumentUpdates[$oid])) {
@@ -1498,13 +1474,10 @@ final class UnitOfWork implements PropertyChangedListener
     public function addToIdentityMap(object $document): bool
     {
         $class = $this->dm->getClassMetadata($document::class);
-        $id    = $this->getIdForIdentityMap($document);
 
-        if (isset($this->identityMap[$class->name][$id])) {
+        if (! $this->dm->addToIdentityMap($class, $document)) {
             return false;
         }
-
-        $this->identityMap[$class->name][$id] = $document;
 
         if ($document instanceof NotifyPropertyChanged && ! $this->isUninitializedObject($document)) {
             $document->addPropertyChangedListener($this);
@@ -1560,7 +1533,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         // Last try before DB lookup: check the identity map.
-        if ($this->tryGetById($id, $class)) {
+        if ($this->dm->tryGetById($id, $class)) {
             return self::STATE_DETACHED;
         }
 
@@ -1587,36 +1560,29 @@ final class UnitOfWork implements PropertyChangedListener
      * Removes a document from the identity map. This effectively detaches the
      * document from the persistence management of Doctrine.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::removeFromIdentityMap()} instead.
      *
      * @throws InvalidArgumentException
      */
     public function removeFromIdentityMap(object $document): bool
     {
-        $oid = spl_object_id($document);
-
-        // Check if id is registered first
-        if (! isset($this->documentIdentifiers[$oid])) {
-            return false;
-        }
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::removeFromIdentityMap() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
 
         $class = $this->dm->getClassMetadata($document::class);
-        $id    = $this->getIdForIdentityMap($document);
 
-        if (isset($this->identityMap[$class->name][$id])) {
-            unset($this->identityMap[$class->name][$id]);
-            $this->dm->getOrCreateObjectState($document)->state = PersistenceState::Detached;
-
-            return true;
-        }
-
-        return false;
+        return $this->dm->removeFromIdentityMap($class, $document);
     }
 
     /**
      * Gets a document in the identity map by its identifier hash.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::getById()} instead.
      *
      * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
@@ -1629,20 +1595,26 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getById($id, ClassMetadata $class): object
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::getById() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
         if (! $class->identifier) {
             throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
         }
 
-        $serializedId = serialize($class->getDatabaseIdentifierValue($id));
-
-        return $this->identityMap[$class->name][$serializedId];
+        return $this->dm->getById($id, $class);
     }
 
     /**
      * Tries to get a document by its identifier hash. If no document is found
      * for the given hash, FALSE is returned.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::tryGetById()} instead.
      *
      * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
@@ -1653,18 +1625,22 @@ final class UnitOfWork implements PropertyChangedListener
      * @throws InvalidArgumentException If the class does not have an identifier.
      *
      * @template T of object
-     *
-     * @ phpstan-suppress InvalidReturnStatement, InvalidReturnType because of the inability of defining a generic property map
      */
     public function tryGetById($id, ClassMetadata $class)
     {
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::tryGetById() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
         if (! $class->identifier) {
             throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
         }
 
-        $serializedId = serialize($class->getDatabaseIdentifierValue($id));
-
-        return $this->identityMap[$class->name][$serializedId] ?? false;
+        return $this->dm->tryGetById($id, $class);
     }
 
     /**
@@ -1681,46 +1657,41 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Checks whether a document is registered in the identity map.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::isInIdentityMap()} instead.
      */
     public function isInIdentityMap(object $document): bool
     {
-        $oid = spl_object_id($document);
-
-        if (! isset($this->documentIdentifiers[$oid])) {
-            return false;
-        }
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::isInIdentityMap() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
 
         $class = $this->dm->getClassMetadata($document::class);
-        $id    = $this->getIdForIdentityMap($document);
 
-        return isset($this->identityMap[$class->name][$id]);
-    }
-
-    private function getIdForIdentityMap(object $document): string
-    {
-        $class = $this->dm->getClassMetadata($document::class);
-
-        if (! $class->identifier) {
-            $id = (string) spl_object_id($document);
-        } else {
-            $id = $this->documentIdentifiers[spl_object_id($document)];
-            $id = serialize($class->getDatabaseIdentifierValue($id));
-        }
-
-        return $id;
+        return $this->dm->isInIdentityMap($class, $document);
     }
 
     /**
      * Checks whether an identifier exists in the identity map.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::containsId()} instead.
      *
      * @param mixed $id
      */
     public function containsId($id, string $rootClassName): bool
     {
-        return isset($this->identityMap[$rootClassName][serialize($id)]);
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::containsId() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
+        return $this->dm->containsId($id, $rootClassName);
     }
 
     /**
@@ -1984,7 +1955,7 @@ final class UnitOfWork implements PropertyChangedListener
 
                                 $current = $prop->getValue($managedCopy);
                                 if ($current !== null) {
-                                    $this->removeFromIdentityMap($current);
+                                    $this->dm->removeFromIdentityMap($this->dm->getClassMetadata($current::class), $current);
                                 }
 
                                 if ($targetClass->subClasses) {
@@ -2104,13 +2075,12 @@ final class UnitOfWork implements PropertyChangedListener
 
         switch ($this->getDocumentState($document, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
-                $this->removeFromIdentityMap($document);
+                $this->dm->removeFromIdentityMap($this->dm->getClassMetadata($document::class), $document);
                 $this->dm->removeObjectState($document);
                 unset(
                     $this->scheduledDocumentInsertions[$oid],
                     $this->scheduledDocumentUpdates[$oid],
                     $this->scheduledDocumentDeletions[$oid],
-                    $this->documentIdentifiers[$oid],
                     $this->scheduledDocumentUpserts[$oid],
                     $this->hasScheduledCollections[$oid],
                 );
@@ -2401,8 +2371,6 @@ final class UnitOfWork implements PropertyChangedListener
     public function clear(?string $documentName = null): void
     {
         if ($documentName === null) {
-            $this->identityMap                  =
-            $this->documentIdentifiers          =
             $this->documentChangeSets           =
             $this->scheduledForSynchronization  =
             $this->scheduledDocumentInsertions  =
@@ -2419,7 +2387,7 @@ final class UnitOfWork implements PropertyChangedListener
             $event = new Event\OnClearEventArgs($this->dm);
         } else {
             $visited = [];
-            foreach ($this->identityMap as $className => $documents) {
+            foreach ($this->dm->getIdentityMap() as $className => $documents) {
                 if ($className !== $documentName) {
                     continue;
                 }
@@ -2774,12 +2742,12 @@ final class UnitOfWork implements PropertyChangedListener
         if (! $class->isQueryResultDocument) {
             $id              = $class->getDatabaseIdentifierValue($data['_id']);
             $serializedId    = serialize($id);
-            $isManagedObject = isset($this->identityMap[$class->name][$serializedId]);
+            $isManagedObject = isset($this->dm->getIdentityMap()[$class->name][$serializedId]);
         }
 
         if ($isManagedObject) {
             /** @phpstan-var T $document */
-            $document = $this->identityMap[$class->name][$serializedId];
+            $document = $this->dm->getIdentityMap()[$class->name][$serializedId];
             if ($this->isUninitializedObject($document)) {
                 if ($this->dm->getConfiguration()->isNativeLazyObjectEnabled()) {
                     $class->reflClass->markLazyObjectAsInitialized($document);
@@ -2811,7 +2779,6 @@ final class UnitOfWork implements PropertyChangedListener
 
             if (! $class->isQueryResultDocument) {
                 $this->registerManaged($document, $id, $data);
-                $this->identityMap[$class->name][$serializedId] = $document;
             }
 
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
@@ -2844,13 +2811,21 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the identity map of the UnitOfWork.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::getIdentityMap()} instead.
      *
      * @return array<class-string, array<string, object>>
      */
     public function getIdentityMap(): array
     {
-        return $this->identityMap;
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::getIdentityMap() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
+        return $this->dm->getIdentityMap();
     }
 
     /**
@@ -2916,11 +2891,21 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the identifier of a document.
      *
+     * @deprecated Use {@see DocumentManager::getDocumentIdentifier()} instead.
+     *
      * @return mixed The identifier value
      */
     public function getDocumentIdentifier(object $document)
     {
-        return $this->documentIdentifiers[spl_object_id($document)] ?? null;
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::getDocumentIdentifier() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
+        return $this->dm->getDocumentIdentifier($document);
     }
 
     /**
@@ -2939,16 +2924,19 @@ final class UnitOfWork implements PropertyChangedListener
      * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
      * number of documents in the identity map.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::getManagedDocumentsCount()} instead.
      */
     public function size(): int
     {
-        $count = 0;
-        foreach ($this->identityMap as $documentSet) {
-            $count += count($documentSet);
-        }
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::getManagedDocumentsCount() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
 
-        return $count;
+        return $this->dm->getManagedDocumentsCount();
     }
 
     /**
@@ -2968,16 +2956,15 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function registerManaged(object $document, $id, array $data): void
     {
-        $oid   = spl_object_id($document);
-        $class = $this->dm->getClassMetadata($document::class);
+        $class       = $this->dm->getClassMetadata($document::class);
+        $objectState = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
 
         if (! $class->identifier || $id === null) {
-            $this->documentIdentifiers[$oid] = $oid;
+            $objectState->identifier = spl_object_id($document);
         } else {
-            $this->documentIdentifiers[$oid] = $class->getPHPIdentifierValue($id);
+            $objectState->identifier = $class->getPHPIdentifierValue($id);
         }
 
-        $objectState               = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
         $objectState->state        = PersistenceState::Managed;
         $objectState->originalData = $data;
         $this->addToIdentityMap($document);

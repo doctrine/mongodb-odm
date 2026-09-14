@@ -82,10 +82,11 @@ class SplObjectHashCollisionsTest extends BaseTestCase
 
     private function countObjectStatesWithParentAssociation(): int
     {
-        $ro       = new ReflectionObject($this->dm);
-        $rp       = $ro->getProperty('objectStates');
-        $storage  = $rp->getValue($this->dm);
-        $withData = 0;
+        $dmReflection       = new ReflectionObject($this->dm);
+        $registry           = $dmReflection->getProperty('documentRegistry')->getValue($this->dm);
+        $registryReflection = new ReflectionObject($registry);
+        $storage            = $registryReflection->getProperty('objectStates')->getValue($registry);
+        $withData           = 0;
 
         foreach ($storage as $document) {
             if ($storage[$document]->parentAssociation !== null) {
