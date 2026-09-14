@@ -25,13 +25,21 @@ use function assert;
 #[Iterations(5)]
 final class LoadDocumentBench extends BaseBench
 {
-    private const NUMBER_OF_ADDITIONAL_USERS = 25;
+    private const NUMBER_OF_ADDITIONAL_USERS     = 25;
+    private const NUMBER_OF_REFERENCE_MANY_USERS = 100;
 
     private static ObjectId $userId;
 
+    /** @var list<ObjectId> */
+    private static array $referenceManyUserIds = [];
+
+    private static int $referenceManyUserIndex = 0;
+
     public function init(): void
     {
-        self::$userId = new ObjectId();
+        self::$userId                 = new ObjectId();
+        self::$referenceManyUserIds   = [];
+        self::$referenceManyUserIndex = 0;
 
         $account = new Account();
         $account->setName('alcaeus');
@@ -61,6 +69,24 @@ final class LoadDocumentBench extends BaseBench
             $additionalUser->setCreatedAt(new DateTimeImmutable());
 
             $this->getDocumentManager()->persist($additionalUser);
+        }
+
+        // A distinct pool of users to load from, one per revolution, so that
+        // benchLoadReferenceManyCollectionInitialization always measures a
+        // cold lazy-collection initialization rather than an identity map hit.
+        for ($i = 0; $i < self::NUMBER_OF_REFERENCE_MANY_USERS; $i++) {
+            $referenceManyUserId = new ObjectId();
+
+            $referenceManyUser = new User();
+            $referenceManyUser->setId($referenceManyUserId);
+            $referenceManyUser->setUsername('groupUser' . $i);
+            $referenceManyUser->setCreatedAt(new DateTimeImmutable());
+            $referenceManyUser->addGroup($group1);
+            $referenceManyUser->addGroup($group2);
+
+            $this->getDocumentManager()->persist($referenceManyUser);
+
+            self::$referenceManyUserIds[] = $referenceManyUserId;
         }
 
         $this->getDocumentManager()->flush();
@@ -107,20 +133,27 @@ final class LoadDocumentBench extends BaseBench
 
     public function benchLoadDocumentByQuery(): void
     {
-        $this->getDocumentManager()->clear();
+        // findOneBy() always queries MongoDB, regardless of identity map
+        // state, so no clear() is needed to keep this measurement honest.
         $this->getDocumentManager()->getRepository(User::class)->findOneBy(['username' => 'alcaeus']);
     }
 
     public function benchLoadCollectionOfDocuments(): void
     {
-        $this->getDocumentManager()->clear();
+        // findBy() always queries MongoDB, regardless of identity map state,
+        // so no clear() is needed to keep this measurement honest.
         $this->getDocumentManager()->getRepository(User::class)->findBy([]);
     }
 
     public function benchLoadReferenceManyCollectionInitialization(): void
     {
-        $this->getDocumentManager()->clear();
-        $this->loadDocument()->getGroups()->count();
+        $id = self::$referenceManyUserIds[self::$referenceManyUserIndex % self::NUMBER_OF_REFERENCE_MANY_USERS];
+        self::$referenceManyUserIndex++;
+
+        $document = $this->getDocumentManager()->find(User::class, $id);
+        assert($document instanceof User);
+
+        $document->getGroups()->count();
     }
 
     private function loadDocument(): User
