@@ -22,6 +22,8 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\ODM\MongoDB\UnitOfWork\ManagedObjectState;
+use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
@@ -33,6 +35,7 @@ use MongoDB\Driver\ClientEncryption;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use RuntimeException;
+use SplObjectStorage;
 use Throwable;
 
 use function array_search;
@@ -141,6 +144,17 @@ class DocumentManager implements ObjectManager
     private ProxyClassNameResolver $classNameResolver;
 
     /**
+     * Long-lived, per-document state (persistence state, original data,
+     * parent association) that survives across flushes and is only reset
+     * when the document is detached or the DocumentManager is cleared.
+     *
+     * @internal
+     *
+     * @var SplObjectStorage<object, ManagedObjectState>
+     */
+    private SplObjectStorage $objectStates;
+
+    /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
@@ -153,6 +167,7 @@ class DocumentManager implements ObjectManager
             [],
             $this->config->getDriverOptions(),
         );
+        $this->objectStates = new SplObjectStorage();
 
         if ($this->config->isNativeLazyObjectEnabled()) {
             $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
@@ -731,6 +746,51 @@ class DocumentManager implements ObjectManager
         }
 
         $this->unitOfWork->clear($objectName);
+    }
+
+    /**
+     * Gets the long-lived state tracked for a document, if any.
+     *
+     * @internal
+     */
+    public function getObjectState(object $document): ?ManagedObjectState
+    {
+        return $this->objectStates[$document] ?? null;
+    }
+
+    /**
+     * Gets the long-lived state tracked for a document, creating it with the
+     * given initial persistence state if it does not exist yet.
+     *
+     * @internal
+     */
+    public function getOrCreateObjectState(object $document, PersistenceState $state = PersistenceState::New): ManagedObjectState
+    {
+        if (! isset($this->objectStates[$document])) {
+            $this->objectStates[$document] = new ManagedObjectState($state);
+        }
+
+        return $this->objectStates[$document];
+    }
+
+    /**
+     * Removes all long-lived state tracked for a document.
+     *
+     * @internal
+     */
+    public function removeObjectState(object $document): void
+    {
+        unset($this->objectStates[$document]);
+    }
+
+    /**
+     * Resets all long-lived per-document state tracked by the DocumentManager.
+     *
+     * @internal
+     */
+    public function clearObjectStates(): void
+    {
+        $this->objectStates = new SplObjectStorage();
     }
 
     /**
