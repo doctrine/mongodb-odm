@@ -23,6 +23,7 @@ use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
 use Doctrine\ODM\MongoDB\UnitOfWork\ManagedObjectState;
+use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
 use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
@@ -791,6 +792,64 @@ class DocumentManager implements ObjectManager
     public function clearObjectStates(): void
     {
         $this->objectStates = new SplObjectStorage();
+    }
+
+    /**
+     * Sets the parent association for a given embedded document.
+     *
+     * @internal
+     *
+     * @phpstan-param FieldMapping $mapping
+     */
+    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath): void
+    {
+        $this->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $propertyPath);
+    }
+
+    /**
+     * Gets the parent association for a given embedded document.
+     *
+     * @internal
+     */
+    public function getParentAssociation(object $document): ?ParentAssociation
+    {
+        return $this->getObjectState($document)?->parentAssociation;
+    }
+
+    /**
+     * Gets the original data of a document. The original data is the data
+     * that was present at the time the document was reconstituted from the
+     * database, used for calculating changesets at commit time.
+     *
+     * @internal
+     *
+     * @return array<string, mixed>
+     */
+    public function getOriginalDocumentData(object $document): array
+    {
+        $objectState = $this->getObjectState($document);
+
+        return $objectState !== null ? $objectState->originalData ?? [] : [];
+    }
+
+    /**
+     * @internal
+     *
+     * @param array<string, mixed> $data
+     */
+    public function setOriginalDocumentData(object $document, array $data): void
+    {
+        $this->getOrCreateObjectState($document)->originalData = $data;
+    }
+
+    /**
+     * Sets a property value of the original data array of a document.
+     *
+     * @internal
+     */
+    public function setOriginalDocumentProperty(object $document, string $property, mixed $value): void
+    {
+        $this->getOrCreateObjectState($document)->originalData[$property] = $value;
     }
 
     /**

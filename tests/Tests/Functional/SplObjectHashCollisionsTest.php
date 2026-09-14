@@ -24,11 +24,9 @@ class SplObjectHashCollisionsTest extends BaseTestCase
         $d->many[] = new SplColEmbed('d.many.1.v1');
 
         $this->dm->persist($d);
-        $this->expectCount('parentAssociations', 3);
-        $this->expectCount('embeddedDocumentsRegistry', 3);
+        $this->expectCount(3);
         $f($this->dm, $d);
-        $this->expectCount('parentAssociations', 0);
-        $this->expectCount('embeddedDocumentsRegistry', 0);
+        $this->expectCount(0);
     }
 
     /** @param callable(DocumentManager, object=): void $f */
@@ -43,11 +41,9 @@ class SplObjectHashCollisionsTest extends BaseTestCase
         $d->one = new SplColEmbed('d.one.v2');
         $this->dm->flush();
 
-        $this->expectCount('parentAssociations', 4);
-        $this->expectCount('embeddedDocumentsRegistry', 4);
+        $this->expectCount(4);
         $f($this->dm, $d);
-        $this->expectCount('parentAssociations', $leftover);
-        $this->expectCount('embeddedDocumentsRegistry', $leftover);
+        $this->expectCount($leftover);
     }
 
     public static function provideParentAssociationsIsCleared(): array
@@ -79,17 +75,9 @@ class SplObjectHashCollisionsTest extends BaseTestCase
         );
     }
 
-    private function expectCount(string $prop, int $expected): void
+    private function expectCount(int $expected): void
     {
-        if ($prop === 'parentAssociations') {
-            self::assertSame($expected, $this->countObjectStatesWithParentAssociation());
-
-            return;
-        }
-
-        $ro = new ReflectionObject($this->uow);
-        $rp = $ro->getProperty($prop);
-        self::assertCount($expected, $rp->getValue($this->uow));
+        self::assertSame($expected, $this->countObjectStatesWithParentAssociation());
     }
 
     private function countObjectStatesWithParentAssociation(): int
