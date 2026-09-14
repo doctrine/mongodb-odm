@@ -21,7 +21,7 @@ use PhpBench\Attributes\Warmup;
 #[BeforeMethods(['init'])]
 #[Warmup(2)]
 #[Revs(1000)]
-#[Iterations(5)]
+#[Iterations(2)]
 final class GetMetadataFromCacheBench
 {
     use MappingBenchTrait;

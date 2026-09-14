@@ -16,11 +16,18 @@ use PhpBench\Attributes\Warmup;
 /**
  * Measures Aggregation\Builder execution, including the driver round trip
  * and, where applicable, ODM hydration of aggregation results.
+ *
+ * benchExecuteAggregationHydrated hydrates into managed documents, so (as
+ * in LoadDocumentBench) it's pinned to a single, un-warmed-up revolution
+ * per iteration to avoid UnitOfWork::getOrCreateDocument() silently
+ * skipping hydration on repeat runs of the same grouping query. The raw
+ * variants never touch the identity map, so they can keep more
+ * revolutions per iteration.
  */
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 #[Warmup(2)]
-#[Revs(50)]
-#[Iterations(5)]
+#[Revs(20)]
+#[Iterations(2)]
 final class ExecuteAggregationBench extends BaseBench
 {
     private const NUMBER_OF_USERS = 25;
@@ -45,9 +52,23 @@ final class ExecuteAggregationBench extends BaseBench
         }
 
         $this->getDocumentManager()->flush();
+
+        // Prime the User hydrator class once, untimed, so the timed
+        // revolutions below don't pay a one-off class-generation cost that
+        // a warm application would never see. The clear() first is
+        // essential: findOneBy() always queries, but
+        // UnitOfWork::getOrCreateDocument() still skips re-hydrating a
+        // document that's already managed and initialized - which, without
+        // this clear(), it is (persist()+flush() above left it that way).
+        $this->getDocumentManager()->clear();
+        $this->getDocumentManager()->getRepository(User::class)->findOneBy([]);
+
         $this->getDocumentManager()->clear();
     }
 
+    #[Warmup(0)]
+    #[Revs(1)]
+    #[Iterations(5)]
     public function benchExecuteAggregationHydrated(): void
     {
         $builder = $this->getDocumentManager()->createAggregationBuilder(User::class);

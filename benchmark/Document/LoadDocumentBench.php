@@ -15,31 +15,39 @@ use MongoDB\BSON\ObjectId;
 use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\Revs;
-use PhpBench\Attributes\Warmup;
 
 use function assert;
 
+/**
+ * Every subject here reads a document that was persisted in init(). Once a
+ * managed document is already fully initialized, UnitOfWork::getOrCreateDocument()
+ * skips hydration entirely unless a refresh is requested, so a second
+ * revolution against the same document would measure "driver round trip
+ * plus skipped hydration" rather than a real load. Revs is therefore kept
+ * at 1: since each iteration runs in its own process (see
+ * Runner::runIteration()), that's enough to guarantee a cold identity map
+ * without needing clear() (which would itself pollute the timed block) or
+ * a pool of documents to rotate through. Warmup defaults to 0 (no Warmup
+ * attribute at any level in this class), which matters for the same
+ * reason: a warmup call runs the same subject in the same process, which
+ * would warm the identity map before the timed revolution ever runs.
+ * Iterations is raised to make up for the lost statistical power of a
+ * single rev.
+ */
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
-#[Warmup(2)]
-#[Revs(100)]
+#[Revs(1)]
 #[Iterations(5)]
 final class LoadDocumentBench extends BaseBench
 {
-    private const NUMBER_OF_ADDITIONAL_USERS     = 25;
-    private const NUMBER_OF_REFERENCE_MANY_USERS = 100;
+    private const NUMBER_OF_ADDITIONAL_USERS = 25;
 
     private static ObjectId $userId;
 
-    /** @var list<ObjectId> */
-    private static array $referenceManyUserIds = [];
-
-    private static int $referenceManyUserIndex = 0;
+    private static ObjectId $referenceManyUserId;
 
     public function init(): void
     {
-        self::$userId                 = new ObjectId();
-        self::$referenceManyUserIds   = [];
-        self::$referenceManyUserIndex = 0;
+        self::$userId = new ObjectId();
 
         $account = new Account();
         $account->setName('alcaeus');
@@ -71,25 +79,36 @@ final class LoadDocumentBench extends BaseBench
             $this->getDocumentManager()->persist($additionalUser);
         }
 
-        // A distinct pool of users to load from, one per revolution, so that
-        // benchLoadReferenceManyCollectionInitialization always measures a
-        // cold lazy-collection initialization rather than an identity map hit.
-        for ($i = 0; $i < self::NUMBER_OF_REFERENCE_MANY_USERS; $i++) {
-            $referenceManyUserId = new ObjectId();
+        self::$referenceManyUserId = new ObjectId();
 
-            $referenceManyUser = new User();
-            $referenceManyUser->setId($referenceManyUserId);
-            $referenceManyUser->setUsername('groupUser' . $i);
-            $referenceManyUser->setCreatedAt(new DateTimeImmutable());
-            $referenceManyUser->addGroup($group1);
-            $referenceManyUser->addGroup($group2);
+        $referenceManyUser = new User();
+        $referenceManyUser->setId(self::$referenceManyUserId);
+        $referenceManyUser->setUsername('groupUser');
+        $referenceManyUser->setCreatedAt(new DateTimeImmutable());
+        $referenceManyUser->addGroup($group1);
+        $referenceManyUser->addGroup($group2);
 
-            $this->getDocumentManager()->persist($referenceManyUser);
-
-            self::$referenceManyUserIds[] = $referenceManyUserId;
-        }
+        $this->getDocumentManager()->persist($referenceManyUser);
 
         $this->getDocumentManager()->flush();
+
+        // Prime hydrator classes (one generated class per document type,
+        // including embedded ones - see DocumentsUserHydrator.php) and
+        // lazy-reference proxy classes once, untimed, so the timed
+        // revolutions below don't pay a one-off class-generation cost that
+        // a warm application would never see. Embedded fields (address,
+        // phonenumbers) are hydrated eagerly by find(), but references
+        // (account, groups) are lazy and only hydrated on access. The
+        // clear() first is essential: persist()+flush() leaves $user
+        // managed, so without it find() would be satisfied by the identity
+        // map and never actually hydrate anything.
+        $this->getDocumentManager()->clear();
+        $primingUser = $this->getDocumentManager()->find(User::class, self::$userId);
+        assert($primingUser instanceof User);
+        $primingUser->getAccount()->getName();
+        $primingUser->getGroups()->forAll(static function (int $key, Group $group) {
+            return $group->getName() !== null;
+        });
 
         $this->getDocumentManager()->clear();
     }
@@ -125,32 +144,27 @@ final class LoadDocumentBench extends BaseBench
 
     public function benchLoadDocumentFromIdentityMap(): void
     {
-        // Warm the identity map, then load again without an intervening
-        // clear() so the second call hits UnitOfWork::tryGetById().
+        // Cold load, then load again without an intervening clear() so the
+        // second call hits UnitOfWork::tryGetById(). Both calls belong in
+        // the same revolution on purpose: it's the cold/warm pair itself
+        // that's being measured.
         $this->loadDocument();
         $this->loadDocument();
     }
 
     public function benchLoadDocumentByQuery(): void
     {
-        // findOneBy() always queries MongoDB, regardless of identity map
-        // state, so no clear() is needed to keep this measurement honest.
         $this->getDocumentManager()->getRepository(User::class)->findOneBy(['username' => 'alcaeus']);
     }
 
     public function benchLoadCollectionOfDocuments(): void
     {
-        // findBy() always queries MongoDB, regardless of identity map state,
-        // so no clear() is needed to keep this measurement honest.
         $this->getDocumentManager()->getRepository(User::class)->findBy([]);
     }
 
     public function benchLoadReferenceManyCollectionInitialization(): void
     {
-        $id = self::$referenceManyUserIds[self::$referenceManyUserIndex % self::NUMBER_OF_REFERENCE_MANY_USERS];
-        self::$referenceManyUserIndex++;
-
-        $document = $this->getDocumentManager()->find(User::class, $id);
+        $document = $this->getDocumentManager()->find(User::class, self::$referenceManyUserId);
         assert($document instanceof User);
 
         $document->getGroups()->count();

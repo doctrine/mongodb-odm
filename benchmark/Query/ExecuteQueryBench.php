@@ -18,11 +18,19 @@ use PhpBench\Attributes\Warmup;
  * round trip and, where applicable, ODM hydration. Complements
  * BuildQueryBench (construction only) and HydrateDocumentBench (hydration
  * only, outside of the query pipeline).
+ *
+ * benchExecuteFindQuery and benchExecuteFindQueryWithReferencePriming
+ * hydrate into managed documents, so (as in LoadDocumentBench) they're
+ * pinned to a single, un-warmed-up revolution per iteration to avoid
+ * UnitOfWork::getOrCreateDocument() silently skipping hydration on repeat
+ * loads of the same documents. benchExecuteFindQueryWithoutHydration
+ * returns raw arrays and never touches the identity map, so it can keep
+ * more revolutions per iteration.
  */
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 #[Warmup(2)]
-#[Revs(50)]
-#[Iterations(5)]
+#[Revs(20)]
+#[Iterations(2)]
 final class ExecuteQueryBench extends BaseBench
 {
     private const NUMBER_OF_USERS = 25;
@@ -47,9 +55,27 @@ final class ExecuteQueryBench extends BaseBench
         }
 
         $this->getDocumentManager()->flush();
+
+        // Prime the User (and, via the reference, Group) hydrator classes
+        // once, untimed, so the timed revolutions below don't pay a
+        // one-off class-generation cost that a warm application would
+        // never see. The clear() first is essential: findBy() always
+        // queries, but UnitOfWork::getOrCreateDocument() still skips
+        // re-hydrating documents that are already managed and initialized
+        // - which, without this clear(), all of them are (persist()+flush()
+        // above left them that way).
+        $this->getDocumentManager()->clear();
+
+        foreach ($this->getDocumentManager()->getRepository(User::class)->findBy([]) as $primingUser) {
+            $primingUser->getGroups()->count();
+        }
+
         $this->getDocumentManager()->clear();
     }
 
+    #[Warmup(0)]
+    #[Revs(1)]
+    #[Iterations(5)]
     public function benchExecuteFindQuery(): void
     {
         $this->getDocumentManager()
@@ -71,6 +97,9 @@ final class ExecuteQueryBench extends BaseBench
             ->toArray();
     }
 
+    #[Warmup(0)]
+    #[Revs(1)]
+    #[Iterations(5)]
     public function benchExecuteFindQueryWithReferencePriming(): void
     {
         $users = $this->getDocumentManager()

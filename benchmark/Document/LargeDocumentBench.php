@@ -30,11 +30,20 @@ use const JSON_THROW_ON_ERROR;
  * embedded sub-documents. Complements HydrateDocumentBench,
  * StoreDocumentBench and LoadDocumentBench, which focus on individual
  * association types rather than overall document scale.
+ *
+ * The class default (20 revs) suits the store subjects, which go over the
+ * network. Hydration is pure in-memory work on a fresh object each call,
+ * so those subjects raise the rev count for better precision, in line
+ * with HydrateDocumentBench. The load subjects read a fixed, already
+ * persisted document, so (as in LoadDocumentBench) they're pinned to a
+ * single, un-warmed-up revolution per iteration to avoid
+ * UnitOfWork::getOrCreateDocument() silently skipping hydration on repeat
+ * loads of the same document.
  */
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 #[Warmup(2)]
-#[Revs(50)]
-#[Iterations(5)]
+#[Revs(20)]
+#[Iterations(2)]
 final class LargeDocumentBench extends BaseBench
 {
     /** @var array<string, mixed> */
@@ -98,17 +107,34 @@ final class LargeDocumentBench extends BaseBench
         $this->getDocumentManager()->persist($nestedDocument);
 
         $this->getDocumentManager()->flush();
-        $this->getDocumentManager()->clear();
 
         self::$flatDocumentId   = $flatDocument->id;
         self::$nestedDocumentId = $nestedDocument->id;
+
+        // Prime the FlatDocument/NestedDocument hydrator classes - plus, for
+        // NestedDocument, the NestedStrItem/NestedIntItem hydrators used for
+        // its embedded fields - once, untimed, so benchLoadFlatDocument and
+        // benchLoadNestedDocument don't pay a one-off class-generation cost
+        // that a warm application would never see. getHydratorFor() above
+        // only generates the class; find() is what actually hydrates the
+        // embedded fields and triggers their own hydrator generation. The
+        // clear() first is essential: persist()+flush() left both documents
+        // managed, so without it find() would be satisfied by the identity
+        // map and never actually hydrate anything.
+        $this->getDocumentManager()->clear();
+        $this->getDocumentManager()->find(FlatDocument::class, self::$flatDocumentId);
+        $this->getDocumentManager()->find(NestedDocument::class, self::$nestedDocumentId);
+
+        $this->getDocumentManager()->clear();
     }
 
+    #[Revs(200)]
     public function benchHydrateFlatDocument(): void
     {
         self::$flatHydrator->hydrate(new FlatDocument(), self::$flatData + ['_id' => new ObjectId()]);
     }
 
+    #[Revs(200)]
     public function benchHydrateNestedDocument(): void
     {
         self::$nestedHydrator->hydrate(new NestedDocument(), self::$nestedData + ['_id' => new ObjectId()]);
@@ -128,11 +154,17 @@ final class LargeDocumentBench extends BaseBench
         $this->getDocumentManager()->clear();
     }
 
+    #[Warmup(0)]
+    #[Revs(1)]
+    #[Iterations(5)]
     public function benchLoadFlatDocument(): void
     {
         $this->getDocumentManager()->find(FlatDocument::class, self::$flatDocumentId);
     }
 
+    #[Warmup(0)]
+    #[Revs(1)]
+    #[Iterations(5)]
     public function benchLoadNestedDocument(): void
     {
         $document = $this->getDocumentManager()->find(NestedDocument::class, self::$nestedDocumentId);

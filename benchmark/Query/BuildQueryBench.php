@@ -20,7 +20,7 @@ use PhpBench\Attributes\Warmup;
 #[BeforeMethods(['initDocumentManager'])]
 #[Warmup(2)]
 #[Revs(1000)]
-#[Iterations(5)]
+#[Iterations(2)]
 final class BuildQueryBench extends BaseBench
 {
     public function benchBuildSimpleQuery(): void

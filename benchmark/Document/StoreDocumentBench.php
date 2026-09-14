@@ -18,10 +18,19 @@ use PhpBench\Attributes\Warmup;
 
 use function random_int;
 
+/**
+ * Each of these inserts/updates/removes a document over the network, so
+ * revolutions mainly buy statistical stability rather than overcoming
+ * timer resolution (unlike, say, HydrateDocumentBench's in-memory calls).
+ * A round trip already dwarfs measurement noise, so a class-wide default
+ * of 20 keeps the suite quick without losing precision.
+ * benchComputeChangeSetsOnly is the one subject here that never touches
+ * the network, so it gets a much higher rev count to match.
+ */
 #[BeforeMethods(['initDocumentManager', 'clearDatabase'])]
 #[Warmup(2)]
-#[Revs(100)]
-#[Iterations(5)]
+#[Revs(20)]
+#[Iterations(2)]
 final class StoreDocumentBench extends BaseBench
 {
     private static User $updateUser;
@@ -127,6 +136,7 @@ final class StoreDocumentBench extends BaseBench
     }
 
     #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'initUpdateBench'])]
+    #[Revs(200)]
     public function benchComputeChangeSetsOnly(): void
     {
         self::$updateUser->setHits(self::$updateUser->getHits() + 1);
@@ -135,7 +145,7 @@ final class StoreDocumentBench extends BaseBench
     }
 
     #[BeforeMethods(['initDocumentManager', 'clearDatabase'])]
-    #[Revs(20)]
+    #[Revs(5)]
     public function benchStoreManyDocuments(): void
     {
         for ($i = 0; $i < 100; $i++) {

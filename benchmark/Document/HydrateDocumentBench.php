@@ -24,7 +24,7 @@ use function range;
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 #[Warmup(2)]
 #[Revs(100)]
-#[Iterations(5)]
+#[Iterations(2)]
 final class HydrateDocumentBench extends BaseBench
 {
     protected static function createMetadataDriverImpl(): AttributeDriver
