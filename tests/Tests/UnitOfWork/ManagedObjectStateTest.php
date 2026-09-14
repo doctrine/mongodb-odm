@@ -17,9 +17,8 @@ class ManagedObjectStateTest extends TestCase
     {
         $state = new ManagedObjectState(PersistenceState::New);
 
-        self::assertSame(PersistenceState::New, $state->getState());
-        self::assertFalse($state->hasOriginalData());
-        self::assertSame([], $state->getOriginalData());
+        self::assertSame(PersistenceState::New, $state->state);
+        self::assertNull($state->originalData);
         self::assertNull($state->getParentAssociation());
     }
 
@@ -27,56 +26,34 @@ class ManagedObjectStateTest extends TestCase
     {
         $state = new ManagedObjectState(PersistenceState::Managed, ['name' => 'Alice']);
 
-        self::assertTrue($state->hasOriginalData());
-        self::assertSame(['name' => 'Alice'], $state->getOriginalData());
+        self::assertSame(['name' => 'Alice'], $state->originalData);
     }
 
-    public function testSetState(): void
+    public function testStateCanBeChanged(): void
     {
         $state = new ManagedObjectState(PersistenceState::New);
 
-        $state->setState(PersistenceState::Managed);
+        $state->state = PersistenceState::Managed;
 
-        self::assertSame(PersistenceState::Managed, $state->getState());
+        self::assertSame(PersistenceState::Managed, $state->state);
     }
 
-    public function testSetOriginalData(): void
+    public function testOriginalDataCanBeChanged(): void
     {
         $state = new ManagedObjectState(PersistenceState::Managed);
 
-        $state->setOriginalData(['name' => 'Alice']);
+        $state->originalData = ['name' => 'Alice'];
 
-        self::assertTrue($state->hasOriginalData());
-        self::assertSame(['name' => 'Alice'], $state->getOriginalData());
+        self::assertSame(['name' => 'Alice'], $state->originalData);
     }
 
-    public function testSetOriginalDataFieldOnEmptyState(): void
-    {
-        $state = new ManagedObjectState(PersistenceState::Managed);
-
-        $state->setOriginalDataField('name', 'Alice');
-
-        self::assertTrue($state->hasOriginalData());
-        self::assertSame(['name' => 'Alice'], $state->getOriginalData());
-    }
-
-    public function testSetOriginalDataFieldUpdatesSingleField(): void
-    {
-        $state = new ManagedObjectState(PersistenceState::Managed, ['name' => 'Alice', 'age' => 30]);
-
-        $state->setOriginalDataField('age', 31);
-
-        self::assertSame(['name' => 'Alice', 'age' => 31], $state->getOriginalData());
-    }
-
-    public function testClearOriginalData(): void
+    public function testOriginalDataCanBeResetToNull(): void
     {
         $state = new ManagedObjectState(PersistenceState::Managed, ['name' => 'Alice']);
 
-        $state->clearOriginalData();
+        $state->originalData = null;
 
-        self::assertFalse($state->hasOriginalData());
-        self::assertSame([], $state->getOriginalData());
+        self::assertNull($state->originalData);
     }
 
     public function testParentAssociation(): void
