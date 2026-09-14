@@ -84,7 +84,7 @@ class AttributeDriver implements MappingDriver
         assert($metadata instanceof ClassMetadata);
         $reflClass = $metadata->getReflectionClass();
 
-        $classAttributes = $this->getClassAttributes(new ReflectionClass($reflClass->getName()));
+        $classAttributes = $this->getClassAttributes($reflClass);
 
         $documentAttribute = null;
         foreach ($classAttributes as $attribute) {
@@ -436,13 +436,7 @@ class AttributeDriver implements MappingDriver
         return new self($paths, $reader);
     }
 
-    /**
-     * @param ReflectionClass<T> $class
-     *
-     * @return object[]
-     *
-     * @template T of object
-     */
+    /** @return object[] */
     private function getClassAttributes(ReflectionClass $class): array
     {
         if ($this->reader instanceof AttributeReader) {

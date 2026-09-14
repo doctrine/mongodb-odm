@@ -55,6 +55,18 @@ parameters:
 			path: src/Event/OnClearEventArgs.php
 
 		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\AttributeDriver\:\:getClassAttributes\(\) has parameter \$class with generic class ReflectionClass but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/AttributeDriver.php
+
+		-
+			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\Driver\\AttributeReader\:\:getClassAttributes\(\) has parameter \$class with generic class ReflectionClass but does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Mapping/Driver/AttributeReader.php
+
+		-
 			message: '#^Method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:mapField\(\) should return array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\} but returns array\{type\?\: string, fieldName\?\: string, name\?\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\}\.$#'
 			identifier: return.type
 			count: 1

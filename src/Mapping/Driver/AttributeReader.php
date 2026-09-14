@@ -16,13 +16,7 @@ use function is_subclass_of;
 /** @internal */
 final class AttributeReader
 {
-    /**
-     * @param ReflectionClass<T> $class
-     *
-     * @return MappingAttribute[]
-     *
-     * @template T of object
-     */
+    /** @return MappingAttribute[] */
     public function getClassAttributes(ReflectionClass $class): array
     {
         return $this->convertToAttributeInstances($class->getAttributes());
