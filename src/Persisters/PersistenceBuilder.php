@@ -515,7 +515,7 @@ final class PersistenceBuilder
     }
 
     /**
-     * @param array<string, mixed>                     $mapping
+     * @param array<string, mixed>                                 $mapping
      * @param array<array-key, mixed>|Collection<array-key, mixed> $rawValue
      *
      * @return PersistentCollectionInterface<array-key, object>

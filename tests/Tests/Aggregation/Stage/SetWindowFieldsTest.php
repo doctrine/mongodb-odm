@@ -77,7 +77,7 @@ class SetWindowFieldsTest extends BaseTestCase
     }
 
     /**
-     * @param array<string, mixed>       $expected
+     * @param array<string, mixed>           $expected
      * @param Closure(Expr): mixed[]|mixed[] $args
      */
     #[DataProvider('provideGroupAccumulatorExpressionOperators')]

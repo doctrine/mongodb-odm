@@ -58,7 +58,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
 
     /**
      * @param array<mixed>|Point $center
-     * @param int|float           $radius
+     * @param int|float          $radius
      */
     public function circle($center, $radius): static
     {

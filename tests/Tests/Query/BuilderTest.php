@@ -560,7 +560,7 @@ class BuilderTest extends BaseTestCase
     }
 
     /**
-     * @param string[]         $args
+     * @param string[]           $args
      * @param array<string, int> $expected
      */
     #[DataProvider('provideSelectProjections')]
@@ -578,7 +578,7 @@ class BuilderTest extends BaseTestCase
     }
 
     /**
-     * @param string[]         $args
+     * @param string[]           $args
      * @param array<string, int> $expected
      */
     #[DataProvider('provideExcludeProjections')]
