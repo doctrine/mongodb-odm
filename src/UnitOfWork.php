@@ -18,7 +18,6 @@ use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
 use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
@@ -80,18 +79,24 @@ final class UnitOfWork implements PropertyChangedListener
 {
     /**
      * A document is in MANAGED state when its persistence is managed by a DocumentManager.
+     *
+     * @deprecated Use {@see PersistenceState::Managed} instead.
      */
     public const STATE_MANAGED = 1;
 
     /**
      * A document is new if it has just been instantiated (i.e. using the "new" operator)
      * and is not (yet) managed by a DocumentManager.
+     *
+     * @deprecated Use {@see PersistenceState::New} instead.
      */
     public const STATE_NEW = 2;
 
     /**
      * A detached document is an instance with a persistent identity that is not
      * (or no longer) associated with a DocumentManager (and a UnitOfWork).
+     *
+     * @deprecated Use {@see PersistenceState::Detached} instead.
      */
     public const STATE_DETACHED = 3;
 
@@ -99,6 +104,8 @@ final class UnitOfWork implements PropertyChangedListener
      * A removed document instance is an instance with a persistent identity,
      * associated with a DocumentManager, whose persistent state has been
      * deleted (or is scheduled for deletion).
+     *
+     * @deprecated Use {@see PersistenceState::Removed} instead.
      */
     public const STATE_REMOVED = 4;
 
@@ -256,15 +263,6 @@ final class UnitOfWork implements PropertyChangedListener
 
     private ReflectionService $reflectionService;
 
-    /**
-     * Array of embedded documents known to UnitOfWork. We need to hold them to prevent spl_object_id
-     * collisions in case already managed object is lost due to GC (so now it won't). Embedded documents
-     * found during doDetach are removed from the registry, to empty it altogether clear() can be utilized.
-     *
-     * @var array<int, object>
-     */
-    private array $embeddedDocumentsRegistry = [];
-
     private int $commitsInProgress = 0;
 
     /**
@@ -297,16 +295,21 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Sets the parent association for a given embedded document.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::setParentAssociation()} instead.
      *
      * @phpstan-param FieldMapping $mapping
      */
     public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath): void
     {
-        $oid                                   = spl_object_id($document);
-        $this->embeddedDocumentsRegistry[$oid] = $document;
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::setParentAssociation() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
 
-        $this->dm->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $propertyPath);
+        $this->dm->setParentAssociation($document, $mapping, $parent, $propertyPath);
     }
 
     /**
@@ -316,11 +319,21 @@ final class UnitOfWork implements PropertyChangedListener
      *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
      *     </code>
      *
+     * @deprecated Use {@see DocumentManager::getParentAssociation()} instead.
+     *
      * @phpstan-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null
      */
     public function getParentAssociation(object $document): ?array
     {
-        $parentAssociation = $this->dm->getObjectState($document)?->parentAssociation;
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::getParentAssociation() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
+        $parentAssociation = $this->dm->getParentAssociation($document);
 
         return $parentAssociation === null
             ? null
@@ -1008,18 +1021,18 @@ final class UnitOfWork implements PropertyChangedListener
                     }
 
                     $this->persistNew($targetClass, $entry);
-                    $this->setParentAssociation($entry, $assoc, $parentDocument, $path);
+                    $this->dm->setParentAssociation($entry, $assoc, $parentDocument, $path);
                     $this->computeChangeSet($targetClass, $entry);
                     break;
 
                 case self::STATE_MANAGED:
                     if ($targetClass->isEmbeddedDocument) {
-                        [, $knownParent] = $this->getParentAssociation($entry);
+                        $knownParent = $this->dm->getParentAssociation($entry)?->parent;
                         if ($knownParent && $knownParent !== $parentDocument) {
                             $entry = clone $entry;
                             if ($assoc['type'] === ClassMetadata::ONE) {
                                 $class->setFieldValue($parentDocument, $assoc['fieldName'], $entry);
-                                $this->setOriginalDocumentProperty($parentDocument, $assoc['fieldName'], $entry);
+                                $this->dm->setOriginalDocumentProperty($parentDocument, $assoc['fieldName'], $entry);
                                 $poid = spl_object_id($parentDocument);
                                 if (isset($this->documentChangeSets[$poid][$assoc['fieldName']])) {
                                     $this->documentChangeSets[$poid][$assoc['fieldName']][1] = $entry;
@@ -1032,7 +1045,7 @@ final class UnitOfWork implements PropertyChangedListener
                             $this->persistNew($targetClass, $entry);
                         }
 
-                        $this->setParentAssociation($entry, $assoc, $parentDocument, $path);
+                        $this->dm->setParentAssociation($entry, $assoc, $parentDocument, $path);
                         $this->computeChangeSet($targetClass, $entry);
                     }
 
@@ -2100,7 +2113,6 @@ final class UnitOfWork implements PropertyChangedListener
                     $this->documentIdentifiers[$oid],
                     $this->scheduledDocumentUpserts[$oid],
                     $this->hasScheduledCollections[$oid],
-                    $this->embeddedDocumentsRegistry[$oid],
                 );
                 break;
             case self::STATE_NEW:
@@ -2276,27 +2288,27 @@ final class UnitOfWork implements PropertyChangedListener
                 $count = 0;
                 foreach ($relatedDocuments as $relatedKey => $relatedDocument) {
                     if (! empty($mapping['embedded'])) {
-                        [, $knownParent] = $this->getParentAssociation($relatedDocument);
+                        $knownParent = $this->dm->getParentAssociation($relatedDocument)?->parent;
                         if ($knownParent && $knownParent !== $document) {
                             $relatedDocument               = clone $relatedDocument;
                             $relatedDocuments[$relatedKey] = $relatedDocument;
                         }
 
                         $pathKey = CollectionHelper::isList($mapping['strategy']) ? $count++ : $relatedKey;
-                        $this->setParentAssociation($relatedDocument, $mapping, $document, $mapping['fieldName'] . '.' . $pathKey);
+                        $this->dm->setParentAssociation($relatedDocument, $mapping, $document, $mapping['fieldName'] . '.' . $pathKey);
                     }
 
                     $this->doPersist($relatedDocument, $visited);
                 }
             } elseif ($relatedDocuments !== null) {
                 if (! empty($mapping['embedded'])) {
-                    [, $knownParent] = $this->getParentAssociation($relatedDocuments);
+                    $knownParent = $this->dm->getParentAssociation($relatedDocuments)?->parent;
                     if ($knownParent && $knownParent !== $document) {
                         $relatedDocuments = clone $relatedDocuments;
                         $class->setFieldValue($document, $mapping['fieldName'], $relatedDocuments);
                     }
 
-                    $this->setParentAssociation($relatedDocuments, $mapping, $document, $mapping['fieldName']);
+                    $this->dm->setParentAssociation($relatedDocuments, $mapping, $document, $mapping['fieldName']);
                 }
 
                 $this->doPersist($relatedDocuments, $visited);
@@ -2399,7 +2411,6 @@ final class UnitOfWork implements PropertyChangedListener
             $this->scheduledDocumentDeletions   =
             $this->scheduledCollectionUpdates   =
             $this->scheduledCollectionDeletions =
-            $this->embeddedDocumentsRegistry    =
             $this->orphanRemovals               =
             $this->hasScheduledCollections      = [];
 
@@ -2474,7 +2485,7 @@ final class UnitOfWork implements PropertyChangedListener
             $class->propertyAccessors[$propName]->setValue($document, $newValue);
             if ($this->isScheduledForUpdate($document)) {
                 // @todo following line should be superfluous once collections are stored in change sets
-                $this->setOriginalDocumentProperty($document, $propName, $newValue);
+                $this->dm->setOriginalDocumentProperty($document, $propName, $newValue);
             }
 
             return $newValue;
@@ -2664,8 +2675,9 @@ final class UnitOfWork implements PropertyChangedListener
         if ($document !== $coll->getOwner()) {
             $parent  = $coll->getOwner();
             $mapping = [];
-            while (($parentAssoc = $this->getParentAssociation($parent)) !== null) {
-                [$mapping, $parent] = $parentAssoc;
+            while (($parentAssoc = $this->dm->getParentAssociation($parent)) !== null) {
+                $mapping = $parentAssoc->mapping;
+                $parent  = $parentAssoc->parent;
             }
 
             if (CollectionHelper::isAtomic($mapping['strategy'])) {
@@ -2697,13 +2709,13 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata($document::class);
         while ($class->isEmbeddedDocument) {
-            $parentAssociation = $this->getParentAssociation($document);
+            $parentAssociation = $this->dm->getParentAssociation($document);
 
             if (! $parentAssociation) {
                 throw new UnexpectedValueException('Could not determine parent association for ' . $document::class);
             }
 
-            [, $parentDocument] = $parentAssociation;
+            $parentDocument = $parentAssociation->parent;
             if (! $parentDocument) {
                 throw new UnexpectedValueException('Could not determine parent association for ' . $document::class);
             }
@@ -2845,36 +2857,60 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the original data of a document. The original data is the data that was
      * present at the time the document was reconstituted from the database.
      *
+     * @deprecated Use {@see DocumentManager::getOriginalDocumentData()} instead.
+     *
      * @return array<string, mixed>
      */
     public function getOriginalDocumentData(object $document): array
     {
-        $objectState = $this->dm->getObjectState($document);
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::getOriginalDocumentData() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
 
-        return $objectState !== null ? $objectState->originalData ?? [] : [];
+        return $this->dm->getOriginalDocumentData($document);
     }
 
     /**
-     * @internal
+     * @deprecated Use {@see DocumentManager::setOriginalDocumentData()} instead.
      *
      * @param array<string, mixed> $data
      */
     public function setOriginalDocumentData(object $document, array $data): void
     {
-        $this->dm->getOrCreateObjectState($document)->originalData = $data;
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::setOriginalDocumentData() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
+        $this->dm->setOriginalDocumentData($document, $data);
         unset($this->documentChangeSets[spl_object_id($document)]);
     }
 
     /**
      * Sets a property value of the original data array of a document.
      *
-     * @internal
+     * @deprecated Use {@see DocumentManager::setOriginalDocumentProperty()} instead.
      *
      * @param mixed $value
      */
     public function setOriginalDocumentProperty(object $document, string $property, $value): void
     {
-        $this->dm->getOrCreateObjectState($document)->originalData[$property] = $value;
+        trigger_deprecation(
+            'doctrine/mongodb-odm',
+            '2.18',
+            '%s is deprecated, call %s::setOriginalDocumentProperty() instead.',
+            __METHOD__,
+            DocumentManager::class,
+        );
+
+        $this->dm->setOriginalDocumentProperty($document, $property, $value);
     }
 
     /**

@@ -427,14 +427,13 @@ final class CollectionPersister
         $mapping = $coll->getMapping();
         $fields  = [];
         $parent  = $coll->getOwner();
-        while (($association = $this->uow->getParentAssociation($parent)) !== null) {
-            [$m, $owner, $field] = $association;
-            if (isset($m['reference'])) {
+        while (($association = $this->dm->getParentAssociation($parent)) !== null) {
+            if (isset($association->mapping['reference'])) {
                 break;
             }
 
-            $parent   = $owner;
-            $fields[] = $field;
+            $parent   = $association->parent;
+            $fields[] = $association->propertyPath;
         }
 
         $propertyPath = implode('.', array_reverse($fields));

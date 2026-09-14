@@ -458,7 +458,8 @@ final class DocumentPersister
         }
 
         $data = $this->hydratorFactory->hydrate($document, (array) $data);
-        $this->uow->setOriginalDocumentData($document, $data);
+        $this->dm->setOriginalDocumentData($document, $data);
+        $this->uow->clearDocumentChangeSet(spl_object_id($document));
     }
 
     /**
@@ -710,7 +711,7 @@ final class DocumentPersister
                 throw HydratorException::associationItemTypeMismatch($owner::class, $mapping['name'], $key, 'array', gettype($embeddedDocument));
             }
 
-            $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
+            $this->dm->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
             $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
             $id   = $data[$embeddedMetadata->identifier ?? ''] ?? null;
@@ -804,7 +805,8 @@ final class DocumentPersister
                 $document = $this->uow->getById($documentData['_id'], $class);
                 if ($this->uow->isUninitializedObject($document)) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
-                    $this->uow->setOriginalDocumentData($document, $data);
+                    $this->dm->setOriginalDocumentData($document, $data);
+                    $this->uow->clearDocumentChangeSet(spl_object_id($document));
                 }
 
                 if (! $sorted) {
