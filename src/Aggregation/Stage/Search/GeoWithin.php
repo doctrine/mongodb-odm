@@ -15,6 +15,8 @@ use GeoJson\Geometry\Polygon;
  * @internal
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-search/geoWithin/
+ *
+ * @phpstan-type GeoJsonGeometry array{type: string, coordinates?: mixed, crs?: mixed, bbox?: mixed}
  */
 class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
 {
@@ -25,7 +27,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     private ?object $box    = null;
     private ?object $circle = null;
 
-    /** @var array<mixed>|MultiPolygon|Polygon|null */
+    /** @var GeoJsonGeometry|MultiPolygon|Polygon|null */
     private array|MultiPolygon|Polygon|null $geometry = null;
 
     public function __construct(Search $search, DocumentPersister $persister, string ...$path)
@@ -43,8 +45,8 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array<mixed>|Point $bottomLeft
-     * @param array<mixed>|Point $topRight
+     * @param GeoJsonGeometry|Point $bottomLeft
+     * @param GeoJsonGeometry|Point $topRight
      */
     public function box($bottomLeft, $topRight): static
     {
@@ -57,8 +59,8 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array<mixed>|Point $center
-     * @param int|float          $radius
+     * @param GeoJsonGeometry|Point $center
+     * @param int|float             $radius
      */
     public function circle($center, $radius): static
     {
@@ -70,7 +72,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /** @param Polygon|MultiPolygon|array<mixed> $geometry */
+    /** @param Polygon|MultiPolygon|GeoJsonGeometry $geometry */
     public function geometry($geometry): static
     {
         $this->geometry = $geometry;
@@ -103,9 +105,9 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array<mixed>|Geometry $geometry
+     * @param GeoJsonGeometry|Geometry $geometry
      *
-     * @return array<mixed>
+     * @return GeoJsonGeometry
      */
     private function convertGeometry($geometry): array
     {
