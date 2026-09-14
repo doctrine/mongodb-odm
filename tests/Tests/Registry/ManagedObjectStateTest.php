@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests\UnitOfWork;
+namespace Doctrine\ODM\MongoDB\Tests\Registry;
 
-use Doctrine\ODM\MongoDB\UnitOfWork\ManagedObjectState;
-use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
-use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
+use Doctrine\ODM\MongoDB\Registry\ManagedObjectState;
+use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
+use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use PHPUnit\Framework\TestCase;
 
 class ManagedObjectStateTest extends TestCase
@@ -18,6 +18,7 @@ class ManagedObjectStateTest extends TestCase
         self::assertSame(PersistenceState::New, $state->state);
         self::assertNull($state->originalData);
         self::assertNull($state->parentAssociation);
+        self::assertNull($state->identifier);
     }
 
     public function testConstructorAcceptsInitialOriginalData(): void
@@ -62,5 +63,14 @@ class ManagedObjectStateTest extends TestCase
         $state->parentAssociation = $parentAssociation;
 
         self::assertSame($parentAssociation, $state->parentAssociation);
+    }
+
+    public function testIdentifierCanBeAssigned(): void
+    {
+        $state = new ManagedObjectState(PersistenceState::Managed);
+
+        $state->identifier = 'abc123';
+
+        self::assertSame('abc123', $state->identifier);
     }
 }

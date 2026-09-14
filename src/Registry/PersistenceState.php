@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\UnitOfWork;
+namespace Doctrine\ODM\MongoDB\Registry;
 
 /**
  * The persistence state of a document tracked by the DocumentManager.

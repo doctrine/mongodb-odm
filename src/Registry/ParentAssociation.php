@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\UnitOfWork;
+namespace Doctrine\ODM\MongoDB\Registry;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
