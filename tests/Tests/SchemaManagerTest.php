@@ -354,6 +354,36 @@ class SchemaManagerTest extends BaseTestCase
 
     /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
+    public function testUpdateDocumentIndexesShouldDropAndRecreateRenamedIndex(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $indexes        = [
+            [
+                'v' => 1,
+                'key' => ['topic' => 1],
+                'name' => 'old_topic_1',
+            ],
+        ];
+
+        $collection
+            ->expects($this->once())
+            ->method('listIndexes')
+            ->willReturn($this->createIndexIterator($indexes));
+        $collection
+            ->expects($this->once())
+            ->method('createIndex')
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
+        $collection
+            ->expects($this->once())
+            ->method('dropIndex')
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
+
+        $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
+    }
+
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $views = array_map(
@@ -1365,6 +1395,21 @@ EOT;
                 'expected' => true,
                 'mongoIndex' => ['name' => 'foo_1_bar_1'],
                 'documentIndex' => [],
+            ],
+            'indexNameMappedAndSame' => [
+                'expected' => true,
+                'mongoIndex' => ['name' => 'my_index'],
+                'documentIndex' => ['options' => ['name' => 'my_index']],
+            ],
+            'indexNameMappedAndDifferent' => [
+                'expected' => false,
+                'mongoIndex' => ['name' => 'my_index'],
+                'documentIndex' => ['options' => ['name' => 'my_renamed_index']],
+            ],
+            'indexNameMappedAndServerGenerated' => [
+                'expected' => false,
+                'mongoIndex' => ['name' => 'foo_1_bar_-1'],
+                'documentIndex' => ['options' => ['name' => 'my_index']],
             ],
             // background option
             'backgroundOptionOnlyInMongoIndex' => [
