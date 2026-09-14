@@ -18,13 +18,14 @@ use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
+use Doctrine\ODM\MongoDB\Registry\ManagedObjectState;
+use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
+use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
-use Doctrine\ODM\MongoDB\UnitOfWork\ManagedObjectState;
-use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
-use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
@@ -36,7 +37,6 @@ use MongoDB\Driver\ClientEncryption;
 use MongoDB\Driver\ReadPreference;
 use MongoDB\GridFS\Bucket;
 use RuntimeException;
-use SplObjectStorage;
 use Throwable;
 
 use function array_search;
@@ -145,15 +145,13 @@ class DocumentManager implements ObjectManager
     private ProxyClassNameResolver $classNameResolver;
 
     /**
-     * Long-lived, per-document state (persistence state, original data,
-     * parent association) that survives across flushes and is only reset
-     * when the document is detached or the DocumentManager is cleared.
+     * Tracks every document known to this DocumentManager, by instance and
+     * by class + identifier, for the manager's lifetime (until it is
+     * cleared).
      *
      * @internal
-     *
-     * @var SplObjectStorage<object, ManagedObjectState>
      */
-    private SplObjectStorage $objectStates;
+    private DocumentRegistry $documentRegistry;
 
     /**
      * Creates a new Document that operates on the given Mongo connection
@@ -161,14 +159,14 @@ class DocumentManager implements ObjectManager
      */
     protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
-        $this->config       = $config ?: new Configuration();
-        $this->eventManager = $eventManager ?: new EventManager();
-        $this->client       = $client ?: new Client(
+        $this->config           = $config ?: new Configuration();
+        $this->eventManager     = $eventManager ?: new EventManager();
+        $this->client           = $client ?: new Client(
             'mongodb://127.0.0.1',
             [],
             $this->config->getDriverOptions(),
         );
-        $this->objectStates = new SplObjectStorage();
+        $this->documentRegistry = new DocumentRegistry();
 
         if ($this->config->isNativeLazyObjectEnabled()) {
             $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
@@ -655,7 +653,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
         /** @phpstan-var T|false $document */
-        $document = $this->unitOfWork->tryGetById($identifier, $class);
+        $document = $this->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($document !== false) {
@@ -689,7 +687,7 @@ class DocumentManager implements ObjectManager
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
-        $document = $this->unitOfWork->tryGetById($identifier, $class);
+        $document = $this->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($document) {
@@ -756,7 +754,7 @@ class DocumentManager implements ObjectManager
      */
     public function getObjectState(object $document): ?ManagedObjectState
     {
-        return $this->objectStates[$document] ?? null;
+        return $this->documentRegistry->getObjectState($document);
     }
 
     /**
@@ -767,11 +765,7 @@ class DocumentManager implements ObjectManager
      */
     public function getOrCreateObjectState(object $document, PersistenceState $state = PersistenceState::New): ManagedObjectState
     {
-        if (! isset($this->objectStates[$document])) {
-            $this->objectStates[$document] = new ManagedObjectState($state);
-        }
-
-        return $this->objectStates[$document];
+        return $this->documentRegistry->getOrCreateObjectState($document, $state);
     }
 
     /**
@@ -781,7 +775,7 @@ class DocumentManager implements ObjectManager
      */
     public function removeObjectState(object $document): void
     {
-        unset($this->objectStates[$document]);
+        $this->documentRegistry->removeObjectState($document);
     }
 
     /**
@@ -791,7 +785,7 @@ class DocumentManager implements ObjectManager
      */
     public function clearObjectStates(): void
     {
-        $this->objectStates = new SplObjectStorage();
+        $this->documentRegistry->clear();
     }
 
     /**
@@ -853,6 +847,138 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Gets the identifier of a document.
+     *
+     * @internal
+     */
+    public function getDocumentIdentifier(object $document): mixed
+    {
+        return $this->getObjectState($document)?->identifier;
+    }
+
+    /**
+     * Registers a document in the identity map.
+     *
+     * Note that documents in a hierarchy are registered with the class name of
+     * the root document. Identifiers are serialized before being used as array
+     * keys to allow differentiation of equal, but not identical, values.
+     *
+     * @internal
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function addToIdentityMap(ClassMetadata $class, object $document): bool
+    {
+        return $this->documentRegistry->addToIdentityMap($class, $document);
+    }
+
+    /**
+     * Removes a document from the identity map, marking it as detached.
+     *
+     * @internal
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function removeFromIdentityMap(ClassMetadata $class, object $document): bool
+    {
+        if (! $this->documentRegistry->removeFromIdentityMap($class, $document)) {
+            return false;
+        }
+
+        $this->getOrCreateObjectState($document)->state = PersistenceState::Detached;
+
+        return true;
+    }
+
+    /**
+     * Checks whether a document is registered in the identity map.
+     *
+     * @internal
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function isInIdentityMap(ClassMetadata $class, object $document): bool
+    {
+        return $this->documentRegistry->isInIdentityMap($class, $document);
+    }
+
+    /**
+     * Gets a document in the identity map by its identifier.
+     *
+     * @internal
+     *
+     * @param mixed $id Document identifier
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @phpstan-return T
+     *
+     * @template T of object
+     */
+    public function getById($id, ClassMetadata $class): object
+    {
+        return $this->documentRegistry->getById($id, $class);
+    }
+
+    /**
+     * Tries to get a document by its identifier. If no document is found for
+     * the given identifier, FALSE is returned.
+     *
+     * @internal
+     *
+     * @param mixed $id Document identifier
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @return mixed The found document or FALSE.
+     * @phpstan-return T|false
+     *
+     * @template T of object
+     */
+    public function tryGetById($id, ClassMetadata $class)
+    {
+        return $this->documentRegistry->tryGetById($id, $class);
+    }
+
+    /**
+     * Checks whether an identifier exists in the identity map.
+     *
+     * @internal
+     *
+     * @param mixed $id
+     */
+    public function containsId($id, string $rootClassName): bool
+    {
+        return $this->documentRegistry->containsId($id, $rootClassName);
+    }
+
+    /**
+     * Gets the identity map of documents known to this DocumentManager.
+     *
+     * @internal
+     *
+     * @return array<class-string, array<string, object>>
+     */
+    public function getIdentityMap(): array
+    {
+        return $this->documentRegistry->getIdentityMap();
+    }
+
+    /**
+     * The number of documents currently tracked in the identity map.
+     *
+     * @internal
+     */
+    public function getManagedDocumentsCount(): int
+    {
+        return $this->documentRegistry->size();
+    }
+
+    /**
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
@@ -881,7 +1007,7 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->unitOfWork->isScheduledForInsert($object) ||
-            $this->unitOfWork->isInIdentityMap($object) &&
+            $this->isInIdentityMap($this->getClassMetadata($object::class), $object) &&
             ! $this->unitOfWork->isScheduledForDelete($object);
     }
 
@@ -906,7 +1032,7 @@ class DocumentManager implements ObjectManager
     public function createReference(object $document, array $referenceMapping)
     {
         $class = $this->getClassMetadata($document::class);
-        $id    = $this->unitOfWork->getDocumentIdentifier($document);
+        $id    = $this->getDocumentIdentifier($document);
 
         if ($id === null) {
             throw new RuntimeException(
