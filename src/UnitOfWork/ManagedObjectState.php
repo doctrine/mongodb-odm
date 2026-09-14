@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\UnitOfWork;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-
 /**
  * Bundles the long-lived state tracked for a single document while it is
  * known to the DocumentManager: its persistence state, the snapshot of data
@@ -13,13 +11,10 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
  * parent association it was found through.
  *
  * @internal This class is not part of the public API and is subject to change.
- *
- * @phpstan-import-type AssociationFieldMapping from ClassMetadata
  */
 final class ManagedObjectState
 {
-    /** @phpstan-var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
-    private ?array $parentAssociation = null;
+    public ?ParentAssociation $parentAssociation = null;
 
     /**
      * $originalData is null until it is recorded for the first time (e.g. a
@@ -32,17 +27,5 @@ final class ManagedObjectState
         public PersistenceState $state,
         public ?array $originalData = null,
     ) {
-    }
-
-    /** @phpstan-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
-    public function getParentAssociation(): ?array
-    {
-        return $this->parentAssociation;
-    }
-
-    /** @phpstan-param AssociationFieldMapping $mapping */
-    public function setParentAssociation(array $mapping, ?object $parent, string $propertyPath): void
-    {
-        $this->parentAssociation = [$mapping, $parent, $propertyPath];
     }
 }
