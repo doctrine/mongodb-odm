@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests\UnitOfWork;
+namespace Doctrine\ODM\MongoDB\Tests\Registry;
 
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
+use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

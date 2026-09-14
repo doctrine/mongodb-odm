@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ODM\MongoDB\Tests\UnitOfWork;
+namespace Doctrine\ODM\MongoDB\Tests\Registry;
 
-use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
+use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use PHPUnit\Framework\TestCase;
 
 class PersistenceStateTest extends TestCase
