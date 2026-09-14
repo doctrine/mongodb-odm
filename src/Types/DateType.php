@@ -54,7 +54,7 @@ class DateType extends Type implements Versionable
             $microseconds  = abs(round($value - $seconds, 6));
             $microseconds *= 1_000_000;
 
-            $datetime = static::craftDateTime($seconds, (int) $microseconds);
+            $datetime = self::craftDateTime($seconds, (int) $microseconds);
         } elseif (is_string($value)) {
             try {
                 $datetime = new DateTime($value);

@@ -50,8 +50,8 @@ final class CollectionPersister
     /**
      * Deletes a PersistentCollection instances completely from a document using $unset.
      *
-     * @param PersistentCollectionInterface[] $collections
-     * @param array<string, mixed>            $options
+     * @param PersistentCollectionInterface<array-key, object>[] $collections
+     * @param array<string, mixed>                               $options
      */
     public function delete(object $parent, array $collections, array $options): void
     {
@@ -102,8 +102,8 @@ final class CollectionPersister
     /**
      * Updates a list PersistentCollection instances deleting removed rows and inserting new rows.
      *
-     * @param PersistentCollectionInterface[] $collections
-     * @param array<string, mixed>            $options
+     * @param PersistentCollectionInterface<array-key, object>[] $collections
+     * @param array<string, mixed>                               $options
      */
     public function update(object $parent, array $collections, array $options): void
     {
@@ -157,8 +157,8 @@ final class CollectionPersister
      * set as a BSON array, which means the collections elements will be
      * reindexed numerically before storage.
      *
-     * @param PersistentCollectionInterface[] $collections
-     * @param array<string, mixed>            $options
+     * @param PersistentCollectionInterface<array-key, object>[] $collections
+     * @param array<string, mixed>                               $options
      */
     private function setCollections(object $parent, array $collections, array $options): void
     {
@@ -171,7 +171,7 @@ final class CollectionPersister
         }
 
         $paths = $this->excludeSubPaths($paths);
-        /** @var PersistentCollectionInterface[] $setColls */
+        /** @var array<string, PersistentCollectionInterface<array-key, object>> $setColls */
         $setColls   = array_intersect_key($pathCollMap, array_flip($paths));
         $setPayload = [];
         foreach ($setColls as $propertyPath => $coll) {
@@ -197,8 +197,8 @@ final class CollectionPersister
      *
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
-     * @param PersistentCollectionInterface[] $collections
-     * @param array<string, mixed>            $options
+     * @param PersistentCollectionInterface<array-key, object>[] $collections
+     * @param array<string, mixed>                               $options
      */
     private function deleteElements(object $parent, array $collections, array $options): void
     {
@@ -260,8 +260,8 @@ final class CollectionPersister
      *
      * This method is intended to be used with the "pushAll" and "addToSet" strategies.
      *
-     * @param PersistentCollectionInterface[] $collections
-     * @param array<string, mixed>            $options
+     * @param PersistentCollectionInterface<array-key, object>[] $collections
+     * @param array<string, mixed>                               $options
      */
     private function insertElements(object $parent, array $collections, array $options): void
     {
@@ -340,7 +340,7 @@ final class CollectionPersister
     private function pushAllCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options): void
     {
         $pushAllPaths = $this->excludeSubPaths($collsPaths);
-        /** @var PersistentCollectionInterface[] $pushAllColls */
+        /** @var array<string, PersistentCollectionInterface<array-key, object>> $pushAllColls */
         $pushAllColls   = array_intersect_key($pathCollsMap, array_flip($pushAllPaths));
         $pushAllPayload = [];
         foreach ($pushAllColls as $propertyPath => $coll) {
@@ -374,7 +374,7 @@ final class CollectionPersister
     private function addToSetCollections(object $parent, array $collsPaths, array $pathCollsMap, array $diffsMap, array $options): void
     {
         $addToSetPaths = $this->excludeSubPaths($collsPaths);
-        /** @var PersistentCollectionInterface[] $addToSetColls */
+        /** @var array<string, PersistentCollectionInterface<array-key, object>> $addToSetColls */
         $addToSetColls = array_intersect_key($pathCollsMap, array_flip($addToSetPaths));
 
         $addToSetPayload = [];
@@ -394,6 +394,8 @@ final class CollectionPersister
     /**
      * Return callback instance for specified collection. This callback will prepare values for query from documents
      * that collection contain.
+     *
+     * @param PersistentCollectionInterface<array-key, object> $coll
      */
     private function getValuePrepareCallback(PersistentCollectionInterface $coll): Closure
     {
@@ -415,6 +417,8 @@ final class CollectionPersister
      *     <code>
      *     list($path, $parent) = $this->getPathAndParent($coll)
      *     </code>
+     *
+     * @param PersistentCollectionInterface<array-key, object> $coll
      *
      * @return array{string, object|null}
      */

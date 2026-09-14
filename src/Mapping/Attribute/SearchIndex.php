@@ -21,7 +21,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 class SearchIndex implements MappingAttribute
 {
     /**
-     * @param array<string, array>|null     $fields
+     * @param array<string, mixed>|null     $fields
      * @param list<array>|null              $analyzers
      * @param SearchIndexStoredSource|null  $storedSource
      * @param list<SearchIndexSynonym>|null $synonyms

@@ -21,7 +21,6 @@ use function array_udiff_assoc;
 use function array_values;
 use function count;
 use function get_class;
-use function is_object;
 use function sprintf;
 
 /**
@@ -359,9 +358,7 @@ trait PersistentCollectionTrait
      */
     public function __clone()
     {
-        if (is_object($this->coll)) {
-            $this->coll = clone $this->coll;
-        }
+        $this->coll = clone $this->coll;
 
         $this->initialize();
 

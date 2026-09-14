@@ -26,7 +26,7 @@ use function strtolower;
  *         partitionBy?: string|OperatorExpression,
  *         partitionByFields?: list<string>,
  *         sortBy?: SortShape,
- *         output: array,
+ *         output: array<string, array<string, mixed>>,
  *     }
  * }
  */

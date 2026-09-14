@@ -559,7 +559,10 @@ class BuilderTest extends BaseTestCase
         ];
     }
 
-    /** @param string[] $args */
+    /**
+     * @param string[]           $args
+     * @param array<string, int> $expected
+     */
     #[DataProvider('provideSelectProjections')]
     public function testSelect(array $args, array $expected): void
     {
@@ -574,7 +577,10 @@ class BuilderTest extends BaseTestCase
         return self::provideProjections(true);
     }
 
-    /** @param string[] $args */
+    /**
+     * @param string[]           $args
+     * @param array<string, int> $expected
+     */
     #[DataProvider('provideExcludeProjections')]
     public function testExclude(array $args, array $expected): void
     {

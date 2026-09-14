@@ -1606,7 +1606,7 @@ use const PHP_VERSION_ID;
         }
     }
 
-    public function getBucketName(): ?string
+    public function getBucketName(): string
     {
         return $this->bucketName;
     }
@@ -1817,8 +1817,6 @@ use const PHP_VERSION_ID;
      * @internal
      *
      * @phpstan-param AssociationFieldMapping $mapping
-     *
-     * @throws MappingException
      */
     public function addInheritedAssociationMapping(array $mapping): void
     {

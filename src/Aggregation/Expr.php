@@ -741,6 +741,10 @@ class Expr implements
         ]);
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function mergeObjects($expression, ...$expressions): static
     {
         return $this->accumulatorOperator('$mergeObjects', ...func_get_args());

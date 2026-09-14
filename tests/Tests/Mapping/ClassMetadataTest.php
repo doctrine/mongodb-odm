@@ -1010,6 +1010,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm->addSearchIndex(['mappings' => []]);
     }
 
+    /** @param array<string, mixed> $definition */
     #[TestWith([null, ClassMetadata::DEFAULT_SEARCH_INDEX_NAME, ['mappings' => ['dynamic' => true]]])]
     #[TestWith(['custom_name', 'custom_name', ['mappings' => ['fields' => ['title' => ['type' => 'string']]]]])]
     public function testSearchIndexDefinition(?string $name, string $expectedName, array $definition): void
@@ -1026,6 +1027,7 @@ class ClassMetadataTest extends BaseTestCase
         ], $cm->getSearchIndexes());
     }
 
+    /** @param array<string, mixed> $definition */
     #[TestWith([[]])]
     #[TestWith([['fields' => []]])]
     #[TestWith([['fields' => [['type' => 'filter', 'path' => 'foo']]]])]

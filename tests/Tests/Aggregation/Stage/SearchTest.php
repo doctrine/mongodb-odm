@@ -789,6 +789,22 @@ class SearchTest extends BaseTestCase
             },
         ];
 
+        yield 'Range with mixed bound inclusivity' => [
+            'expectedOperator' => [
+                'range' => (object) [
+                    'path' => ['field1', 'field2'],
+                    'gt' => 5,
+                    'lte' => 10,
+                ],
+            ],
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
+                return $stage->range()
+                    ->path('field1', 'field2')
+                    ->gt(5)
+                    ->lte(10);
+            },
+        ];
+
         yield 'Range with boost score' => [
             'expectedOperator' => [
                 'range' => (object) [
@@ -1089,6 +1105,7 @@ class SearchTest extends BaseTestCase
         ];
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideCompoundBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
@@ -1143,6 +1160,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideCompoundBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
@@ -1190,6 +1208,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
     #[DataProvider('provideEqualsBuilders')]
@@ -1239,6 +1258,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideCompoundBuilders')]
     #[DataProvider('provideEqualsBuilders')]
@@ -1276,6 +1296,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     public function testSearchOperatorsWithSearchBefore(array $expectedOperator, Closure $createOperator, ?string $className = null): void
     {
@@ -1317,6 +1338,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     public function testSearchOperatorsWithSearchAfter(array $expectedOperator, Closure $createOperator, ?string $className = null): void
     {

@@ -130,6 +130,9 @@ abstract class BaseTestCase extends TestCase
      * the original assertion checked.
      *
      * @deprecated
+     *
+     * @param array<array-key, mixed> $subset
+     * @param array<array-key, mixed> $array
      */
     public static function assertArraySubset(array $subset, array $array, bool $checkForObjectIdentity = false, string $message = ''): void
     {

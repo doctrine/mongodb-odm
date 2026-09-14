@@ -15,17 +15,19 @@ use GeoJson\Geometry\Polygon;
  * @internal
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-search/geoWithin/
+ *
+ * @phpstan-type GeoJsonGeometry array{type: string, coordinates?: mixed, crs?: mixed, bbox?: mixed}
  */
 class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;
 
     /** @var list<string> */
-    private array $path      = [];
-    private string $relation = '';
-    private ?object $box     = null;
-    private ?object $circle  = null;
+    private array $path     = [];
+    private ?object $box    = null;
+    private ?object $circle = null;
 
+    /** @var GeoJsonGeometry|MultiPolygon|Polygon|null */
     private array|MultiPolygon|Polygon|null $geometry = null;
 
     public function __construct(Search $search, DocumentPersister $persister, string ...$path)
@@ -43,8 +45,8 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array|Point $bottomLeft
-     * @param array|Point $topRight
+     * @param GeoJsonGeometry|Point $bottomLeft
+     * @param GeoJsonGeometry|Point $topRight
      */
     public function box($bottomLeft, $topRight): static
     {
@@ -57,8 +59,8 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
     }
 
     /**
-     * @param array|Point $center
-     * @param int|float   $radius
+     * @param GeoJsonGeometry|Point $center
+     * @param int|float             $radius
      */
     public function circle($center, $radius): static
     {
@@ -70,7 +72,7 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this;
     }
 
-    /** @param Polygon|MultiPolygon|array $geometry */
+    /** @param Polygon|MultiPolygon|GeoJsonGeometry $geometry */
     public function geometry($geometry): static
     {
         $this->geometry = $geometry;
@@ -102,7 +104,11 @@ class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
         return $this->appendScore($params);
     }
 
-    /** @param array|Geometry $geometry */
+    /**
+     * @param GeoJsonGeometry|Geometry $geometry
+     *
+     * @return GeoJsonGeometry
+     */
     private function convertGeometry($geometry): array
     {
         if (! $geometry instanceof Geometry) {

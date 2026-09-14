@@ -150,7 +150,7 @@ class Expr
     public function addToSet($valueOrExpression): self
     {
         $this->requiresCurrentField(__METHOD__);
-        $this->newObj['$addToSet'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
+        $this->newObj['$addToSet'][$this->currentField] = self::convertExpression($valueOrExpression, $this->class);
 
         return $this;
     }
@@ -995,7 +995,7 @@ class Expr
     public function pull($valueOrExpression): self
     {
         $this->requiresCurrentField(__METHOD__);
-        $this->newObj['$pull'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
+        $this->newObj['$pull'][$this->currentField] = self::convertExpression($valueOrExpression, $this->class);
 
         return $this;
     }
@@ -1464,7 +1464,7 @@ class Expr
                 continue;
             }
 
-            $convertedQuery[$key] = static::convertExpression($value, $fieldMetadata ?? $classMetadata);
+            $convertedQuery[$key] = self::convertExpression($value, $fieldMetadata ?? $classMetadata);
         }
 
         return $convertedQuery;

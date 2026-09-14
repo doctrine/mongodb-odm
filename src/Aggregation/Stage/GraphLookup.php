@@ -23,10 +23,10 @@ use function substr;
 /** @phpstan-import-type FieldMapping from ClassMetadata */
 class GraphLookup extends Stage
 {
-    private ?string $from;
+    private string $from;
 
-    /** @var string|Expr|mixed[]|null */
-    private string|Expr|array|null $startWith;
+    /** @var string|Expr|mixed[] */
+    private string|Expr|array $startWith;
 
     private ?string $connectFromField = null;
 
