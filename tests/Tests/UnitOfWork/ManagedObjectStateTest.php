@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\UnitOfWork;
 
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\UnitOfWork\ManagedObjectState;
+use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
 use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
-/** @phpstan-import-type AssociationFieldMapping from ClassMetadata */
 class ManagedObjectStateTest extends TestCase
 {
     public function testInitialState(): void
@@ -19,7 +17,7 @@ class ManagedObjectStateTest extends TestCase
 
         self::assertSame(PersistenceState::New, $state->state);
         self::assertNull($state->originalData);
-        self::assertNull($state->getParentAssociation());
+        self::assertNull($state->parentAssociation);
     }
 
     public function testConstructorAcceptsInitialOriginalData(): void
@@ -56,42 +54,13 @@ class ManagedObjectStateTest extends TestCase
         self::assertNull($state->originalData);
     }
 
-    public function testParentAssociation(): void
+    public function testParentAssociationCanBeAssigned(): void
     {
-        $state   = new ManagedObjectState(PersistenceState::Managed);
-        $mapping = self::getAssociationFieldMapping();
-        $parent  = new stdClass();
+        $state             = new ManagedObjectState(PersistenceState::Managed);
+        $parentAssociation = new ParentAssociation(ParentAssociationTest::getAssociationFieldMapping(), null, 'embedded');
 
-        $state->setParentAssociation($mapping, $parent, 'embedded');
+        $state->parentAssociation = $parentAssociation;
 
-        self::assertSame([$mapping, $parent, 'embedded'], $state->getParentAssociation());
-    }
-
-    public function testParentAssociationWithoutParent(): void
-    {
-        $state   = new ManagedObjectState(PersistenceState::Managed);
-        $mapping = self::getAssociationFieldMapping();
-
-        $state->setParentAssociation($mapping, null, 'embedded');
-
-        self::assertSame([$mapping, null, 'embedded'], $state->getParentAssociation());
-    }
-
-    /** @phpstan-return AssociationFieldMapping */
-    private static function getAssociationFieldMapping(): array
-    {
-        return [
-            'fieldName' => 'embedded',
-            'name' => 'embedded',
-            'isCascadeRemove' => false,
-            'isCascadePersist' => false,
-            'isCascadeRefresh' => false,
-            'isCascadeMerge' => false,
-            'isCascadeDetach' => false,
-            'isOwningSide' => true,
-            'isInverseSide' => false,
-            'targetDocument' => stdClass::class,
-            'association' => ClassMetadata::EMBED_ONE,
-        ];
+        self::assertSame($parentAssociation, $state->parentAssociation);
     }
 }

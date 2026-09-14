@@ -18,6 +18,7 @@ use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\UnitOfWork\ParentAssociation;
 use Doctrine\ODM\MongoDB\UnitOfWork\PersistenceState;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
@@ -305,7 +306,7 @@ final class UnitOfWork implements PropertyChangedListener
         $oid                                   = spl_object_id($document);
         $this->embeddedDocumentsRegistry[$oid] = $document;
 
-        $this->dm->getOrCreateObjectState($document)->setParentAssociation($mapping, $parent, $propertyPath);
+        $this->dm->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $propertyPath);
     }
 
     /**
@@ -319,7 +320,11 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getParentAssociation(object $document): ?array
     {
-        return $this->dm->getObjectState($document)?->getParentAssociation();
+        $parentAssociation = $this->dm->getObjectState($document)?->parentAssociation;
+
+        return $parentAssociation === null
+            ? null
+            : [$parentAssociation->mapping, $parentAssociation->parent, $parentAssociation->propertyPath];
     }
 
     /**

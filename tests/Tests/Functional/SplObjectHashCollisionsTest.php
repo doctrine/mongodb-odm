@@ -100,7 +100,7 @@ class SplObjectHashCollisionsTest extends BaseTestCase
         $withData = 0;
 
         foreach ($storage as $document) {
-            if ($storage[$document]->getParentAssociation() !== null) {
+            if ($storage[$document]->parentAssociation !== null) {
                 $withData++;
             }
         }
