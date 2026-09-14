@@ -88,7 +88,7 @@ class DocumentManagerTest extends BaseTestCase
 
         $state = $this->dm->getOrCreateObjectState($document);
 
-        self::assertSame(PersistenceState::New, $state->getState());
+        self::assertSame(PersistenceState::New, $state->state);
         self::assertSame($state, $this->dm->getObjectState($document));
     }
 
@@ -98,18 +98,18 @@ class DocumentManagerTest extends BaseTestCase
 
         $state = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
 
-        self::assertSame(PersistenceState::Managed, $state->getState());
+        self::assertSame(PersistenceState::Managed, $state->state);
     }
 
     public function testGetOrCreateObjectStateReturnsExistingStateWithoutOverwritingIt(): void
     {
         $document = new CmsUser();
 
-        $state = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
-        $state->setState(PersistenceState::Removed);
+        $state        = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
+        $state->state = PersistenceState::Removed;
 
         self::assertSame($state, $this->dm->getOrCreateObjectState($document, PersistenceState::New));
-        self::assertSame(PersistenceState::Removed, $state->getState());
+        self::assertSame(PersistenceState::Removed, $state->state);
     }
 
     public function testRemoveObjectStateForgetsTrackedState(): void
@@ -151,8 +151,8 @@ class DocumentManagerTest extends BaseTestCase
         $state2 = $this->dm->getOrCreateObjectState($document2, PersistenceState::New);
 
         self::assertNotSame($state1, $state2);
-        self::assertSame(PersistenceState::Managed, $this->dm->getObjectState($document1)->getState());
-        self::assertSame(PersistenceState::New, $this->dm->getObjectState($document2)->getState());
+        self::assertSame(PersistenceState::Managed, $this->dm->getObjectState($document1)->state);
+        self::assertSame(PersistenceState::New, $this->dm->getObjectState($document2)->state);
     }
 
     public function testGetProxyFactory(): void
