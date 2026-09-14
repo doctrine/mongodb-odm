@@ -81,9 +81,31 @@ class SplObjectHashCollisionsTest extends BaseTestCase
 
     private function expectCount(string $prop, int $expected): void
     {
+        if ($prop === 'parentAssociations') {
+            self::assertSame($expected, $this->countObjectStatesWithParentAssociation());
+
+            return;
+        }
+
         $ro = new ReflectionObject($this->uow);
         $rp = $ro->getProperty($prop);
         self::assertCount($expected, $rp->getValue($this->uow));
+    }
+
+    private function countObjectStatesWithParentAssociation(): int
+    {
+        $ro       = new ReflectionObject($this->dm);
+        $rp       = $ro->getProperty('objectStates');
+        $storage  = $rp->getValue($this->dm);
+        $withData = 0;
+
+        foreach ($storage as $document) {
+            if ($storage[$document]->getParentAssociation() !== null) {
+                $withData++;
+            }
+        }
+
+        return $withData;
     }
 }
 
