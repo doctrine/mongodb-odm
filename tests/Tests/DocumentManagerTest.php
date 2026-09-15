@@ -17,7 +17,6 @@ use Doctrine\ODM\MongoDB\Proxy\Factory\ProxyFactory;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
-use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\SchemaManager;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\BaseCategory;
@@ -77,111 +76,9 @@ class DocumentManagerTest extends BaseTestCase
         self::assertInstanceOf(UnitOfWork::class, $this->dm->getUnitOfWork());
     }
 
-    public function testGetObjectStateReturnsNullForUnknownDocument(): void
+    public function testGetDocumentRegistryReturnsTheSameInstanceEveryTime(): void
     {
-        self::assertNull($this->dm->getObjectState(new CmsUser()));
-    }
-
-    public function testGetOrCreateObjectStateCreatesStateWithDefaultPersistenceState(): void
-    {
-        $document = new CmsUser();
-
-        $state = $this->dm->getOrCreateObjectState($document);
-
-        self::assertSame(PersistenceState::New, $state->state);
-        self::assertSame($state, $this->dm->getObjectState($document));
-    }
-
-    public function testGetOrCreateObjectStateUsesGivenInitialPersistenceState(): void
-    {
-        $document = new CmsUser();
-
-        $state = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
-
-        self::assertSame(PersistenceState::Managed, $state->state);
-    }
-
-    public function testGetOrCreateObjectStateReturnsExistingStateWithoutOverwritingIt(): void
-    {
-        $document = new CmsUser();
-
-        $state        = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
-        $state->state = PersistenceState::Removed;
-
-        self::assertSame($state, $this->dm->getOrCreateObjectState($document, PersistenceState::New));
-        self::assertSame(PersistenceState::Removed, $state->state);
-    }
-
-    public function testTrackEstablishesStateIdentifierAndIdentityMapEntry(): void
-    {
-        $document = new CmsUser();
-        $class    = $this->dm->getClassMetadata(CmsUser::class);
-        $id       = (string) new ObjectId();
-        $class->setIdentifierValue($document, $id);
-
-        $wasNewlyAdded = $this->dm->track($class, $document, PersistenceState::Managed, ['username' => 'alice']);
-
-        self::assertTrue($wasNewlyAdded);
-        $state = $this->dm->getObjectState($document);
-        self::assertSame(PersistenceState::Managed, $state->state);
-        self::assertSame($id, $state->identifier);
-        self::assertSame(['username' => 'alice'], $state->originalData);
-        self::assertSame($document, $this->dm->tryGetById($id, $class));
-    }
-
-    public function testTrackReturnsFalseWhenAlreadyInIdentityMap(): void
-    {
-        $document = new CmsUser();
-        $class    = $this->dm->getClassMetadata(CmsUser::class);
-        $class->setIdentifierValue($document, (string) new ObjectId());
-
-        self::assertTrue($this->dm->track($class, $document, PersistenceState::Managed));
-        self::assertFalse($this->dm->track($class, $document, PersistenceState::Managed));
-    }
-
-    public function testStopTrackingForgetsStateAndIdentityMapEntry(): void
-    {
-        $document = new CmsUser();
-        $class    = $this->dm->getClassMetadata(CmsUser::class);
-        $id       = (string) new ObjectId();
-        $class->setIdentifierValue($document, $id);
-        $this->dm->track($class, $document, PersistenceState::Managed);
-
-        self::assertTrue($this->dm->stopTracking($class, $document));
-
-        self::assertNull($this->dm->getObjectState($document));
-        self::assertFalse($this->dm->tryGetById($id, $class));
-    }
-
-    public function testStopTrackingOnUntrackedDocumentIsANoop(): void
-    {
-        self::assertFalse($this->dm->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser()));
-    }
-
-    public function testClearObjectStatesForgetsAllTrackedState(): void
-    {
-        $document1 = new CmsUser();
-        $document2 = new CmsUser();
-        $this->dm->getOrCreateObjectState($document1);
-        $this->dm->getOrCreateObjectState($document2);
-
-        $this->dm->clearObjectStates();
-
-        self::assertNull($this->dm->getObjectState($document1));
-        self::assertNull($this->dm->getObjectState($document2));
-    }
-
-    public function testObjectStatesAreTrackedPerDocumentInstance(): void
-    {
-        $document1 = new CmsUser();
-        $document2 = new CmsUser();
-
-        $state1 = $this->dm->getOrCreateObjectState($document1, PersistenceState::Managed);
-        $state2 = $this->dm->getOrCreateObjectState($document2, PersistenceState::New);
-
-        self::assertNotSame($state1, $state2);
-        self::assertSame(PersistenceState::Managed, $this->dm->getObjectState($document1)->state);
-        self::assertSame(PersistenceState::New, $this->dm->getObjectState($document2)->state);
+        self::assertSame($this->dm->getDocumentRegistry(), $this->dm->getDocumentRegistry());
     }
 
     public function testGetProxyFactory(): void

@@ -16,6 +16,7 @@ use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
+use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
 use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -200,6 +201,12 @@ final class UnitOfWork implements PropertyChangedListener
     private DocumentManager $dm;
 
     /**
+     * The DocumentManager's DocumentRegistry, cached here for direct access
+     * to the operations that have no public equivalent on DocumentManager.
+     */
+    private DocumentRegistry $documentRegistry;
+
+    /**
      * The EventManager used for dispatching events.
      */
     private EventManager $evm;
@@ -246,6 +253,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function __construct(DocumentManager $dm, EventManager $evm, HydratorFactory $hydratorFactory)
     {
         $this->dm                    = $dm;
+        $this->documentRegistry      = $dm->getDocumentRegistry();
         $this->evm                   = $evm;
         $this->hydratorFactory       = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
@@ -670,7 +678,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $oid           = spl_object_id($document);
         $actualData    = $this->getDocumentActualData($document);
-        $objectState   = $this->dm->getOrCreateObjectState($document);
+        $objectState   = $this->documentRegistry->getOrCreateObjectState($document);
         $isNewDocument = $objectState->originalData === null;
         if ($isNewDocument) {
             // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
@@ -916,7 +924,7 @@ final class UnitOfWork implements PropertyChangedListener
                     isset($this->scheduledDocumentInsertions[$oid])
                     || isset($this->scheduledDocumentUpserts[$oid])
                     || isset($this->scheduledDocumentDeletions[$oid])
-                    || $this->dm->getObjectState($document) === null
+                    || $this->documentRegistry->getObjectState($document) === null
                 ) {
                     continue;
                 }
@@ -1070,7 +1078,7 @@ final class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($this->dm->getObjectState($document)?->state !== PersistenceState::Managed) {
+        if ($this->documentRegistry->getObjectState($document)?->state !== PersistenceState::Managed) {
             throw new InvalidArgumentException('Document must be managed.');
         }
 
@@ -1093,7 +1101,7 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $this->lifecycleEventManager->prePersist($class, $document);
         $oid         = spl_object_id($document);
-        $objectState = $this->dm->getOrCreateObjectState($document);
+        $objectState = $this->documentRegistry->getOrCreateObjectState($document);
         $upsert      = false;
         if ($class->identifier) {
             $idValue = $class->getIdentifierValue($document);
@@ -1229,7 +1237,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $persister->delete($document, $options);
             }
 
-            $this->dm->stopTracking($class, $document);
+            $this->documentRegistry->stopTracking($class, $document);
 
             // Clear snapshot information for any referenced PersistentCollection
             // http://www.doctrine-project.org/jira/browse/MODM-95
@@ -1282,7 +1290,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         $this->scheduledDocumentInsertions[$oid] = $document;
 
-        if ($this->dm->getObjectState($document)?->identifier === null) {
+        if ($this->documentRegistry->getObjectState($document)?->identifier === null) {
             return;
         }
 
@@ -1322,8 +1330,8 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document can not be scheduled for upsert twice.');
         }
 
-        $this->scheduledDocumentUpserts[$oid]                    = $document;
-        $this->dm->getOrCreateObjectState($document)->identifier = $class->getIdentifierValue($document);
+        $this->scheduledDocumentUpserts[$oid]                                  = $document;
+        $this->documentRegistry->getOrCreateObjectState($document)->identifier = $class->getIdentifierValue($document);
         $this->addToIdentityMap($document);
     }
 
@@ -1353,7 +1361,7 @@ final class UnitOfWork implements PropertyChangedListener
     public function scheduleForUpdate(object $document): void
     {
         $oid = spl_object_id($document);
-        if ($this->dm->getObjectState($document)?->identifier === null) {
+        if ($this->documentRegistry->getObjectState($document)?->identifier === null) {
             throw new InvalidArgumentException('Document has no identity.');
         }
 
@@ -1417,7 +1425,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $this->dm->removeFromIdentityMap($class, $document);
-        $this->dm->getOrCreateObjectState($document)->state = PersistenceState::Removed;
+        $this->documentRegistry->getOrCreateObjectState($document)->state = PersistenceState::Removed;
 
         if (isset($this->scheduledDocumentUpdates[$oid])) {
             unset($this->scheduledDocumentUpdates[$oid]);
@@ -1475,7 +1483,7 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->dm->getClassMetadata($document::class);
 
-        if (! $this->dm->addToIdentityMap($class, $document)) {
+        if (! $this->documentRegistry->addToIdentityMap($class, $document)) {
             return false;
         }
 
@@ -1505,7 +1513,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getDocumentState(object $document, ?int $assume = null): int
     {
-        $objectState = $this->dm->getObjectState($document);
+        $objectState = $this->documentRegistry->getObjectState($document);
 
         if ($objectState !== null) {
             return $this->persistenceStateToInt($objectState->state);
@@ -1997,7 +2005,7 @@ final class UnitOfWork implements PropertyChangedListener
                             $managedCol = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $assoc2, null);
                             $managedCol->setOwner($managedCopy, $assoc2);
                             $prop->setValue($managedCopy, $managedCol);
-                            $this->dm->getOrCreateObjectState($document)->originalData[$name] = $managedCol;
+                            $this->documentRegistry->getOrCreateObjectState($document)->originalData[$name] = $managedCol;
                         }
 
                         /* Note: do not process association's target documents.
@@ -2084,7 +2092,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         switch ($this->getDocumentState($document, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
-                $this->dm->stopTracking($this->dm->getClassMetadata($document::class), $document);
+                $this->documentRegistry->stopTracking($this->dm->getClassMetadata($document::class), $document);
                 unset(
                     $this->scheduledDocumentInsertions[$oid],
                     $this->scheduledDocumentUpdates[$oid],
@@ -2390,7 +2398,7 @@ final class UnitOfWork implements PropertyChangedListener
             $this->orphanRemovals               =
             $this->hasScheduledCollections      = [];
 
-            $this->dm->clearObjectStates();
+            $this->documentRegistry->clear();
 
             $event = new Event\OnClearEventArgs($this->dm);
         } else {
@@ -2776,8 +2784,8 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             if ($overrideLocalValues) {
-                $data                                                      = $this->hydratorFactory->hydrate($document, $data, $hints);
-                $this->dm->getOrCreateObjectState($document)->originalData = $data;
+                $data                                                                    = $this->hydratorFactory->hydrate($document, $data, $hints);
+                $this->documentRegistry->getOrCreateObjectState($document)->originalData = $data;
             }
         } else {
             if ($document === null) {
@@ -2792,7 +2800,7 @@ final class UnitOfWork implements PropertyChangedListener
             $data = $this->hydratorFactory->hydrate($document, $data, $hints);
 
             if (! $class->isQueryResultDocument && ! $class->isView()) {
-                $this->dm->getOrCreateObjectState($document)->originalData = $data;
+                $this->documentRegistry->getOrCreateObjectState($document)->originalData = $data;
             }
         }
 
@@ -2970,7 +2978,7 @@ final class UnitOfWork implements PropertyChangedListener
             $class->setIdentifierValue($document, $class->getPHPIdentifierValue($id));
         }
 
-        if (! $this->dm->track($class, $document, PersistenceState::Managed, $data)) {
+        if (! $this->documentRegistry->track($class, $document, PersistenceState::Managed, $data)) {
             return;
         }
 

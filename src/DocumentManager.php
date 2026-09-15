@@ -19,7 +19,6 @@ use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
-use Doctrine\ODM\MongoDB\Registry\ManagedObjectState;
 use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
 use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
@@ -749,39 +748,18 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Gets the long-lived state tracked for a document, if any.
+     * Gets the registry tracking long-lived per-document state and the
+     * identity map for this DocumentManager.
+     *
+     * Only reach for this directly when you need lower-level access than
+     * the methods below provide (e.g. from UnitOfWork, which caches the
+     * result of this method); most callers should prefer those instead.
      *
      * @internal
      */
-    public function getObjectState(object $document): ?ManagedObjectState
+    public function getDocumentRegistry(): DocumentRegistry
     {
-        return $this->documentRegistry->getObjectState($document);
-    }
-
-    /**
-     * Gets the long-lived state tracked for a document, creating it with the
-     * given initial persistence state if it does not exist yet.
-     *
-     * Note that this does not add the document to the identity map or
-     * otherwise establish it as tracked. Prefer {@see track()} unless you
-     * have a specific reason to set state on a document ahead of (or
-     * without) fully tracking it.
-     *
-     * @internal
-     */
-    public function getOrCreateObjectState(object $document, PersistenceState $state = PersistenceState::New): ManagedObjectState
-    {
-        return $this->documentRegistry->getOrCreateObjectState($document, $state);
-    }
-
-    /**
-     * Resets all long-lived per-document state tracked by the DocumentManager.
-     *
-     * @internal
-     */
-    public function clearObjectStates(): void
-    {
-        $this->documentRegistry->clear();
+        return $this->documentRegistry;
     }
 
     /**
@@ -793,7 +771,7 @@ class DocumentManager implements ObjectManager
      */
     public function setParentAssociation(object $document, array $mapping, ?object $parent, string $field): void
     {
-        $this->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $field);
+        $this->documentRegistry->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $field);
     }
 
     /**
@@ -803,7 +781,7 @@ class DocumentManager implements ObjectManager
      */
     public function getParentAssociation(object $document): ?ParentAssociation
     {
-        return $this->getObjectState($document)?->parentAssociation;
+        return $this->documentRegistry->getObjectState($document)?->parentAssociation;
     }
 
     /**
@@ -817,7 +795,7 @@ class DocumentManager implements ObjectManager
      */
     public function getOriginalDocumentData(object $document): array
     {
-        $objectState = $this->getObjectState($document);
+        $objectState = $this->documentRegistry->getObjectState($document);
 
         return $objectState !== null ? $objectState->originalData ?? [] : [];
     }
@@ -829,7 +807,7 @@ class DocumentManager implements ObjectManager
      */
     public function setOriginalDocumentData(object $document, array $data): void
     {
-        $this->getOrCreateObjectState($document)->originalData = $data;
+        $this->documentRegistry->getOrCreateObjectState($document)->originalData = $data;
     }
 
     /**
@@ -839,7 +817,7 @@ class DocumentManager implements ObjectManager
      */
     public function setOriginalDocumentProperty(object $document, string $property, mixed $value): void
     {
-        $this->getOrCreateObjectState($document)->originalData[$property] = $value;
+        $this->documentRegistry->getOrCreateObjectState($document)->originalData[$property] = $value;
     }
 
     /**
@@ -849,61 +827,7 @@ class DocumentManager implements ObjectManager
      */
     public function getDocumentIdentifier(object $document): mixed
     {
-        return $this->getObjectState($document)?->identifier;
-    }
-
-    /**
-     * Fully establishes a document as managed: records its persistence state
-     * and (if given) original data, reads its identifier off the document
-     * itself, and adds it to the identity map. Returns whether the document
-     * was newly added to the identity map.
-     *
-     * @internal
-     *
-     * @param array<string, mixed>|null $originalData
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @template T of object
-     */
-    public function track(ClassMetadata $class, object $document, PersistenceState $state = PersistenceState::New, ?array $originalData = null): bool
-    {
-        return $this->documentRegistry->track($class, $document, $state, $originalData);
-    }
-
-    /**
-     * Fully forgets a document: removes its tracked state and its entry in
-     * the identity map, if any.
-     *
-     * Returns whether the document was removed from the identity map (as
-     * opposed to not having been present there).
-     *
-     * @internal
-     *
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @template T of object
-     */
-    public function stopTracking(ClassMetadata $class, object $document): bool
-    {
-        return $this->documentRegistry->stopTracking($class, $document);
-    }
-
-    /**
-     * Registers a document in the identity map.
-     *
-     * Note that documents in a hierarchy are registered with the class name of
-     * the root document. Identifiers are serialized before being used as array
-     * keys to allow differentiation of equal, but not identical, values.
-     *
-     * @internal
-     *
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @template T of object
-     */
-    public function addToIdentityMap(ClassMetadata $class, object $document): bool
-    {
-        return $this->documentRegistry->addToIdentityMap($class, $document);
+        return $this->documentRegistry->getObjectState($document)?->identifier;
     }
 
     /**
@@ -921,7 +845,7 @@ class DocumentManager implements ObjectManager
             return false;
         }
 
-        $this->getOrCreateObjectState($document)->state = PersistenceState::Detached;
+        $this->documentRegistry->getOrCreateObjectState($document)->state = PersistenceState::Detached;
 
         return true;
     }
