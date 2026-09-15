@@ -43,6 +43,14 @@ final class DocumentRegistry implements Countable
         return $this->objectStates[$document] ?? null;
     }
 
+    /**
+     * Note that this creates a ManagedObjectState for the document if none
+     * exists yet, without adding it to the identity map or otherwise
+     * establishing it as tracked. Prefer {@see track()} unless you have a
+     * specific reason to set state on a document ahead of (or without)
+     * fully tracking it, e.g. recording a parent association before an
+     * embedded document has an identifier of its own.
+     */
     public function getOrCreateObjectState(object $document, PersistenceState $state = PersistenceState::New): ManagedObjectState
     {
         return $this->objectStates[$document] ??= new ManagedObjectState($state);
