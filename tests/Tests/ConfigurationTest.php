@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\ConfigurationException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use LogicException;
 use MongoDB\Driver\Manager;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
@@ -256,5 +258,34 @@ class ConfigurationTest extends TestCase
 
         // @phpstan-ignore argument.type
         $c->setKmsProvider(['type' => ['not', 'a', 'string']]);
+    }
+
+    public function testTypRegistry(): void
+    {
+        $c = new Configuration();
+        self::assertSame($c->getTypeRegistry(), TypeRegistry::getSharedInstance());
+
+        $typeRegistry = new TypeRegistry();
+        $c->setTypeRegistry($typeRegistry);
+        self::assertSame($typeRegistry, $c->getTypeRegistry());
+    }
+
+    public function testTypeRegistryCannotBeReplacedOnceSet(): void
+    {
+        $c = new Configuration();
+        $c->setTypeRegistry(new TypeRegistry());
+
+        self::expectException(LogicException::class);
+        $c->setTypeRegistry(new TypeRegistry());
+    }
+
+    public function testAnyTypeProviderImplementationIsAccepted(): void
+    {
+        $c        = new Configuration();
+        $provider = self::createStub(TypeProvider::class);
+
+        $c->setTypeRegistry($provider);
+
+        self::assertSame($provider, $c->getTypeRegistry());
     }
 }

@@ -21,6 +21,8 @@ use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
@@ -153,6 +155,22 @@ class Configuration
     private bool $nativeLazyObject = false;
 
     private static string $version;
+
+    private ?TypeProvider $typeRegistry = null;
+
+    public function setTypeRegistry(TypeProvider $typeRegistry): void
+    {
+        if ($this->typeRegistry !== null) {
+            throw new LogicException('TypeRegistry is already set and cannot be changed.');
+        }
+
+        $this->typeRegistry = $typeRegistry;
+    }
+
+    public function getTypeRegistry(): TypeProvider
+    {
+        return $this->typeRegistry ?? TypeRegistry::getSharedInstance();
+    }
 
     /**
      * Provides the driver options to be used when creating the MongoDB client.

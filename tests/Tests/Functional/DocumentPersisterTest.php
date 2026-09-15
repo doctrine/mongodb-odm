@@ -223,8 +223,7 @@ class DocumentPersisterTest extends BaseTestCase
     {
         $class             = DocumentPersisterTestDocumentWithCustomId::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
-
-        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+        $this->typeRegistry->register('DocumentPersisterCustomId', new DocumentPersisterCustomIdType());
 
         self::assertEquals(
             $expected,
@@ -235,7 +234,7 @@ class DocumentPersisterTest extends BaseTestCase
     #[DataProvider('queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId')]
     public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase): void
     {
-        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+        $this->typeRegistry->register('DocumentPersisterCustomId', new DocumentPersisterCustomIdType());
 
         $class             = DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
