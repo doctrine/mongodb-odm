@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Registry;
 
+use Countable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use SplObjectStorage;
 
@@ -22,7 +23,7 @@ use function spl_object_id;
  *
  * @internal This class is not part of the public API and is subject to change.
  */
-final class DocumentRegistry
+final class DocumentRegistry implements Countable
 {
     /** @var SplObjectStorage<object, ManagedObjectState> */
     private SplObjectStorage $objectStates;
@@ -42,11 +43,7 @@ final class DocumentRegistry
 
     public function getOrCreateObjectState(object $document, PersistenceState $state = PersistenceState::New): ManagedObjectState
     {
-        if (! isset($this->objectStates[$document])) {
-            $this->objectStates[$document] = new ManagedObjectState($state);
-        }
-
-        return $this->objectStates[$document];
+        return $this->objectStates[$document] ??= new ManagedObjectState($state);
     }
 
     public function removeObjectState(object $document): void
@@ -58,6 +55,45 @@ final class DocumentRegistry
     {
         $this->objectStates = new SplObjectStorage();
         $this->identityMap  = [];
+    }
+
+    /**
+     * Fully establishes a document as managed: records its persistence state,
+     * identifier and (if given) original data on its ManagedObjectState, and
+     * adds it to the identity map.
+     *
+     * Returns whether the document was newly added to the identity map (as
+     * opposed to already being present there).
+     *
+     * @param array<string, mixed>|null $originalData
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function track(ClassMetadata $class, object $document, PersistenceState $state, mixed $identifier, ?array $originalData = null): bool
+    {
+        $objectState             = $this->getOrCreateObjectState($document, $state);
+        $objectState->state      = $state;
+        $objectState->identifier = $identifier;
+        if ($originalData !== null) {
+            $objectState->originalData = $originalData;
+        }
+
+        return $this->addToIdentityMap($class, $document);
+    }
+
+    /**
+     * Fully forgets a document: removes its ManagedObjectState and its entry
+     * in the identity map, if any.
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function stopTracking(ClassMetadata $class, object $document): void
+    {
+        $this->removeFromIdentityMap($class, $document);
+        $this->removeObjectState($document);
     }
 
     /**
@@ -169,16 +205,11 @@ final class DocumentRegistry
     }
 
     /**
-     * The number of documents currently tracked in the identity map.
+     * The number of documents currently tracked by this registry.
      */
-    public function size(): int
+    public function count(): int
     {
-        $count = 0;
-        foreach ($this->identityMap as $documentSet) {
-            $count += count($documentSet);
-        }
-
-        return $count;
+        return count($this->objectStates);
     }
 
     /** @phpstan-param ClassMetadata<object> $class */

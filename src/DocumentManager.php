@@ -41,6 +41,7 @@ use Throwable;
 
 use function array_search;
 use function assert;
+use function count;
 use function gettype;
 use function is_object;
 use function ltrim;
@@ -769,16 +770,6 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Removes all long-lived state tracked for a document.
-     *
-     * @internal
-     */
-    public function removeObjectState(object $document): void
-    {
-        $this->documentRegistry->removeObjectState($document);
-    }
-
-    /**
      * Resets all long-lived per-document state tracked by the DocumentManager.
      *
      * @internal
@@ -795,9 +786,9 @@ class DocumentManager implements ObjectManager
      *
      * @phpstan-param FieldMapping $mapping
      */
-    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath): void
+    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $field): void
     {
-        $this->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $propertyPath);
+        $this->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $field);
     }
 
     /**
@@ -854,6 +845,38 @@ class DocumentManager implements ObjectManager
     public function getDocumentIdentifier(object $document): mixed
     {
         return $this->getObjectState($document)?->identifier;
+    }
+
+    /**
+     * Fully establishes a document as managed: records its persistence state,
+     * identifier and (if given) original data, and adds it to the identity
+     * map. Returns whether the document was newly added to the identity map.
+     *
+     * @internal
+     *
+     * @param array<string, mixed>|null $originalData
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function track(ClassMetadata $class, object $document, PersistenceState $state, mixed $identifier, ?array $originalData = null): bool
+    {
+        return $this->documentRegistry->track($class, $document, $state, $identifier, $originalData);
+    }
+
+    /**
+     * Fully forgets a document: removes its tracked state and its entry in
+     * the identity map, if any.
+     *
+     * @internal
+     *
+     * @phpstan-param ClassMetadata<T> $class
+     *
+     * @template T of object
+     */
+    public function stopTracking(ClassMetadata $class, object $document): void
+    {
+        $this->documentRegistry->stopTracking($class, $document);
     }
 
     /**
@@ -975,7 +998,7 @@ class DocumentManager implements ObjectManager
      */
     public function getManagedDocumentsCount(): int
     {
-        return $this->documentRegistry->size();
+        return count($this->documentRegistry);
     }
 
     /**

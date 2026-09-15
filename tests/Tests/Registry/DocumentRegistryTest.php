@@ -51,6 +51,64 @@ class DocumentRegistryTest extends BaseTestCase
         self::assertNull($this->registry->getObjectState($document));
     }
 
+    public function testTrackEstablishesStateIdentifierAndIdentityMapEntry(): void
+    {
+        $document = new CmsUser();
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
+
+        $wasNewlyAdded = $this->registry->track($class, $document, PersistenceState::Managed, $id, ['username' => 'alice']);
+
+        self::assertTrue($wasNewlyAdded);
+        $state = $this->registry->getObjectState($document);
+        self::assertSame(PersistenceState::Managed, $state->state);
+        self::assertSame($id, $state->identifier);
+        self::assertSame(['username' => 'alice'], $state->originalData);
+        self::assertSame($document, $this->registry->tryGetById($id, $class));
+    }
+
+    public function testTrackDoesNotOverwriteOriginalDataWhenNotGiven(): void
+    {
+        $document = new CmsUser();
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
+
+        $this->registry->track($class, $document, PersistenceState::Managed, $id, ['username' => 'alice']);
+        $this->registry->track($class, $document, PersistenceState::Managed, $id);
+
+        self::assertSame(['username' => 'alice'], $this->registry->getObjectState($document)->originalData);
+    }
+
+    public function testTrackReturnsFalseWhenAlreadyInIdentityMap(): void
+    {
+        $document = new CmsUser();
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
+
+        self::assertTrue($this->registry->track($class, $document, PersistenceState::Managed, $id));
+        self::assertFalse($this->registry->track($class, $document, PersistenceState::Managed, $id));
+    }
+
+    public function testStopTrackingForgetsStateAndIdentityMapEntry(): void
+    {
+        $document = new CmsUser();
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
+        $this->registry->track($class, $document, PersistenceState::Managed, $id);
+
+        $this->registry->stopTracking($class, $document);
+
+        self::assertNull($this->registry->getObjectState($document));
+        self::assertFalse($this->registry->tryGetById($id, $class));
+    }
+
+    public function testStopTrackingOnUntrackedDocumentIsANoop(): void
+    {
+        $this->registry->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser());
+
+        $this->expectNotToPerformAssertions();
+    }
+
     public function testAddToIdentityMapAndGetById(): void
     {
         $class                                                         = $this->dm->getClassMetadata(CmsUser::class);
@@ -132,18 +190,18 @@ class DocumentRegistryTest extends BaseTestCase
         self::assertFalse($this->registry->containsId(new ObjectId(), $class->name));
     }
 
-    public function testGetIdentityMapAndSize(): void
+    public function testGetIdentityMapAndCount(): void
     {
         $class = $this->dm->getClassMetadata(CmsUser::class);
 
-        self::assertSame(0, $this->registry->size());
+        self::assertCount(0, $this->registry);
         self::assertSame([], $this->registry->getIdentityMap());
 
         $document                                                      = new CmsUser();
         $this->registry->getOrCreateObjectState($document)->identifier = (string) new ObjectId();
         $this->registry->addToIdentityMap($class, $document);
 
-        self::assertSame(1, $this->registry->size());
+        self::assertCount(1, $this->registry);
         self::assertSame([CmsUser::class => [$document]], array_map('array_values', $this->registry->getIdentityMap()));
     }
 
@@ -157,7 +215,7 @@ class DocumentRegistryTest extends BaseTestCase
         $this->registry->clear();
 
         self::assertNull($this->registry->getObjectState($document));
-        self::assertSame(0, $this->registry->size());
+        self::assertCount(0, $this->registry);
         self::assertSame([], $this->registry->getIdentityMap());
     }
 }
