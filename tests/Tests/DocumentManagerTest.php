@@ -112,19 +112,48 @@ class DocumentManagerTest extends BaseTestCase
         self::assertSame(PersistenceState::Removed, $state->state);
     }
 
-    public function testRemoveObjectStateForgetsTrackedState(): void
+    public function testTrackEstablishesStateIdentifierAndIdentityMapEntry(): void
     {
         $document = new CmsUser();
-        $this->dm->getOrCreateObjectState($document);
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
 
-        $this->dm->removeObjectState($document);
+        $wasNewlyAdded = $this->dm->track($class, $document, PersistenceState::Managed, $id, ['username' => 'alice']);
 
-        self::assertNull($this->dm->getObjectState($document));
+        self::assertTrue($wasNewlyAdded);
+        $state = $this->dm->getObjectState($document);
+        self::assertSame(PersistenceState::Managed, $state->state);
+        self::assertSame($id, $state->identifier);
+        self::assertSame(['username' => 'alice'], $state->originalData);
+        self::assertSame($document, $this->dm->tryGetById($id, $class));
     }
 
-    public function testRemoveObjectStateOnUntrackedDocumentIsANoop(): void
+    public function testTrackReturnsFalseWhenAlreadyInIdentityMap(): void
     {
-        $this->dm->removeObjectState(new CmsUser());
+        $document = new CmsUser();
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
+
+        self::assertTrue($this->dm->track($class, $document, PersistenceState::Managed, $id));
+        self::assertFalse($this->dm->track($class, $document, PersistenceState::Managed, $id));
+    }
+
+    public function testStopTrackingForgetsStateAndIdentityMapEntry(): void
+    {
+        $document = new CmsUser();
+        $class    = $this->dm->getClassMetadata(CmsUser::class);
+        $id       = (string) new ObjectId();
+        $this->dm->track($class, $document, PersistenceState::Managed, $id);
+
+        $this->dm->stopTracking($class, $document);
+
+        self::assertNull($this->dm->getObjectState($document));
+        self::assertFalse($this->dm->tryGetById($id, $class));
+    }
+
+    public function testStopTrackingOnUntrackedDocumentIsANoop(): void
+    {
+        $this->dm->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser());
 
         $this->expectNotToPerformAssertions();
     }

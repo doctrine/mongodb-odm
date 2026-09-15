@@ -274,7 +274,7 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @phpstan-param FieldMapping $mapping
      */
-    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $propertyPath): void
+    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $field): void
     {
         trigger_deprecation(
             'doctrine/mongodb-odm',
@@ -284,14 +284,14 @@ final class UnitOfWork implements PropertyChangedListener
             DocumentManager::class,
         );
 
-        $this->dm->setParentAssociation($document, $mapping, $parent, $propertyPath);
+        $this->dm->setParentAssociation($document, $mapping, $parent, $field);
     }
 
     /**
      * Gets the parent association for a given embedded document.
      *
      *     <code>
-     *     list($mapping, $parent, $propertyPath) = $this->getParentAssociation($embeddedDocument);
+     *     list($mapping, $parent, $field) = $this->getParentAssociation($embeddedDocument);
      *     </code>
      *
      * @deprecated Use {@see DocumentManager::getParentAssociation()} instead.
@@ -312,7 +312,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         return $parentAssociation === null
             ? null
-            : [$parentAssociation->mapping, $parentAssociation->parent, $parentAssociation->propertyPath];
+            : [$parentAssociation->mapping, $parentAssociation->parent, $parentAssociation->field];
     }
 
     /**
@@ -1229,7 +1229,7 @@ final class UnitOfWork implements PropertyChangedListener
                 $persister->delete($document, $options);
             }
 
-            $this->dm->removeObjectState($document);
+            $this->dm->stopTracking($class, $document);
 
             // Clear snapshot information for any referenced PersistentCollection
             // http://www.doctrine-project.org/jira/browse/MODM-95
@@ -1479,11 +1479,20 @@ final class UnitOfWork implements PropertyChangedListener
             return false;
         }
 
+        $this->registerPropertyChangedListener($document);
+
+        return true;
+    }
+
+    /**
+     * Registers this UnitOfWork as a listener for NOTIFY-tracked property
+     * changes on a document that has just become managed.
+     */
+    private function registerPropertyChangedListener(object $document): void
+    {
         if ($document instanceof NotifyPropertyChanged && ! $this->isUninitializedObject($document)) {
             $document->addPropertyChangedListener($this);
         }
-
-        return true;
     }
 
     /**
@@ -2075,8 +2084,7 @@ final class UnitOfWork implements PropertyChangedListener
 
         switch ($this->getDocumentState($document, self::STATE_DETACHED)) {
             case self::STATE_MANAGED:
-                $this->dm->removeFromIdentityMap($this->dm->getClassMetadata($document::class), $document);
-                $this->dm->removeObjectState($document);
+                $this->dm->stopTracking($this->dm->getClassMetadata($document::class), $document);
                 unset(
                     $this->scheduledDocumentInsertions[$oid],
                     $this->scheduledDocumentUpdates[$oid],
@@ -2956,18 +2964,16 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function registerManaged(object $document, $id, array $data): void
     {
-        $class       = $this->dm->getClassMetadata($document::class);
-        $objectState = $this->dm->getOrCreateObjectState($document, PersistenceState::Managed);
+        $class      = $this->dm->getClassMetadata($document::class);
+        $identifier = ! $class->identifier || $id === null
+            ? spl_object_id($document)
+            : $class->getPHPIdentifierValue($id);
 
-        if (! $class->identifier || $id === null) {
-            $objectState->identifier = spl_object_id($document);
-        } else {
-            $objectState->identifier = $class->getPHPIdentifierValue($id);
+        if (! $this->dm->track($class, $document, PersistenceState::Managed, $identifier, $data)) {
+            return;
         }
 
-        $objectState->state        = PersistenceState::Managed;
-        $objectState->originalData = $data;
-        $this->addToIdentityMap($document);
+        $this->registerPropertyChangedListener($document);
     }
 
     /**
