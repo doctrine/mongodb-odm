@@ -8,8 +8,8 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 
 /**
  * The parent association of an embedded document: the mapping it was found
- * through, the (possibly null) object that owns it, and the property path
- * from that parent.
+ * through, the (possibly null) object that owns it, and the field on that
+ * parent it was found in.
  *
  * @internal
  *
@@ -21,7 +21,7 @@ final class ParentAssociation
     public function __construct(
         public readonly array $mapping,
         public readonly ?object $parent,
-        public readonly string $propertyPath,
+        public readonly string $field,
     ) {
     }
 }
