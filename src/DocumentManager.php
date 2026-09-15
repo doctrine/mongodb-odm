@@ -874,15 +874,18 @@ class DocumentManager implements ObjectManager
      * Fully forgets a document: removes its tracked state and its entry in
      * the identity map, if any.
      *
+     * Returns whether the document was removed from the identity map (as
+     * opposed to not having been present there).
+     *
      * @internal
      *
      * @phpstan-param ClassMetadata<T> $class
      *
      * @template T of object
      */
-    public function stopTracking(ClassMetadata $class, object $document): void
+    public function stopTracking(ClassMetadata $class, object $document): bool
     {
-        $this->documentRegistry->stopTracking($class, $document);
+        return $this->documentRegistry->stopTracking($class, $document);
     }
 
     /**

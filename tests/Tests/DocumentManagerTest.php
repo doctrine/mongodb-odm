@@ -147,7 +147,7 @@ class DocumentManagerTest extends BaseTestCase
         $class->setIdentifierValue($document, $id);
         $this->dm->track($class, $document, PersistenceState::Managed);
 
-        $this->dm->stopTracking($class, $document);
+        self::assertTrue($this->dm->stopTracking($class, $document));
 
         self::assertNull($this->dm->getObjectState($document));
         self::assertFalse($this->dm->tryGetById($id, $class));
@@ -155,9 +155,7 @@ class DocumentManagerTest extends BaseTestCase
 
     public function testStopTrackingOnUntrackedDocumentIsANoop(): void
     {
-        $this->dm->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser());
-
-        $this->expectNotToPerformAssertions();
+        self::assertFalse($this->dm->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser()));
     }
 
     public function testClearObjectStatesForgetsAllTrackedState(): void
