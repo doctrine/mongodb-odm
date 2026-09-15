@@ -21,7 +21,7 @@ class ParentAssociationTest extends TestCase
 
         self::assertSame($mapping, $association->mapping);
         self::assertSame($parent, $association->parent);
-        self::assertSame('embedded', $association->propertyPath);
+        self::assertSame('embedded', $association->field);
     }
 
     public function testParentCanBeNull(): void

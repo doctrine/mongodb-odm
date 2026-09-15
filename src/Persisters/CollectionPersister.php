@@ -433,7 +433,7 @@ final class CollectionPersister
             }
 
             $parent   = $association->parent;
-            $fields[] = $association->propertyPath;
+            $fields[] = $association->field;
         }
 
         $propertyPath = implode('.', array_reverse($fields));
