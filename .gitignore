@@ -12,3 +12,5 @@ vendor/
 .phpunit.cache
 .phpunit.result.cache
 phpcs.xml
+docker-compose.override.yaml
+phpbench.json
