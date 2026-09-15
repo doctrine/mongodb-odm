@@ -9,7 +9,6 @@ use Doctrine\ODM\MongoDB\Benchmark\Fixtures\AllTypesDocument;
 use Doctrine\ODM\MongoDB\Benchmark\Fixtures\RichDocument;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorInterface;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
-use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use PhpBench\Attributes\BeforeMethods;
@@ -21,6 +20,14 @@ use function array_fill;
 use function array_map;
 use function range;
 
+/**
+ * Hydrates Fixtures\RichDocument rather than the test suite's
+ * Documents\User: User has ten EmbedMany/ReferenceMany fields, each
+ * unconditionally constructing a PersistentCollection during hydration
+ * regardless of whether that field has data, which dominates its
+ * hydration cost and would swamp the differences these benchmarks are
+ * meant to isolate.
+ */
 #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'init'])]
 #[Warmup(2)]
 #[Revs(100)]
@@ -29,14 +36,11 @@ final class HydrateDocumentBench extends BaseBench
 {
     protected static function createMetadataDriverImpl(): AttributeDriver
     {
-        return AttributeDriver::create([__DIR__ . '/../../tests/Documents', __DIR__ . '/../Fixtures']);
+        return AttributeDriver::create(__DIR__ . '/../Fixtures');
     }
 
     /** @var array<string, mixed> */
     private static array $data;
-
-    /** @var array<string, mixed> */
-    private static array $extraData;
 
     /** @var array<string, mixed> */
     private static array $embedOneData;
@@ -44,13 +48,11 @@ final class HydrateDocumentBench extends BaseBench
     /** @var array<string, mixed[]> */
     private static array $embedManyData;
 
-    /** @var array<string, mixed[]> */
+    /** @var array<string, mixed> */
     private static array $referenceOneData;
 
     /** @var array<string, mixed[]> */
     private static array $referenceManyData;
-
-    private static HydratorInterface $hydrator;
 
     private static HydratorInterface $richDocumentHydrator;
 
@@ -72,56 +74,28 @@ final class HydrateDocumentBench extends BaseBench
     {
         self::$data = [
             '_id' => new ObjectId(),
-            'username' => 'alcaeus',
-            'createdAt' => new UTCDateTime(),
-        ];
-
-        self::$extraData = [
-            'hits' => 100,
-            'age' => 30,
-            'nullTest' => null,
-            'logs' => [
-                'User logged in',
-                'User updated profile',
-                'User logged out',
-            ],
+            'title' => 'benchmark',
+            'score' => 100,
         ];
 
         self::$embedOneData = [
-            'address' => ['city' => 'Munich'],
+            'address' => ['street' => 'Redacted', 'city' => 'Munich', 'zipCode' => '80331'],
         ];
 
         self::$embedManyData = [
-            'phonenumbers' => [
-                ['phonenumber' => '12345678'],
-                ['phonenumber' => '12345678'],
+            'tags' => [
+                ['name' => 'tagOne'],
+                ['name' => 'tagTwo'],
             ],
         ];
 
         self::$referenceOneData = [
-            'account' => [
-                '$ref' => 'Account',
-                '$id' => new ObjectId(),
-            ],
+            'department' => new ObjectId(),
         ];
 
         self::$referenceManyData = [
-            'groups' => [
-                [
-                    '$ref' => 'Group',
-                    '$id' => new ObjectId(),
-                ],
-                [
-                    '$ref' => 'Group',
-                    '$id' => new ObjectId(),
-                ],
-            ],
+            'teams' => [new ObjectId(), new ObjectId()],
         ];
-
-        self::$hydrator = $this
-            ->getDocumentManager()
-            ->getHydratorFactory()
-            ->getHydratorFor(User::class);
 
         self::$richDocumentHydrator = $this
             ->getDocumentManager()
@@ -175,27 +149,27 @@ final class HydrateDocumentBench extends BaseBench
 
     public function benchHydrateDocument(): void
     {
-        self::$hydrator->hydrate(new User(), self::$data + self::$extraData);
+        self::$richDocumentHydrator->hydrate(new RichDocument(), self::$data);
     }
 
     public function benchHydrateDocumentWithEmbedOne(): void
     {
-        self::$hydrator->hydrate(new User(), self::$data + self::$embedOneData);
+        self::$richDocumentHydrator->hydrate(new RichDocument(), self::$data + self::$embedOneData);
     }
 
     public function benchHydrateDocumentWithEmbedMany(): void
     {
-        self::$hydrator->hydrate(new User(), self::$data + self::$embedManyData);
+        self::$richDocumentHydrator->hydrate(new RichDocument(), self::$data + self::$embedManyData);
     }
 
     public function benchHydrateDocumentWithReferenceOne(): void
     {
-        self::$hydrator->hydrate(new User(), self::$data + self::$referenceOneData);
+        self::$richDocumentHydrator->hydrate(new RichDocument(), self::$data + self::$referenceOneData);
     }
 
     public function benchHydrateDocumentWithReferenceMany(): void
     {
-        self::$hydrator->hydrate(new User(), self::$data + self::$referenceManyData);
+        self::$richDocumentHydrator->hydrate(new RichDocument(), self::$data + self::$referenceManyData);
     }
 
     public function benchHydrateDocumentWithNestedEmbedMany(): void

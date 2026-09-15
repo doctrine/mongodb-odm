@@ -17,6 +17,9 @@ class RichDocument
     #[ODM\Field(type: 'string')]
     public string $title;
 
+    #[ODM\Field(type: 'int')]
+    public int $score = 0;
+
     #[ODM\EmbedOne(targetDocument: Address::class)]
     public ?Address $address = null;
 

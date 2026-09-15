@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Benchmark\Document;
 
-use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Benchmark\BaseBench;
-use Documents\Account;
-use Documents\Address;
-use Documents\Group;
-use Documents\Phonenumber;
-use Documents\User;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Address;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Department;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\RichDocument;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Tag;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Team;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\Revs;
@@ -18,7 +18,16 @@ use PhpBench\Attributes\Warmup;
 
 use function random_int;
 
+use const PHP_INT_MAX;
+
 /**
+ * Persists Fixtures\RichDocument rather than the test suite's
+ * Documents\User: User has ten EmbedMany/ReferenceMany fields, each
+ * unconditionally constructing a PersistentCollection during hydration
+ * regardless of whether that field has data, which dominates its
+ * hydration cost and would swamp the differences these benchmarks are
+ * meant to isolate.
+ *
  * Each of these inserts/updates/removes a document over the network, so
  * revolutions mainly buy statistical stability rather than overcoming
  * timer resolution (unlike, say, HydrateDocumentBench's in-memory calls).
@@ -33,96 +42,112 @@ use function random_int;
 #[Iterations(2)]
 final class StoreDocumentBench extends BaseBench
 {
-    private static User $updateUser;
+    private static RichDocument $updateDocument;
+
+    protected static function createMetadataDriverImpl(): AttributeDriver
+    {
+        return AttributeDriver::create(__DIR__ . '/../Fixtures');
+    }
 
     public function benchStoreDocument(): void
     {
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
+        $document        = new RichDocument();
+        $document->title = 'benchmark';
 
-        $this->getDocumentManager()->persist($user);
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
         $this->getDocumentManager()->clear();
     }
 
     public function benchStoreDocumentWithEmbedOne(): void
     {
-        $address = new Address();
-        $address->setAddress('Redacted');
-        $address->setCity('Munich');
+        $address          = new Address();
+        $address->street  = 'Redacted';
+        $address->city    = 'Munich';
+        $address->zipCode = '80331';
 
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->setAddress($address);
+        $document          = new RichDocument();
+        $document->title   = 'benchmark';
+        $document->address = $address;
 
-        $this->getDocumentManager()->persist($user);
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
         $this->getDocumentManager()->clear();
     }
 
     public function benchStoreDocumentWithEmbedMany(): void
     {
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->addPhonenumber(new Phonenumber('12345678'));
-        $user->addPhonenumber(new Phonenumber('12345678'));
+        $tag1       = new Tag();
+        $tag1->name = 'One';
 
-        $this->getDocumentManager()->persist($user);
+        $tag2       = new Tag();
+        $tag2->name = 'Two';
+
+        $document        = new RichDocument();
+        $document->title = 'benchmark';
+        $document->tags->add($tag1);
+        $document->tags->add($tag2);
+
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
         $this->getDocumentManager()->clear();
     }
 
     public function benchStoreDocumentWithReferenceOne(): void
     {
-        $account = new Account();
-        $account->setName('alcaeus');
+        $department       = new Department();
+        $department->name = 'Engineering';
 
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->setAccount($account);
+        $document             = new RichDocument();
+        $document->title      = 'benchmark';
+        $document->department = $department;
 
-        $this->getDocumentManager()->persist($user);
+        $this->getDocumentManager()->persist($department);
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
         $this->getDocumentManager()->clear();
     }
 
     public function benchStoreDocumentWithReferenceMany(): void
     {
-        $group1 = new Group('One');
-        $group2 = new Group('Two');
+        $team1       = new Team();
+        $team1->name = 'One';
 
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->addGroup($group1);
-        $user->addGroup($group2);
+        $team2       = new Team();
+        $team2->name = 'Two';
 
-        $this->getDocumentManager()->persist($user);
+        $document        = new RichDocument();
+        $document->title = 'benchmark';
+        $document->teams->add($team1);
+        $document->teams->add($team2);
+
+        $this->getDocumentManager()->persist($team1);
+        $this->getDocumentManager()->persist($team2);
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
         $this->getDocumentManager()->clear();
     }
 
     public function initUpdateBench(): void
     {
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->addPhonenumber(new Phonenumber('12345678'));
+        $tag       = new Tag();
+        $tag->name = 'One';
 
-        $this->getDocumentManager()->persist($user);
+        $document        = new RichDocument();
+        $document->title = 'benchmark';
+        $document->score = 0;
+        $document->tags->add($tag);
+
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
 
-        self::$updateUser = $user;
+        self::$updateDocument = $document;
     }
 
     #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'initUpdateBench'])]
     public function benchUpdateDocument(): void
     {
-        self::$updateUser->setHits(self::$updateUser->getHits() + 1);
+        self::$updateDocument->score++;
 
         $this->getDocumentManager()->flush();
     }
@@ -130,7 +155,11 @@ final class StoreDocumentBench extends BaseBench
     #[BeforeMethods(['initDocumentManager', 'clearDatabase', 'initUpdateBench'])]
     public function benchUpdateDocumentWithEmbedMany(): void
     {
-        self::$updateUser->getPhonenumbers()->first()->setPhoneNumber((string) random_int(10_000_000, 99_999_999));
+        // A fresh value every call: an unconditionally repeated value would
+        // only produce a real diff on the first revolution (see
+        // benchLoadDocumentFromIdentityMap's docblock for the same class of
+        // issue with revs > 1), leaving flush() a no-op for the rest.
+        self::$updateDocument->tags->first()->name = 'Updated' . random_int(0, PHP_INT_MAX);
 
         $this->getDocumentManager()->flush();
     }
@@ -139,7 +168,7 @@ final class StoreDocumentBench extends BaseBench
     #[Revs(200)]
     public function benchComputeChangeSetsOnly(): void
     {
-        self::$updateUser->setHits(self::$updateUser->getHits() + 1);
+        self::$updateDocument->score++;
 
         $this->getDocumentManager()->getUnitOfWork()->computeChangeSets();
     }
@@ -149,11 +178,10 @@ final class StoreDocumentBench extends BaseBench
     public function benchStoreManyDocuments(): void
     {
         for ($i = 0; $i < 100; $i++) {
-            $user = new User();
-            $user->setUsername('alcaeus' . $i);
-            $user->setCreatedAt(new DateTimeImmutable());
+            $document        = new RichDocument();
+            $document->title = 'benchmark' . $i;
 
-            $this->getDocumentManager()->persist($user);
+            $this->getDocumentManager()->persist($document);
         }
 
         $this->getDocumentManager()->flush();
@@ -162,14 +190,13 @@ final class StoreDocumentBench extends BaseBench
 
     public function benchRemoveDocument(): void
     {
-        $user = new User();
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
+        $document        = new RichDocument();
+        $document->title = 'benchmark';
 
-        $this->getDocumentManager()->persist($user);
+        $this->getDocumentManager()->persist($document);
         $this->getDocumentManager()->flush();
 
-        $this->getDocumentManager()->remove($user);
+        $this->getDocumentManager()->remove($document);
         $this->getDocumentManager()->flush();
         $this->getDocumentManager()->clear();
     }

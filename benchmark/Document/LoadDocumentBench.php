@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Benchmark\Document;
 
-use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Benchmark\BaseBench;
-use Documents\Account;
-use Documents\Address;
-use Documents\Group;
-use Documents\Phonenumber;
-use Documents\User;
-use MongoDB\BSON\ObjectId;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Address;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Department;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\RichDocument;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Tag;
+use Doctrine\ODM\MongoDB\Benchmark\Fixtures\Team;
+use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use PhpBench\Attributes\BeforeMethods;
 use PhpBench\Attributes\Iterations;
 use PhpBench\Attributes\Revs;
@@ -19,6 +18,13 @@ use PhpBench\Attributes\Revs;
 use function assert;
 
 /**
+ * Reads Fixtures\RichDocument rather than the test suite's
+ * Documents\User: User has ten EmbedMany/ReferenceMany fields, each
+ * unconditionally constructing a PersistentCollection during hydration
+ * regardless of whether that field has data, which dominates its
+ * hydration cost and would swamp the differences these benchmarks are
+ * meant to isolate.
+ *
  * Every subject here reads a document that was persisted in init(). Once a
  * managed document is already fully initialized, UnitOfWork::getOrCreateDocument()
  * skips hydration entirely unless a refresh is requested, so a second
@@ -39,76 +45,85 @@ use function assert;
 #[Iterations(5)]
 final class LoadDocumentBench extends BaseBench
 {
-    private const NUMBER_OF_ADDITIONAL_USERS = 25;
+    private const NUMBER_OF_ADDITIONAL_DOCUMENTS = 25;
 
-    private static ObjectId $userId;
+    private static string $documentId;
 
-    private static ObjectId $referenceManyUserId;
+    private static string $referenceManyDocumentId;
+
+    protected static function createMetadataDriverImpl(): AttributeDriver
+    {
+        return AttributeDriver::create(__DIR__ . '/../Fixtures');
+    }
 
     public function init(): void
     {
-        self::$userId = new ObjectId();
+        $department       = new Department();
+        $department->name = 'Engineering';
 
-        $account = new Account();
-        $account->setName('alcaeus');
+        $address          = new Address();
+        $address->street  = 'Redacted';
+        $address->city    = 'Munich';
+        $address->zipCode = '80331';
 
-        $address = new Address();
-        $address->setAddress('Redacted');
-        $address->setCity('Munich');
+        $team1       = new Team();
+        $team1->name = 'One';
 
-        $group1 = new Group('One');
-        $group2 = new Group('Two');
+        $team2       = new Team();
+        $team2->name = 'Two';
 
-        $user = new User();
-        $user->setId(self::$userId);
-        $user->setUsername('alcaeus');
-        $user->setCreatedAt(new DateTimeImmutable());
-        $user->setAddress($address);
-        $user->setAccount($account);
-        $user->addPhonenumber(new Phonenumber('12345678'));
-        $user->addGroup($group1);
-        $user->addGroup($group2);
+        $tag       = new Tag();
+        $tag->name = 'benchmark';
 
-        $this->getDocumentManager()->persist($user);
+        $document             = new RichDocument();
+        $document->title      = 'benchmark';
+        $document->address    = $address;
+        $document->department = $department;
+        $document->tags->add($tag);
+        $document->teams->add($team1);
+        $document->teams->add($team2);
 
-        for ($i = 0; $i < self::NUMBER_OF_ADDITIONAL_USERS; $i++) {
-            $additionalUser = new User();
-            $additionalUser->setUsername('user' . $i);
-            $additionalUser->setCreatedAt(new DateTimeImmutable());
+        $this->getDocumentManager()->persist($department);
+        $this->getDocumentManager()->persist($team1);
+        $this->getDocumentManager()->persist($team2);
+        $this->getDocumentManager()->persist($document);
 
-            $this->getDocumentManager()->persist($additionalUser);
+        for ($i = 0; $i < self::NUMBER_OF_ADDITIONAL_DOCUMENTS; $i++) {
+            $additionalDocument        = new RichDocument();
+            $additionalDocument->title = 'doc' . $i;
+
+            $this->getDocumentManager()->persist($additionalDocument);
         }
 
-        self::$referenceManyUserId = new ObjectId();
+        $referenceManyDocument        = new RichDocument();
+        $referenceManyDocument->title = 'teamDoc';
+        $referenceManyDocument->teams->add($team1);
+        $referenceManyDocument->teams->add($team2);
 
-        $referenceManyUser = new User();
-        $referenceManyUser->setId(self::$referenceManyUserId);
-        $referenceManyUser->setUsername('groupUser');
-        $referenceManyUser->setCreatedAt(new DateTimeImmutable());
-        $referenceManyUser->addGroup($group1);
-        $referenceManyUser->addGroup($group2);
-
-        $this->getDocumentManager()->persist($referenceManyUser);
+        $this->getDocumentManager()->persist($referenceManyDocument);
 
         $this->getDocumentManager()->flush();
 
         // Prime hydrator classes (one generated class per document type,
-        // including embedded ones - see DocumentsUserHydrator.php) and
+        // including embedded ones - see the RichDocument hydrator) and
         // lazy-reference proxy classes once, untimed, so the timed
         // revolutions below don't pay a one-off class-generation cost that
         // a warm application would never see. Embedded fields (address,
-        // phonenumbers) are hydrated eagerly by find(), but references
-        // (account, groups) are lazy and only hydrated on access. The
-        // clear() first is essential: persist()+flush() leaves $user
-        // managed, so without it find() would be satisfied by the identity
-        // map and never actually hydrate anything.
+        // tags) are hydrated eagerly by find(), but references (department,
+        // teams) are lazy and only hydrated on access. The clear() first is
+        // essential: persist()+flush() leaves $document managed, so without
+        // it find() would be satisfied by the identity map and never
+        // actually hydrate anything.
         $this->getDocumentManager()->clear();
-        $primingUser = $this->getDocumentManager()->find(User::class, self::$userId);
-        assert($primingUser instanceof User);
-        $primingUser->getAccount()->getName();
-        $primingUser->getGroups()->forAll(static function (int $key, Group $group) {
-            return $group->getName() !== null;
-        });
+        $primingDocument = $this->getDocumentManager()->find(RichDocument::class, $document->id);
+        assert($primingDocument instanceof RichDocument);
+        $primingDepartmentName = $primingDocument->department?->name;
+        foreach ($primingDocument->teams as $team) {
+            assert($team instanceof Team);
+        }
+
+        self::$documentId              = $document->id;
+        self::$referenceManyDocumentId = $referenceManyDocument->id;
 
         $this->getDocumentManager()->clear();
     }
@@ -120,26 +135,26 @@ final class LoadDocumentBench extends BaseBench
 
     public function benchLoadEmbedOne(): void
     {
-        $this->loadDocument()->getAddress()->getCity();
+        $this->loadDocument()->address?->city;
     }
 
     public function benchLoadEmbedMany(): void
     {
-        $this->loadDocument()->getPhonenumbers()->forAll(static function (int $key, Phonenumber $element) {
-            return $element->getPhoneNumber() !== null;
-        });
+        foreach ($this->loadDocument()->tags as $tag) {
+            assert($tag instanceof Tag);
+        }
     }
 
     public function benchLoadReferenceOne(): void
     {
-        $this->loadDocument()->getAccount()->getName();
+        $this->loadDocument()->department?->name;
     }
 
     public function benchLoadReferenceMany(): void
     {
-        $this->loadDocument()->getGroups()->forAll(static function (int $key, Group $group) {
-            return $group->getName() !== null;
-        });
+        foreach ($this->loadDocument()->teams as $team) {
+            assert($team instanceof Team);
+        }
     }
 
     public function benchLoadDocumentFromIdentityMap(): void
@@ -154,26 +169,26 @@ final class LoadDocumentBench extends BaseBench
 
     public function benchLoadDocumentByQuery(): void
     {
-        $this->getDocumentManager()->getRepository(User::class)->findOneBy(['username' => 'alcaeus']);
+        $this->getDocumentManager()->getRepository(RichDocument::class)->findOneBy(['title' => 'benchmark']);
     }
 
     public function benchLoadCollectionOfDocuments(): void
     {
-        $this->getDocumentManager()->getRepository(User::class)->findBy([]);
+        $this->getDocumentManager()->getRepository(RichDocument::class)->findBy([]);
     }
 
     public function benchLoadReferenceManyCollectionInitialization(): void
     {
-        $document = $this->getDocumentManager()->find(User::class, self::$referenceManyUserId);
-        assert($document instanceof User);
+        $document = $this->getDocumentManager()->find(RichDocument::class, self::$referenceManyDocumentId);
+        assert($document instanceof RichDocument);
 
-        $document->getGroups()->count();
+        $document->teams->count();
     }
 
-    private function loadDocument(): User
+    private function loadDocument(): RichDocument
     {
-        $document = $this->getDocumentManager()->find(User::class, self::$userId);
-        assert($document instanceof User);
+        $document = $this->getDocumentManager()->find(RichDocument::class, self::$documentId);
+        assert($document instanceof RichDocument);
 
         return $document;
     }
