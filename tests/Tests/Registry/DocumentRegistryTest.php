@@ -98,7 +98,7 @@ class DocumentRegistryTest extends BaseTestCase
         $class->setIdentifierValue($document, $id);
         $this->registry->track($class, $document, PersistenceState::Managed);
 
-        $this->registry->stopTracking($class, $document);
+        self::assertTrue($this->registry->stopTracking($class, $document));
 
         self::assertNull($this->registry->getObjectState($document));
         self::assertFalse($this->registry->tryGetById($id, $class));
@@ -106,9 +106,7 @@ class DocumentRegistryTest extends BaseTestCase
 
     public function testStopTrackingOnUntrackedDocumentIsANoop(): void
     {
-        $this->registry->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser());
-
-        $this->expectNotToPerformAssertions();
+        self::assertFalse($this->registry->stopTracking($this->dm->getClassMetadata(CmsUser::class), new CmsUser()));
     }
 
     public function testAddToIdentityMapAndGetById(): void

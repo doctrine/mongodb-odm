@@ -99,14 +99,19 @@ final class DocumentRegistry implements Countable
      * Fully forgets a document: removes its ManagedObjectState and its entry
      * in the identity map, if any.
      *
+     * Returns whether the document was removed from the identity map (as
+     * opposed to not having been present there).
+     *
      * @phpstan-param ClassMetadata<T> $class
      *
      * @template T of object
      */
-    public function stopTracking(ClassMetadata $class, object $document): void
+    public function stopTracking(ClassMetadata $class, object $document): bool
     {
-        $this->removeFromIdentityMap($class, $document);
+        $wasInIdentityMap = $this->removeFromIdentityMap($class, $document);
         $this->removeObjectState($document);
+
+        return $wasInIdentityMap;
     }
 
     /**
