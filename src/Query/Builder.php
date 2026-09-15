@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\IterableResult;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
 use InvalidArgumentException;
@@ -28,14 +29,12 @@ use function in_array;
 use function is_array;
 use function is_bool;
 use function is_callable;
-use function is_string;
-use function strtolower;
 
 /**
  * Query builder for ODM.
  *
  * @phpstan-import-type QueryShape from Query
- * @phpstan-import-type SortMetaKeywords from Sort
+ * @phpstan-import-type SortMetaKeywords from SortHelper
  */
 class Builder
 {
@@ -1483,14 +1482,8 @@ class Builder
         $this->query['sort'] ??= [];
         $fields                = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
-        foreach ($fields as $fieldName => $order) {
-            if ($order instanceof SortDirection) {
-                $order = $order === SortDirection::Ascending ? 1 : -1;
-            } elseif (is_string($order)) {
-                $order = strtolower($order) === 'asc' ? 1 : -1;
-            }
-
-            $this->query['sort'][$fieldName] = (int) $order;
+        foreach (SortHelper::normalizeSortDirections($fields, ['textScore', 'indexKey']) as $fieldName => $order) {
+            $this->query['sort'][$fieldName] = $order;
         }
 
         return $this;

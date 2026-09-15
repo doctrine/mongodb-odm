@@ -10,18 +10,18 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SearchOperator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search\SupportsAllSearchOperatorsTrait;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
+use SortDirection;
 
-use function in_array;
+use function array_replace;
 use function is_array;
-use function is_string;
-use function strtolower;
 
 /**
  * @phpstan-import-type SortDirectionKeywords from Sort
  * @phpstan-type CountType "lowerBound"|"total"
  * @phpstan-type SortMetaKeywords "searchScore"
  * @phpstan-type SortMeta array{"$meta": SortMetaKeywords}
- * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords>
+ * @phpstan-type SortShape array<string, -1|1|SortMeta|SortDirectionKeywords|SortDirection>
  * @phpstan-type SearchStageExpression array{
  *     "$search": object{
  *         index?: string,
@@ -173,28 +173,18 @@ class Search extends Stage implements SupportsAllSearchOperators
     }
 
     /**
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string $fieldName
-     * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string                                       $fieldName
+     * @phpstan-param -1|1|SortMeta|SortDirectionKeywords|SortDirection|null $order
      */
     public function sort($fieldName, $order = null): static
     {
         $allowedMetaSort = ['searchScore'];
 
-        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
-        foreach ($fields as $fieldName => $order) {
-            if (is_string($order)) {
-                if (in_array($order, $allowedMetaSort, true)) {
-                    $order = ['$meta' => $order];
-                } else {
-                    $order = strtolower($order) === 'asc' ? 1 : -1;
-                }
-            }
-
-            $this->sort[$fieldName] = $order;
-        }
+        $this->sort = array_replace($this->sort, SortHelper::normalizeSortDirections($fields, $allowedMetaSort));
 
         return $this;
     }

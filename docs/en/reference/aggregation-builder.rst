@@ -46,6 +46,18 @@ builder object:
             ->field('amount')
             ->sum('$amount');
 
+The ``sort()`` stage orders the documents of the pipeline, using the same sort
+directions as the query builder:
+
+.. code-block:: php
+
+    <?php
+
+    use SortDirection;
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder->sort('purchaseDate', SortDirection::Descending);
+
 Just like the query builder, the aggregation builder takes care of converting
 ``DateTime`` objects into ``MongoDB\Driver\BSON\UTCDateTime`` objects.
 

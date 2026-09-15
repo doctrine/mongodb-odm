@@ -14,6 +14,7 @@ use GeoJson\Geometry\Point;
 use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\Attributes\DataProvider;
+use SortDirection;
 
 class ExprTest extends BaseTestCase
 {
@@ -686,6 +687,29 @@ class ExprTest extends BaseTestCase
                     '$each' => [['x' => 1], ['x' => 2]],
                     '$slice' => -2,
                     '$sort' => ['x' => 1],
+                ],
+            ],
+        ];
+
+        self::assertSame($expr, $expr->field('a')->push($innerExpr));
+        self::assertEquals($expectedNewObj, $expr->getNewObj());
+    }
+
+    public function testPushWithExpressionEnumSort(): void
+    {
+        $expr      = $this->createExpr();
+        $innerExpr = $this->createExpr();
+        $innerExpr
+            ->each([['x' => 1], ['x' => 2]])
+            ->slice(-2)
+            ->sort(['x' => SortDirection::Ascending, 'y' => SortDirection::Descending]);
+
+        $expectedNewObj = [
+            '$push' => [
+                'a' => [
+                    '$each' => [['x' => 1], ['x' => 2]],
+                    '$slice' => -2,
+                    '$sort' => ['x' => 1, 'y' => -1],
                 ],
             ],
         ];

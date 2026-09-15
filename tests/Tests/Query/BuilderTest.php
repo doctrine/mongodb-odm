@@ -26,6 +26,7 @@ use MongoDB\Driver\ReadPreference;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
+use SortDirection;
 
 class BuilderTest extends BaseTestCase
 {
@@ -693,9 +694,8 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => 1], $qb->debug('sort'));
     }
 
-    /** @param string|int $order */
     #[DataProvider('provideSortOrders')]
-    public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
+    public function testSortWithFieldNameAndOrder(mixed $order, mixed $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);
@@ -712,6 +712,14 @@ class BuilderTest extends BaseTestCase
             ['desc', -1],
             ['ASC', 1],
             ['DESC', -1],
+            [SortDirection::Ascending, 1],
+            [SortDirection::Descending, -1],
+            ['-1', -1],
+            ['1', 1],
+            [1.0, 1],
+            [-1.0, -1],
+            ['textScore', ['$meta' => 'textScore']],
+            ['indexKey', ['$meta' => 'indexKey']],
         ];
     }
 
