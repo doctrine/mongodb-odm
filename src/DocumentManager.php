@@ -848,9 +848,10 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Fully establishes a document as managed: records its persistence state,
-     * identifier and (if given) original data, and adds it to the identity
-     * map. Returns whether the document was newly added to the identity map.
+     * Fully establishes a document as managed: records its persistence state
+     * and (if given) original data, reads its identifier off the document
+     * itself, and adds it to the identity map. Returns whether the document
+     * was newly added to the identity map.
      *
      * @internal
      *
@@ -859,9 +860,9 @@ class DocumentManager implements ObjectManager
      *
      * @template T of object
      */
-    public function track(ClassMetadata $class, object $document, PersistenceState $state, mixed $identifier, ?array $originalData = null): bool
+    public function track(ClassMetadata $class, object $document, PersistenceState $state = PersistenceState::New, ?array $originalData = null): bool
     {
-        return $this->documentRegistry->track($class, $document, $state, $identifier, $originalData);
+        return $this->documentRegistry->track($class, $document, $state, $originalData);
     }
 
     /**
@@ -957,12 +958,11 @@ class DocumentManager implements ObjectManager
      * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
      *
-     * @return mixed The found document or FALSE.
      * @phpstan-return T|false
      *
      * @template T of object
      */
-    public function tryGetById($id, ClassMetadata $class)
+    public function tryGetById($id, ClassMetadata $class): object|bool
     {
         return $this->documentRegistry->tryGetById($id, $class);
     }

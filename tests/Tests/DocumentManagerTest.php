@@ -117,8 +117,9 @@ class DocumentManagerTest extends BaseTestCase
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
         $id       = (string) new ObjectId();
+        $class->setIdentifierValue($document, $id);
 
-        $wasNewlyAdded = $this->dm->track($class, $document, PersistenceState::Managed, $id, ['username' => 'alice']);
+        $wasNewlyAdded = $this->dm->track($class, $document, PersistenceState::Managed, ['username' => 'alice']);
 
         self::assertTrue($wasNewlyAdded);
         $state = $this->dm->getObjectState($document);
@@ -132,10 +133,10 @@ class DocumentManagerTest extends BaseTestCase
     {
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
-        $id       = (string) new ObjectId();
+        $class->setIdentifierValue($document, (string) new ObjectId());
 
-        self::assertTrue($this->dm->track($class, $document, PersistenceState::Managed, $id));
-        self::assertFalse($this->dm->track($class, $document, PersistenceState::Managed, $id));
+        self::assertTrue($this->dm->track($class, $document, PersistenceState::Managed));
+        self::assertFalse($this->dm->track($class, $document, PersistenceState::Managed));
     }
 
     public function testStopTrackingForgetsStateAndIdentityMapEntry(): void
@@ -143,7 +144,8 @@ class DocumentManagerTest extends BaseTestCase
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
         $id       = (string) new ObjectId();
-        $this->dm->track($class, $document, PersistenceState::Managed, $id);
+        $class->setIdentifierValue($document, $id);
+        $this->dm->track($class, $document, PersistenceState::Managed);
 
         $this->dm->stopTracking($class, $document);
 

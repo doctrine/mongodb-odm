@@ -2964,12 +2964,13 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function registerManaged(object $document, $id, array $data): void
     {
-        $class      = $this->dm->getClassMetadata($document::class);
-        $identifier = ! $class->identifier || $id === null
-            ? spl_object_id($document)
-            : $class->getPHPIdentifierValue($id);
+        $class = $this->dm->getClassMetadata($document::class);
 
-        if (! $this->dm->track($class, $document, PersistenceState::Managed, $identifier, $data)) {
+        if ($class->identifier && $id !== null) {
+            $class->setIdentifierValue($document, $class->getPHPIdentifierValue($id));
+        }
+
+        if (! $this->dm->track($class, $document, PersistenceState::Managed, $data)) {
             return;
         }
 
