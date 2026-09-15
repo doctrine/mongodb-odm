@@ -51,8 +51,8 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
     /**
      * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
      * @param int|string|SortDirection                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string                                      $fieldName
-     * @phpstan-param int|SortMeta|SortDirectionKeywords|SortDirection|null $order
+     * @phpstan-param SortShape|string                                       $fieldName
+     * @phpstan-param -1|1|SortMeta|SortDirectionKeywords|SortDirection|null $order
      */
     public function sort($fieldName, $order = null): Search
     {

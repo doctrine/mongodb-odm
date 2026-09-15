@@ -171,9 +171,10 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds documents by a set of criteria.
      *
-     * @param int|null $limit
-     * @param int|null $offset
-     * @phpstan-param array<string, int|string|SortDirection>|null $orderBy
+     * @param array<string, mixed>                                               $criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $orderBy
+     * @param int|null                                                           $limit
+     * @param int|null                                                           $offset
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
@@ -183,8 +184,8 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds a single document by a set of criteria.
      *
-     * @param array<string, int|string|SortDirection>|null $sort
-     * @param array<string, mixed>                         $criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
+     * @param array<string, mixed>                                               $criteria
      *
      * @return T|null The object.
      */

@@ -1230,6 +1230,30 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    public function testSortWithIntegerLikeFieldNames(): void
+    {
+        $searchStage = $this->createSearchStage();
+        $searchStage
+            ->index('my_search_index')
+            ->sort('2024', 'desc')
+            // @phpstan-ignore argument.type (integer-like string keys become integer keys in PHP)
+            ->sort(['2025' => 'desc'])
+            ->sort('2024', 'asc');
+
+        self::assertEquals(
+            [
+                '$search' => (object) [
+                    'index' => 'my_search_index',
+                    'sort' => (object) [
+                        '2024' => 1,
+                        '2025' => -1,
+                    ],
+                ],
+            ],
+            $searchStage->getExpression(),
+        );
+    }
+
     /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]

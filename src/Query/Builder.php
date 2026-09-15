@@ -1483,7 +1483,7 @@ class Builder
         $fields                = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
         foreach (SortHelper::normalizeSortDirections($fields) as $fieldName => $order) {
-            $this->query['sort'][$fieldName] = (int) $order;
+            $this->query['sort'][$fieldName] = $order;
         }
 
         return $this;

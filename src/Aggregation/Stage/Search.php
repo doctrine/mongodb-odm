@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use SortDirection;
 
-use function array_merge;
+use function array_replace;
 use function is_array;
 
 /**
@@ -21,7 +21,7 @@ use function is_array;
  * @phpstan-type CountType "lowerBound"|"total"
  * @phpstan-type SortMetaKeywords "searchScore"
  * @phpstan-type SortMeta array{"$meta": SortMetaKeywords}
- * @phpstan-type SortShape array<string, int|SortMeta|SortDirectionKeywords|SortDirection>
+ * @phpstan-type SortShape array<string, -1|1|SortMeta|SortDirectionKeywords|SortDirection>
  * @phpstan-type SearchStageExpression array{
  *     "$search": object{
  *         index?: string,
@@ -175,16 +175,16 @@ class Search extends Stage implements SupportsAllSearchOperators
     /**
      * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
      * @param int|string|SortDirection                       $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string                                      $fieldName
-     * @phpstan-param int|SortMeta|SortDirectionKeywords|SortDirection|null $order
+     * @phpstan-param SortShape|string                                       $fieldName
+     * @phpstan-param -1|1|SortMeta|SortDirectionKeywords|SortDirection|null $order
      */
     public function sort($fieldName, $order = null): static
     {
         $allowedMetaSort = ['searchScore'];
 
-        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
-        $this->sort = array_merge($this->sort, SortHelper::normalizeSortDirections($fields, $allowedMetaSort));
+        $this->sort = array_replace($this->sort, SortHelper::normalizeSortDirections($fields, $allowedMetaSort));
 
         return $this;
     }

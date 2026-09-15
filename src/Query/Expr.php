@@ -1267,7 +1267,7 @@ class Expr
      */
     public function sort($fieldName, $order = null): self
     {
-        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
         return $this->operator('$sort', SortHelper::normalizeSortDirections($fields));
     }

@@ -517,8 +517,9 @@ final class DocumentPersister
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array<string, mixed>                         $criteria
-     * @param array<string, int|string|SortDirection>|null $sort
+     * @param array<string, mixed>                                               $criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
+     * @phpstan-param SortShape|null $sort
      *
      * @return Iterator<T>
      */
@@ -945,13 +946,16 @@ final class DocumentPersister
      * @phpstan-param SortShape $fields
      *
      * @phpstan-return array<string, -1|1|SortMeta>
+     *
+     * @throws InvalidArgumentException if a sort direction is invalid.
      */
     public function prepareSort(array $fields, array $allowedMetaSort = []): array
     {
         $sortFields = [];
 
         foreach (SortHelper::normalizeSortDirections($fields, $allowedMetaSort) as $key => $value) {
-            $sortFields[$this->prepareFieldName($key)] = $value;
+            // Field names that are integer-like strings become integer array keys in PHP
+            $sortFields[$this->prepareFieldName((string) $key)] = $value;
         }
 
         return $sortFields;
