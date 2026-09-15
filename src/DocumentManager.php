@@ -762,6 +762,11 @@ class DocumentManager implements ObjectManager
      * Gets the long-lived state tracked for a document, creating it with the
      * given initial persistence state if it does not exist yet.
      *
+     * Note that this does not add the document to the identity map or
+     * otherwise establish it as tracked. Prefer {@see track()} unless you
+     * have a specific reason to set state on a document ahead of (or
+     * without) fully tracking it.
+     *
      * @internal
      */
     public function getOrCreateObjectState(object $document, PersistenceState $state = PersistenceState::New): ManagedObjectState
