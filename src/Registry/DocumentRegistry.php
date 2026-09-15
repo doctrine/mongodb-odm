@@ -6,11 +6,13 @@ namespace Doctrine\ODM\MongoDB\Registry;
 
 use Countable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use InvalidArgumentException;
 use SplObjectStorage;
 
 use function count;
 use function serialize;
 use function spl_object_id;
+use function sprintf;
 
 /**
  * Tracks every document known to a DocumentManager for the lifetime of that
@@ -58,9 +60,11 @@ final class DocumentRegistry implements Countable
     }
 
     /**
-     * Fully establishes a document as managed: records its persistence state,
-     * identifier and (if given) original data on its ManagedObjectState, and
-     * adds it to the identity map.
+     * Fully establishes a document as managed: records its persistence state
+     * and (if given) original data on its ManagedObjectState, reads its
+     * identifier off the document itself (or, for documents without an
+     * identifier field, a value that uniquely identifies the instance
+     * instead), and adds it to the identity map.
      *
      * Returns whether the document was newly added to the identity map (as
      * opposed to already being present there).
@@ -70,11 +74,12 @@ final class DocumentRegistry implements Countable
      *
      * @template T of object
      */
-    public function track(ClassMetadata $class, object $document, PersistenceState $state, mixed $identifier, ?array $originalData = null): bool
+    public function track(ClassMetadata $class, object $document, PersistenceState $state = PersistenceState::New, ?array $originalData = null): bool
     {
-        $objectState             = $this->getOrCreateObjectState($document, $state);
-        $objectState->state      = $state;
-        $objectState->identifier = $identifier;
+        $objectState               = $this->getOrCreateObjectState($document, $state);
+        $objectState->state        = $state;
+        $objectState->identifier   = $class->identifier ? $class->getIdentifierValue($document) : null;
+        $objectState->identifier ??= spl_object_id($document);
         if ($originalData !== null) {
             $objectState->originalData = $originalData;
         }
@@ -159,41 +164,44 @@ final class DocumentRegistry implements Countable
     /**
      * Gets a document in the identity map by its identifier.
      *
-     * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
      *
      * @phpstan-return T
      *
+     * @throws InvalidArgumentException If no document is registered for the given identifier.
+     *
      * @template T of object
      */
-    public function getById($id, ClassMetadata $class): object
+    public function getById(mixed $id, ClassMetadata $class): object
     {
-        return $this->identityMap[$class->name][$this->getSerializedId($class, $id)];
+        $serializedId = $this->getSerializedId($id, $class);
+
+        if (! isset($this->identityMap[$class->name][$serializedId])) {
+            throw new InvalidArgumentException(sprintf('No document of class "%s" is registered for the given identifier.', $class->name));
+        }
+
+        return $this->identityMap[$class->name][$serializedId];
     }
 
     /**
      * Tries to get a document by its identifier. If no document is found for
      * the given identifier, FALSE is returned.
      *
-     * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
      *
-     * @return mixed The found document or FALSE.
      * @phpstan-return T|false
      *
      * @template T of object
      */
-    public function tryGetById($id, ClassMetadata $class)
+    public function tryGetById(mixed $id, ClassMetadata $class): object|bool
     {
-        return $this->identityMap[$class->name][$this->getSerializedId($class, $id)] ?? false;
+        return $this->identityMap[$class->name][$this->getSerializedId($id, $class)] ?? false;
     }
 
     /**
      * Checks whether an identifier exists in the identity map.
-     *
-     * @param mixed $id
      */
-    public function containsId($id, string $rootClassName): bool
+    public function containsId(mixed $id, string $rootClassName): bool
     {
         return isset($this->identityMap[$rootClassName][serialize($id)]);
     }
@@ -219,14 +227,11 @@ final class DocumentRegistry implements Countable
             return (string) spl_object_id($document);
         }
 
-        return $this->getSerializedId($class, $this->getObjectState($document)?->identifier);
+        return $this->getSerializedId($this->getObjectState($document)?->identifier, $class);
     }
 
-    /**
-     * @param mixed $id
-     * @phpstan-param ClassMetadata<object> $class
-     */
-    private function getSerializedId(ClassMetadata $class, $id): string
+    /** @phpstan-param ClassMetadata<object> $class */
+    private function getSerializedId(mixed $id, ClassMetadata $class): string
     {
         return serialize($class->getDatabaseIdentifierValue($id));
     }

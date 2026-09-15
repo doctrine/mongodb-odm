@@ -56,8 +56,9 @@ class DocumentRegistryTest extends BaseTestCase
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
         $id       = (string) new ObjectId();
+        $class->setIdentifierValue($document, $id);
 
-        $wasNewlyAdded = $this->registry->track($class, $document, PersistenceState::Managed, $id, ['username' => 'alice']);
+        $wasNewlyAdded = $this->registry->track($class, $document, PersistenceState::Managed, ['username' => 'alice']);
 
         self::assertTrue($wasNewlyAdded);
         $state = $this->registry->getObjectState($document);
@@ -71,10 +72,10 @@ class DocumentRegistryTest extends BaseTestCase
     {
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
-        $id       = (string) new ObjectId();
+        $class->setIdentifierValue($document, (string) new ObjectId());
 
-        $this->registry->track($class, $document, PersistenceState::Managed, $id, ['username' => 'alice']);
-        $this->registry->track($class, $document, PersistenceState::Managed, $id);
+        $this->registry->track($class, $document, PersistenceState::Managed, ['username' => 'alice']);
+        $this->registry->track($class, $document, PersistenceState::Managed);
 
         self::assertSame(['username' => 'alice'], $this->registry->getObjectState($document)->originalData);
     }
@@ -83,10 +84,10 @@ class DocumentRegistryTest extends BaseTestCase
     {
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
-        $id       = (string) new ObjectId();
+        $class->setIdentifierValue($document, (string) new ObjectId());
 
-        self::assertTrue($this->registry->track($class, $document, PersistenceState::Managed, $id));
-        self::assertFalse($this->registry->track($class, $document, PersistenceState::Managed, $id));
+        self::assertTrue($this->registry->track($class, $document, PersistenceState::Managed));
+        self::assertFalse($this->registry->track($class, $document, PersistenceState::Managed));
     }
 
     public function testStopTrackingForgetsStateAndIdentityMapEntry(): void
@@ -94,7 +95,8 @@ class DocumentRegistryTest extends BaseTestCase
         $document = new CmsUser();
         $class    = $this->dm->getClassMetadata(CmsUser::class);
         $id       = (string) new ObjectId();
-        $this->registry->track($class, $document, PersistenceState::Managed, $id);
+        $class->setIdentifierValue($document, $id);
+        $this->registry->track($class, $document, PersistenceState::Managed);
 
         $this->registry->stopTracking($class, $document);
 
