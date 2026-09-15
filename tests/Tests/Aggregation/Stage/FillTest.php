@@ -95,6 +95,33 @@ class FillTest extends BaseTestCase
         );
     }
 
+    public function testStageWithMultipleSortByCalls(): void
+    {
+        $fillStage = new Fill($this->getTestAggregationBuilder());
+        $fillStage
+            ->partitionByFields('field1', 'field2')
+            ->sortBy('field1')
+            ->sortBy('field2', 'desc')
+            ->output()
+                ->field('foo')->locf();
+
+        self::assertEquals(
+            [
+                '$fill' => (object) [
+                    'partitionByFields' => ['field1', 'field2'],
+                    'sortBy' => (object) [
+                        'field1' => 1,
+                        'field2' => -1,
+                    ],
+                    'output' => (object) [
+                        'foo' => ['method' => 'locf'],
+                    ],
+                ],
+            ],
+            $fillStage->getExpression(),
+        );
+    }
+
     public function testStageWithEnumSort(): void
     {
         $fillStage = new Fill($this->getTestAggregationBuilder());

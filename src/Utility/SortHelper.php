@@ -10,6 +10,7 @@ use SortDirection;
 use function get_debug_type;
 use function in_array;
 use function is_array;
+use function is_bool;
 use function is_scalar;
 use function is_string;
 use function sprintf;
@@ -48,14 +49,14 @@ final class SortHelper
 
         foreach ($fields as $fieldName => $order) {
             $normalized[$fieldName] = match (true) {
-                $order === 1, $order === -1 => $order,
                 $order instanceof SortDirection => $order === SortDirection::Ascending ? 1 : -1,
                 is_array($order) => $order,
                 is_string($order) && in_array($order, $allowedMetaSort, true) => ['$meta' => $order],
                 is_string($order) && strtolower($order) === 'asc' => 1,
                 is_string($order) && strtolower($order) === 'desc' => -1,
+                is_scalar($order) && ! is_bool($order) && in_array((int) $order, [1, -1], true) => (int) $order,
                 default => throw new InvalidArgumentException(sprintf(
-                    'Invalid sort order %s for field "%s". Allowed values are 1, -1, "asc", "desc" and SortDirection cases.',
+                    'Invalid sort order %s for field "%s". Allowed values are 1, -1, "asc", "desc", SortDirection cases, and $meta expressions.',
                     is_scalar($order) ? var_export($order, true) : get_debug_type($order),
                     $fieldName,
                 )),

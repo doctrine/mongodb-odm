@@ -350,6 +350,42 @@ in the order you call the method:
 
     $query->sort('featured', 'desc');
 
+Sort directions can be given as the ``asc`` and ``desc`` strings (case
+insensitive), the ``1`` and ``-1`` integers, or the ``SortDirection`` enum
+added in PHP 8.6. The ``symfony/polyfill-php86`` package provides the enum for
+PHP 8.1 and later.
+
+.. code-block:: php
+
+    <?php
+
+    use SortDirection;
+
+    $qb = $dm->createQueryBuilder(Article::class)
+        ->sort('createdAt', SortDirection::Descending);
+
+You can sort on multiple fields in a single call, passing an array of
+field/order pairs to ``sort()``:
+
+.. code-block:: php
+
+    <?php
+
+    use SortDirection;
+
+    $qb = $dm->createQueryBuilder(Article::class)
+        ->sort(['featured' => SortDirection::Descending, 'createdAt' => 1]);
+
+The ``textScore`` and ``indexKey`` keywords are converted into ``$meta``
+expressions, allowing you to sort by a text score or an index key:
+
+.. code-block:: php
+
+    <?php
+
+    $qb = $dm->createQueryBuilder(Article::class)
+        ->sort('score', 'textScore');
+
 Conditional Operators
 ~~~~~~~~~~~~~~~~~~~~~
 

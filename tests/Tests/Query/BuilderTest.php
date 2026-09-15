@@ -694,9 +694,8 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => 1], $qb->debug('sort'));
     }
 
-    /** @param string|int|SortDirection $order */
     #[DataProvider('provideSortOrders')]
-    public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
+    public function testSortWithFieldNameAndOrder(mixed $order, mixed $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);
@@ -715,6 +714,12 @@ class BuilderTest extends BaseTestCase
             ['DESC', -1],
             [SortDirection::Ascending, 1],
             [SortDirection::Descending, -1],
+            ['-1', -1],
+            ['1', 1],
+            [1.0, 1],
+            [-1.0, -1],
+            ['textScore', ['$meta' => 'textScore']],
+            ['indexKey', ['$meta' => 'indexKey']],
         ];
     }
 

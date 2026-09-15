@@ -30,7 +30,7 @@ class Sort extends Stage
      *
      * @see https://www.mongodb.com/docs/manual/reference/operator/aggregation/meta/
      */
-    public const ALLOWED_META_SORTS = ['textScore', 'searchScore', 'vectorSearchScore'];
+    public const ALLOWED_META_SORTS = ['textScore', 'indexKey', 'searchScore', 'vectorSearchScore'];
 
     /** @var array<string, -1|1|SortMeta> */
     private array $sort = [];

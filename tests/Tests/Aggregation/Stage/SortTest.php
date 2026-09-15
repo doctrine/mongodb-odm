@@ -74,6 +74,10 @@ class SortTest extends BaseTestCase
                 ['field' => ['$meta' => 'searchScore'], 'otherField' => ['$meta' => 'vectorSearchScore']],
                 ['field' => 'searchScore', 'otherField' => 'vectorSearchScore'],
             ],
+            'sortMetaIndexKey' => [
+                ['field' => ['$meta' => 'indexKey']],
+                ['field' => 'indexKey'],
+            ],
         ];
     }
 

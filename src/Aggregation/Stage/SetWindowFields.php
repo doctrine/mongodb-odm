@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields\Output;
 use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use SortDirection;
 
+use function array_replace;
 use function is_array;
 
 /**
@@ -59,7 +60,7 @@ class SetWindowFields extends Stage
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
-        $this->sortBy = SortHelper::normalizeSortDirections($fields);
+        $this->sortBy = array_replace($this->sortBy, SortHelper::normalizeSortDirections($fields));
 
         return $this;
     }

@@ -15,9 +15,9 @@ class SortHelperTest extends TestCase
 {
     /** @param array<string, mixed> $expected */
     #[DataProvider('provideValidSortOrders')]
-    public function testNormalizeSortDirections(array $expected, mixed $order): void
+    public function testNormalizeSortDirections(array $expected, mixed $order, array $allowedMetaSort = []): void
     {
-        self::assertSame($expected, SortHelper::normalizeSortDirections(['field' => $order], ['textScore']));
+        self::assertSame($expected, SortHelper::normalizeSortDirections(['field' => $order], $allowedMetaSort));
     }
 
     public static function provideValidSortOrders(): array
@@ -31,7 +31,12 @@ class SortHelperTest extends TestCase
             'DESC' => [['field' => -1], 'DESC'],
             'ascending enum' => [['field' => 1], SortDirection::Ascending],
             'descending enum' => [['field' => -1], SortDirection::Descending],
-            'allowed meta keyword' => [['field' => ['$meta' => 'textScore']], 'textScore'],
+            'numeric string ascending' => [['field' => 1], '1'],
+            'numeric string descending' => [['field' => -1], '-1'],
+            'float ascending' => [['field' => 1], 1.0],
+            'float descending' => [['field' => -1], -1.0],
+            'allowed meta keyword' => [['field' => ['$meta' => 'textScore']], 'textScore', ['textScore', 'indexKey']],
+            'allowed indexKey meta keyword' => [['field' => ['$meta' => 'indexKey']], 'indexKey', ['textScore', 'indexKey']],
             'meta expression' => [['field' => ['$meta' => 'searchScore']], ['$meta' => 'searchScore']],
         ];
     }
@@ -49,12 +54,11 @@ class SortHelperTest extends TestCase
     {
         return [
             'zero' => [0],
+            'numeric string zero' => ['0'],
             'out of range int' => [2],
             'unknown keyword' => ['nonExistingMetaField'],
             'meta keyword not allowed' => ['textScore'],
-            'numeric string' => ['1'],
             'null' => [null],
-            'float' => [1.0],
             'boolean' => [true],
             'object' => [new stdClass()],
         ];

@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill\Output;
 use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use SortDirection;
 
+use function array_replace;
 use function array_values;
 use function is_array;
 
@@ -73,7 +74,7 @@ class Fill extends Stage
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
-        $this->sortBy = SortHelper::normalizeSortDirections($fields);
+        $this->sortBy = array_replace($this->sortBy, SortHelper::normalizeSortDirections($fields));
 
         return $this;
     }

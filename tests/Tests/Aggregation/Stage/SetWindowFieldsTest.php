@@ -140,6 +140,33 @@ class SetWindowFieldsTest extends BaseTestCase
         );
     }
 
+    public function testStageWithMultipleSortByCalls(): void
+    {
+        $setWindowFieldsStage = new SetWindowFields($this->getTestAggregationBuilder());
+        $setWindowFieldsStage
+            ->partitionBy('$field1')
+            ->sortBy('field1')
+            ->sortBy('field2', 'desc')
+            ->output()
+                ->field('foo')->locf('$foo');
+
+        self::assertEquals(
+            [
+                '$setWindowFields' => (object) [
+                    'partitionBy' => '$field1',
+                    'sortBy' => (object) [
+                        'field1' => 1,
+                        'field2' => -1,
+                    ],
+                    'output' => (object) [
+                        'foo' => ['$locf' => '$foo'],
+                    ],
+                ],
+            ],
+            $setWindowFieldsStage->getExpression(),
+        );
+    }
+
     public function testStageWithEnumSort(): void
     {
         $setWindowFieldsStage = new SetWindowFields($this->getTestAggregationBuilder());
