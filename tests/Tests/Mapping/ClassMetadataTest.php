@@ -420,6 +420,7 @@ class ClassMetadataTest extends BaseTestCase
         $cm->mapField(['fieldName' => 'username', 'name' => 'uname', 'type' => Type::STRING]);
 
         $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Field "name" in class "Documents\CmsUser" is mapped to field "uname" in the database, but that name is already in use by field "username".');
         $cm->mapField(['fieldName' => 'name', 'name' => 'uname', 'type' => Type::STRING]);
     }
 
