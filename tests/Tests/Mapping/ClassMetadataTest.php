@@ -388,6 +388,41 @@ class ClassMetadataTest extends BaseTestCase
         $cm->mapField(['fieldName' => 'name', 'type' => Type::STRING]);
     }
 
+    public function testSetDiscriminatorFieldAcceptsDeprecatedArrayWithName(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+
+        $this->captureDeprecationMessages(
+            static fn () => $cm->setDiscriminatorField(['name' => 'disc']),
+            $errors,
+        );
+
+        self::assertSame('disc', $cm->discriminatorField);
+        self::assertNotEmpty($errors);
+    }
+
+    public function testSetDiscriminatorFieldAcceptsDeprecatedArrayWithFieldName(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+
+        $this->captureDeprecationMessages(
+            static fn () => $cm->setDiscriminatorField(['fieldName' => 'disc']),
+            $errors,
+        );
+
+        self::assertSame('disc', $cm->discriminatorField);
+        self::assertNotEmpty($errors);
+    }
+
+    public function testDuplicateFieldMappingThrowsMappingException(): void
+    {
+        $cm = new ClassMetadata(CmsUser::class);
+        $cm->mapField(['fieldName' => 'username', 'name' => 'uname', 'type' => Type::STRING]);
+
+        $this->expectException(MappingException::class);
+        $cm->mapField(['fieldName' => 'name', 'name' => 'uname', 'type' => Type::STRING]);
+    }
+
     public function testDuplicateFieldAndAssocationMapping1(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
