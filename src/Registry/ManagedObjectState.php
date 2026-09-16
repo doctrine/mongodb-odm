@@ -14,25 +14,19 @@ namespace Doctrine\ODM\MongoDB\Registry;
  */
 final class ManagedObjectState
 {
-    public ?ParentAssociation $parentAssociation = null;
-
-    /**
-     * The document's identifier. For documents without an identifier field
-     * (e.g. embedded documents), this holds a value uniquely identifying the
-     * document instance instead (see {@see DocumentRegistry}).
-     */
-    public mixed $identifier = null;
-
     /**
      * $originalData is null until it is recorded for the first time (e.g. a
      * document that has been persisted but not yet flushed); it is never
      * reset back to null afterwards, even for an empty snapshot.
      *
      * @param array<string, mixed>|null $originalData
+     * @param mixed                     $identifier   The document's identifier. For documents without an identifier field (e.g. embedded documents), this holds a value uniquely identifying the document instance instead (see {@see DocumentRegistry}).
      */
     public function __construct(
         public PersistenceState $state,
         public ?array $originalData = null,
+        public mixed $identifier = null,
+        public ?ParentAssociation $parentAssociation = null,
     ) {
     }
 }
