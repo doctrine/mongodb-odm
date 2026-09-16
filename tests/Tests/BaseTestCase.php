@@ -324,8 +324,14 @@ abstract class BaseTestCase extends TestCase
         return $manager->selectServer()->getType() !== Server::TYPE_STANDALONE;
     }
 
-    protected function createFailPoint(string $failCommand, bool $transient = false, int $times = 1): void
-    {
+    /** @param list<string>|null $errorLabels */
+    protected function createFailPoint(
+        string $failCommand,
+        bool $transient = false,
+        int $times = 1,
+        int $errorCode = 192, // FailPointEnabled
+        ?array $errorLabels = null,
+    ): void {
         try {
             $this->dm->getClient()->getManager()->executeCommand(
                 'admin',
@@ -333,8 +339,8 @@ abstract class BaseTestCase extends TestCase
                     'configureFailPoint' => 'failCommand',
                     'mode'               => ['times' => $times],
                     'data' => [
-                        'errorCode' => 192, // FailPointEnabled
-                        'errorLabels' => $transient ? ['TransientTransactionError'] : [],
+                        'errorCode' => $errorCode,
+                        'errorLabels' => $errorLabels ?? ($transient ? ['TransientTransactionError'] : []),
                         'failCommands' => [$failCommand],
                     ],
                 ]),
