@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\ReentrantCommitListenerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
@@ -577,6 +578,42 @@ class UnitOfWorkTest extends BaseTestCase
             $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
             self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+
+            return;
+        }
+
+        $this->fail('This should never be reached, an exception should have been thrown.');
+    }
+
+    public function testCommitThrowsWhenAlreadyInProgress(): void
+    {
+        $listener = new ReentrantCommitListenerMock();
+        $this->dm->getEventManager()->addEventSubscriber($listener);
+
+        $user           = new ForumUser();
+        $user->username = '12345';
+
+        $this->dm->persist($user);
+
+        $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
+
+        try {
+            $this->dm->flush();
+        } catch (MongoDBException $e) {
+            self::assertSame(
+                'There is already a commit operation in progress. Did you call flush from an event listener?',
+                $e->getMessage(),
+            );
+
+            // The reentrancy guard must not leak commitsInProgress, otherwise
+            // every subsequent flush() would throw the same exception.
+            self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+
+            $this->dm->getEventManager()->removeEventSubscriber($listener);
+            $this->dm->flush();
+
+            self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+            self::assertFalse($this->uow->isScheduledForInsert($user));
 
             return;
         }
