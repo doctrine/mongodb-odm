@@ -445,7 +445,7 @@ final class UnitOfWork implements PropertyChangedListener
             return; // Nothing to do.
         }
 
-        if ($this->commitsInProgress > 1) {
+        if ($this->commitsInProgress > 0) {
             throw MongoDBException::commitInProgress();
         }
 

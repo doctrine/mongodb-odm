@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 
 class ReentrantCommitListenerMock implements EventSubscriber
 {
+    public int $onFlushCallCount = 0;
+
     public function getSubscribedEvents(): array
     {
         return ['onFlush'];
@@ -16,6 +18,7 @@ class ReentrantCommitListenerMock implements EventSubscriber
 
     public function onFlush(OnFlushEventArgs $args): void
     {
+        $this->onFlushCallCount++;
         $args->getDocumentManager()->flush();
     }
 }

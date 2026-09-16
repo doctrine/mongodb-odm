@@ -605,6 +605,11 @@ class UnitOfWorkTest extends BaseTestCase
                 $e->getMessage(),
             );
 
+            // The guard must trip on the first reentrant call: onFlush must
+            // fire only once, for the outer commit(). The nested flush() it
+            // triggers must throw before ever dispatching onFlush itself.
+            self::assertSame(1, $listener->onFlushCallCount);
+
             // The reentrancy guard must not leak commitsInProgress, otherwise
             // every subsequent flush() would throw the same exception.
             self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
