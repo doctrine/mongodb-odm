@@ -44,7 +44,8 @@ builder object:
             ->field('numPurchases')
             ->sum(1)
             ->field('amount')
-            ->sum('$amount');
+            ->sum('$amount')
+        ->sort('amount', \SortDirection::Descending);
 
 Just like the query builder, the aggregation builder takes care of converting
 ``DateTime`` objects into ``MongoDB\Driver\BSON\UTCDateTime`` objects.

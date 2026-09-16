@@ -107,7 +107,7 @@ class BuilderTest extends BaseTestCase
                     ],
                 ],
             ],
-            ['$sort' => ['totalAmount' => 0]],
+            ['$sort' => ['totalAmount' => 1]],
             ['$sort' => ['numOrders' => -1, 'avgAmount' => 1]],
             ['$limit' => 5],
             ['$skip' => 2],
