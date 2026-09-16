@@ -77,6 +77,7 @@ jobs:
             dependencies: "highest"
             symfony-version: ""
             proxy: "proxy-manager"
+            topology: "server"
           # Test with Native Lazy Objects
           - php-version: "8.4"
             mongodb-version: "8.0"
@@ -84,6 +85,7 @@ jobs:
             dependencies: "highest"
             symfony-version: ""
             proxy: "native"
+            topology: "server"
           # Test with extension 1.21
           - topology: "server"
             php-version: "8.2"
