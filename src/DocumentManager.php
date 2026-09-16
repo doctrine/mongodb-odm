@@ -19,8 +19,6 @@ use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
 use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
-use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
-use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
@@ -40,7 +38,6 @@ use Throwable;
 
 use function array_search;
 use function assert;
-use function count;
 use function gettype;
 use function is_object;
 use function ltrim;
@@ -653,7 +650,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
         /** @phpstan-var T|false $document */
-        $document = $this->tryGetById($identifier, $class);
+        $document = $this->documentRegistry->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($document !== false) {
@@ -687,7 +684,7 @@ class DocumentManager implements ObjectManager
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
-        $document = $this->tryGetById($identifier, $class);
+        $document = $this->documentRegistry->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($document) {
@@ -763,177 +760,6 @@ class DocumentManager implements ObjectManager
     }
 
     /**
-     * Sets the parent association for a given embedded document.
-     *
-     * @internal
-     *
-     * @phpstan-param FieldMapping $mapping
-     */
-    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $field): void
-    {
-        $this->documentRegistry->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $field);
-    }
-
-    /**
-     * Gets the parent association for a given embedded document.
-     *
-     * @internal
-     */
-    public function getParentAssociation(object $document): ?ParentAssociation
-    {
-        return $this->documentRegistry->getObjectState($document)?->parentAssociation;
-    }
-
-    /**
-     * Gets the original data of a document. The original data is the data
-     * that was present at the time the document was reconstituted from the
-     * database, used for calculating changesets at commit time.
-     *
-     * @internal
-     *
-     * @return array<string, mixed>
-     */
-    public function getOriginalDocumentData(object $document): array
-    {
-        $objectState = $this->documentRegistry->getObjectState($document);
-
-        return $objectState !== null ? $objectState->originalData ?? [] : [];
-    }
-
-    /**
-     * @internal
-     *
-     * @param array<string, mixed> $data
-     */
-    public function setOriginalDocumentData(object $document, array $data): void
-    {
-        $this->documentRegistry->getOrCreateObjectState($document)->originalData = $data;
-    }
-
-    /**
-     * Sets a property value of the original data array of a document.
-     *
-     * @internal
-     */
-    public function setOriginalDocumentProperty(object $document, string $property, mixed $value): void
-    {
-        $this->documentRegistry->getOrCreateObjectState($document)->originalData[$property] = $value;
-    }
-
-    /**
-     * Gets the identifier of a document.
-     *
-     * @internal
-     */
-    public function getDocumentIdentifier(object $document): mixed
-    {
-        return $this->documentRegistry->getObjectState($document)?->identifier;
-    }
-
-    /**
-     * Removes a document from the identity map, marking it as detached.
-     *
-     * @internal
-     *
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @template T of object
-     */
-    public function removeFromIdentityMap(ClassMetadata $class, object $document): bool
-    {
-        if (! $this->documentRegistry->removeFromIdentityMap($class, $document)) {
-            return false;
-        }
-
-        $this->documentRegistry->getOrCreateObjectState($document)->state = PersistenceState::Detached;
-
-        return true;
-    }
-
-    /**
-     * Checks whether a document is registered in the identity map.
-     *
-     * @internal
-     *
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @template T of object
-     */
-    public function isInIdentityMap(ClassMetadata $class, object $document): bool
-    {
-        return $this->documentRegistry->isInIdentityMap($class, $document);
-    }
-
-    /**
-     * Gets a document in the identity map by its identifier.
-     *
-     * @internal
-     *
-     * @param mixed $id Document identifier
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @phpstan-return T
-     *
-     * @template T of object
-     */
-    public function getById($id, ClassMetadata $class): object
-    {
-        return $this->documentRegistry->getById($id, $class);
-    }
-
-    /**
-     * Tries to get a document by its identifier. If no document is found for
-     * the given identifier, FALSE is returned.
-     *
-     * @internal
-     *
-     * @param mixed $id Document identifier
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @phpstan-return T|false
-     *
-     * @template T of object
-     */
-    public function tryGetById($id, ClassMetadata $class): object|bool
-    {
-        return $this->documentRegistry->tryGetById($id, $class);
-    }
-
-    /**
-     * Checks whether an identifier exists in the identity map.
-     *
-     * @internal
-     *
-     * @param mixed $id
-     */
-    public function containsId($id, string $rootClassName): bool
-    {
-        return $this->documentRegistry->containsId($id, $rootClassName);
-    }
-
-    /**
-     * Gets the identity map of documents known to this DocumentManager.
-     *
-     * @internal
-     *
-     * @return array<class-string, array<string, object>>
-     */
-    public function getIdentityMap(): array
-    {
-        return $this->documentRegistry->getIdentityMap();
-    }
-
-    /**
-     * The number of documents currently tracked in the identity map.
-     *
-     * @internal
-     */
-    public function getManagedDocumentsCount(): int
-    {
-        return count($this->documentRegistry);
-    }
-
-    /**
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
@@ -962,7 +788,7 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->unitOfWork->isScheduledForInsert($object) ||
-            $this->isInIdentityMap($this->getClassMetadata($object::class), $object) &&
+            $this->documentRegistry->isInIdentityMap($this->getClassMetadata($object::class), $object) &&
             ! $this->unitOfWork->isScheduledForDelete($object);
     }
 
@@ -987,7 +813,7 @@ class DocumentManager implements ObjectManager
     public function createReference(object $document, array $referenceMapping)
     {
         $class = $this->getClassMetadata($document::class);
-        $id    = $this->getDocumentIdentifier($document);
+        $id    = $this->documentRegistry->getDocumentIdentifier($document);
 
         if ($id === null) {
             throw new RuntimeException(

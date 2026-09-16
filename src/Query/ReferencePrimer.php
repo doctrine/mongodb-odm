@@ -114,7 +114,7 @@ final class ReferencePrimer
 
             if ($mapping['type'] === ClassMetadata::ONE && $this->uow->isUninitializedObject($fieldValue)) {
                 $refClass                                    = $this->dm->getClassMetadata($fieldValue::class);
-                $id                                          = $this->dm->getDocumentIdentifier($fieldValue);
+                $id                                          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($fieldValue);
                 $groupedIds[$refClass->name][serialize($id)] = $id;
             } elseif ($mapping['type'] === ClassMetadata::MANY && $fieldValue instanceof PersistentCollectionInterface) {
                 $this->addManyReferences($fieldValue, $groupedIds);
@@ -240,7 +240,7 @@ final class ReferencePrimer
                 continue;
             }
 
-            $document = $this->dm->tryGetById($id, $class);
+            $document = $this->dm->getDocumentRegistry()->tryGetById($id, $class);
 
             if ($document && ! $this->uow->isUninitializedObject($document)) {
                 continue;

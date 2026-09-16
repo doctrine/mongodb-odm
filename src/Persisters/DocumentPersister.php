@@ -421,7 +421,7 @@ final class DocumentPersister
     public function delete(object $document, array $options = []): void
     {
         if ($this->bucket instanceof Bucket) {
-            $documentIdentifier = $this->dm->getDocumentIdentifier($document);
+            $documentIdentifier = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
             $databaseIdentifier = $this->class->getDatabaseIdentifierValue($documentIdentifier);
 
             $this->bucket->delete($databaseIdentifier);
@@ -458,7 +458,7 @@ final class DocumentPersister
         }
 
         $data = $this->hydratorFactory->hydrate($document, (array) $data);
-        $this->dm->setOriginalDocumentData($document, $data);
+        $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
         $this->uow->clearDocumentChangeSet(spl_object_id($document));
     }
 
@@ -615,7 +615,7 @@ final class DocumentPersister
      */
     public function lock(object $document, int $lockMode): void
     {
-        $id          = $this->dm->getDocumentIdentifier($document);
+        $id          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         assert($this->collection instanceof Collection);
@@ -628,7 +628,7 @@ final class DocumentPersister
      */
     public function unlock(object $document): void
     {
-        $id          = $this->dm->getDocumentIdentifier($document);
+        $id          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         assert($this->collection instanceof Collection);
@@ -711,7 +711,7 @@ final class DocumentPersister
                 throw HydratorException::associationItemTypeMismatch($owner::class, $mapping['name'], $key, 'array', gettype($embeddedDocument));
             }
 
-            $this->dm->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
+            $this->dm->getDocumentRegistry()->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
             $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
             $id   = $data[$embeddedMetadata->identifier ?? ''] ?? null;
@@ -802,10 +802,10 @@ final class DocumentPersister
             $cursor    = $mongoCollection->find($criteria, $options);
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
-                $document = $this->dm->getById($documentData['_id'], $class);
+                $document = $this->dm->getDocumentRegistry()->getById($documentData['_id'], $class);
                 if ($this->uow->isUninitializedObject($document)) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
-                    $this->dm->setOriginalDocumentData($document, $data);
+                    $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
                     $this->uow->clearDocumentChangeSet(spl_object_id($document));
                 }
 
@@ -1541,7 +1541,7 @@ final class DocumentPersister
      */
     private function getQueryForDocument(object $document): array
     {
-        $id = $this->dm->getDocumentIdentifier($document);
+        $id = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
         $id = $this->class->getDatabaseIdentifierValue($id);
 
         $shardKeyQueryPart = $this->getShardKeyQuery($document);

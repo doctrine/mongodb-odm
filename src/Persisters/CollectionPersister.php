@@ -427,7 +427,7 @@ final class CollectionPersister
         $mapping = $coll->getMapping();
         $fields  = [];
         $parent  = $coll->getOwner();
-        while (($association = $this->dm->getParentAssociation($parent)) !== null) {
+        while (($association = $this->dm->getDocumentRegistry()->getParentAssociation($parent)) !== null) {
             if (isset($association->mapping['reference'])) {
                 break;
             }
@@ -455,7 +455,7 @@ final class CollectionPersister
     {
         $className = $document::class;
         $class     = $this->dm->getClassMetadata($className);
-        $id        = $class->getDatabaseIdentifierValue($this->dm->getDocumentIdentifier($document));
+        $id        = $class->getDatabaseIdentifierValue($this->dm->getDocumentRegistry()->getDocumentIdentifier($document));
         $query     = ['_id' => $id];
         if ($class->isVersioned) {
             $query[$class->fieldMappings[$class->versionField]['name']] = $class->propertyAccessors[$class->versionField]->getValue($document);
