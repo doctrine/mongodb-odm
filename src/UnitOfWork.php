@@ -445,11 +445,11 @@ final class UnitOfWork implements PropertyChangedListener
             return; // Nothing to do.
         }
 
-        $this->commitsInProgress++;
-        if ($this->commitsInProgress > 1) {
+        if ($this->commitsInProgress > 0) {
             throw MongoDBException::commitInProgress();
         }
 
+        $this->commitsInProgress++;
         try {
             if ($this->orphanRemovals) {
                 foreach ($this->orphanRemovals as $removal) {

@@ -106,4 +106,4 @@ jobs:
         with:
           disable_search: true
           files: coverage.xml
-          flags: "${{ matrix.mongodb-version }}-${{ matrix.topology }}"
+          flags: "atlas"

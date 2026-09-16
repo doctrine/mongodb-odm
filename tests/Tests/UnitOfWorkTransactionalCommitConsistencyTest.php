@@ -14,6 +14,7 @@ use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
 use MongoDB\Driver\Exception\BulkWriteException;
+use MongoDB\Driver\Exception\RuntimeException;
 use Throwable;
 
 class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
@@ -580,6 +581,97 @@ class UnitOfWorkTransactionalCommitConsistencyTest extends BaseTestCase
         $check = $this->dm->find(User::class, $alcaeus->getId());
         self::assertNotNull($check);
         self::assertCount(1, $check->getPhonenumbers());
+    }
+
+    public function testTransientCommitTransactionErrorIsRetried(): void
+    {
+        $user           = new ForumUser();
+        $user->username = 'alcaeus';
+        $this->uow->persist($user);
+
+        // A single transient error on commitTransaction restarts the transaction
+        // (re-running the callback) and succeeds on the second attempt.
+        $this->createFailPoint('commitTransaction', transient: true);
+
+        $this->uow->commit();
+
+        self::assertSame(
+            1,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+    }
+
+    public function testUnknownTransactionCommitResultIsRetried(): void
+    {
+        $user           = new ForumUser();
+        $user->username = 'alcaeus';
+        $this->uow->persist($user);
+
+        // A single UnknownTransactionCommitResult error retries the commitTransaction
+        // command itself, without re-running the callback.
+        $this->createFailPoint('commitTransaction', errorLabels: ['UnknownTransactionCommitResult']);
+
+        $this->uow->commit();
+
+        self::assertSame(
+            1,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+    }
+
+    public function testMultipleTransientCommitTransactionErrorsExhaustRetries(): void
+    {
+        $user           = new ForumUser();
+        $user->username = 'alcaeus';
+        $this->uow->persist($user);
+
+        // Two transient errors on commitTransaction exhaust the retry budget: the
+        // callback is re-run once, fails transiently again, and the exception propagates.
+        $this->createFailPoint('commitTransaction', transient: true, times: 2);
+
+        try {
+            $this->uow->commit();
+            self::fail('Expected exception when committing');
+        } catch (Throwable $e) {
+            self::assertInstanceOf(RuntimeException::class, $e);
+        }
+
+        self::assertSame(
+            0,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertTrue($this->uow->isScheduledForInsert($user));
+    }
+
+    public function testMaxTimeMSExpiredDuringCommitIsNotRetried(): void
+    {
+        $user           = new ForumUser();
+        $user->username = 'alcaeus';
+        $this->uow->persist($user);
+
+        // Even though it carries the UnknownTransactionCommitResult label, error
+        // code 50 (MaxTimeMSExpired) must not be retried.
+        $this->createFailPoint(
+            'commitTransaction',
+            errorCode: 50,
+            errorLabels: ['UnknownTransactionCommitResult'],
+        );
+
+        try {
+            $this->uow->commit();
+            self::fail('Expected exception when committing');
+        } catch (Throwable $e) {
+            self::assertInstanceOf(RuntimeException::class, $e);
+            self::assertSame(50, $e->getCode());
+        }
+
+        self::assertSame(
+            0,
+            $this->dm->getDocumentCollection(ForumUser::class)->countDocuments(),
+        );
+
+        self::assertTrue($this->uow->isScheduledForInsert($user));
     }
 
     /** Create a document manager with a single host to ensure failpoints target the correct server */
