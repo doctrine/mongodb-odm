@@ -75,7 +75,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: "flex"
           extensions: "mongodb, bcmath"
-          coverage: "none"
+          coverage: "xdebug"
           ini-values: "zend.assertions=1"
 
       - name: "Show driver information"
@@ -94,8 +94,16 @@ jobs:
           SYMFONY_REQUIRE: ${{ matrix.symfony-version }}
 
       - name: "Run PHPUnit with Atlas Local"
-        run: "vendor/bin/phpunit --group atlas"
+        run: "vendor/bin/phpunit --coverage-clover coverage.xml --group atlas"
         env:
+          XDEBUG_MODE: "coverage"
           DOCTRINE_MONGODB_SERVER: "mongodb://127.0.0.1:27017/?directConnection=true"
           USE_LAZY_GHOST_OBJECT: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}
           USE_NATIVE_LAZY_OBJECT: ${{ matrix.proxy == 'native' && '1' || '0' }}
+
+      - name: "Upload coverage report"
+        uses: codecov/codecov-action@v7
+        with:
+          disable_search: true
+          files: coverage.xml
+          flags: "${{ matrix.mongodb-version }}-${{ matrix.topology }}"
