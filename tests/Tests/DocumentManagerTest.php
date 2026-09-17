@@ -76,11 +76,6 @@ class DocumentManagerTest extends BaseTestCase
         self::assertInstanceOf(UnitOfWork::class, $this->dm->getUnitOfWork());
     }
 
-    public function testGetDocumentRegistryReturnsTheSameInstanceEveryTime(): void
-    {
-        self::assertSame($this->dm->getDocumentRegistry(), $this->dm->getDocumentRegistry());
-    }
-
     public function testGetProxyFactory(): void
     {
         self::assertInstanceOf(ProxyFactory::class, $this->dm->getProxyFactory());

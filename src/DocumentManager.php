@@ -141,13 +141,6 @@ class DocumentManager implements ObjectManager
     /** @var ProxyClassNameResolver&ClassNameResolver  */
     private ProxyClassNameResolver $classNameResolver;
 
-    /**
-     * Tracks every document known to this DocumentManager, by instance and
-     * by class + identifier, for the manager's lifetime (until it is
-     * cleared).
-     *
-     * @internal
-     */
     private DocumentRegistry $documentRegistry;
 
     /**

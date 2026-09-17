@@ -23,7 +23,7 @@ use function sprintf;
  *  - by class and (serialized) identifier, to find the managed instance for
  *    a given database identity without loading it twice.
  *
- * @internal This class is not part of the public API and is subject to change.
+ * @internal
  *
  * @phpstan-import-type FieldMapping from ClassMetadata
  */
@@ -95,8 +95,6 @@ final class DocumentRegistry implements Countable
 
     /**
      * Sets the parent association for a given embedded document.
-     *
-     * @internal
      *
      * @phpstan-param FieldMapping $mapping
      */
