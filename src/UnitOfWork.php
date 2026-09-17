@@ -7,9 +7,11 @@ namespace Doctrine\ODM\MongoDB;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\ChangeSets\ChangeSet;
+use Doctrine\ODM\MongoDB\ChangeSets\ChangeSetComputationRequest;
+use Doctrine\ODM\MongoDB\ChangeSets\ChangeSetComputer;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
@@ -26,7 +28,6 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
-use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -62,10 +63,6 @@ use const PHP_VERSION_ID;
  *
  * @phpstan-import-type FieldMapping from ClassMetadata
  * @phpstan-import-type AssociationFieldMapping from ClassMetadata
- * @phpstan-type ChangeSet array{
- *      0: mixed,
- *      1: mixed
- * }
  * @phpstan-type Hints array<int, mixed>
  * @phpstan-type CommitOptions array{
  *      fsync?: bool,
@@ -122,7 +119,7 @@ final class UnitOfWork implements PropertyChangedListener
      * Map of document changes. Keys are object ids (spl_object_id).
      * Filled at the beginning of a commit of the UnitOfWork and cleaned at the end.
      *
-     * @var array<int, array<string, ChangeSet>>
+     * @var array<int, ChangeSet>
      */
     private array $documentChangeSets = [];
 
@@ -247,6 +244,8 @@ final class UnitOfWork implements PropertyChangedListener
 
     private int $commitsInProgress = 0;
 
+    private readonly ChangeSetComputer $changeSetComputer;
+
     /**
      * Initializes a new UnitOfWork instance, bound to the given DocumentManager.
      */
@@ -258,6 +257,7 @@ final class UnitOfWork implements PropertyChangedListener
         $this->hydratorFactory       = $hydratorFactory;
         $this->lifecycleEventManager = new LifecycleEventManager($dm, $this, $evm);
         $this->reflectionService     = new RuntimeReflectionService();
+        $this->changeSetComputer     = new ChangeSetComputer();
     }
 
     /**
@@ -511,13 +511,23 @@ final class UnitOfWork implements PropertyChangedListener
      * Gets the changeset for a document.
      *
      * @return array{property: array{0: mixed, 1: mixed}}
-     * @phpstan-return array<string, ChangeSet>
+     * @phpstan-return array<string, array{0: mixed, 1: mixed}>
      */
     public function getDocumentChangeSet(object $document): array
     {
-        $oid = spl_object_id($document);
+        return $this->getChangeSet($document)->toArray();
+    }
 
-        return $this->documentChangeSets[$oid] ?? [];
+    /**
+     * Gets the changeset for a document as a {@see ChangeSet} value object.
+     *
+     * Returns the same instance stored internally, so mutating it (e.g. via
+     * {@see ChangeSet::recordChange()}) is visible to the rest of the UnitOfWork
+     * without calling {@see self::setDocumentChangeSet()} back.
+     */
+    public function getChangeSet(object $document): ChangeSet
+    {
+        return $this->documentChangeSets[spl_object_id($document)] ?? new ChangeSet($document, []);
     }
 
     /**
@@ -525,11 +535,18 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      *
-     * @param array<string, ChangeSet> $changeset
+     * @param array<string, array{0: mixed, 1: mixed}> $changeset
      */
     public function setDocumentChangeSet(object $document, array $changeset): void
     {
-        $this->documentChangeSets[spl_object_id($document)] = $changeset;
+        $originalData = [];
+        $newValues    = [];
+        foreach ($changeset as $field => [$oldValue, $newValue]) {
+            $originalData[$field] = $oldValue;
+            $newValues[$field]    = $newValue;
+        }
+
+        $this->documentChangeSets[spl_object_id($document)] = new ChangeSet($document, $originalData, $newValues);
     }
 
     /**
@@ -628,163 +645,96 @@ final class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $oid           = spl_object_id($document);
-        $actualData    = $this->getDocumentActualData($document);
-        $objectState   = $this->documentRegistry->getOrCreateObjectState($document);
+        $oid         = spl_object_id($document);
+        $actualData  = $this->getDocumentActualData($document);
+        $actualData  = $this->fixActualDataCollectionOwnership($class, $document, $actualData);
+        $objectState = $this->documentRegistry->getOrCreateObjectState($document);
+
         $isNewDocument = $objectState->originalData === null;
+
+        if (! $isNewDocument && $class->isReadOnly) {
+            return;
+        }
+
+        $request = new ChangeSetComputationRequest(
+            $class,
+            $document,
+            $objectState->originalData,
+            $actualData,
+            $this->documentChangeSets[$oid] ?? null,
+            $class->isChangeTrackingNotify(),
+            $recompute,
+        );
+
+        $changeSet = $this->changeSetComputer->computeChangeSets(
+            [$request],
+            $this->isCollectionScheduledForDeletion(...),
+        )[$oid];
+
         if ($isNewDocument) {
-            // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
-            // These result in an INSERT.
-            $objectState->originalData = $actualData;
-            $changeSet                 = [];
-            foreach ($actualData as $propName => $actualValue) {
-                /* At this PersistentCollection shouldn't be here, probably it
-                 * was cloned and its ownership must be fixed
-                 */
-                if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
-                    $actualData[$propName] = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
-                    $actualValue           = $actualData[$propName];
-                }
-
-                // ignore inverse side of reference relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
-                    continue;
-                }
-
-                $changeSet[$propName] = [null, $actualValue];
-            }
-
+            $objectState->originalData      = $actualData;
             $this->documentChangeSets[$oid] = $changeSet;
-        } else {
-            if ($class->isReadOnly) {
-                return;
-            }
+        } elseif (! $changeSet->isEmpty()) {
+            $objectState->originalData = $actualData;
+            $this->scheduleForUpdate($document);
 
-            // Document is "fully" MANAGED: it was already fully persisted before
-            // and we have a copy of the original data
-            $originalData           = $objectState->originalData ?? [];
-            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
-            if ($isChangeTrackingNotify && ! $recompute && isset($this->documentChangeSets[$oid])) {
-                $changeSet = $this->documentChangeSets[$oid];
-            } else {
-                $changeSet = [];
-            }
-
-            $gridFSMetadataProperty = null;
-
-            if ($class->isFile) {
-                try {
-                    $gridFSMetadata         = $class->getFieldMappingByDbFieldName('metadata');
-                    $gridFSMetadataProperty = $gridFSMetadata['fieldName'];
-                } catch (MappingException) {
-                }
-            }
-
-            foreach ($actualData as $propName => $actualValue) {
-                // skip not saved fields
-                if (
-                    (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) ||
-                    ($class->isFile && $propName !== $gridFSMetadataProperty)
-                ) {
+            // The computer intentionally does not schedule anything itself; derive
+            // orphan removal / collection deletion from exactly the fields this pass
+            // found changed (i.e. from $changeSet, before it is merged below).
+            foreach ($changeSet->getFieldNames() as $propName) {
+                $mapping = $class->fieldMappings[$propName] ?? null;
+                if ($mapping === null) {
                     continue;
                 }
 
-                $orgValue = $originalData[$propName] ?? null;
-
-                // skip if value has not changed
-                if ($orgValue === $actualValue) {
-                    if (! $actualValue instanceof PersistentCollectionInterface) {
-                        continue;
-                    }
-
-                    if (! $actualValue->isDirty() && ! $this->isCollectionScheduledForDeletion($actualValue)) {
-                        // consider dirty collections as changed as well
-                        continue;
-                    }
-                }
-
-                // if relationship is a embed-one, schedule orphan removal to trigger cascade remove operations
-                if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::ONE) {
+                if (isset($mapping['embedded']) && $mapping['type'] === ClassMetadata::ONE) {
+                    $orgValue = $changeSet->getOldValue($propName);
                     if ($orgValue !== null) {
                         $this->scheduleOrphanRemoval($orgValue);
                     }
 
-                    $changeSet[$propName] = [$orgValue, $actualValue];
                     continue;
                 }
 
-                // if owning side of reference-one relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::ONE && $class->fieldMappings[$propName]['isOwningSide']) {
-                    if ($orgValue !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
+                if (isset($mapping['reference']) && $mapping['type'] === ClassMetadata::ONE && $mapping['isOwningSide']) {
+                    $orgValue = $changeSet->getOldValue($propName);
+                    if ($orgValue !== null && $mapping['orphanRemoval']) {
                         $this->scheduleOrphanRemoval($orgValue);
                     }
 
-                    $changeSet[$propName] = [$orgValue, $actualValue];
                     continue;
                 }
 
-                if ($isChangeTrackingNotify) {
+                if (! isset($mapping['type']) || $mapping['type'] !== ClassMetadata::MANY) {
                     continue;
                 }
 
-                // ignore inverse side of reference relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
+                $orgValue    = $changeSet->getOldValue($propName);
+                $actualValue = $changeSet->getNewValue($propName);
+                if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($mapping['strategy'])) {
                     continue;
                 }
 
-                // Persistent collection was exchanged with the "originally"
-                // created one. This can only mean it was cloned and replaced
-                // on another document.
-                if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
-                    $actualValue = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
-                }
-
-                // if embed-many or reference-many relationship
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
-                    $changeSet[$propName] = [$orgValue, $actualValue];
-                    /* If original collection was exchanged with a non-empty value
-                     * and $set will be issued, there is no need to $unset it first
-                     */
-                    if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
-                        continue;
-                    }
-
-                    if ($orgValue !== $actualValue && $orgValue instanceof PersistentCollectionInterface) {
-                        $this->scheduleCollectionDeletion($orgValue);
-                    }
-
+                if ($orgValue === $actualValue || ! ($orgValue instanceof PersistentCollectionInterface)) {
                     continue;
                 }
 
-                // skip equivalent date values
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                    $dateType      = $class->getFieldType($propName);
-                    $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
-                    $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
-
-                    // Loose comparison is only safe when both values are UTC dates. A custom
-                    // type overriding "date" may produce a different database representation.
-                    if ($dbOrgValue instanceof UTCDateTime && $dbActualValue instanceof UTCDateTime) {
-                        // We rely on loose comparison to compare every field
-                        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-                        if ($dbOrgValue == $dbActualValue) {
-                            continue;
-                        }
-                    }
-                }
-
-                // regular field
-                $changeSet[$propName] = [$orgValue, $actualValue];
+                $this->scheduleCollectionDeletion($orgValue);
             }
 
-            if ($changeSet) {
-                $this->documentChangeSets[$oid] = isset($this->documentChangeSets[$oid])
-                    ? $changeSet + $this->documentChangeSets[$oid]
-                    : $changeSet;
+            // Merge this pass's diff onto any existing stored changeset instead of replacing
+            // it outright, so fields recorded by an earlier pass (e.g. the initial insert diff,
+            // or a prior recompute) that didn't change again in this pass are not lost.
+            if (isset($this->documentChangeSets[$oid]) && $this->documentChangeSets[$oid] !== $changeSet) {
+                $existing = $this->documentChangeSets[$oid];
+                foreach ($changeSet->getFieldNames() as $field) {
+                    $existing->recordChange($field, $changeSet->getNewValue($field));
+                }
 
-                $objectState->originalData = $actualData;
-                $this->scheduleForUpdate($document);
+                $changeSet = $existing;
             }
+
+            $this->documentChangeSets[$oid] = $changeSet;
         }
 
         // Look for changes in associations of the document
@@ -811,14 +761,18 @@ final class UnitOfWork implements PropertyChangedListener
             foreach ($values as $obj) {
                 $oid2 = spl_object_id($obj);
 
-                if (! isset($this->documentChangeSets[$oid2])) {
+                if (! isset($this->documentChangeSets[$oid2]) || $this->documentChangeSets[$oid2]->isEmpty()) {
                     continue;
                 }
 
-                if (empty($this->documentChangeSets[$oid][$mapping['fieldName']])) {
+                if (! isset($this->documentChangeSets[$oid])) {
+                    $this->documentChangeSets[$oid] = new ChangeSet($document, $objectState->originalData ?? []);
+                }
+
+                if (! $this->documentChangeSets[$oid]->hasChangedField($mapping['fieldName'])) {
                     // instance of $value is the same as it was previously otherwise there would be
                     // change set already in place
-                    $this->documentChangeSets[$oid][$mapping['fieldName']] = [$value, $value];
+                    $this->documentChangeSets[$oid]->recordChange($mapping['fieldName'], $value);
                 }
 
                 if (! $isNewDocument) {
@@ -854,18 +808,11 @@ final class UnitOfWork implements PropertyChangedListener
 
             // If change tracking is explicit or happens through notification, then only compute
             // changes on document of that type that are explicitly marked for synchronization.
-            switch (true) {
-                case $class->isChangeTrackingDeferredImplicit():
-                    $documentsToProcess = $documents;
-                    break;
-
-                case isset($this->scheduledForSynchronization[$className]):
-                    $documentsToProcess = $this->scheduledForSynchronization[$className];
-                    break;
-
-                default:
-                    $documentsToProcess = [];
-            }
+            $documentsToProcess = $this->changeSetComputer->selectDocumentsForChangeSetComputation(
+                $class,
+                $documents,
+                $this->scheduledForSynchronization[$className] ?? [],
+            );
 
             foreach ($documentsToProcess as $document) {
                 // Ignore uninitialized proxy objects
@@ -972,8 +919,8 @@ final class UnitOfWork implements PropertyChangedListener
                                 $class->setFieldValue($parentDocument, $assoc['fieldName'], $entry);
                                 $this->documentRegistry->setOriginalDocumentProperty($parentDocument, $assoc['fieldName'], $entry);
                                 $poid = spl_object_id($parentDocument);
-                                if (isset($this->documentChangeSets[$poid][$assoc['fieldName']])) {
-                                    $this->documentChangeSets[$poid][$assoc['fieldName']][1] = $entry;
+                                if (isset($this->documentChangeSets[$poid]) && $this->documentChangeSets[$poid]->hasChangedField($assoc['fieldName'])) {
+                                    $this->documentChangeSets[$poid]->setNewValue($assoc['fieldName'], $entry);
                                 }
                             } else {
                                 // must use unwrapped value to not trigger orphan removal
@@ -1166,7 +1113,7 @@ final class UnitOfWork implements PropertyChangedListener
         foreach ($documents as $oid => $document) {
             $this->lifecycleEventManager->preUpdate($class, $document, $options['session'] ?? null);
 
-            if (! empty($this->documentChangeSets[$oid]) || $this->hasScheduledCollections($document)) {
+            if (! $this->getChangeSet($document)->isEmpty() || $this->hasScheduledCollections($document)) {
                 $persister->update($document, $options);
             }
 
@@ -2304,6 +2251,30 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Applies {@see self::fixPersistentCollectionOwnership()} to every field of
+     * $actualData up front, so ChangeSetComputer never has to (it has no
+     * DocumentRegistry/scheduling access to do so itself).
+     *
+     * @param array<string, mixed> $actualData
+     * @phpstan-param ClassMetadata<T> $class
+     * @phpstan-param T $document
+     *
+     * @return array<string, mixed>
+     *
+     * @template T of object
+     */
+    private function fixActualDataCollectionOwnership(ClassMetadata $class, object $document, array $actualData): array
+    {
+        foreach ($actualData as $propName => $actualValue) {
+            if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
+                $actualData[$propName] = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
+            }
+        }
+
+        return $actualData;
+    }
+
+    /**
      * Fixes PersistentCollection state if it wasn't used exactly as we had in mind:
      *  1) sets owner if it was cloned
      *  2) clones collection, sets owner, updates document's property and, if necessary, updates originalData
@@ -2794,7 +2765,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function clearDocumentChangeSet(int $oid): void
     {
-        $this->documentChangeSets[$oid] = [];
+        unset($this->documentChangeSets[$oid]);
     }
 
     /* PropertyChangedListener implementation */
@@ -2817,7 +2788,11 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         // Update changeset and mark document for synchronization
-        $this->documentChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
+        if (! isset($this->documentChangeSets[$oid])) {
+            $this->documentChangeSets[$oid] = new ChangeSet($sender, $this->documentRegistry->getOrCreateObjectState($sender)->originalData ?? []);
+        }
+
+        $this->documentChangeSets[$oid]->recordChange($propertyName, $newValue);
         if (isset($this->scheduledForSynchronization[$class->name][$oid])) {
             return;
         }
