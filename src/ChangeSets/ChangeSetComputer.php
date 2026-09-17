@@ -8,9 +8,9 @@ use Closure;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use MongoDB\BSON\UTCDateTime;
-
-use function spl_object_id;
+use SplObjectStorage;
 
 /**
  * Computes the field-level {@see ChangeSet} for one or more documents, given
@@ -29,41 +29,106 @@ final class ChangeSetComputer
      * @param iterable<ChangeSetComputationRequest>                           $requests
      * @param Closure(PersistentCollectionInterface<array-key, object>): bool $isCollectionScheduledForDeletion
      *
-     * @return array<int, ChangeSet> keyed by spl_object_id() of each request's document
+     * @return SplObjectStorage<object, ChangeSet> keyed by each request's document
      */
-    public function computeChangeSets(iterable $requests, Closure $isCollectionScheduledForDeletion): array
+    public function computeChangeSets(iterable $requests, Closure $isCollectionScheduledForDeletion): SplObjectStorage
     {
-        $changeSets = [];
+        $changeSets = new SplObjectStorage();
         foreach ($requests as $request) {
-            $changeSets[spl_object_id($request->document)] = $this->computeChangeSet($request, $isCollectionScheduledForDeletion);
+            $changeSets[$request->document] = $this->computeSingleChangeSet($request, $isCollectionScheduledForDeletion);
         }
 
         return $changeSets;
     }
 
     /**
-     * Pure policy decision: which already-managed documents of $class should
-     * even be examined this commit, given the class's change-tracking policy.
+     * Computes the changeset for a single document and derives everything
+     * the caller needs to schedule as a consequence (orphan removal,
+     * collection deletion), merging onto an existing changeset when one is
+     * given. Scheduling is derived from this pass's own diff, before that
+     * merge happens.
      *
-     * @param array<string, object> $identityMapForClass
-     * @param array<int, object>    $scheduledForSynchronization
-     *
-     * @return iterable<object>
+     * @param Closure(PersistentCollectionInterface<array-key, object>): bool $isCollectionScheduledForDeletion
      */
-    public function selectDocumentsForChangeSetComputation(
-        ClassMetadata $class,
-        array $identityMapForClass,
-        array $scheduledForSynchronization,
-    ): iterable {
-        if ($class->isChangeTrackingDeferredImplicit()) {
-            return $identityMapForClass;
+    public function computeChangeSet(ChangeSetComputationRequest $request, Closure $isCollectionScheduledForDeletion): ChangeSetComputationResult
+    {
+        $changeSet     = $this->computeChangeSets([$request], $isCollectionScheduledForDeletion)[$request->document];
+        $isNewDocument = $request->originalData === null;
+
+        if ($isNewDocument || $changeSet->isEmpty()) {
+            return new ChangeSetComputationResult($changeSet, $isNewDocument);
         }
 
-        return $scheduledForSynchronization;
+        [$orphansToRemove, $collectionsToDelete] = $this->determineScheduling($changeSet, $request->class);
+
+        if ($request->existingChangeSet !== null && $request->existingChangeSet !== $changeSet) {
+            $request->existingChangeSet->merge($changeSet);
+            $changeSet = $request->existingChangeSet;
+        }
+
+        return new ChangeSetComputationResult($changeSet, false, $orphansToRemove, $collectionsToDelete);
+    }
+
+    /**
+     * Pure policy decision: given the fields this pass found changed, which
+     * old values need orphan removal and which old collections need
+     * deletion.
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     *
+     * @return array{0: list<object>, 1: list<PersistentCollectionInterface<array-key, object>>}
+     */
+    private function determineScheduling(ChangeSet $changeSet, ClassMetadata $class): array
+    {
+        $orphansToRemove     = [];
+        $collectionsToDelete = [];
+
+        foreach ($changeSet->getFieldNames() as $propName) {
+            $mapping = $class->fieldMappings[$propName] ?? null;
+            if ($mapping === null) {
+                continue;
+            }
+
+            if (isset($mapping['embedded']) && $mapping['type'] === ClassMetadata::ONE) {
+                $orgValue = $changeSet->getOldValue($propName);
+                if ($orgValue !== null) {
+                    $orphansToRemove[] = $orgValue;
+                }
+
+                continue;
+            }
+
+            if (isset($mapping['reference']) && $mapping['type'] === ClassMetadata::ONE && $mapping['isOwningSide']) {
+                $orgValue = $changeSet->getOldValue($propName);
+                if ($orgValue !== null && $mapping['orphanRemoval']) {
+                    $orphansToRemove[] = $orgValue;
+                }
+
+                continue;
+            }
+
+            if (! isset($mapping['type']) || $mapping['type'] !== ClassMetadata::MANY) {
+                continue;
+            }
+
+            $orgValue    = $changeSet->getOldValue($propName);
+            $actualValue = $changeSet->getNewValue($propName);
+            if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($mapping['strategy'])) {
+                continue;
+            }
+
+            if ($orgValue === $actualValue || ! ($orgValue instanceof PersistentCollectionInterface)) {
+                continue;
+            }
+
+            $collectionsToDelete[] = $orgValue;
+        }
+
+        return [$orphansToRemove, $collectionsToDelete];
     }
 
     /** @param Closure(PersistentCollectionInterface<array-key, object>): bool $isCollectionScheduledForDeletion */
-    private function computeChangeSet(ChangeSetComputationRequest $request, Closure $isCollectionScheduledForDeletion): ChangeSet
+    private function computeSingleChangeSet(ChangeSetComputationRequest $request, Closure $isCollectionScheduledForDeletion): ChangeSet
     {
         $class      = $request->class;
         $document   = $request->document;

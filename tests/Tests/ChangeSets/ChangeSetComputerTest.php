@@ -18,12 +18,10 @@ use Documents\Address;
 use Documents\File;
 use Documents\FileMetadata;
 use Documents\Profile;
-use Documents\ProfileNotify;
 use Documents\User;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-use function spl_object_id;
 use function sys_get_temp_dir;
 
 /**
@@ -433,36 +431,132 @@ class ChangeSetComputerTest extends TestCase
         );
 
         self::assertCount(2, $results);
-        self::assertSame(1, $results[spl_object_id($document1)]->getNewValue('hits'));
-        self::assertSame(2, $results[spl_object_id($document2)]->getNewValue('hits'));
+        self::assertSame(1, $results[$document1]->getNewValue('hits'));
+        self::assertSame(2, $results[$document2]->getNewValue('hits'));
     }
 
-    public function testSelectDocumentsForChangeSetComputationForDeferredImplicit(): void
+    public function testComputeChangeSetForNewDocumentShortCircuits(): void
     {
-        $class = $this->getClassMetadata(User::class);
+        $class    = $this->getClassMetadata(User::class);
+        $document = new User();
 
-        $identityMap = ['user-1' => new User(), 'user-2' => new User()];
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, null, ['hits' => 1], null, false, false),
+            static fn () => false,
+        );
 
-        $selected = $this->computer->selectDocumentsForChangeSetComputation($class, $identityMap, []);
-
-        self::assertSame($identityMap, $selected);
+        self::assertTrue($result->isNewDocument);
+        self::assertSame([], $result->orphansToRemove);
+        self::assertSame([], $result->collectionsToDelete);
     }
 
-    public function testSelectDocumentsForChangeSetComputationForNotify(): void
+    public function testComputeChangeSetForUnchangedDocumentShortCircuits(): void
     {
-        $class = $this->getClassMetadata(ProfileNotify::class);
+        $class    = $this->getClassMetadata(User::class);
+        $document = new User();
 
-        $scheduled = [spl_object_id(new ProfileNotify()) => new ProfileNotify()];
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, ['hits' => 1], ['hits' => 1], null, false, false),
+            static fn () => false,
+        );
 
-        $selected = $this->computer->selectDocumentsForChangeSetComputation($class, ['profile-1' => new ProfileNotify()], $scheduled);
+        self::assertFalse($result->isNewDocument);
+        self::assertTrue($result->changeSet->isEmpty());
+        self::assertSame([], $result->orphansToRemove);
+        self::assertSame([], $result->collectionsToDelete);
+    }
 
-        self::assertSame($scheduled, $selected);
+    public function testComputeChangeSetSchedulesEmbedOneOrphanRemoval(): void
+    {
+        $class    = $this->getClassMetadata(User::class);
+        $document = new User();
+        $oldValue = new Address();
+
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, ['address' => $oldValue], ['address' => new Address()], null, false, false),
+            static fn () => false,
+        );
+
+        self::assertSame([$oldValue], $result->orphansToRemove);
+        self::assertSame([], $result->collectionsToDelete);
+    }
+
+    public function testComputeChangeSetSchedulesOwningReferenceOneOrphanRemovalOnlyWhenConfigured(): void
+    {
+        $class    = $this->getClassMetadata(User::class);
+        $document = new User();
+        $oldValue = new Profile();
+
+        // User::$profile is mapped without orphanRemoval, so the old Profile is not orphaned.
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, ['profile' => $oldValue], ['profile' => new Profile()], null, false, false),
+            static fn () => false,
+        );
+
+        self::assertSame([], $result->orphansToRemove);
+    }
+
+    public function testComputeChangeSetSchedulesCollectionDeletionForReplacedCollection(): void
+    {
+        $class    = $this->getClassMetadata(User::class);
+        $document = new User();
+        $oldValue = $this->createMock(PersistentCollectionInterface::class);
+        $oldValue->method('isDirty')->willReturn(false);
+        $newValue = $this->createMock(PersistentCollectionInterface::class);
+        $newValue->method('isDirty')->willReturn(false);
+
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, ['groups' => $oldValue], ['groups' => $newValue], null, false, false),
+            static fn () => false,
+        );
+
+        self::assertSame([$oldValue], $result->collectionsToDelete);
+    }
+
+    public function testComputeChangeSetSkipsCollectionDeletionForSameInstance(): void
+    {
+        $class      = $this->getClassMetadata(User::class);
+        $document   = new User();
+        $collection = $this->createMock(PersistentCollectionInterface::class);
+        $collection->method('isDirty')->willReturn(true);
+
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, ['groups' => $collection], ['groups' => $collection], null, false, false),
+            static fn () => false,
+        );
+
+        self::assertSame([], $result->collectionsToDelete);
+    }
+
+    public function testComputeChangeSetMergesOntoExistingChangeSetUsingOnlyThisPassDiffForScheduling(): void
+    {
+        $class        = $this->getClassMetadata(User::class);
+        $document     = new User();
+        $originalData = ['hits' => 1, 'address' => null];
+        $existing     = new ChangeSet($document, $originalData);
+        $existing->recordChange('hits', 42); // e.g. pushed in by propertyChanged()
+
+        $address = new Address();
+
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, $originalData, ['hits' => 1, 'address' => $address], $existing, false, false),
+            static fn () => false,
+        );
+
+        // Merged: the earlier pass's "hits" change survives alongside this pass's "address" change.
+        self::assertSame($existing, $result->changeSet);
+        self::assertTrue($result->changeSet->hasChangedField('hits'));
+        self::assertSame(42, $result->changeSet->getNewValue('hits'));
+        self::assertTrue($result->changeSet->hasChangedField('address'));
+
+        // Scheduling is derived from this pass's own diff (address only), not the merged changeset.
+        self::assertSame([], $result->orphansToRemove);
     }
 
     private function compute(ChangeSetComputationRequest $request, ?Closure $isCollectionScheduledForDeletion = null): ChangeSet
     {
         $results = $this->computer->computeChangeSets([$request], $isCollectionScheduledForDeletion ?? static fn () => false);
 
-        return $results[spl_object_id($request->document)];
+        return $results[$request->document];
     }
 }
