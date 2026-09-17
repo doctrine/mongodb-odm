@@ -501,8 +501,28 @@ final class SchemaManager
             $collection->dropSearchIndex($name);
         }
 
+        $missingSearchIndexes = [];
+
         foreach ($searchIndexes as $searchIndex) {
+            if (! in_array($searchIndex['name'], $existingNames, true)) {
+                $missingSearchIndexes[] = $searchIndex;
+
+                continue;
+            }
+
             $collection->updateSearchIndex($searchIndex['name'], $searchIndex['definition']);
+        }
+
+        if (empty($missingSearchIndexes)) {
+            return;
+        }
+
+        $createdNames = $collection->createSearchIndexes($missingSearchIndexes);
+
+        $unprocessedNames = array_diff(array_column($missingSearchIndexes, 'name'), $createdNames);
+
+        if (! empty($unprocessedNames)) {
+            throw SchemaException::missingSearchIndex($class->name, $unprocessedNames);
         }
     }
 
