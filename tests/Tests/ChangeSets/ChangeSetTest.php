@@ -19,12 +19,12 @@ class ChangeSetTest extends TestCase
         self::assertSame([], $changeSet->getFieldNames());
     }
 
-    public function testGetDocumentReturnsTheSameInstance(): void
+    public function testDocumentIsTheSameInstance(): void
     {
         $document  = new stdClass();
         $changeSet = new ChangeSet($document, []);
 
-        self::assertSame($document, $changeSet->getDocument());
+        self::assertSame($document, $changeSet->document);
     }
 
     public function testRecordChangeMarksFieldAsChanged(): void
@@ -77,24 +77,6 @@ class ChangeSetTest extends TestCase
         $changeSet->getNewValue('name');
     }
 
-    public function testSetNewValueOverwritesAnAlreadyRecordedChange(): void
-    {
-        $changeSet = new ChangeSet(new stdClass(), ['name' => 'Alice']);
-        $changeSet->recordChange('name', 'Bob');
-        $changeSet->setNewValue('name', 'Carol');
-
-        self::assertSame('Alice', $changeSet->getOldValue('name'));
-        self::assertSame('Carol', $changeSet->getNewValue('name'));
-    }
-
-    public function testSetNewValueThrowsIfFieldHasNotChanged(): void
-    {
-        $changeSet = new ChangeSet(new stdClass(), ['name' => 'Alice']);
-
-        $this->expectException(InvalidArgumentException::class);
-        $changeSet->setNewValue('name', 'Bob');
-    }
-
     public function testApplyToOriginalDataMergesRecordedChanges(): void
     {
         $changeSet = new ChangeSet(new stdClass(), ['name' => 'Alice', 'age' => 30]);
@@ -124,5 +106,36 @@ class ChangeSetTest extends TestCase
         $changeSet = new ChangeSet(new stdClass(), ['name' => 'Alice']);
 
         self::assertSame([], $changeSet->toArray());
+    }
+
+    public function testMergeCopiesChangesFromOther(): void
+    {
+        $document = new stdClass();
+        $existing = new ChangeSet($document, ['name' => 'Alice', 'age' => 30]);
+        $existing->recordChange('name', 'Bob');
+
+        $other = new ChangeSet($document, ['name' => 'Alice', 'age' => 30]);
+        $other->recordChange('age', 31);
+
+        $existing->merge($other);
+
+        self::assertSame(['name', 'age'], $existing->getFieldNames());
+        self::assertSame('Bob', $existing->getNewValue('name'));
+        self::assertSame(31, $existing->getNewValue('age'));
+    }
+
+    public function testMergeOverwritesNewValueButKeepsOwnOldValue(): void
+    {
+        $document = new stdClass();
+        $existing = new ChangeSet($document, ['name' => 'Alice']);
+        $existing->recordChange('name', 'Bob');
+
+        $other = new ChangeSet($document, ['name' => 'Bob']);
+        $other->recordChange('name', 'Carol');
+
+        $existing->merge($other);
+
+        self::assertSame('Alice', $existing->getOldValue('name'));
+        self::assertSame('Carol', $existing->getNewValue('name'));
     }
 }

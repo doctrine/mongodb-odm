@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Event;
 
+use Doctrine\ODM\MongoDB\ChangeSets\ChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use InvalidArgumentException;
 use MongoDB\Driver\Session;
@@ -14,11 +15,12 @@ use function sprintf;
 /**
  * Class that holds event arguments for a preUpdate event.
  *
- * @phpstan-type ChangeSet array{0: mixed, 1: mixed}
+ * @phpstan-import-type LegacyChangeSet from ChangeSet
+ * @phpstan-import-type LegacyChangeSetArray from ChangeSet
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
-    /** @param array<string, ChangeSet> $changeSet */
+    /** @param LegacyChangeSetArray $changeSet */
     public function __construct(
         object $document,
         DocumentManager $dm,
@@ -30,7 +32,7 @@ final class PreUpdateEventArgs extends LifecycleEventArgs
         $this->changeSet = $changeSet;
     }
 
-    /** @return array<string, ChangeSet> */
+    /** @return LegacyChangeSetArray */
     public function getDocumentChangeSet(): array
     {
         return $this->changeSet;

@@ -21,7 +21,8 @@ use function sprintf;
  * derives them from the original data snapshot the instance was constructed
  * with, which this class never mutates itself.
  *
- * @phpstan-type ChangeSetArray array<string, array{mixed, mixed}>
+ * @phpstan-type LegacyChangeSet array{mixed, mixed}
+ * @phpstan-type LegacyChangeSetArray array<string, LegacyChangeSet>
  */
 final class ChangeSet
 {
@@ -30,15 +31,10 @@ final class ChangeSet
      * @param array<string, mixed> $newValues
      */
     public function __construct(
-        private readonly object $document,
+        public readonly object $document,
         private readonly array $originalData,
         private array $newValues = [],
     ) {
-    }
-
-    public function getDocument(): object
-    {
-        return $this->document;
     }
 
     public function isEmpty(): bool
@@ -83,15 +79,18 @@ final class ChangeSet
     }
 
     /**
-     * Overwrites the new value of an already-changed field.
+     * Copies every recorded change from $other onto this instance, overwriting
+     * a new value already recorded here for the same field. Old values are
+     * unaffected — they stay anchored to this instance's own original-data
+     * snapshot, never $other's.
      *
-     * @throws InvalidArgumentException If the field has no recorded change.
+     * @internal
      */
-    public function setNewValue(string $field, mixed $value): void
+    public function merge(self $other): void
     {
-        $this->assertFieldChanged($field);
-
-        $this->newValues[$field] = $value;
+        foreach ($other->getFieldNames() as $field) {
+            $this->recordChange($field, $other->getNewValue($field));
+        }
     }
 
     /**
@@ -107,7 +106,7 @@ final class ChangeSet
 
     /**
      * @return array<string, array{mixed, mixed}>
-     * @phpstan-return ChangeSetArray
+     * @phpstan-return LegacyChangeSetArray
      */
     public function toArray(): array
     {
