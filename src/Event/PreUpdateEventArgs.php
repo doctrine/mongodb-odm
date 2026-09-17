@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use InvalidArgumentException;
 use MongoDB\Driver\Session;
 
@@ -15,7 +14,7 @@ use function sprintf;
 /**
  * Class that holds event arguments for a preUpdate event.
  *
- * @phpstan-import-type ChangeSet from UnitOfWork
+ * @phpstan-type ChangeSet array{0: mixed, 1: mixed}
  */
 final class PreUpdateEventArgs extends LifecycleEventArgs
 {
