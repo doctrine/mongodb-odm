@@ -459,7 +459,7 @@ final class DocumentPersister
 
         $data = $this->hydratorFactory->hydrate($document, (array) $data);
         $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
-        $this->uow->clearDocumentChangeSet(spl_object_id($document));
+        $this->uow->clearDocumentChangeSet($document);
     }
 
     /**
@@ -805,7 +805,7 @@ final class DocumentPersister
                 if ($this->uow->isUninitializedObject($document)) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
                     $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
-                    $this->uow->clearDocumentChangeSet(spl_object_id($document));
+                    $this->uow->clearDocumentChangeSet($document);
                 }
 
                 if (! $sorted) {
