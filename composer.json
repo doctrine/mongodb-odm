@@ -55,6 +55,7 @@
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^10.5.58|^11.5.43",
+        "psr/container": "^1.1 || ^2.0",
         "squizlabs/php_codesniffer": "^4",
         "symfony/cache": "^5.4 || ^6.0 || ^7.0 || ^8.0",
         "symfony/uid": "^5.4 || ^6.0 || ^7.0 || ^8.0"
@@ -66,7 +67,8 @@
     },
     "suggest": {
         "doctrine/annotations": "For annotation mapping support",
-        "ext-bcmath": "Decimal128 type support"
+        "ext-bcmath": "Decimal128 type support",
+        "psr/container": "To lazy-load custom types from a service container in TypeRegistry"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ODM\\MongoDB\\": "src" }

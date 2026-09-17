@@ -73,6 +73,24 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         self::assertSame(['_id' => $o->identifier], $shardKeyQuery);
     }
 
+    public function testGetShardKeyQueryWithCustomFieldName(): void
+    {
+        $o        = new ShardedByScalarWithCustomFieldName();
+        $o->myOid = (string) new ObjectId();
+
+        $persister = $this->uow->getDocumentPersister($o::class);
+
+        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
+        $shardKeyQuery = $method->invoke($persister, $o);
+
+        // The shard key uses DB field name 'my_oid'; value must be converted via ObjectIdType,
+        // not left as a raw string (which would happen if getFieldType received the DB field
+        // name instead of the PHP property name).
+        self::assertArrayHasKey('my_oid', $shardKeyQuery);
+        self::assertInstanceOf(ObjectId::class, $shardKeyQuery['my_oid']);
+        self::assertSame($o->myOid, (string) $shardKeyQuery['my_oid']);
+    }
+
     public function testShardByReference(): void
     {
         $o = new ShardedByReferenceOne();
@@ -161,4 +179,15 @@ class ShardedByReferenceOne
     /** @var User|null */
     #[ODM\ReferenceOne(targetDocument: User::class)]
     public $reference;
+}
+
+#[ODM\Document]
+#[ODM\ShardKey(keys: ['my_oid' => 'asc'])]
+class ShardedByScalarWithCustomFieldName
+{
+    #[ODM\Id]
+    public ?string $id;
+
+    #[ODM\Field(name: 'my_oid', type: 'object_id')]
+    public ?string $myOid;
 }

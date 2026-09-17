@@ -24,6 +24,11 @@ document mapping metadata:
     stored in the metadata cache. Therefore all drivers perform equally well at
     runtime.
 
+    ``ClassMetadata`` instances must always be loaded through
+    ``ClassMetadataFactory``, which restores runtime dependencies (such as the
+    ``TypeRegistry``) after deserialization. Deserializing a ``ClassMetadata``
+    instance directly is not supported.
+
 Introduction to Attributes
 --------------------------
 

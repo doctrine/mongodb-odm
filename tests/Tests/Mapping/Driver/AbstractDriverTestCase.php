@@ -7,6 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\Driver;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\EncryptQuery;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Documents\Account;
 use Documents\Address;
@@ -46,6 +47,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testDriver(): void
     {
         $classMetadata = new ClassMetadata(User::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(User::class, $classMetadata);
 
         self::assertEquals([
@@ -260,6 +262,7 @@ abstract class AbstractDriverTestCase extends TestCase
         );
 
         $classMetadata = new ClassMetadata(EmbeddedDocument::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(EmbeddedDocument::class, $classMetadata);
 
         self::assertEquals([
@@ -416,6 +419,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testNullableFieldsMapping(): void
     {
         $classMetadata = new ClassMetadata(NullableFieldsDocument::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(NullableFieldsDocument::class, $classMetadata);
 
         self::assertEquals([
@@ -535,6 +539,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testEncryptFieldMapping(): void
     {
         $classMetadata = new ClassMetadata(PatientRecord::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(PatientRecord::class, $classMetadata);
 
         self::assertFalse($classMetadata->isEncrypted);
@@ -557,6 +562,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testEncryptEmbeddedDocumentMapping(): void
     {
         $classMetadata = new ClassMetadata(ClientCard::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(ClientCard::class, $classMetadata);
 
         self::assertTrue($classMetadata->isEncrypted);
@@ -568,6 +574,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testEncryptQueryRangeTypes(): void
     {
         $classMetadata = new ClassMetadata(RangeTypes::class);
+        $classMetadata->setTypeRegistry(new TypeRegistry());
         $this->driver->loadMetadataForClass(RangeTypes::class, $classMetadata);
 
         self::assertEquals([
