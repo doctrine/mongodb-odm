@@ -1,5 +1,14 @@
 # UPGRADE FROM 2.17 to 2.18
 
+## New `ChangeSets\ChangeSet` value object
+
+`UnitOfWork::getChangeSet(object $document): ChangeSet` is a new method
+returning a `Doctrine\ODM\MongoDB\ChangeSets\ChangeSet` object describing a
+document's pending field changes, as an alternative to the existing
+`getDocumentChangeSet(): array`, which is unaffected and continues to return
+the same `array<string, array{0: mixed, 1: mixed}>` shape as before. This is
+purely additive: no existing method's signature or behavior has changed.
+
 ## Removed previously internal, deprecated `UnitOfWork` methods
 
 The following methods, previously marked `@internal` have been removed from
