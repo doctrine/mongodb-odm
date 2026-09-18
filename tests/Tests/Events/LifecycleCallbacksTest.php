@@ -96,8 +96,10 @@ class LifecycleCallbacksTest extends BaseTestCase
     {
         $user = $this->createUser();
 
-        self::assertTrue($this->uow->isInIdentityMap($user));
-        self::assertTrue($this->uow->isInIdentityMap($user->profile));
+        $registry = $this->dm->getDocumentRegistry();
+
+        self::assertTrue($registry->isInIdentityMap($this->dm->getClassMetadata(User::class), $user));
+        self::assertTrue($registry->isInIdentityMap($this->dm->getClassMetadata(Profile::class), $user->profile));
 
         $this->dm->remove($user);
         $this->dm->flush();
@@ -164,7 +166,7 @@ class LifecycleCallbacksTest extends BaseTestCase
         $this->dm->flush();
 
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->profile->profile));
-        self::assertTrue($this->uow->isInIdentityMap($user->profile->profile));
+        self::assertTrue($this->dm->getDocumentRegistry()->isInIdentityMap($this->dm->getClassMetadata(Profile::class), $user->profile->profile));
 
         self::assertTrue($profile->prePersist);
         self::assertTrue($profile->postPersist);

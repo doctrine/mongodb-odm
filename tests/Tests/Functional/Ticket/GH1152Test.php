@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 
 class GH1152Test extends BaseTestCase
@@ -29,9 +30,7 @@ class GH1152Test extends BaseTestCase
         self::assertNotNull($parent);
 
         self::assertNotNull($parent->child->parentAssociation);
-        [$mapping, $parentAssociation, $fieldName] = $parent->child->parentAssociation;
-
-        self::assertSame($parent, $parentAssociation);
+        self::assertSame($parent, $parent->child->parentAssociation->parent);
     }
 }
 
@@ -53,8 +52,7 @@ class GH1152Parent
 #[ODM\EmbeddedDocument]
 class GH1152Child
 {
-    /** @var array{0: AssociationFieldMapping, 1: object|null, 2: string}|null */
-    public $parentAssociation;
+    public ParentAssociation $parentAssociation;
 }
 
 class GH1152Listener
@@ -68,6 +66,6 @@ class GH1152Listener
             return;
         }
 
-        $document->parentAssociation = $dm->getUnitOfWork()->getParentAssociation($document);
+        $document->parentAssociation = $dm->getDocumentRegistry()->getParentAssociation($document);
     }
 }

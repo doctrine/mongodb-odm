@@ -336,7 +336,7 @@ EOF
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $return = $embeddedMetadata->newInstance();
 
-                $this->dm->getUnitOfWork()->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
+                $this->dm->getDocumentRegistry()->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
 
                 $embeddedData = $this->dm->getHydratorFactory()->hydrate($return, $embeddedDocument, $hints);
                 $embeddedId = $embeddedMetadata->identifier && isset($embeddedData[$embeddedMetadata->identifier]) ? $embeddedData[$embeddedMetadata->identifier] : null;

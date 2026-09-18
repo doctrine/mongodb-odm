@@ -273,7 +273,7 @@ parameters:
 		-
 			message: '#^Unable to resolve the template type T in call to method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:getClassMetadata\(\)$#'
 			identifier: argument.templateType
-			count: 1
+			count: 2
 			path: src/UnitOfWork.php
 
 		-

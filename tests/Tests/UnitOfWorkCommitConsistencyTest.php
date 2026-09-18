@@ -318,7 +318,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertTrue($this->uow->isScheduledForDelete($address));
 
         // As $address is orphaned after changeset computation, it is removed from the identity map
-        $this->assertFalse($this->uow->isInIdentityMap($address));
+        $this->assertFalse($this->dm->getDocumentRegistry()->isInIdentityMap($this->dm->getClassMetadata(Address::class), $address));
     }
 
     public function testUpdateWithRemovedEmbeddedDocumentClearsChangesets(): void
@@ -340,7 +340,7 @@ class UnitOfWorkCommitConsistencyTest extends BaseTestCase
         $this->assertFalse($this->uow->isScheduledForUpdate($user));
         $this->assertEquals([], $this->uow->getDocumentChangeSet($user));
         $this->assertFalse($this->uow->isScheduledForDelete($address));
-        $this->assertFalse($this->uow->isInIdentityMap($address));
+        $this->assertFalse($this->dm->getDocumentRegistry()->isInIdentityMap($this->dm->getClassMetadata(Address::class), $address));
     }
 
     public function testDeleteErrorKeepsFailingDelete(): void

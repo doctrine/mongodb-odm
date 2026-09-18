@@ -427,14 +427,13 @@ final class CollectionPersister
         $mapping = $coll->getMapping();
         $fields  = [];
         $parent  = $coll->getOwner();
-        while (($association = $this->uow->getParentAssociation($parent)) !== null) {
-            [$m, $owner, $field] = $association;
-            if (isset($m['reference'])) {
+        while (($association = $this->dm->getDocumentRegistry()->getParentAssociation($parent)) !== null) {
+            if (isset($association->mapping['reference'])) {
                 break;
             }
 
-            $parent   = $owner;
-            $fields[] = $field;
+            $parent   = $association->parent;
+            $fields[] = $association->field;
         }
 
         $propertyPath = implode('.', array_reverse($fields));
@@ -456,7 +455,7 @@ final class CollectionPersister
     {
         $className = $document::class;
         $class     = $this->dm->getClassMetadata($className);
-        $id        = $class->getDatabaseIdentifierValue($this->uow->getDocumentIdentifier($document));
+        $id        = $class->getDatabaseIdentifierValue($this->dm->getDocumentRegistry()->getDocumentIdentifier($document));
         $query     = ['_id' => $id];
         if ($class->isVersioned) {
             $query[$class->fieldMappings[$class->versionField]['name']] = $class->propertyAccessors[$class->versionField]->getValue($document);
