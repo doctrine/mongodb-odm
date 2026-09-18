@@ -673,9 +673,22 @@ final class UnitOfWork implements PropertyChangedListener
         $result = $this->changeSetComputer->computeChangeSet($request, $this->isCollectionScheduledForDeletion(...));
 
         if ($result->isNewDocument) {
+            // FIXME: this stamps $actualData as the document's "original" (i.e. persisted)
+            // snapshot before anything has actually been INSERTed. If the insert never
+            // happens (flush fails, the document is later removed from the identity map,
+            // etc.), the snapshot is left describing data that was never written to MongoDB,
+            // and a later diff against it will silently miss changes made in the meantime.
             $objectState->originalData           = $actualData;
             $this->documentChangeSets[$document] = $result->changeSet;
         } elseif (! $result->changeSet->isEmpty()) {
+            // FIXME: same premature snapshot problem as above, but for UPDATEs: this makes
+            // $actualData the new baseline as soon as a diff is computed, before the
+            // corresponding update is (or possibly ever is) sent to MongoDB.
+            // DocumentPersister::update()/executeUpsert() never touch originalData themselves,
+            // so this is the only place it gets refreshed for an existing document — if the
+            // write later fails (LockException, connection error, the flush being aborted by
+            // an event listener) the snapshot is left describing data that was never actually
+            // persisted, and a subsequent diff against it will miss the real remaining changes.
             $objectState->originalData = $actualData;
             $this->scheduleForUpdate($document);
 
@@ -705,6 +718,8 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function walkAssociationChanges(ClassMetadata $class, object $document, bool $isNewDocument): void
     {
+        // `notSaved` associations exist only in memory and are never persisted, so they
+        // can neither carry a change of their own nor need their targets visited here.
         $associationMappings = array_filter(
             $class->associationMappings,
             static fn ($assoc) => empty($assoc['notSaved']),
@@ -720,33 +735,56 @@ final class UnitOfWork implements PropertyChangedListener
             $this->computeAssociationChanges($document, $mapping, $value);
 
             if (isset($mapping['reference'])) {
+                // A reference's target is a separate, independently persisted document:
+                // the changeset just computed for it above is all it needs. Unlike an
+                // embed, it never has to be reflected back onto this document's own
+                // changeset, since the reference itself (an id) doesn't change.
                 continue;
             }
 
-            $values = $mapping['type'] === ClassMetadata::ONE ? [$value] : $value->unwrap();
+            $this->bubbleUpEmbeddedChildChanges($document, $mapping, $value, $isNewDocument);
+        }
+    }
 
-            foreach ($values as $obj) {
-                if (! isset($this->documentChangeSets[$obj]) || $this->documentChangeSets[$obj]->isEmpty()) {
-                    continue;
-                }
+    /**
+     * An embedded document's changeset doesn't automatically surface on its parent:
+     * the object instance stored in the parent's field is unchanged, only the embed's
+     * own fields differ. So the first time we find a child (or, for embed-many, any
+     * child in the collection) with a non-empty changeset, we synthesize a change for
+     * the parent's association field — purely so persisters see that field as needing
+     * to be rewritten — and mark the parent for update.
+     *
+     * @param PersistentCollectionInterface<array-key, object>|object $value the embed's current value: a single document, or its owning collection
+     * @phpstan-param T $parentDocument
+     * @phpstan-param AssociationFieldMapping $mapping
+     *
+     * @template T of object
+     */
+    private function bubbleUpEmbeddedChildChanges(object $parentDocument, array $mapping, $value, bool $isNewParentDocument): void
+    {
+        $children = $mapping['type'] === ClassMetadata::ONE ? [$value] : $value->unwrap();
 
-                if (! isset($this->documentChangeSets[$document])) {
-                    $originalData                        = $this->documentRegistry->getOrCreateObjectState($document)->originalData;
-                    $this->documentChangeSets[$document] = new ChangeSet($document, $originalData ?? []);
-                }
-
-                if (! $this->documentChangeSets[$document]->hasChangedField($mapping['fieldName'])) {
-                    // instance of $value is the same as it was previously otherwise there would be
-                    // change set already in place
-                    $this->documentChangeSets[$document]->recordChange($mapping['fieldName'], $value);
-                }
-
-                if (! $isNewDocument) {
-                    $this->scheduleForUpdate($document);
-                }
-
-                break;
+        foreach ($children as $child) {
+            if (! isset($this->documentChangeSets[$child]) || $this->documentChangeSets[$child]->isEmpty()) {
+                continue;
             }
+
+            if (! isset($this->documentChangeSets[$parentDocument])) {
+                $originalData                              = $this->documentRegistry->getOrCreateObjectState($parentDocument)->originalData;
+                $this->documentChangeSets[$parentDocument] = new ChangeSet($parentDocument, $originalData ?? []);
+            }
+
+            if (! $this->documentChangeSets[$parentDocument]->hasChangedField($mapping['fieldName'])) {
+                // instance of $value is the same as it was previously otherwise there would be
+                // change set already in place
+                $this->documentChangeSets[$parentDocument]->recordChange($mapping['fieldName'], $value);
+            }
+
+            if (! $isNewParentDocument) {
+                $this->scheduleForUpdate($parentDocument);
+            }
+
+            return;
         }
     }
 
@@ -801,7 +839,14 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Computes the changes of an association.
+     * Computes the changes of an association. This does two largely independent
+     * things: first, if the association's own value is a dirty owning-side (or
+     * embedded) collection, it schedules that collection itself for a write and
+     * for any orphan removal its dirtiness implies; second, it walks every
+     * document currently in the association (one, for a to-one) looking for new
+     * or moved documents to cascade-persist or re-parent, since a document
+     * assigned into an association doesn't otherwise get discovered by the
+     * UnitOfWork on its own ("persistence by reachability").
      *
      * @param mixed $value The value of the association.
      * @phpstan-param AssociationFieldMapping $assoc
@@ -810,10 +855,11 @@ final class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(object $parentDocument, array $assoc, $value): void
     {
-        $isNewParentDocument   = isset($this->scheduledDocumentInsertions[spl_object_id($parentDocument)]);
-        $class                 = $this->dm->getClassMetadata($parentDocument::class);
-        $topOrExistingDocument = ( ! $isNewParentDocument || ! $class->isEmbeddedDocument);
+        $isNewParentDocument = isset($this->scheduledDocumentInsertions[spl_object_id($parentDocument)]);
+        $class               = $this->dm->getClassMetadata($parentDocument::class);
 
+        // Uninitialized proxies/collections have nothing loaded to walk — and forcing
+        // them to load here would defeat the point of them being lazy in the first place.
         if ($value instanceof InternalProxy && ! $value->__isInitialized()) {
             return;
         }
@@ -822,19 +868,8 @@ final class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        if ($value instanceof PersistentCollectionInterface && $value->isDirty() && $value->getOwner() !== null && ($assoc['isOwningSide'] || isset($assoc['embedded']))) {
-            if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
-                $this->scheduleCollectionUpdate($value);
-            }
-
-            $topmostOwner                                             = $this->getOwningDocument($value->getOwner());
-            $this->visitedCollections[spl_object_id($topmostOwner)][] = $value;
-            if (! empty($assoc['orphanRemoval']) || isset($assoc['embedded'])) {
-                $value->initialize();
-                foreach ($value->getDeletedDocuments() as $orphan) {
-                    $this->scheduleOrphanRemoval($orphan);
-                }
-            }
+        if ($value instanceof PersistentCollectionInterface) {
+            $this->scheduleDirtyOwningCollection($assoc, $value, $isNewParentDocument, $class);
         }
 
         // Look through the documents, and in any of their associations,
@@ -862,6 +897,10 @@ final class UnitOfWork implements PropertyChangedListener
 
             switch ($state) {
                 case self::STATE_NEW:
+                    // A transient document reached through this association is only ever
+                    // allowed here because the mapping opted into cascading persists;
+                    // otherwise it's a mistake the caller needs to fix explicitly, since
+                    // silently persisting it would be a surprising side effect.
                     if (! $assoc['isCascadePersist']) {
                         throw new InvalidArgumentException('A new document was found through a relationship that was not'
                             . ' configured to cascade persist operations: ' . $this->objToStr($entry) . '.'
@@ -876,6 +915,12 @@ final class UnitOfWork implements PropertyChangedListener
 
                 case self::STATE_MANAGED:
                     if ($targetClass->isEmbeddedDocument) {
+                        // Unlike a reference, an embedded document can only ever belong to one
+                        // parent. If this instance is already registered under a different
+                        // parent (e.g. the same embed was assigned into a second property, or
+                        // moved from one document to another), sharing it would corrupt both
+                        // parents' changesets and orphan-removal bookkeeping. So it is cloned
+                        // into an independent copy and re-persisted under the new parent instead.
                         $knownParent = $this->documentRegistry->getParentAssociation($entry)?->parent;
                         if ($knownParent && $knownParent !== $parentDocument) {
                             $entry = clone $entry;
@@ -918,6 +963,43 @@ final class UnitOfWork implements PropertyChangedListener
                     // MANAGED associated documents are already taken into account
                     // during changeset calculation anyway, since they are in the identity map.
             }
+        }
+    }
+
+    /**
+     * A collection is scheduled for its own write/orphan-removal pass only when it
+     * is genuinely dirty, still attached to an owner, and on the owning (writable)
+     * side of the association — an inverse-side collection is never itself written.
+     * Embedded parents that are themselves still unpersisted normally don't need
+     * their collections scheduled separately (they'll be written wholesale with
+     * the parent), except under a "set" write strategy, which always rewrites the
+     * field's whole array and so must be scheduled regardless.
+     *
+     * @phpstan-param AssociationFieldMapping $assoc
+     * @phpstan-param PersistentCollectionInterface<array-key, object> $value
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function scheduleDirtyOwningCollection(array $assoc, PersistentCollectionInterface $value, bool $isNewParentDocument, ClassMetadata $class): void
+    {
+        if (! $value->isDirty() || $value->getOwner() === null || (! $assoc['isOwningSide'] && ! isset($assoc['embedded']))) {
+            return;
+        }
+
+        $topOrExistingDocument = ! $isNewParentDocument || ! $class->isEmbeddedDocument;
+        if ($topOrExistingDocument || CollectionHelper::usesSet($assoc['strategy'])) {
+            $this->scheduleCollectionUpdate($value);
+        }
+
+        $topmostOwner                                             = $this->getOwningDocument($value->getOwner());
+        $this->visitedCollections[spl_object_id($topmostOwner)][] = $value;
+
+        if (empty($assoc['orphanRemoval']) && ! isset($assoc['embedded'])) {
+            return;
+        }
+
+        $value->initialize();
+        foreach ($value->getDeletedDocuments() as $orphan) {
+            $this->scheduleOrphanRemoval($orphan);
         }
     }
 

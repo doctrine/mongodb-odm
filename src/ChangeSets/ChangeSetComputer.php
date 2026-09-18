@@ -72,7 +72,10 @@ final class ChangeSetComputer
     /**
      * Pure policy decision: given the fields this pass found changed, which
      * old values need orphan removal and which old collections need
-     * deletion.
+     * deletion. Only single-valued embeds/references being replaced can
+     * produce an orphan, and only a to-many association whose collection
+     * instance itself was swapped out (as opposed to merely being mutated)
+     * can produce a collection to delete.
      *
      * @phpstan-param ClassMetadata<object> $class
      *
@@ -84,47 +87,69 @@ final class ChangeSetComputer
         $collectionsToDelete = [];
 
         foreach ($changeSet->getFieldNames() as $propName) {
-            $mapping = $class->fieldMappings[$propName] ?? null;
-            if ($mapping === null) {
+            if (! isset($class->fieldMappings[$propName])) {
                 continue;
             }
 
-            if (isset($mapping['embedded']) && $mapping['type'] === ClassMetadata::ONE) {
-                $orgValue = $changeSet->getOldValue($propName);
-                if ($orgValue !== null) {
-                    $orphansToRemove[] = $orgValue;
+            if ($class->isSingleValuedEmbed($propName)) {
+                $orphan = $changeSet->getOldValue($propName);
+                if ($orphan !== null) {
+                    $orphansToRemove[] = $orphan;
                 }
 
                 continue;
             }
 
-            if (isset($mapping['reference']) && $mapping['type'] === ClassMetadata::ONE && $mapping['isOwningSide']) {
-                $orgValue = $changeSet->getOldValue($propName);
-                if ($orgValue !== null && $mapping['orphanRemoval']) {
-                    $orphansToRemove[] = $orgValue;
+            if ($class->isSingleValuedReference($propName) && $class->fieldMappings[$propName]['isOwningSide']) {
+                $orphan = $changeSet->getOldValue($propName);
+                if ($orphan !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
+                    $orphansToRemove[] = $orphan;
                 }
 
                 continue;
             }
 
-            if (! isset($mapping['type']) || $mapping['type'] !== ClassMetadata::MANY) {
+            $collection = $this->collectionReplacedForDeletion($changeSet, $class, $propName);
+            if ($collection === null) {
                 continue;
             }
 
-            $orgValue    = $changeSet->getOldValue($propName);
-            $actualValue = $changeSet->getNewValue($propName);
-            if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($mapping['strategy'])) {
-                continue;
-            }
-
-            if ($orgValue === $actualValue || ! ($orgValue instanceof PersistentCollectionInterface)) {
-                continue;
-            }
-
-            $collectionsToDelete[] = $orgValue;
+            $collectionsToDelete[] = $collection;
         }
 
         return [$orphansToRemove, $collectionsToDelete];
+    }
+
+    /**
+     * A to-many field's old collection only needs deleting when the field's
+     * value was swapped for a genuinely different collection instance. A
+     * collection that merely had elements added or removed (dirty) is
+     * updated in place instead — except when it uses the "set" write
+     * strategy, which always rewrites the field's whole array anyway and
+     * would otherwise get its still-in-use collection queued for deletion.
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     *
+     * @return PersistentCollectionInterface<array-key, object>|null the old collection to delete, if any
+     */
+    private function collectionReplacedForDeletion(ChangeSet $changeSet, ClassMetadata $class, string $propName): PersistentCollectionInterface|null
+    {
+        if (! $class->isCollectionValuedAssociation($propName)) {
+            return null;
+        }
+
+        $orgValue    = $changeSet->getOldValue($propName);
+        $actualValue = $changeSet->getNewValue($propName);
+
+        if ($actualValue && $actualValue->isDirty() && CollectionHelper::usesSet($class->fieldMappings[$propName]['strategy'])) {
+            return null;
+        }
+
+        if ($orgValue === $actualValue || ! ($orgValue instanceof PersistentCollectionInterface)) {
+            return null;
+        }
+
+        return $orgValue;
     }
 
     /** @param Closure(PersistentCollectionInterface<array-key, object>): bool $isCollectionScheduledForDeletion */
@@ -134,75 +159,99 @@ final class ChangeSetComputer
         $document   = $request->document;
         $actualData = $request->actualData;
 
+        // A document with no original-data snapshot has never been fully loaded
+        // from (or written to) the database: it's either brand new, or a managed
+        // document that only has an identifier so far. Either way there is nothing
+        // to diff against, so every current field value is recorded as a change
+        // and the whole document becomes an INSERT.
         if ($request->originalData === null) {
-            // Document is either NEW or MANAGED but not yet fully persisted (only has an id).
-            // These result in an INSERT.
-            $changeSet = new ChangeSet($document, []);
-            foreach ($actualData as $propName => $actualValue) {
-                // ignore inverse side of reference relationship
-                if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
-                    continue;
-                }
-
-                $changeSet->recordChange($propName, $actualValue);
-            }
-
-            return $changeSet;
+            return $this->buildInsertChangeSet($class, $document, $actualData);
         }
 
+        // Read-only documents never produce a changeset: whatever their fields
+        // say now is irrelevant. We just echo back whatever changeset (if any)
+        // the caller already had.
         if ($class->isReadOnly) {
             return $request->existingChangeSet ?? new ChangeSet($document, $request->originalData);
         }
 
-        // Document is "fully" MANAGED: it was already fully persisted before
-        // and we have a copy of the original data
+        return $this->buildManagedChangeSet($request, $actualData, $isCollectionScheduledForDeletion);
+    }
+
+    /**
+     * Builds the changeset for a document being INSERTed: every field is "new"
+     * by definition, except the inverse side of a reference, which carries no
+     * data of its own (it's populated by, and saved via, the owning side).
+     *
+     * @param array<string, mixed> $actualData
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function buildInsertChangeSet(ClassMetadata $class, object $document, array $actualData): ChangeSet
+    {
+        $changeSet = new ChangeSet($document, []);
+        foreach ($actualData as $propName => $actualValue) {
+            if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
+                continue;
+            }
+
+            $changeSet->recordChange($propName, $actualValue);
+        }
+
+        return $changeSet;
+    }
+
+    /**
+     * Diffs a fully managed document's original data against its actual data,
+     * field by field. Most of the complexity here is in deciding, per field,
+     * whether a value that differs from the snapshot is actually worth
+     * recording: associations are recorded unconditionally (so the caller can
+     * later derive orphan-removal/collection-deletion scheduling from them),
+     * dates need a smarter-than-`===` equivalence check, and some fields are
+     * excluded outright (notSaved fields, non-metadata GridFS fields, inverse
+     * references, and — under NOTIFY change tracking — anything that isn't
+     * itself an association, since NOTIFY already recorded real changes as
+     * they happened).
+     *
+     * @param array<string, mixed>                                            $actualData
+     * @param Closure(PersistentCollectionInterface<array-key, object>): bool $isCollectionScheduledForDeletion
+     */
+    private function buildManagedChangeSet(ChangeSetComputationRequest $request, array $actualData, Closure $isCollectionScheduledForDeletion): ChangeSet
+    {
+        $class                  = $request->class;
+        $document               = $request->document;
         $originalData           = $request->originalData;
         $isChangeTrackingNotify = $request->isChangeTrackingNotify;
-        $changeSet              = $isChangeTrackingNotify && ! $request->forceRecompute && $request->existingChangeSet !== null
+
+        // Under NOTIFY change tracking, the document itself pushes field-level
+        // changes into an existing changeset as they happen; that changeset is
+        // reused (and merely extended below) instead of being diffed from
+        // scratch — unless the caller explicitly asked to recompute, in which
+        // case we fall back to a full diff against the snapshot, same as any
+        // other tracking policy.
+        $changeSet = $isChangeTrackingNotify && ! $request->forceRecompute && $request->existingChangeSet !== null
             ? $request->existingChangeSet
             : new ChangeSet($document, $originalData);
 
-        $gridFSMetadataProperty = null;
-
-        if ($class->isFile) {
-            try {
-                $gridFSMetadata         = $class->getFieldMappingByDbFieldName('metadata');
-                $gridFSMetadataProperty = $gridFSMetadata['fieldName'];
-            } catch (MappingException) {
-            }
-        }
+        $gridFsMetadataProperty = $this->resolveGridFsMetadataProperty($class);
 
         foreach ($actualData as $propName => $actualValue) {
-            // skip not saved fields
-            if (
-                (isset($class->fieldMappings[$propName]['notSaved']) && $class->fieldMappings[$propName]['notSaved'] === true) ||
-                ($class->isFile && $propName !== $gridFSMetadataProperty)
-            ) {
+            if ($this->isUnsavedField($class, $propName, $gridFsMetadataProperty)) {
                 continue;
             }
 
             $orgValue = $originalData[$propName] ?? null;
 
-            // skip if value has not changed
-            if ($orgValue === $actualValue) {
-                if (! $actualValue instanceof PersistentCollectionInterface) {
-                    continue;
-                }
-
-                if (! $actualValue->isDirty() && ! $isCollectionScheduledForDeletion($actualValue)) {
-                    // consider dirty collections as changed as well
-                    continue;
-                }
-            }
-
-            // if relationship is a embed-one, the caller schedules orphan removal for $orgValue itself
-            if (isset($class->fieldMappings[$propName]['embedded']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::ONE) {
-                $changeSet->recordChange($propName, $actualValue);
+            if (! $this->hasFieldValueChanged($orgValue, $actualValue, $isCollectionScheduledForDeletion)) {
                 continue;
             }
 
-            // if owning side of reference-one relationship
-            if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::ONE && $class->fieldMappings[$propName]['isOwningSide']) {
+            // Single-valued embeds, and the owning side of single-valued
+            // references, are always recorded once they differ: the caller
+            // relies on the field being present in the changeset to know it
+            // must schedule orphan removal for the old value.
+            $isSingleValuedAssociation = $class->isSingleValuedEmbed($propName)
+                || ($class->isSingleValuedReference($propName) && $class->fieldMappings[$propName]['isOwningSide']);
+            if ($isSingleValuedAssociation) {
                 $changeSet->recordChange($propName, $actualValue);
                 continue;
             }
@@ -211,38 +260,111 @@ final class ChangeSetComputer
                 continue;
             }
 
-            // ignore inverse side of reference relationship
+            // The inverse side of a reference has no data of its own to persist.
             if (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']) {
                 continue;
             }
 
-            // if embed-many or reference-many relationship
-            if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === ClassMetadata::MANY) {
+            // To-many embeds/references are always recorded once dirty or
+            // replaced, for the same reason as single-valued associations above.
+            if ($class->isCollectionValuedAssociation($propName)) {
                 $changeSet->recordChange($propName, $actualValue);
                 continue;
             }
 
-            // skip equivalent date values
-            if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                $dateType      = $class->getFieldType($propName);
-                $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
-                $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
-
-                // Loose comparison is only safe when both values are UTC dates. A custom
-                // type overriding "date" may produce a different database representation.
-                if ($dbOrgValue instanceof UTCDateTime && $dbActualValue instanceof UTCDateTime) {
-                    // We rely on loose comparison to compare every field
-                    // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-                    if ($dbOrgValue == $dbActualValue) {
-                        continue;
-                    }
-                }
+            if ($this->isEquivalentDate($class, $propName, $orgValue, $actualValue)) {
+                continue;
             }
 
-            // regular field
             $changeSet->recordChange($propName, $actualValue);
         }
 
         return $changeSet;
+    }
+
+    /**
+     * Fields flagged `notSaved` are computed/derived and are never diffed. A
+     * GridFS file document is a special case on top of that: only its
+     * `metadata` field (whatever its PHP property is actually called) is
+     * writable, so every other field is skipped regardless of mapping.
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function isUnsavedField(ClassMetadata $class, string $propName, string|null $gridFsMetadataProperty): bool
+    {
+        if (($class->fieldMappings[$propName]['notSaved'] ?? false) === true) {
+            return true;
+        }
+
+        return $class->isFile && $propName !== $gridFsMetadataProperty;
+    }
+
+    /**
+     * Resolves the PHP field name backing a GridFS file's `metadata` DB field,
+     * or null if the class isn't a GridFS file (or, defensively, doesn't map
+     * that field at all).
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function resolveGridFsMetadataProperty(ClassMetadata $class): string|null
+    {
+        if (! $class->isFile) {
+            return null;
+        }
+
+        try {
+            return $class->getFieldMappingByDbFieldName('metadata')['fieldName'];
+        } catch (MappingException) {
+            return null;
+        }
+    }
+
+    /**
+     * A field counts as unchanged only when its value is strictly identical to
+     * the snapshot. Persistent collections are the one exception: even the
+     * very same collection instance counts as "changed" when it has pending
+     * element changes, or is already scheduled for deletion, since a
+     * collection's elements are mutated in place rather than the collection
+     * being replaced wholesale.
+     *
+     * @param Closure(PersistentCollectionInterface<array-key, object>): bool $isCollectionScheduledForDeletion
+     */
+    private function hasFieldValueChanged(mixed $orgValue, mixed $actualValue, Closure $isCollectionScheduledForDeletion): bool
+    {
+        if ($orgValue !== $actualValue) {
+            return true;
+        }
+
+        return $actualValue instanceof PersistentCollectionInterface
+            && ($actualValue->isDirty() || $isCollectionScheduledForDeletion($actualValue));
+    }
+
+    /**
+     * Dates are compared via their DB representation with loose equality
+     * rather than `===`, because two distinct DateTime-family objects (or a
+     * DateTime vs. a DateTimeImmutable) can represent the exact same instant,
+     * including microseconds, without being identical.
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function isEquivalentDate(ClassMetadata $class, string $propName, mixed $orgValue, mixed $actualValue): bool
+    {
+        if (($class->fieldMappings[$propName]['type'] ?? null) !== 'date') {
+            return false;
+        }
+
+        $dateType      = $class->getFieldType($propName);
+        $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
+        $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
+
+        // Loose comparison is only safe when both values are UTC dates. A custom
+        // type overriding "date" may produce a different database representation.
+        if (! $dbOrgValue instanceof UTCDateTime || ! $dbActualValue instanceof UTCDateTime) {
+            return false;
+        }
+
+        // We rely on loose comparison to compare every field (including microseconds)
+        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+        return $dbOrgValue == $dbActualValue;
     }
 }
