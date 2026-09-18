@@ -103,11 +103,6 @@ final class DocumentRegistry implements Countable
         $this->getOrCreateObjectState($document)->parentAssociation = new ParentAssociation($mapping, $parent, $field);
     }
 
-    /**
-     * Gets the parent association for a given embedded document.
-     *
-     * @internal
-     */
     public function getParentAssociation(object $document): ?ParentAssociation
     {
         return $this->getObjectState($document)?->parentAssociation;
@@ -118,8 +113,6 @@ final class DocumentRegistry implements Countable
      * that was present at the time the document was reconstituted from the
      * database, used for calculating changesets at commit time.
      *
-     * @internal
-     *
      * @return array<string, mixed>
      */
     public function getOriginalDocumentData(object $document): array
@@ -129,31 +122,17 @@ final class DocumentRegistry implements Countable
         return $objectState !== null ? $objectState->originalData ?? [] : [];
     }
 
-    /**
-     * @internal
-     *
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function setOriginalDocumentData(object $document, array $data): void
     {
         $this->getOrCreateObjectState($document)->originalData = $data;
     }
 
-    /**
-     * Sets a property value of the original data array of a document.
-     *
-     * @internal
-     */
     public function setOriginalDocumentProperty(object $document, string $property, mixed $value): void
     {
         $this->getOrCreateObjectState($document)->originalData[$property] = $value;
     }
 
-    /**
-     * Gets the identifier of a document.
-     *
-     * @internal
-     */
     public function getDocumentIdentifier(object $document): mixed
     {
         return $this->getObjectState($document)?->identifier;
