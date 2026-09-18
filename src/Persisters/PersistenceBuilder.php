@@ -131,9 +131,15 @@ final class PersistenceBuilder
      * from the map (allowed only for an empty map, i.e. no map is enforced
      * at all).
      *
+     * No return type is declared: {@see ClassMetadata::$discriminatorValue}
+     * is documented as `class-string|null`, but a discriminator map keyed by
+     * integers (e.g. `#[DiscriminatorMap([0 => Foo::class, 1 => Bar::class])]`)
+     * assigns that integer key as the value instead, so `int` is also
+     * possible in practice.
+     *
      * @phpstan-param ClassMetadata<object> $class
      */
-    private function resolveDiscriminatorValue(ClassMetadata $class): string
+    private function resolveDiscriminatorValue(ClassMetadata $class): mixed
     {
         $discriminatorValue = $class->discriminatorValue;
 
