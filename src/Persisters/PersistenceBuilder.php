@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\ChangeSets\ChangeSet;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -60,60 +61,91 @@ final class PersistenceBuilder
     public function prepareInsertData($document)
     {
         $class     = $this->dm->getClassMetadata($document::class);
-        $changeset = $this->uow->getDocumentChangeSet($document);
+        $changeSet = $this->uow->getChangeSet($document);
 
         $insertData = [];
-        foreach ($class->fieldMappings as $fieldName => $mapping) {
-            $new = $changeset[$mapping['fieldName']][1] ?? null;
-
-            if ($new === null) {
-                if ($mapping['nullable']) {
-                    $insertData[$mapping['name']] = null;
-                }
-
-                continue;
-            }
-
-            // @Field, @String, @Date, etc.
-            if (! isset($mapping['association'])) {
-                $insertData[$mapping['name']] = $class->getFieldType($fieldName)->convertToDatabaseValue($new);
-
-            // @ReferenceOne
-            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
-
-            // @EmbedOne
-            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
-                $insertData[$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
-
-            // @ReferenceMany, @EmbedMany
-            // We're excluding collections using addToSet since there is a risk
-            // of duplicated entries stored in the collection
-            } elseif (
-                $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                    && (! $new->isEmpty() || $mapping['storeEmptyArray'])
-                    && ($mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET || $mapping['storeEmptyArray'])
-            ) {
-                $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
-            }
+        foreach ($class->fieldMappings as $mapping) {
+            $this->applyInsertValue($insertData, $class, $mapping, $this->resolveInsertValue($changeSet, $mapping['fieldName']));
         }
 
-        // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $discriminatorValue = $class->discriminatorValue;
-
-            if ($discriminatorValue === null) {
-                if (! empty($class->discriminatorMap)) {
-                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
-                }
-
-                $discriminatorValue = $class->name;
-            }
-
-            $insertData[$class->discriminatorField] = $discriminatorValue;
+            $insertData[$class->discriminatorField] = $this->resolveDiscriminatorValue($class);
         }
 
         return $insertData;
+    }
+
+    /**
+     * A field that was never recorded as changed inserts as absent rather
+     * than erroring: unlike an update, an insert has no prior state to diff
+     * against, so every mapped field is either "new" (present in the
+     * changeset) or simply unset on the document.
+     */
+    private function resolveInsertValue(ChangeSet $changeSet, string $fieldName): mixed
+    {
+        return $changeSet->hasChangedField($fieldName) ? $changeSet->getNewValue($fieldName) : null;
+    }
+
+    /**
+     * @param array<string, mixed> $insertData
+     * @phpstan-param ClassMetadata<object> $class
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyInsertValue(array &$insertData, ClassMetadata $class, array $mapping, mixed $new): void
+    {
+        if ($new === null) {
+            if ($mapping['nullable']) {
+                $insertData[$mapping['name']] = null;
+            }
+
+            return;
+        }
+
+        // @Field, @String, @Date, etc.
+        if (! isset($mapping['association'])) {
+            $insertData[$mapping['name']] = $class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($new);
+
+        // @ReferenceOne
+        } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+
+        // @EmbedOne
+        } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
+            $insertData[$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+
+        // @ReferenceMany, @EmbedMany
+        // We're excluding collections using addToSet since there is a risk
+        // of duplicated entries stored in the collection
+        } elseif (
+            $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
+                && (! $new->isEmpty() || $mapping['storeEmptyArray'])
+                && ($mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET || $mapping['storeEmptyArray'])
+        ) {
+            $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
+        }
+    }
+
+    /**
+     * Resolves the discriminator value to store for $class: its own explicit
+     * value if mapped, or the class name itself when the class is absent
+     * from the map (allowed only for an empty map, i.e. no map is enforced
+     * at all).
+     *
+     * @phpstan-param ClassMetadata<object> $class
+     */
+    private function resolveDiscriminatorValue(ClassMetadata $class): string
+    {
+        $discriminatorValue = $class->discriminatorValue;
+
+        if ($discriminatorValue === null) {
+            if (! empty($class->discriminatorMap)) {
+                throw MappingException::unlistedClassInDiscriminatorMap($class->name);
+            }
+
+            $discriminatorValue = $class->name;
+        }
+
+        return $discriminatorValue;
     }
 
     /**
