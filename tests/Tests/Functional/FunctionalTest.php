@@ -936,16 +936,11 @@ class FunctionalTest extends BaseTestCase
         $this->dm->persist($a);
         $this->dm->flush();
 
-        $unitOfWork = $this->dm->getUnitOfWork();
+        $registry = $this->dm->getDocumentRegistry();
 
-        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[0]);
-        self::assertSame($a->child, $document);
-
-        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child->children[1]);
-        self::assertSame($a->child, $document);
-
-        [$mapping, $document] = $unitOfWork->getParentAssociation($a->child);
-        self::assertSame($a, $document);
+        self::assertSame($a->child, $registry->getParentAssociation($a->child->children[0])->parent);
+        self::assertSame($a->child, $registry->getParentAssociation($a->child->children[1])->parent);
+        self::assertSame($a, $registry->getParentAssociation($a->child)->parent);
     }
 }
 

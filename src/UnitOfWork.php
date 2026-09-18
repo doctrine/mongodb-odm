@@ -42,7 +42,6 @@ use function array_key_exists;
 use function array_merge;
 use function assert;
 use function call_user_func;
-use function count;
 use function get_class;
 use function in_array;
 use function is_array;
@@ -274,54 +273,6 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         return $this->persistenceBuilder;
-    }
-
-    /**
-     * Sets the parent association for a given embedded document.
-     *
-     * @deprecated Use {@see DocumentRegistry::setParentAssociation()} instead.
-     *
-     * @phpstan-param FieldMapping $mapping
-     */
-    public function setParentAssociation(object $document, array $mapping, ?object $parent, string $field): void
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::setParentAssociation() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        $this->documentRegistry->setParentAssociation($document, $mapping, $parent, $field);
-    }
-
-    /**
-     * Gets the parent association for a given embedded document.
-     *
-     *     <code>
-     *     list($mapping, $parent, $field) = $this->getParentAssociation($embeddedDocument);
-     *     </code>
-     *
-     * @deprecated Use {@see DocumentRegistry::getParentAssociation()} instead.
-     *
-     * @phpstan-return array{0: AssociationFieldMapping, 1: object|null, 2: string}|null
-     */
-    public function getParentAssociation(object $document): ?array
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::getParentAssociation() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        $parentAssociation = $this->documentRegistry->getParentAssociation($document);
-
-        return $parentAssociation === null
-            ? null
-            : [$parentAssociation->mapping, $parentAssociation->parent, $parentAssociation->field];
     }
 
     /**
@@ -1575,60 +1526,6 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Removes a document from the identity map. This effectively detaches the
-     * document from the persistence management of Doctrine.
-     *
-     * @deprecated Use {@see DocumentRegistry::removeFromIdentityMap()} instead.
-     *
-     * @throws InvalidArgumentException
-     */
-    public function removeFromIdentityMap(object $document): bool
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::removeFromIdentityMap() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        $class = $this->dm->getClassMetadata($document::class);
-
-        return $this->documentRegistry->removeFromIdentityMap($class, $document);
-    }
-
-    /**
-     * Gets a document in the identity map by its identifier hash.
-     *
-     * @deprecated Use {@see DocumentRegistry::getById()} instead.
-     *
-     * @param mixed $id Document identifier
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @phpstan-return T
-     *
-     * @throws InvalidArgumentException If the class does not have an identifier.
-     *
-     * @template T of object
-     */
-    public function getById($id, ClassMetadata $class): object
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::getById() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        if (! $class->identifier) {
-            throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
-        }
-
-        return $this->documentRegistry->getById($id, $class);
-    }
-
-    /**
      * Tries to get a document by its identifier hash. If no document is found
      * for the given hash, FALSE is returned.
      *
@@ -1670,46 +1567,6 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $class                                                                     = $this->dm->getClassMetadata($document::class);
         $this->scheduledForSynchronization[$class->name][spl_object_id($document)] = $document;
-    }
-
-    /**
-     * Checks whether a document is registered in the identity map.
-     *
-     * @deprecated Use {@see DocumentRegistry::isInIdentityMap()} instead.
-     */
-    public function isInIdentityMap(object $document): bool
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::isInIdentityMap() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        $class = $this->dm->getClassMetadata($document::class);
-
-        return $this->documentRegistry->isInIdentityMap($class, $document);
-    }
-
-    /**
-     * Checks whether an identifier exists in the identity map.
-     *
-     * @deprecated Use {@see DocumentRegistry::containsId()} instead.
-     *
-     * @param mixed $id
-     */
-    public function containsId($id, string $rootClassName): bool
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::containsId() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        return $this->documentRegistry->containsId($id, $rootClassName);
     }
 
     /**
@@ -2826,26 +2683,6 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Gets the identity map of the UnitOfWork.
-     *
-     * @deprecated Use {@see DocumentRegistry::getIdentityMap()} instead.
-     *
-     * @return array<class-string, array<string, object>>
-     */
-    public function getIdentityMap(): array
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::getIdentityMap() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        return $this->documentRegistry->getIdentityMap();
-    }
-
-    /**
      * Gets the original data of a document. The original data is the data that was
      * present at the time the document was reconstituted from the database.
      *
@@ -2886,26 +2723,6 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Sets a property value of the original data array of a document.
-     *
-     * @deprecated Use {@see DocumentRegistry::setOriginalDocumentProperty()} instead.
-     *
-     * @param mixed $value
-     */
-    public function setOriginalDocumentProperty(object $document, string $property, $value): void
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::setOriginalDocumentProperty() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        $this->documentRegistry->setOriginalDocumentProperty($document, $property, $value);
-    }
-
-    /**
      * Gets the identifier of a document.
      *
      * @deprecated Use {@see DocumentRegistry::getDocumentIdentifier()} instead.
@@ -2935,25 +2752,6 @@ final class UnitOfWork implements PropertyChangedListener
     public function hasPendingInsertions(): bool
     {
         return ! empty($this->scheduledDocumentInsertions);
-    }
-
-    /**
-     * Calculates the size of the UnitOfWork. The size of the UnitOfWork is the
-     * number of documents in the identity map.
-     *
-     * @deprecated Use {@see DocumentRegistry::count()} instead.
-     */
-    public function size(): int
-    {
-        trigger_deprecation(
-            'doctrine/mongodb-odm',
-            '2.18',
-            '%s is deprecated, call %s::count() instead.',
-            __METHOD__,
-            DocumentRegistry::class,
-        );
-
-        return count($this->documentRegistry);
     }
 
     /**

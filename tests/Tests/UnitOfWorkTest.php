@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ReentrantCommitListenerMock;
@@ -170,12 +171,12 @@ class UnitOfWorkTest extends BaseTestCase
         $c = new ParentAssociationTest('c');
         $d = new ParentAssociationTest('c');
 
-        $this->uow->setParentAssociation($b, ClassMetadataTestUtil::getFieldMapping(['name' => 'b']), $a, 'b');
-        $this->uow->setParentAssociation($c, ClassMetadataTestUtil::getFieldMapping(['name' => 'c']), $b, 'b.c');
+        $this->dm->getDocumentRegistry()->setParentAssociation($b, ClassMetadataTestUtil::getFieldMapping(['name' => 'b']), $a, 'b');
+        $this->dm->getDocumentRegistry()->setParentAssociation($c, ClassMetadataTestUtil::getFieldMapping(['name' => 'c']), $b, 'b.c');
         $mappingD = ClassMetadataTestUtil::getFieldMapping(['name' => 'c']);
-        $this->uow->setParentAssociation($d, $mappingD, $c, 'b.c.d');
+        $this->dm->getDocumentRegistry()->setParentAssociation($d, $mappingD, $c, 'b.c.d');
 
-        self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
+        self::assertEquals(new ParentAssociation($mappingD, $c, 'b.c.d'), $this->dm->getDocumentRegistry()->getParentAssociation($d));
     }
 
     #[DoesNotPerformAssertions]
@@ -450,20 +451,23 @@ class UnitOfWorkTest extends BaseTestCase
         $user    = new User();
         $user->setAddress($address);
 
+        $registry = $this->dm->getDocumentRegistry();
+        $class    = $this->dm->getClassMetadata(Address::class);
+
         self::assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($address));
-        self::assertFalse($this->uow->isInIdentityMap($address));
+        self::assertFalse($registry->isInIdentityMap($class, $address));
         self::assertNull($this->uow->getDocumentIdentifier($address));
 
         $this->uow->persist($user);
 
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->getAddress()));
-        self::assertTrue($this->uow->isInIdentityMap($address));
+        self::assertTrue($registry->isInIdentityMap($class, $address));
         self::assertTrue($this->uow->isScheduledForInsert($address));
         self::assertEquals(spl_object_id($address), $this->uow->getDocumentIdentifier($address));
 
         $this->uow->commit();
 
-        self::assertTrue($this->uow->isInIdentityMap($address));
+        self::assertTrue($registry->isInIdentityMap($class, $address));
         self::assertFalse($this->uow->isScheduledForInsert($address));
     }
 
