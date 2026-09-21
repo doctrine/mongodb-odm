@@ -58,7 +58,7 @@ final class PersistenceBuilder
      *
      * @return array<string, mixed> $insertData
      */
-    public function prepareInsertData($document)
+    public function prepareInsertData($document): array
     {
         $class     = $this->dm->getClassMetadata($document::class);
         $changeSet = $this->uow->getChangeSet($document);
@@ -105,24 +105,59 @@ final class PersistenceBuilder
         if (! isset($mapping['association'])) {
             $insertData[$mapping['name']] = $class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($new);
 
+            return;
+        }
+
         // @ReferenceOne
-        } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+        if ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
             $insertData[$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
 
+            return;
+        }
+
         // @EmbedOne
-        } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
+        if ($mapping['association'] === ClassMetadata::EMBED_ONE) {
             $insertData[$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
 
-        // @ReferenceMany, @EmbedMany
-        // We're excluding collections using addToSet since there is a risk
-        // of duplicated entries stored in the collection
-        } elseif (
-            $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
-                && (! $new->isEmpty() || $mapping['storeEmptyArray'])
-                && ($mapping['strategy'] !== ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET || $mapping['storeEmptyArray'])
-        ) {
-            $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
+            return;
         }
+
+        // @ReferenceMany, @EmbedMany
+        if ($mapping['type'] === ClassMetadata::MANY) {
+            $this->applyManyFieldInsert($insertData, $mapping, $new);
+
+            return;
+        }
+
+        throw new UnexpectedValueException('Unsupported mapping association for field "' . $mapping['fieldName'] . '": ' . $mapping['association']);
+    }
+
+    /**
+     * An inverse-side collection is never stored on the owning document, and
+     * an `addToSet`-strategy collection is populated by its own atomic
+     * operation rather than the insert document, to avoid a risk of
+     * duplicated entries — both are silently skipped here rather than
+     * treated as an error.
+     *
+     * @param array<string, mixed>                             $insertData
+     * @param PersistentCollectionInterface<array-key, object> $new
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyManyFieldInsert(array &$insertData, array $mapping, PersistentCollectionInterface $new): void
+    {
+        if ($mapping['isInverseSide']) {
+            return;
+        }
+
+        if ($new->isEmpty() && ! $mapping['storeEmptyArray']) {
+            return;
+        }
+
+        if ($mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_ADD_TO_SET && ! $mapping['storeEmptyArray']) {
+            return;
+        }
+
+        $insertData[$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
     }
 
     /**
@@ -161,7 +196,7 @@ final class PersistenceBuilder
      *
      * @return array<string, mixed> $updateData
      */
-    public function prepareUpdateData($document)
+    public function prepareUpdateData($document): array
     {
         $class     = $this->dm->getClassMetadata($document::class);
         $changeSet = $this->uow->getChangeSet($document);
@@ -186,18 +221,31 @@ final class PersistenceBuilder
             if (! isset($mapping['association'])) {
                 $this->applyScalarFieldUpdate($updateData, $class, $mapping, $changeSet->getOldValue($fieldName), $new);
 
+                continue;
+            }
+
             // @EmbedOne
-            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
+            if ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $this->applyEmbedOneFieldUpdate($updateData, $mapping, $new);
 
+                continue;
+            }
+
             // @ReferenceMany, @EmbedMany
-            } elseif ($mapping['type'] === ClassMetadata::MANY) {
+            if ($mapping['type'] === ClassMetadata::MANY) {
                 $this->applyManyFieldUpdate($updateData, $mapping, $changeSet->getOldValue($fieldName), $new);
 
-            // @ReferenceOne
-            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $this->applyReferenceOneField($updateData, $mapping, $new);
+                continue;
             }
+
+            // @ReferenceOne
+            if ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+                $this->applyReferenceOneField($updateData, $mapping, $new);
+
+                continue;
+            }
+
+            throw new UnexpectedValueException('Unsupported mapping association for field "' . $mapping['fieldName'] . '": ' . $mapping['association']);
         }
 
         $this->applyScheduledCollectionsUpdate($updateData, $document);
@@ -374,7 +422,7 @@ final class PersistenceBuilder
      *
      * @return array<string, mixed> $updateData
      */
-    public function prepareUpsertData($document)
+    public function prepareUpsertData($document): array
     {
         $class     = $this->dm->getClassMetadata($document::class);
         $changeSet = $this->uow->getChangeSet($document);
@@ -394,23 +442,35 @@ final class PersistenceBuilder
             if (! isset($mapping['association'])) {
                 $this->applyScalarFieldUpsert($updateData, $class, $mapping, $changeSet->getOldValue($fieldName), $new);
 
+                continue;
+            }
+
             // @EmbedOne
-            } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
+            if ($mapping['association'] === ClassMetadata::EMBED_ONE) {
                 $this->applyEmbedOneFieldUpsert($updateData, $mapping, $new);
 
+                continue;
+            }
+
             // @ReferenceOne
-            } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
+            if ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
                 $this->applyReferenceOneField($updateData, $mapping, $new);
 
+                continue;
+            }
+
             // @ReferenceMany, @EmbedMany
-            } elseif (
+            if (
                 $mapping['type'] === ClassMetadata::MANY && ! $mapping['isInverseSide']
                     && $new instanceof PersistentCollectionInterface && $new->isDirty()
                     && CollectionHelper::isAtomic($mapping['strategy'])
             ) {
                 $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
+
+                continue;
             }
-            // @EmbedMany and non-atomic @ReferenceMany are handled by CollectionPersister
+
+            // @EmbedMany and non-atomic @ReferenceMany are handled by CollectionPersister, so no need to throw here.
         }
 
         if (isset($class->discriminatorField)) {
@@ -495,10 +555,8 @@ final class PersistenceBuilder
      *
      * @param object $document
      * @phpstan-param FieldMapping $referenceMapping
-     *
-     * @return array<string, mixed>|null
      */
-    public function prepareReferencedDocumentValue(array $referenceMapping, $document)
+    public function prepareReferencedDocumentValue(array $referenceMapping, $document): mixed
     {
         return $this->dm->createReference($document, $referenceMapping);
     }
@@ -525,7 +583,7 @@ final class PersistenceBuilder
      *
      * @throws UnexpectedValueException If an unsupported associating mapping is found.
      */
-    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false)
+    public function prepareEmbeddedDocumentValue(array $embeddedMapping, $embeddedDocument, $includeNestedCollections = false): array|object
     {
         $embeddedDocumentValue = [];
         $class                 = $this->dm->getClassMetadata($embeddedDocument::class);
@@ -640,11 +698,13 @@ final class PersistenceBuilder
      * @param bool   $includeNestedCollections
      * @phpstan-param FieldMapping  $mapping
      *
-     * @return mixed[]|object|null
+     * A reference can resolve to a bare identifier (see
+     * {@see self::prepareReferencedDocumentValue()}), so this can't be
+     * narrowed past `mixed`.
      *
      * @throws InvalidArgumentException If the mapping is neither embedded nor reference.
      */
-    public function prepareAssociatedDocumentValue(array $mapping, $document, $includeNestedCollections = false)
+    public function prepareAssociatedDocumentValue(array $mapping, $document, $includeNestedCollections = false): mixed
     {
         if (isset($mapping['embedded'])) {
             return $this->prepareEmbeddedDocumentValue($mapping, $document, $includeNestedCollections);
@@ -665,7 +725,7 @@ final class PersistenceBuilder
      *
      * @return mixed[]
      */
-    public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false)
+    public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false): array
     {
         $mapping  = $coll->getMapping();
         $pb       = $this;
