@@ -19,7 +19,10 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
+use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -873,6 +876,8 @@ use const PHP_VERSION_ID;
     /** @var class-string|null */
     private ?string $rootClass;
 
+    private TypeProvider $typeProvider;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
@@ -930,6 +935,24 @@ use const PHP_VERSION_ID;
         }
 
         return ($pathPrefix ? $pathPrefix . '.' : '') . self::getReferencePrefix($storeAs) . 'id';
+    }
+
+    /**
+     * Inject the TypeProvider instance, used for field transformation and type detection.
+     */
+    public function setTypeProvider(TypeProvider $types): void
+    {
+        $this->typeProvider = $types;
+    }
+
+    private function getTypeProvider(): TypeProvider
+    {
+        if (! isset($this->typeProvider)) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Using ClassMetadata without a TypeProvider is deprecated. Inject the TypeProvider instance from the DocumentManager via $classMetadata->setTypeProvider($configuration->getTypeProvider()).');
+            $this->typeProvider = TypeRegistry::getDeprecatedSharedInstance();
+        }
+
+        return $this->typeProvider;
     }
 
     public function getReflectionClass(): ReflectionClass
@@ -1717,7 +1740,7 @@ use const PHP_VERSION_ID;
             default:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
-                $type              = Type::getType($mapping['type']);
+                $type              = $this->getTypeProvider()->get($mapping['type']);
                 if ($type instanceof Incrementable) {
                     $allowedStrategies[] = self::STORAGE_STRATEGY_INCREMENT;
                 }
@@ -1924,9 +1947,7 @@ use const PHP_VERSION_ID;
      */
     public function getPHPIdentifierValue($id)
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return Type::getType($idType)->convertToPHPValue($id);
+        return $this->getFieldType($this->identifier)->convertToPHPValue($id);
     }
 
     /**
@@ -1938,9 +1959,7 @@ use const PHP_VERSION_ID;
      */
     public function getDatabaseIdentifierValue($id)
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return Type::getType($idType)->convertToDatabaseValue($id);
+        return $this->getFieldType($this->identifier)->convertToDatabaseValue($id);
     }
 
     /**
@@ -2040,6 +2059,19 @@ use const PHP_VERSION_ID;
         }
 
         return $this->fieldMappings[$fieldName];
+    }
+
+    public function getFieldType(string $fieldName): Type
+    {
+        if (! isset($this->fieldMappings[$fieldName]['type'])) {
+            return $this->getTypeProvider()->get(Type::RAW);
+        }
+
+        try {
+            return $this->getTypeProvider()->get($this->fieldMappings[$fieldName]['type']);
+        } catch (InvalidTypeException) {
+            throw MappingException::invalidTypeForField($this->name, $fieldName, $this->fieldMappings[$fieldName]['type']);
+        }
     }
 
     /**
@@ -2211,7 +2243,7 @@ use const PHP_VERSION_ID;
      */
     public function setVersionMapping(array &$mapping): void
     {
-        if (! Type::getType($mapping['type']) instanceof Versionable) {
+        if (! $this->getTypeProvider()->get($mapping['type']) instanceof Versionable) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 
@@ -2474,7 +2506,7 @@ use const PHP_VERSION_ID;
 
         if (isset($mapping['encrypt']['queryType'])) {
             // The encrypted range query options min and max must be converted to the database type
-            $type = Type::getType($mapping['type']);
+            $type = $this->getTypeProvider()->get($mapping['type']);
             foreach (['min', 'max'] as $option) {
                 if (isset($mapping['encrypt'][$option])) {
                     $mapping['encrypt'][$option] = $type->convertToDatabaseValue($mapping['encrypt'][$option]);
@@ -2888,7 +2920,7 @@ use const PHP_VERSION_ID;
             return $mapping;
         }
 
-        if (! $type->isBuiltin() && Type::hasType($type->getName())) {
+        if (! $type->isBuiltin() && $this->getTypeProvider()->has($type->getName())) {
             $mapping['type'] = $type->getName();
 
             return $mapping;

@@ -22,6 +22,7 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\ReadPreference;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -426,7 +427,7 @@ class BuilderTest extends BaseTestCase
 
         $expected = [
             '$setOnInsert' => [
-                'createDate' => Type::getType('date')->convertToDatabaseValue($createDate),
+                'createDate' => new UTCDateTime($createDate),
             ],
         ];
         self::assertEquals($expected, $qb->getNewObj());
@@ -441,8 +442,8 @@ class BuilderTest extends BaseTestCase
 
         $expected = [
             'createdAt' => [
-                '$gte' => Type::getType('date')->convertToDatabaseValue($start),
-                '$lt' => Type::getType('date')->convertToDatabaseValue($end),
+                '$gte' => new UTCDateTime($start),
+                '$lt' => new UTCDateTime($end),
             ],
         ];
         self::assertEquals($expected, $qb->getQueryArray());
