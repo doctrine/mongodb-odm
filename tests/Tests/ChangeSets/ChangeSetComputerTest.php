@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
 use Documents\Address;
 use Documents\File;
 use Documents\FileMetadata;
@@ -70,6 +71,16 @@ class ChangeSetComputerTest extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB('doctrine_odm_changeset_computer_test');
         $config->setMetadataDriverImpl(AttributeDriver::create([__DIR__ . '/../../Documents']));
+
+        if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
+            $config->setUseNativeLazyObject(true);
+        } elseif ($_ENV['USE_LAZY_GHOST_OBJECT']) {
+            $config->setUseLazyGhostObject(true);
+        }
+
+        if ($config->isNativeLazyObjectEnabled()) {
+            NativeLazyObjectFactory::enableTracking();
+        }
 
         // The client is never connected to: only getClassMetadata() is used below.
         return self::$metadataOnlyDocumentManager = DocumentManager::create(null, $config);
