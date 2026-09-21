@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Closure;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\CmsAddress;
 use Documents\CmsArticle;
 use Documents\CmsPhonenumber;
@@ -19,7 +18,6 @@ use InvalidArgumentException;
 
 use function assert;
 use function serialize;
-use function spl_object_id;
 use function unserialize;
 
 class DetachedDocumentTest extends BaseTestCase
@@ -141,14 +139,7 @@ class DetachedDocumentTest extends BaseTestCase
         $reregistered->id = $user->id;
         $uow->registerManaged($reregistered, $user->id, ['id' => $user->id]);
 
-        $markRemoved = Closure::bind(
-            function (object $document): void {
-                $this->documentStates[spl_object_id($document)] = self::STATE_REMOVED;
-            },
-            $uow,
-            UnitOfWork::class,
-        );
-        $markRemoved($reregistered);
+        $this->dm->getDocumentRegistry()->getOrCreateObjectState($reregistered)->state = PersistenceState::Removed;
 
         $detachedCopy           = new CmsUser();
         $detachedCopy->id       = $user->id;
