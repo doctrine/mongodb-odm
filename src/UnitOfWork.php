@@ -655,13 +655,14 @@ final class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        $actualData  = $this->getDocumentActualData($document);
-        $actualData  = $this->fixActualDataCollectionOwnership($class, $document, $actualData);
         $objectState = $this->documentRegistry->getOrCreateObjectState($document);
 
         if ($objectState->originalData !== null && $class->isReadOnly) {
             return;
         }
+
+        $actualData = $this->getDocumentActualData($document);
+        $actualData = $this->fixActualDataCollectionOwnership($class, $document, $actualData, $objectState->originalData);
 
         $request = new ChangeSetComputationRequest(
             $class,
@@ -2302,25 +2303,52 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Applies {@see self::fixPersistentCollectionOwnership()} to every field of
      * $actualData up front, so ChangeSetComputer never has to (it has no
-     * DocumentRegistry/scheduling access to do so itself).
+     * DocumentRegistry/scheduling access to do so itself). A document with no
+     * original-data snapshot yet (i.e. new) has every field fixed, matching
+     * the INSERT changeset's own "every field is new" treatment; an
+     * already-managed document is limited to the fields that would actually
+     * reach a to-many association's ownership check during diffing: not a
+     * notSaved/GridFS-excluded field, and not the inverse side of a reference
+     * (which carries no data of its own).
      *
-     * @param array<string, mixed> $actualData
      * @phpstan-param ClassMetadata<T> $class
      * @phpstan-param T $document
+     * @phpstan-param array<string, mixed> $actualData
+     * @phpstan-param array<string, mixed>|null $originalData
      *
-     * @return array<string, mixed>
+     * @phpstan-return array<string, mixed>
      *
      * @template T of object
      */
-    private function fixActualDataCollectionOwnership(ClassMetadata $class, object $document, array $actualData): array
+    private function fixActualDataCollectionOwnership(ClassMetadata $class, object $document, array $actualData, array|null $originalData): array
     {
         foreach ($actualData as $propName => $actualValue) {
-            if ($actualValue instanceof PersistentCollectionInterface && $actualValue->getOwner() !== $document) {
-                $actualData[$propName] = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
+            if (! $actualValue instanceof PersistentCollectionInterface || $actualValue->getOwner() === $document) {
+                continue;
             }
+
+            if ($originalData !== null && ! $this->isCollectionOwnershipFixApplicable($class, $propName)) {
+                continue;
+            }
+
+            $actualData[$propName] = $this->fixPersistentCollectionOwnership($actualValue, $document, $class, $propName);
         }
 
         return $actualData;
+    }
+
+    /** @phpstan-param ClassMetadata<object> $class */
+    private function isCollectionOwnershipFixApplicable(ClassMetadata $class, string $propName): bool
+    {
+        if (($class->fieldMappings[$propName]['notSaved'] ?? false) === true) {
+            return false;
+        }
+
+        if ($class->isFile) {
+            return false;
+        }
+
+        return ! (isset($class->fieldMappings[$propName]['reference']) && $class->fieldMappings[$propName]['isInverseSide']);
     }
 
     /**
