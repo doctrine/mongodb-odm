@@ -59,7 +59,7 @@ final class ChangeSetComputer
             return new ChangeSetComputationResult($changeSet, $isNewDocument);
         }
 
-        [$orphansToRemove, $collectionsToDelete] = $this->determineScheduling($changeSet, $request->class);
+        [$orphansToRemove, $collectionsToDelete] = $this->determineScheduling($changeSet, $request->class, $request->isChangeTrackingNotify);
 
         if ($request->existingChangeSet !== null && $request->existingChangeSet !== $changeSet) {
             $request->existingChangeSet->merge($changeSet);
@@ -81,7 +81,7 @@ final class ChangeSetComputer
      *
      * @return array{0: list<object>, 1: list<PersistentCollectionInterface<array-key, object>>}
      */
-    private function determineScheduling(ChangeSet $changeSet, ClassMetadata $class): array
+    private function determineScheduling(ChangeSet $changeSet, ClassMetadata $class, bool $isChangeTrackingNotify): array
     {
         $orphansToRemove     = [];
         $collectionsToDelete = [];
@@ -106,6 +106,17 @@ final class ChangeSetComputer
                     $orphansToRemove[] = $orphan;
                 }
 
+                continue;
+            }
+
+            // Under NOTIFY change tracking, a to-many field is never diffed against
+            // its snapshot here in the first place (buildManagedChangeSet() records
+            // it only via propertyChanged(), which has no old collection to compare
+            // against) — so when $changeSet is the NOTIFY-reused, cross-pass instance
+            // (see computeChangeSet()), a to-many field it carries may simply be a
+            // propertyChanged()-recorded change unrelated to a collection swap in
+            // this pass, and must not be scanned for a collection to delete.
+            if ($isChangeTrackingNotify) {
                 continue;
             }
 
