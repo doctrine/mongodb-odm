@@ -9,12 +9,10 @@ use DateTime;
 use Doctrine\ODM\MongoDB\ChangeSets\ChangeSet;
 use Doctrine\ODM\MongoDB\ChangeSets\ChangeSetComputationRequest;
 use Doctrine\ODM\MongoDB\ChangeSets\ChangeSetComputer;
-use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
-use Doctrine\ODM\MongoDB\Proxy\Factory\NativeLazyObjectFactory;
+use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Address;
 use Documents\File;
 use Documents\FileMetadata;
@@ -23,15 +21,13 @@ use Documents\User;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-use function sys_get_temp_dir;
-
 /**
  * Deliberately does not extend BaseTestCase: that base class pings a real
  * MongoDB server during setUp() (transaction-support detection), which this
  * suite must not need — ChangeSetComputer is computed purely from class
- * metadata and plain arrays, no database required. A DocumentManager is
- * still built here, but only to resolve ClassMetadata via the attribute
- * driver; no command is ever sent to the (never-connected) client.
+ * metadata and plain arrays, no database required. It does reuse
+ * {@see BaseTestCase::createMetadataOnlyDocumentManager()} to resolve
+ * ClassMetadata via the attribute driver, without connecting to a client.
  */
 class ChangeSetComputerTest extends TestCase
 {
@@ -58,32 +54,7 @@ class ChangeSetComputerTest extends TestCase
 
     private static function getMetadataOnlyDocumentManager(): DocumentManager
     {
-        if (self::$metadataOnlyDocumentManager !== null) {
-            return self::$metadataOnlyDocumentManager;
-        }
-
-        $config = new Configuration();
-        $config->setProxyDir(sys_get_temp_dir());
-        $config->setProxyNamespace('Proxies');
-        $config->setHydratorDir(sys_get_temp_dir());
-        $config->setHydratorNamespace('Hydrators');
-        $config->setPersistentCollectionDir(sys_get_temp_dir());
-        $config->setPersistentCollectionNamespace('PersistentCollections');
-        $config->setDefaultDB('doctrine_odm_changeset_computer_test');
-        $config->setMetadataDriverImpl(AttributeDriver::create([__DIR__ . '/../../Documents']));
-
-        if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
-            $config->setUseNativeLazyObject(true);
-        } elseif ($_ENV['USE_LAZY_GHOST_OBJECT']) {
-            $config->setUseLazyGhostObject(true);
-        }
-
-        if ($config->isNativeLazyObjectEnabled()) {
-            NativeLazyObjectFactory::enableTracking();
-        }
-
-        // The client is never connected to: only getClassMetadata() is used below.
-        return self::$metadataOnlyDocumentManager = DocumentManager::create(null, $config);
+        return self::$metadataOnlyDocumentManager ??= BaseTestCase::createMetadataOnlyDocumentManager();
     }
 
     public function testNewDocumentRecordsEveryFieldAsChanged(): void
