@@ -514,14 +514,15 @@ class ChangeSetComputerTest extends TestCase
     {
         $class        = $this->getClassMetadata(User::class);
         $document     = new User();
-        $originalData = ['hits' => 1, 'address' => null];
+        $oldAddress   = new Address();
+        $originalData = ['hits' => 1, 'address' => $oldAddress];
         $existing     = new ChangeSet($document, $originalData);
         $existing->recordChange('hits', 42); // e.g. pushed in by propertyChanged()
 
-        $address = new Address();
+        $newAddress = new Address();
 
         $result = $this->computer->computeChangeSet(
-            new ChangeSetComputationRequest($class, $document, $originalData, ['hits' => 1, 'address' => $address], $existing, false, false),
+            new ChangeSetComputationRequest($class, $document, $originalData, ['hits' => 1, 'address' => $newAddress], $existing, false, false),
             static fn () => false,
         );
 
@@ -531,8 +532,9 @@ class ChangeSetComputerTest extends TestCase
         self::assertSame(42, $result->changeSet->getNewValue('hits'));
         self::assertTrue($result->changeSet->hasChangedField('address'));
 
-        // Scheduling is derived from this pass's own diff (address only), not the merged changeset.
-        self::assertSame([], $result->orphansToRemove);
+        // Scheduling is derived from this pass's own diff (address only) rather than the merged
+        // changeset, so the old address is orphaned exactly once, not once per pass.
+        self::assertSame([$oldAddress], $result->orphansToRemove);
     }
 
     private function compute(ChangeSetComputationRequest $request, ?Closure $isCollectionScheduledForDeletion = null): ChangeSet
