@@ -537,6 +537,31 @@ class ChangeSetComputerTest extends TestCase
         self::assertSame([$oldAddress], $result->orphansToRemove);
     }
 
+    public function testNotifyReusedChangeSetNeverSchedulesCollectionDeletion(): void
+    {
+        $class     = $this->getClassMetadata(User::class);
+        $document  = new User();
+        $oldGroups = $this->createMock(PersistentCollectionInterface::class);
+        $oldGroups->method('isDirty')->willReturn(false);
+        $originalData = ['hits' => 1, 'groups' => $oldGroups];
+        $existing     = new ChangeSet($document, $originalData);
+
+        $newGroups = $this->createMock(PersistentCollectionInterface::class);
+        $newGroups->method('isDirty')->willReturn(false);
+        // e.g. pushed in by propertyChanged() when the whole collection field was reassigned
+        $existing->recordChange('groups', $newGroups);
+
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, $originalData, ['hits' => 1, 'groups' => $newGroups], $existing, true, false),
+            static fn () => false,
+        );
+
+        // Under NOTIFY, a to-many field is only ever diffed by propertyChanged() itself,
+        // never re-diffed here — so a collection swap it already recorded must not also
+        // get scheduled for deletion by this pass.
+        self::assertSame([], $result->collectionsToDelete);
+    }
+
     private function compute(ChangeSetComputationRequest $request, ?Closure $isCollectionScheduledForDeletion = null): ChangeSet
     {
         $results = $this->computer->computeChangeSets([$request], $isCollectionScheduledForDeletion ?? static fn () => false);
