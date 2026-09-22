@@ -525,13 +525,16 @@ final class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the changeset for a document as a {@see ChangeSet} value object.
      *
-     * Returns the same instance stored internally, so mutating it (e.g. via
-     * {@see ChangeSet::recordChange()}) is visible to the rest of the UnitOfWork
-     * without calling {@see self::setDocumentChangeSet()} back.
+     * Always returns an instance detached from the one (if any) stored
+     * internally: mutating the returned instance (e.g. via
+     * {@see ChangeSet::recordChange()}) has no effect on the UnitOfWork's own
+     * bookkeeping.
      */
     public function getChangeSet(object $document): ChangeSet
     {
-        return $this->documentChangeSets[$document] ?? new ChangeSet($document, []);
+        $changeSet = $this->documentChangeSets[$document] ?? null;
+
+        return $changeSet !== null ? clone $changeSet : new ChangeSet($document, []);
     }
 
     /**
