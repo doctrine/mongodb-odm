@@ -38,6 +38,7 @@ use function preg_match;
 use function strlen;
 use function strpos;
 use function substr_replace;
+use function sys_get_temp_dir;
 use function version_compare;
 
 use const DOCTRINE_MONGODB_DATABASE;
@@ -182,6 +183,36 @@ abstract class BaseTestCase extends TestCase
         $client = new Client(self::getUri());
 
         return DocumentManager::create($client, $config);
+    }
+
+    /**
+     * Builds a DocumentManager whose Client is never connected to, only good
+     * for resolving ClassMetadata via the attribute driver. Useful for tests
+     * that need class metadata without pinging a real MongoDB server.
+     */
+    public static function createMetadataOnlyDocumentManager(): DocumentManager
+    {
+        $config = new Configuration();
+        $config->setProxyDir(sys_get_temp_dir());
+        $config->setProxyNamespace('Proxies');
+        $config->setHydratorDir(sys_get_temp_dir());
+        $config->setHydratorNamespace('Hydrators');
+        $config->setPersistentCollectionDir(sys_get_temp_dir());
+        $config->setPersistentCollectionNamespace('PersistentCollections');
+        $config->setDefaultDB('doctrine_odm_metadata_only_test');
+        $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
+
+        if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
+            $config->setUseNativeLazyObject(true);
+        } elseif ($_ENV['USE_LAZY_GHOST_OBJECT']) {
+            $config->setUseLazyGhostObject(true);
+        }
+
+        if ($config->isNativeLazyObjectEnabled()) {
+            NativeLazyObjectFactory::enableTracking();
+        }
+
+        return DocumentManager::create(null, $config);
     }
 
     protected function getServerVersion(): string
