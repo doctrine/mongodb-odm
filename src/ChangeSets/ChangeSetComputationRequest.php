@@ -14,9 +14,12 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 final class ChangeSetComputationRequest
 {
     /**
-     * @param ClassMetadata<object>     $class
+     * @param ClassMetadata<T>          $class
+     * @param T                         $document
      * @param array<string, mixed>|null $originalData null means the document has no snapshot yet (i.e. it is new)
      * @param array<string, mixed>      $actualData   the document's current in-memory field values
+     *
+     * @template T of object = object
      */
     public function __construct(
         public readonly ClassMetadata $class,
