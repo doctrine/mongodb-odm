@@ -52,7 +52,11 @@ final class ChangeSetComputer
      */
     public function computeChangeSet(ChangeSetComputationRequest $request, Closure $isCollectionScheduledForDeletion): ChangeSetComputationResult
     {
-        $changeSet     = $this->computeChangeSets([$request], $isCollectionScheduledForDeletion)[$request->document];
+        // Computes directly rather than through the batch computeChangeSets()
+        // entry point, which has no caller in this single-document form yet:
+        // that would allocate a one-entry SplObjectStorage on every call, for
+        // every document, on every flush.
+        $changeSet     = $this->computeSingleChangeSet($request, $isCollectionScheduledForDeletion);
         $isNewDocument = $request->originalData === null;
 
         if ($isNewDocument || $changeSet->isEmpty()) {
