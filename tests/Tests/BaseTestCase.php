@@ -201,6 +201,7 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB('doctrine_odm_metadata_only_test');
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
+        $config->setTypeProvider(new TypeRegistry());
 
         if ($_ENV['USE_NATIVE_LAZY_OBJECT']) {
             $config->setUseNativeLazyObject(true);
