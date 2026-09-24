@@ -7,13 +7,9 @@ namespace Doctrine\ODM\MongoDB\Persisters;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
-use Doctrine\ODM\MongoDB\Iterator\HydratingIterator;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\LockException;
-use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\CriteriaPreparer;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -21,7 +17,6 @@ use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
-use MongoDB\Driver\CursorInterface;
 use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Session;
@@ -34,8 +29,6 @@ use function array_key_exists;
 use function array_keys;
 use function array_merge;
 use function assert;
-use function is_scalar;
-use function is_string;
 use function spl_object_id;
 use function strpos;
 use function trigger_deprecation;
@@ -89,6 +82,12 @@ final class DocumentPersister
 
     private CollectionLoader $collectionLoader;
 
+    /** @phpstan-var ShardKeyQueryBuilder<T> */
+    private ShardKeyQueryBuilder $shardKeyQueryBuilder;
+
+    /** @phpstan-var DocumentLoader<T> */
+    private DocumentLoader $documentLoader;
+
     /** @phpstan-param ClassMetadata<T> $class */
     public function __construct(
         private PersistenceBuilder $pb,
@@ -98,22 +97,21 @@ final class DocumentPersister
         private ClassMetadata $class,
         ?CriteriaMerger $cm = null,
     ) {
-        $this->cm               = $cm ?: new CriteriaMerger();
-        $this->cp               = $this->uow->getCollectionPersister();
-        $this->criteriaPreparer = new CriteriaPreparer($this->dm, $this->pb, $this->class, $this->cm);
-        $this->collectionLoader = new CollectionLoader($this->dm, $this->uow, $this->hydratorFactory, $this->criteriaPreparer, $this->cm);
+        $this->cm                   = $cm ?: new CriteriaMerger();
+        $this->cp                   = $this->uow->getCollectionPersister();
+        $this->criteriaPreparer     = new CriteriaPreparer($this->dm, $this->pb, $this->class, $this->cm);
+        $this->collectionLoader     = new CollectionLoader($this->dm, $this->uow, $this->hydratorFactory, $this->criteriaPreparer, $this->cm);
+        $this->shardKeyQueryBuilder = new ShardKeyQueryBuilder($this->dm, $this->uow, $this->class, $this->criteriaPreparer);
 
-        if ($class->isEmbeddedDocument || $class->isQueryResultDocument) {
-            return;
+        if (! $class->isEmbeddedDocument && ! $class->isQueryResultDocument) {
+            $this->collection = $dm->getDocumentCollection($class->name);
+
+            if ($class->isFile) {
+                $this->bucket = $dm->getDocumentBucket($class->name);
+            }
         }
 
-        $this->collection = $dm->getDocumentCollection($class->name);
-
-        if (! $class->isFile) {
-            return;
-        }
-
-        $this->bucket = $dm->getDocumentBucket($class->name);
+        $this->documentLoader = new DocumentLoader($this->dm, $this->uow, $this->hydratorFactory, $this->class, $this->criteriaPreparer, $this->shardKeyQueryBuilder, $this->collection);
     }
 
     /** @return array<int, object> */
@@ -274,7 +272,7 @@ final class DocumentPersister
     private function executeUpsert(object $document, array $options): void
     {
         $options['upsert'] = true;
-        $criteria          = $this->getQueryForDocument($document);
+        $criteria          = $this->shardKeyQueryBuilder->getQueryForDocument($document);
 
         $data = $this->pb->prepareUpsertData($document);
 
@@ -350,7 +348,7 @@ final class DocumentPersister
     {
         $update = $this->pb->prepareUpdateData($document);
 
-        $query = $this->getQueryForDocument($document);
+        $query = $this->shardKeyQueryBuilder->getQueryForDocument($document);
 
         foreach (array_keys($query) as $field) {
             unset($update['$set'][$field]);
@@ -422,7 +420,7 @@ final class DocumentPersister
             return;
         }
 
-        $query = $this->getQueryForDocument($document);
+        $query = $this->shardKeyQueryBuilder->getQueryForDocument($document);
 
         if ($this->class->isLockable) {
             $query[$this->class->lockField] = ['$exists' => false];
@@ -443,16 +441,7 @@ final class DocumentPersister
      */
     public function refresh(object $document): void
     {
-        assert($this->collection instanceof Collection);
-        $query = $this->getQueryForDocument($document);
-        $data  = $this->collection->findOne($query);
-        if ($data === null) {
-            throw MongoDBException::cannotRefreshDocument();
-        }
-
-        $data = $this->hydratorFactory->hydrate($document, (array) $data);
-        $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
-        $this->uow->clearDocumentChangeSet($document);
+        $this->documentLoader->refresh($document);
     }
 
     /**
@@ -470,42 +459,10 @@ final class DocumentPersister
      * @return T|null
      *
      * @throws LockException
-     *
-     * @todo Check identity map? loadById method? Try to guess whether
-     *     $criteria is the id?
      */
     public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
     {
-        // TODO: remove this
-        if ($criteria === null || is_scalar($criteria) || $criteria instanceof ObjectId) {
-            $criteria = ['_id' => $criteria];
-        }
-
-        $criteria = $this->criteriaPreparer->prepareQueryOrNewObj($criteria);
-        $criteria = $this->criteriaPreparer->addDiscriminatorToPreparedQuery($criteria);
-        $criteria = $this->criteriaPreparer->addFilterToPreparedQuery($criteria);
-
-        $options = [];
-        if ($sort !== null) {
-            $options['sort'] = $this->criteriaPreparer->prepareSort($sort, ['textScore']);
-        }
-
-        assert($this->collection instanceof Collection);
-        $result = $this->collection->findOne($criteria, $options);
-        $result = $result !== null ? (array) $result : null;
-
-        if ($this->class->isLockable) {
-            $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-            if (isset($result[$lockMapping['name']]) && $result[$lockMapping['name']] === LockMode::PESSIMISTIC_WRITE) {
-                throw LockException::lockFailed($document);
-            }
-        }
-
-        if ($result === null) {
-            return null;
-        }
-
-        return $this->createDocument($result, $document, $hints);
+        return $this->documentLoader->load($criteria, $document, $hints, $lockMode, $sort);
     }
 
     /**
@@ -519,76 +476,7 @@ final class DocumentPersister
      */
     public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
-        $criteria = $this->criteriaPreparer->prepareQueryOrNewObj($criteria);
-        $criteria = $this->criteriaPreparer->addDiscriminatorToPreparedQuery($criteria);
-        $criteria = $this->criteriaPreparer->addFilterToPreparedQuery($criteria);
-
-        $options = [];
-        if ($sort !== null) {
-            $options['sort'] = $this->criteriaPreparer->prepareSort($sort, ['textScore']);
-        }
-
-        if ($limit !== null) {
-            $options['limit'] = $limit;
-        }
-
-        if ($skip !== null) {
-            $options['skip'] = $skip;
-        }
-
-        assert($this->collection instanceof Collection);
-        $baseCursor = $this->collection->find($criteria, $options);
-
-        return $this->wrapCursor($baseCursor);
-    }
-
-    /**
-     * @return array<string, mixed>
-     *
-     * @throws MongoDBException
-     */
-    private function getShardKeyQuery(object $document): array
-    {
-        if (! $this->class->isSharded()) {
-            return [];
-        }
-
-        $shardKey = $this->class->getShardKey();
-        $keys     = array_keys($shardKey['keys']);
-        $data     = $this->uow->getDocumentActualData($document);
-
-        $shardKeyQueryPart = [];
-        foreach ($keys as $key) {
-            assert(is_string($key));
-            $mapping = $this->class->getFieldMappingByDbFieldName($key);
-            $this->guardMissingShardKey($document, $key, $data);
-
-            if (isset($mapping['association']) && $mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $reference = $this->criteriaPreparer->prepareReference(
-                    $key,
-                    $data[$mapping['fieldName']],
-                    $mapping,
-                    false,
-                );
-                foreach ($reference as $keyValue) {
-                    $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
-                }
-            } else {
-                $shardKeyQueryPart[$key] = $this->class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($data[$mapping['fieldName']]);
-            }
-        }
-
-        return $shardKeyQueryPart;
-    }
-
-    /**
-     * Wraps the supplied base cursor in the corresponding ODM class.
-     *
-     * @return Iterator<T>
-     */
-    private function wrapCursor(CursorInterface $baseCursor): Iterator
-    {
-        return new CachingIterator(new HydratingIterator($baseCursor, $this->dm->getUnitOfWork(), $this->class));
+        return $this->documentLoader->loadAll($criteria, $sort, $limit, $skip);
     }
 
     /**
@@ -596,10 +484,7 @@ final class DocumentPersister
      */
     public function exists(object $document): bool
     {
-        $id = $this->class->getIdentifierObject($document);
-        assert($this->collection instanceof Collection);
-
-        return (bool) $this->collection->findOne(['_id' => $id], ['_id']);
+        return $this->documentLoader->exists($document);
     }
 
     /**
@@ -607,12 +492,7 @@ final class DocumentPersister
      */
     public function lock(object $document, int $lockMode): void
     {
-        $id          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
-        $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
-        $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        assert($this->collection instanceof Collection);
-        $this->collection->updateOne($criteria, ['$set' => [$lockMapping['name'] => $lockMode]]);
-        $this->class->propertyAccessors[$this->class->lockField]->setValue($document, $lockMode);
+        $this->documentLoader->lock($document, $lockMode);
     }
 
     /**
@@ -620,35 +500,7 @@ final class DocumentPersister
      */
     public function unlock(object $document): void
     {
-        $id          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
-        $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
-        $lockMapping = $this->class->fieldMappings[$this->class->lockField];
-        assert($this->collection instanceof Collection);
-        $this->collection->updateOne($criteria, ['$unset' => [$lockMapping['name'] => true]]);
-        $this->class->propertyAccessors[$this->class->lockField]->setValue($document, null);
-    }
-
-    /**
-     * Creates or fills a single document object from an query result.
-     *
-     * @param array<string, mixed> $result   The query result.
-     * @param object|null          $document The document object to fill, if any.
-     * @param array                $hints    Hints for document creation.
-     * @phpstan-param Hints $hints
-     * @phpstan-param T|null $document
-     *
-     * @return object The filled and managed document object.
-     * @phpstan-return T
-     */
-    private function createDocument(array $result, ?object $document = null, array $hints = []): object
-    {
-        if ($document !== null) {
-            $hints[Query::HINT_REFRESH] = true;
-            $id                         = $this->class->getPHPIdentifierValue($result['_id']);
-            $this->uow->registerManaged($document, $id, $result);
-        }
-
-        return $this->uow->getOrCreateDocument($this->class->name, $result, $hints, $document);
+        $this->documentLoader->unlock($document);
     }
 
     /**
@@ -693,47 +545,6 @@ final class DocumentPersister
         }
 
         $this->cp->update($document, $collections, $options);
-    }
-
-    /**
-     * If the document is new, ignore shard key field value, otherwise throw an
-     * exception. Also, shard key field should be present in actual document
-     * data.
-     *
-     * @param array<string, mixed> $actualDocumentData
-     *
-     * @throws MongoDBException
-     */
-    private function guardMissingShardKey(object $document, string $shardKeyField, array $actualDocumentData): void
-    {
-        $dcs      = $this->uow->getDocumentChangeSet($document);
-        $isUpdate = $this->uow->isScheduledForUpdate($document);
-
-        $fieldMapping = $this->class->getFieldMappingByDbFieldName($shardKeyField);
-        $fieldName    = $fieldMapping['fieldName'];
-
-        if ($isUpdate && isset($dcs[$fieldName]) && $dcs[$fieldName][0] !== $dcs[$fieldName][1]) {
-            throw MongoDBException::shardKeyFieldCannotBeChanged($shardKeyField, $this->class->getName());
-        }
-
-        if (! isset($actualDocumentData[$fieldName])) {
-            throw MongoDBException::shardKeyFieldMissing($shardKeyField, $this->class->getName());
-        }
-    }
-
-    /**
-     * Get shard key aware query for single document.
-     *
-     * @return array<string, mixed>
-     */
-    private function getQueryForDocument(object $document): array
-    {
-        $id = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
-        $id = $this->class->getDatabaseIdentifierValue($id);
-
-        $shardKeyQueryPart = $this->getShardKeyQuery($document);
-
-        return array_merge(['_id' => $id], $shardKeyQueryPart);
     }
 
     /**

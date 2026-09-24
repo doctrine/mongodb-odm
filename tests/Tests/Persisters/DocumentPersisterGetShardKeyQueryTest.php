@@ -12,9 +12,24 @@ use MongoDB\BSON\Binary;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use ReflectionMethod;
+use ReflectionProperty;
 
 class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 {
+    /**
+     * @phpstan-param class-string $className
+     *
+     * @return array{0: object, 1: ReflectionMethod}
+     */
+    private function getShardKeyQueryBuilder(string $className): array
+    {
+        $persister            = $this->uow->getDocumentPersister($className);
+        $property             = new ReflectionProperty($persister, 'shardKeyQueryBuilder');
+        $shardKeyQueryBuilder = $property->getValue($persister);
+
+        return [$shardKeyQueryBuilder, new ReflectionMethod($shardKeyQueryBuilder, 'getShardKeyQuery')];
+    }
+
     public function testGetShardKeyQueryScalars(): void
     {
         $o         = new ShardedByScalars();
@@ -23,13 +38,11 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o->bool   = true;
         $o->float  = 1.2;
 
-        $persister = $this->uow->getDocumentPersister($o::class);
-
-        $method = new ReflectionMethod($persister, 'getShardKeyQuery');
+        [$shardKeyQueryBuilder, $method] = $this->getShardKeyQueryBuilder($o::class);
 
         self::assertSame(
             ['int' => $o->int, 'string' => $o->string, 'bool' => $o->bool, 'float' => $o->float],
-            $method->invoke($persister, $o),
+            $method->invoke($shardKeyQueryBuilder, $o),
         );
     }
 
@@ -40,10 +53,8 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o->bin  = 'hi';
         $o->date = new DateTime();
 
-        $persister = $this->uow->getDocumentPersister($o::class);
-
-        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $shardKeyQuery = $method->invoke($persister, $o);
+        [$shardKeyQueryBuilder, $method] = $this->getShardKeyQueryBuilder($o::class);
+        $shardKeyQuery                   = $method->invoke($shardKeyQueryBuilder, $o);
 
         self::assertInstanceOf(ObjectId::class, $shardKeyQuery['oid']);
         self::assertSame($o->oid, (string) $shardKeyQuery['oid']);
@@ -65,10 +76,8 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o             = new ShardedById();
         $o->identifier = new ObjectId();
 
-        $persister = $this->uow->getDocumentPersister($o::class);
-
-        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $shardKeyQuery = $method->invoke($persister, $o);
+        [$shardKeyQueryBuilder, $method] = $this->getShardKeyQueryBuilder($o::class);
+        $shardKeyQuery                   = $method->invoke($shardKeyQueryBuilder, $o);
 
         self::assertSame(['_id' => $o->identifier], $shardKeyQuery);
     }
@@ -101,10 +110,8 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
 
         $this->dm->persist($o->reference);
 
-        $persister = $this->uow->getDocumentPersister($o::class);
-
-        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $shardKeyQuery = $method->invoke($persister, $o);
+        [$shardKeyQueryBuilder, $method] = $this->getShardKeyQueryBuilder($o::class);
+        $shardKeyQuery                   = $method->invoke($shardKeyQueryBuilder, $o);
 
         self::assertSame([
             'reference.$ref' => $this->dm->getDocumentCollection(User::class)->getCollectionName(),
