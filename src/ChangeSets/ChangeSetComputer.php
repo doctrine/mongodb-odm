@@ -93,7 +93,12 @@ final class ChangeSetComputer
 
             if ($class->isSingleValuedEmbed($propName)) {
                 $orphan = $changeSet->getOldValue($propName);
-                if ($orphan !== null) {
+                // A field can be present in the changeset without the value
+                // having actually changed: under NOTIFY tracking, a reused
+                // changeset can carry a field that was set and then set back
+                // to its original value within the same pass. Only a genuine
+                // replacement produces an orphan.
+                if ($orphan !== null && $orphan !== $changeSet->getNewValue($propName)) {
                     $orphansToRemove[] = $orphan;
                 }
 
@@ -102,7 +107,11 @@ final class ChangeSetComputer
 
             if ($class->isSingleValuedReference($propName) && $class->fieldMappings[$propName]['isOwningSide']) {
                 $orphan = $changeSet->getOldValue($propName);
-                if ($orphan !== null && $class->fieldMappings[$propName]['orphanRemoval']) {
+                if (
+                    $orphan !== null
+                    && $orphan !== $changeSet->getNewValue($propName)
+                    && $class->fieldMappings[$propName]['orphanRemoval']
+                ) {
                     $orphansToRemove[] = $orphan;
                 }
 

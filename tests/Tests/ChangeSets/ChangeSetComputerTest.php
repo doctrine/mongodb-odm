@@ -562,6 +562,26 @@ class ChangeSetComputerTest extends TestCase
         self::assertSame([], $result->collectionsToDelete);
     }
 
+    public function testNotifyReusedChangeSetDoesNotOrphanEmbedRevertedToOriginalValue(): void
+    {
+        $class           = $this->getClassMetadata(User::class);
+        $document        = new User();
+        $originalAddress = new Address();
+        $originalData    = ['address' => $originalAddress];
+        $existing        = new ChangeSet($document, $originalData);
+        $existing->recordChange('address', new Address()); // changed...
+        $existing->recordChange('address', $originalAddress); // ...then changed back within the same flush
+
+        $result = $this->computer->computeChangeSet(
+            new ChangeSetComputationRequest($class, $document, $originalData, ['address' => $originalAddress], $existing, true, false),
+            static fn () => false,
+        );
+
+        // The field is still present in the reused changeset (both recordChange()
+        // calls left it there), but old === new, so nothing was actually replaced.
+        self::assertSame([], $result->orphansToRemove);
+    }
+
     private function compute(ChangeSetComputationRequest $request, ?Closure $isCollectionScheduledForDeletion = null): ChangeSet
     {
         $results = $this->computer->computeChangeSets([$request], $isCollectionScheduledForDeletion ?? static fn () => false);
