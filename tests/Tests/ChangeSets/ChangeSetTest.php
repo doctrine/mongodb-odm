@@ -138,4 +138,14 @@ class ChangeSetTest extends TestCase
         self::assertSame('Alice', $existing->getOldValue('name'));
         self::assertSame('Carol', $existing->getNewValue('name'));
     }
+
+    public function testFromChangesBuildsChangeSetWithGivenValues(): void
+    {
+        $document  = new stdClass();
+        $changeSet = ChangeSet::fromChanges($document, ['name' => 'Alice'], ['name' => 'Bob']);
+
+        self::assertSame(['name'], $changeSet->getFieldNames());
+        self::assertSame('Alice', $changeSet->getOldValue('name'));
+        self::assertSame('Bob', $changeSet->getNewValue('name'));
+    }
 }
