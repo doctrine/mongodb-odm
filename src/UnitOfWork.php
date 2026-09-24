@@ -546,14 +546,26 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function setDocumentChangeSet(object $document, array $changeset): void
     {
-        $originalData = [];
+        // Seeded from the document's real snapshot rather than only the
+        // fields $changeset happens to carry: a caller such as
+        // PreUpdateEventArgs::setNewValue() may pass a changeset that only
+        // covers the fields already recorded at that point, and a
+        // truncated snapshot here would make a later merge onto this
+        // instance (see ChangeSetComputer::computeChangeSet()) report a
+        // null old value for every field the merge adds.
+        //
+        // TODO: originalData is still a snapshot copied at construction
+        // time rather than a live view of the document's actual state, so
+        // this class of desync is only closed at this one call site, not
+        // structurally. Revisit alongside the premature-originalData-stamp
+        // issue tracked in applyChangeSet().
+        $originalData = $this->documentRegistry->getOrCreateObjectState($document)->originalData ?? [];
         $newValues    = [];
-        foreach ($changeset as $field => [$oldValue, $newValue]) {
-            $originalData[$field] = $oldValue;
-            $newValues[$field]    = $newValue;
+        foreach ($changeset as $field => [, $newValue]) {
+            $newValues[$field] = $newValue;
         }
 
-        $this->documentChangeSets[$document] = new ChangeSet($document, $originalData, $newValues);
+        $this->documentChangeSets[$document] = ChangeSet::fromChanges($document, $originalData, $newValues);
     }
 
     /**
