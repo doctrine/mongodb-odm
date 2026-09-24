@@ -637,7 +637,7 @@ class Builder
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
         // The persister is needed here to map PHP field names to database field names
-        $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields, Stage\Sort::ALLOWED_META_SORTS));
+        $stage = new Stage\Sort($this, $this->getDocumentPersister()->getCriteriaPreparer()->prepareSort($fields, Stage\Sort::ALLOWED_META_SORTS));
 
         return $this->addStage($stage);
     }
@@ -704,7 +704,7 @@ class Builder
     public function unwind(string $fieldName): Stage\Unwind
     {
         // Fixme: move field name translation to stage
-        $stage = new Stage\Unwind($this, $this->getDocumentPersister()->prepareFieldName($fieldName));
+        $stage = new Stage\Unwind($this, $this->getDocumentPersister()->getCriteriaPreparer()->prepareFieldName($fieldName));
 
         return $this->addStage($stage);
     }
@@ -740,8 +740,8 @@ class Builder
 
         $documentPersister = $this->getDocumentPersister();
 
-        $query = $documentPersister->addDiscriminatorToPreparedQuery($query);
-        $query = $documentPersister->addFilterToPreparedQuery($query);
+        $query = $documentPersister->getCriteriaPreparer()->addDiscriminatorToPreparedQuery($query);
+        $query = $documentPersister->getCriteriaPreparer()->addFilterToPreparedQuery($query);
 
         // An empty array is encoded as a BSON array. We need a BSON document.
         return $query === [] ? (object) $query : $query;

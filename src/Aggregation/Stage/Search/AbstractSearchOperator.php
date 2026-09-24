@@ -80,10 +80,10 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
     protected function prepareFieldPath(string|array $field): string|array
     {
         if (is_array($field)) {
-            return array_map($this->persister->prepareFieldName(...), $field);
+            return array_map($this->persister->getCriteriaPreparer()->prepareFieldName(...), $field);
         }
 
-        return $this->persister->prepareFieldName($field);
+        return $this->persister->getCriteriaPreparer()->prepareFieldName($field);
     }
 
     /**
@@ -93,7 +93,7 @@ abstract class AbstractSearchOperator extends Stage implements SearchOperator
      */
     protected function prepareDocuments(array $documents): array
     {
-        return array_map($this->persister->prepareQueryOrNewObj(...), $documents);
+        return array_map($this->persister->getCriteriaPreparer()->prepareQueryOrNewObj(...), $documents);
     }
 
     protected function getDocumentPersister(): DocumentPersister

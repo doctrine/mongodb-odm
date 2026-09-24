@@ -26,7 +26,6 @@ use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
-use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
@@ -174,6 +173,18 @@ final class DocumentPersister
     public function getClassMetadata(): ClassMetadata
     {
         return $this->class;
+    }
+
+    /**
+     * Gets the CriteriaPreparer instance used by this persister.
+     *
+     * @internal
+     *
+     * @phpstan-return CriteriaPreparer<T>
+     */
+    public function getCriteriaPreparer(): CriteriaPreparer
+    {
+        return $this->criteriaPreparer;
     }
 
     /**
@@ -480,13 +491,13 @@ final class DocumentPersister
             $criteria = ['_id' => $criteria];
         }
 
-        $criteria = $this->prepareQueryOrNewObj($criteria);
-        $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
-        $criteria = $this->addFilterToPreparedQuery($criteria);
+        $criteria = $this->criteriaPreparer->prepareQueryOrNewObj($criteria);
+        $criteria = $this->criteriaPreparer->addDiscriminatorToPreparedQuery($criteria);
+        $criteria = $this->criteriaPreparer->addFilterToPreparedQuery($criteria);
 
         $options = [];
         if ($sort !== null) {
-            $options['sort'] = $this->prepareSort($sort, ['textScore']);
+            $options['sort'] = $this->criteriaPreparer->prepareSort($sort, ['textScore']);
         }
 
         assert($this->collection instanceof Collection);
@@ -518,13 +529,13 @@ final class DocumentPersister
      */
     public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
-        $criteria = $this->prepareQueryOrNewObj($criteria);
-        $criteria = $this->addDiscriminatorToPreparedQuery($criteria);
-        $criteria = $this->addFilterToPreparedQuery($criteria);
+        $criteria = $this->criteriaPreparer->prepareQueryOrNewObj($criteria);
+        $criteria = $this->criteriaPreparer->addDiscriminatorToPreparedQuery($criteria);
+        $criteria = $this->criteriaPreparer->addFilterToPreparedQuery($criteria);
 
         $options = [];
         if ($sort !== null) {
-            $options['sort'] = $this->prepareSort($sort, ['textScore']);
+            $options['sort'] = $this->criteriaPreparer->prepareSort($sort, ['textScore']);
         }
 
         if ($limit !== null) {
@@ -771,11 +782,11 @@ final class DocumentPersister
                 $this->dm->getFilterCollection()->getFilterCriteria($class),
                 $mapping['criteria'] ?? [],
             );
-            $criteria        = $this->uow->getDocumentPersister($className)->prepareQueryOrNewObj($criteria);
+            $criteria        = $this->uow->getCriteriaPreparer($className)->prepareQueryOrNewObj($criteria);
 
             $options = [];
             if (isset($mapping['sort'])) {
-                $options['sort'] = $this->prepareSort($mapping['sort']);
+                $options['sort'] = $this->criteriaPreparer->prepareSort($mapping['sort']);
             }
 
             if (isset($mapping['limit'])) {
@@ -842,7 +853,7 @@ final class DocumentPersister
             $this->dm->getFilterCollection()->getFilterCriteria($targetClass),
             $mapping['criteria'] ?? [],
         );
-        $criteria = $this->uow->getDocumentPersister($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
+        $criteria = $this->uow->getCriteriaPreparer($mapping['targetDocument'])->prepareQueryOrNewObj($criteria);
         $qb       = $this->dm->createQueryBuilder($mapping['targetDocument'])
             ->setQueryArray($criteria);
 
@@ -909,96 +920,6 @@ final class DocumentPersister
         }
 
         return $cursor;
-    }
-
-    /**
-     * Prepare a projection array by converting keys, which are PHP property
-     * names, to MongoDB field names.
-     *
-     * @param array<string, mixed> $fields
-     *
-     * @return array<string, mixed>
-     */
-    public function prepareProjection(array $fields): array
-    {
-        return $this->criteriaPreparer->prepareProjection($fields);
-    }
-
-    /**
-     * Prepare a sort specification array by converting keys to MongoDB field
-     * names and changing direction strings to int.
-     *
-     * @param array<string, int|string|SortDirection|array<string, string>> $fields
-     * @param list<string>                                                  $allowedMetaSort
-     * @phpstan-param SortShape $fields
-     *
-     * @phpstan-return array<string, -1|1|SortMeta>
-     *
-     * @throws InvalidArgumentException if a sort direction is invalid.
-     */
-    public function prepareSort(array $fields, array $allowedMetaSort = []): array
-    {
-        return $this->criteriaPreparer->prepareSort($fields, $allowedMetaSort);
-    }
-
-    /**
-     * Prepare a mongodb field name and convert the PHP property names to
-     * MongoDB field names.
-     */
-    public function prepareFieldName(string $fieldName): string
-    {
-        return $this->criteriaPreparer->prepareFieldName($fieldName);
-    }
-
-    /**
-     * Adds discriminator criteria to an already-prepared query.
-     *
-     * If the class we're querying has a discriminator field set, we add all
-     * possible discriminator values to the query. The list of possible
-     * discriminator values is based on the discriminatorValue of the class
-     * itself as well as those of all its subclasses.
-     *
-     * This method should be used once for query criteria and not be used for
-     * nested expressions. It should be called before
-     * {@link DocumentPerister::addFilterToPreparedQuery()}.
-     *
-     * @param array<string, mixed> $preparedQuery
-     *
-     * @return array<string, mixed>
-     */
-    public function addDiscriminatorToPreparedQuery(array $preparedQuery): array
-    {
-        return $this->criteriaPreparer->addDiscriminatorToPreparedQuery($preparedQuery);
-    }
-
-    /**
-     * Adds filter criteria to an already-prepared query.
-     *
-     * This method should be used once for query criteria and not be used for
-     * nested expressions. It should be called after
-     * {@link DocumentPerister::addDiscriminatorToPreparedQuery()}.
-     *
-     * @param array<string, mixed> $preparedQuery
-     *
-     * @return array<string, mixed>
-     */
-    public function addFilterToPreparedQuery(array $preparedQuery): array
-    {
-        return $this->criteriaPreparer->addFilterToPreparedQuery($preparedQuery);
-    }
-
-    /**
-     * Prepares the query criteria or new document object.
-     *
-     * PHP field names and types will be converted to those used by MongoDB.
-     *
-     * @param array<string|int, mixed> $query
-     *
-     * @return array<string, mixed>
-     */
-    public function prepareQueryOrNewObj(array $query, bool $isNewObj = false): array
-    {
-        return $this->criteriaPreparer->prepareQueryOrNewObj($query, $isNewObj);
     }
 
     /** @param array<string, mixed> $options */

@@ -249,7 +249,7 @@ final class SchemaManager
             ];
 
             foreach ($index['keys'] as $key => $value) {
-                $key = $persister->prepareFieldName($key);
+                $key = $persister->getCriteriaPreparer()->prepareFieldName($key);
                 if ($class->hasField($key)) {
                     $mapping                            = $class->getFieldMapping($key);
                     $newIndex['keys'][$mapping['name']] = $value;
@@ -594,7 +594,7 @@ final class SchemaManager
                 // Vector Search Index, field names in 'path' parameter
                 $fields = [];
                 foreach ($definition['fields'] as $field) {
-                    $key = $persister->prepareFieldName($field['path']);
+                    $key = $persister->getCriteriaPreparer()->prepareFieldName($field['path']);
                     if ($class->hasField($key)) {
                         $field['path'] = $class->getFieldMapping($key)['name'];
                     } else {
@@ -609,7 +609,7 @@ final class SchemaManager
                 // Search Index with fields mappings, field names as keys
                 $fields = [];
                 foreach ($definition['mappings']['fields'] as $name => $field) {
-                    $key = $persister->prepareFieldName($name);
+                    $key = $persister->getCriteriaPreparer()->prepareFieldName($name);
                     if ($class->hasField($key)) {
                         $fields[$class->getFieldMapping($key)['name']] = $field;
                     } else {
