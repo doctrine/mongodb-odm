@@ -2759,7 +2759,7 @@ final class UnitOfWork implements PropertyChangedListener
             throw PersistentCollectionException::ownerRequiredToLoadCollection();
         }
 
-        $this->getDocumentPersister(get_class($collection->getOwner()))->loadCollection($collection);
+        $this->getDocumentPersister(get_class($collection->getOwner()))->getCollectionLoader()->loadCollection($collection);
         $this->lifecycleEventManager->postCollectionLoad($collection);
     }
 
