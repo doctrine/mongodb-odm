@@ -519,7 +519,12 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function getDocumentChangeSet(object $document): array
     {
-        return $this->getChangeSet($document)->toArray();
+        // Reads the stored ChangeSet directly rather than going through
+        // getChangeSet(), which clones for its own, different contract
+        // (a detached instance callers may mutate). toArray() already
+        // returns a fresh array, so that clone would be pure overhead on
+        // this hot path (called per document, per persist operation).
+        return ($this->documentChangeSets[$document] ?? null)?->toArray() ?? [];
     }
 
     /**
@@ -528,7 +533,10 @@ final class UnitOfWork implements PropertyChangedListener
      * Always returns an instance detached from the one (if any) stored
      * internally: mutating the returned instance (e.g. via
      * {@see ChangeSet::recordChange()}) has no effect on the UnitOfWork's own
-     * bookkeeping.
+     * bookkeeping. That guarantee costs a clone on every call; see #3066
+     * for whether that is worth optimizing further. Callers that don't need
+     * a detached ChangeSet (e.g. only checking whether one is empty) should
+     * read {@see self::$documentChangeSets} directly instead.
      */
     public function getChangeSet(object $document): ChangeSet
     {
@@ -1174,7 +1182,10 @@ final class UnitOfWork implements PropertyChangedListener
         foreach ($documents as $oid => $document) {
             $this->lifecycleEventManager->preUpdate($class, $document, $options['session'] ?? null);
 
-            if (! $this->getChangeSet($document)->isEmpty() || $this->hasScheduledCollections($document)) {
+            // Avoids getChangeSet()'s clone: only whether there is a change
+            // matters here, not a detached instance to hand out.
+            $changeSet = $this->documentChangeSets[$document] ?? null;
+            if (($changeSet !== null && ! $changeSet->isEmpty()) || $this->hasScheduledCollections($document)) {
                 $persister->update($document, $options);
             }
 
