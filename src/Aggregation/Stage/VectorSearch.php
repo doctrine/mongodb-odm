@@ -87,7 +87,7 @@ class VectorSearch extends Stage
         }
 
         if ($this->path !== null) {
-            $params['path'] = $this->persister->prepareFieldName($this->path);
+            $params['path'] = $this->persister->getCriteriaPreparer()->prepareFieldName($this->path);
         }
 
         if ($this->query !== null) {

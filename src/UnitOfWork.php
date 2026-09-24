@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\CollectionPersister;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
+use Doctrine\ODM\MongoDB\Query\CriteriaPreparer;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
 use Doctrine\ODM\MongoDB\Registry\PersistenceState;
@@ -296,6 +297,22 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         return $this->persisters[$documentName];
+    }
+
+    /**
+     * Get the CriteriaPreparer instance for the given document name.
+     *
+     * @internal
+     *
+     * @param class-string<T> $documentName
+     *
+     * @return CriteriaPreparer<T>
+     *
+     * @template T of object
+     */
+    public function getCriteriaPreparer(string $documentName): CriteriaPreparer
+    {
+        return $this->getDocumentPersister($documentName)->getCriteriaPreparer();
     }
 
     /**

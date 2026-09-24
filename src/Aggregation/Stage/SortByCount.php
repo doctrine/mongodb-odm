@@ -26,7 +26,7 @@ class SortByCount extends Stage
         parent::__construct($builder);
 
         $documentPersister = $dm->getUnitOfWork()->getDocumentPersister($class->name);
-        $this->fieldName   = '$' . $documentPersister->prepareFieldName(substr($fieldName, 1));
+        $this->fieldName   = '$' . $documentPersister->getCriteriaPreparer()->prepareFieldName(substr($fieldName, 1));
     }
 
     /** @phpstan-return SortByCountStageExpression */

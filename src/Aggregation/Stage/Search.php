@@ -106,7 +106,7 @@ class Search extends Stage implements SupportsAllSearchOperators
         }
 
         if ($this->sort) {
-            $params->sort = (object) $this->persister->prepareSort($this->sort, ['searchScore']);
+            $params->sort = (object) $this->persister->getCriteriaPreparer()->prepareSort($this->sort, ['searchScore']);
         }
 
         if ($this->operator !== null) {

@@ -162,7 +162,7 @@ class DocumentPersisterTest extends BaseTestCase
     #[DataProvider('getTestPrepareFieldNameData')]
     public function testPrepareFieldName(string $fieldName, string $expected): void
     {
-        self::assertEquals($expected, $this->documentPersister->prepareFieldName($fieldName));
+        self::assertEquals($expected, $this->documentPersister->getCriteriaPreparer()->prepareFieldName($fieldName));
     }
 
     public static function getTestPrepareFieldNameData(): array
@@ -218,7 +218,7 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['_id' => $hashId];
         $expected = ['_id' => (object) $hashId];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     /** @param array<array-key, string> $hashId */
@@ -231,27 +231,27 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['_id' => ['$exists' => true]];
         $expected = ['_id' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$elemMatch' => $hashId]];
         $expected = ['_id' => ['$elemMatch' => $hashId]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$in' => [$hashId]]];
         $expected = ['_id' => ['$in' => [(object) $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['_id' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['_id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['_id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -267,7 +267,7 @@ class DocumentPersisterTest extends BaseTestCase
 
         self::assertEquals(
             $expected,
-            $documentPersister->prepareQueryOrNewObj($query),
+            $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($query),
         );
     }
 
@@ -283,7 +283,7 @@ class DocumentPersisterTest extends BaseTestCase
 
         self::assertEquals(
             $expected,
-            $documentPersister->prepareQueryOrNewObj($query),
+            $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($query),
         );
     }
 
@@ -306,32 +306,32 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['simpleRef' => (string) $id];
         $expected = ['simpleRef' => $id];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$exists' => true]];
         $expected = ['simpleRef' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$elemMatch' => (string) $id]];
         $expected = ['simpleRef' => ['$elemMatch' => $id]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$in' => [(string) $id]]];
         $expected = ['simpleRef' => ['$in' => [$id]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $id]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['simpleRef' => ['$not' => ['$in' => [$id]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     public static function queryProviderForCustomTypeId(): Generator
@@ -422,32 +422,32 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['simpleRef' => $hashId];
         $expected = ['simpleRef' => (object) $hashId];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$exists' => true]];
         $expected = ['simpleRef' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$elemMatch' => $hashId]];
         $expected = ['simpleRef' => ['$elemMatch' => $hashId]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$in' => [$hashId]]];
         $expected = ['simpleRef' => ['$in' => [(object) $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['simpleRef' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['simpleRef' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['simpleRef' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     public function testPrepareQueryOrNewObjWithDBRefReferenceToTargetDocumentWithNormalIdType(): void
@@ -460,32 +460,32 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['complexRef.id' => (string) $id];
         $expected = ['complexRef.$id' => $id];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$exists' => true]];
         $expected = ['complexRef.$id' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$elemMatch' => (string) $id]];
         $expected = ['complexRef.$id' => ['$elemMatch' => $id]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$in' => [(string) $id]]];
         $expected = ['complexRef.$id' => ['$in' => [$id]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $id]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [$id]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     /** @param array<array-key, string> $hashId */
@@ -498,32 +498,32 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['complexRef.id' => $hashId];
         $expected = ['complexRef.$id' => (object) $hashId];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$exists' => true]];
         $expected = ['complexRef.$id' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$elemMatch' => $hashId]];
         $expected = ['complexRef.$id' => ['$elemMatch' => $hashId]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$in' => [$hashId]]];
         $expected = ['complexRef.$id' => ['$in' => [(object) $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['complexRef.$id' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['complexRef.id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['complexRef.$id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     /**
@@ -538,7 +538,7 @@ class DocumentPersisterTest extends BaseTestCase
 
         self::assertEquals(
             $expected,
-            $documentPersister->prepareQueryOrNewObj($query),
+            $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($query),
         );
     }
 
@@ -575,32 +575,32 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['embeddedRef.id' => (string) $id];
         $expected = ['embeddedRef.id' => $id];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$exists' => true]];
         $expected = ['embeddedRef.id' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$elemMatch' => (string) $id]];
         $expected = ['embeddedRef.id' => ['$elemMatch' => $id]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$in' => [(string) $id]]];
         $expected = ['embeddedRef.id' => ['$in' => [$id]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => (string) $id]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $id]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$in' => [(string) $id]]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$in' => [$id]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     /** @param array<array-key, string> $hashId */
@@ -613,32 +613,32 @@ class DocumentPersisterTest extends BaseTestCase
         $value    = ['embeddedRef.id' => $hashId];
         $expected = ['embeddedRef.id' => (object) $hashId];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$exists' => true]];
         $expected = ['embeddedRef.id' => ['$exists' => true]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
         $expected = ['embeddedRef.id' => ['$elemMatch' => $hashId]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$in' => [$hashId]]];
         $expected = ['embeddedRef.id' => ['$in' => [(object) $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$elemMatch' => $hashId]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
 
         $value    = ['embeddedRef.id' => ['$not' => ['$in' => [$hashId]]]];
         $expected = ['embeddedRef.id' => ['$not' => ['$in' => [(object) $hashId]]]];
 
-        self::assertEquals($expected, $documentPersister->prepareQueryOrNewObj($value));
+        self::assertEquals($expected, $documentPersister->getCriteriaPreparer()->prepareQueryOrNewObj($value));
     }
 
     public static function dataProviderTestWriteConcern(): array
