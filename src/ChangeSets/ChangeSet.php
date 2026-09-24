@@ -21,20 +21,44 @@ use function sprintf;
  * derives them from the original data snapshot the instance was constructed
  * with, which this class never mutates itself.
  *
+ * TODO: $originalData is a snapshot copied at construction time, not a live
+ * view of the document's actual state. Every caller that builds a ChangeSet
+ * from a partial view of that state (see UnitOfWork::setDocumentChangeSet())
+ * risks the same class of desync bug. Holding a reference to the document's
+ * ManagedObjectState instead would close this structurally, but needs the
+ * insert path (which stamps the object state's originalData immediately
+ * after diffing) reworked first so "old" values don't silently become "new".
+ *
  * @phpstan-type LegacyChangeSet array{mixed, mixed}
  * @phpstan-type LegacyChangeSetArray array<string, LegacyChangeSet>
  */
 final class ChangeSet
 {
-    /**
-     * @param array<string, mixed> $originalData
-     * @param array<string, mixed> $newValues
-     */
+    /** @var array<string, mixed> */
+    private array $newValues = [];
+
+    /** @param array<string, mixed> $originalData */
     public function __construct(
         public readonly object $document,
         private readonly array $originalData,
-        private array $newValues = [],
     ) {
+    }
+
+    /**
+     * Builds a changeset that already carries changes, e.g. from the legacy
+     * array shape passed to {@see \Doctrine\ODM\MongoDB\UnitOfWork::setDocumentChangeSet()}.
+     *
+     * @internal
+     *
+     * @param array<string, mixed> $originalData
+     * @param array<string, mixed> $newValues
+     */
+    public static function fromChanges(object $document, array $originalData, array $newValues): self
+    {
+        $changeSet            = new self($document, $originalData);
+        $changeSet->newValues = $newValues;
+
+        return $changeSet;
     }
 
     public function isEmpty(): bool
