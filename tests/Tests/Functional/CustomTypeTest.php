@@ -10,9 +10,10 @@ use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Exception;
-use PHPUnit\Framework\Attributes\After;
-use ReflectionProperty;
+use InvalidArgumentException;
 
 use function array_map;
 use function array_values;
@@ -27,16 +28,8 @@ class CustomTypeTest extends BaseTestCase
     {
         parent::setUp();
 
-        Type::addType('date_collection', DateCollectionType::class);
-        Type::addType(Language::class, LanguageType::class);
-        Type::addType('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
-    }
-
-    #[After]
-    public function restoreTypeMap(): void
-    {
-        $r = new ReflectionProperty(Type::class, 'typesMap');
-        $r->setValue(null, $r->getDefaultValue());
+        $this->typeRegistry->register('date_collection', new DateCollectionType());
+        $this->typeRegistry->register(Language::class, LanguageType::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -84,24 +77,40 @@ class CustomTypeTest extends BaseTestCase
         self::assertSame('fr', $country->lang->code);
     }
 
-    public function testTypeFromPHPVariable(): void
+    public function testConvertToDatabaseValue(): void
     {
-        $lang = new Language('French', 'fr');
-        $type = Type::getTypeFromPHPVariable($lang);
+        $lang    = new Language('French', 'fr');
+        $guesser = new TypeGuesser($this->typeRegistry);
+        $type    = $guesser->guessTypeFromValue($lang);
         self::assertInstanceOf(LanguageType::class, $type);
 
-        $databaseValue = Type::convertPHPToDatabaseValue($lang);
+        $databaseValue = $guesser->convertToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
     }
 
     public function testNotOverridingClosureToPHPIsDeprecated(): void
     {
-        $type = Type::getType('custom_type_without_closure_to_php');
+        $type = new CustomTypeWithoutClosureToPHP();
 
         $code = $this->captureDeprecationMessages(static fn () => $type->closureToPHP(), $deprecations);
 
         self::assertSame('$return = $value;', $code);
         self::assertSame(['Since doctrine/mongodb-odm 2.16: The method Type::closureToPHP() will change its default implementation in 3.0 to use convertToPHPValue(). Override this method if you need custom behavior before upgrading to 3.0 or use the trait ClosureToPHP to get the upcoming behavior now.'], $deprecations);
+    }
+
+    public function testNoArgConstructorAllowedInCustomTypeRegisteredByClassName(): void
+    {
+        $this->typeRegistry->register('custom_with_constructor', CustomTypeWithConstructor::class);
+
+        self::assertInstanceOf(CustomTypeWithConstructor::class, $this->typeRegistry->get('custom_with_constructor'));
+    }
+
+    public function testRequiredConstructorParametersNotAllowedInCustomTypeRegisteredByClassName(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Type class "Doctrine\ODM\MongoDB\Tests\Functional\CustomTypeWithRequiredConstructor" must not have a constructor with required parameters to be registered by class name. Register an instance of the class instead.');
+
+        $this->typeRegistry->register('custom_with_required_constructor', CustomTypeWithRequiredConstructor::class);
     }
 }
 
@@ -122,7 +131,8 @@ class DateCollectionType extends Type
             throw new CustomTypeException('Array expected.');
         }
 
-        $converter = Type::getType('date');
+        $registry  = new TypeRegistry();
+        $converter = $registry->get('date');
 
         $value = array_map(static fn ($date) => $converter->convertToDatabaseValue($date), array_values($value));
 
@@ -139,7 +149,8 @@ class DateCollectionType extends Type
             throw new CustomTypeException('Array expected.');
         }
 
-        $converter = Type::getType('date');
+        $registry  = new TypeRegistry();
+        $converter = $registry->get('date');
 
         $value = array_map(static fn ($date) => $converter->convertToPHPValue($date), array_values($value));
 
@@ -215,4 +226,18 @@ class LanguageType extends Type
 
 class CustomTypeWithoutClosureToPHP extends Type
 {
+}
+
+class CustomTypeWithConstructor extends Type
+{
+    public function __construct()
+    {
+    }
+}
+
+class CustomTypeWithRequiredConstructor extends Type
+{
+    public function __construct(private string $required)
+    {
+    }
 }

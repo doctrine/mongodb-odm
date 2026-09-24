@@ -18,7 +18,6 @@ use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
 use Doctrine\ODM\MongoDB\Registry\PersistenceState;
-use Doctrine\ODM\MongoDB\Types\DateType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
@@ -27,6 +26,7 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -758,15 +758,18 @@ final class UnitOfWork implements PropertyChangedListener
 
                 // skip equivalent date values
                 if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                    $dateType = Type::getType('date');
-                    assert($dateType instanceof DateType);
+                    $dateType      = $class->getFieldType($propName);
                     $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
                     $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
-                    // We rely on loose comparison to compare every field (including microseconds)
-                    // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-                    if ($dbOrgValue == $dbActualValue) {
-                        continue;
+                    // Loose comparison is only safe when both values are UTC dates. A custom
+                    // type overriding "date" may produce a different database representation.
+                    if ($dbOrgValue instanceof UTCDateTime && $dbActualValue instanceof UTCDateTime) {
+                        // We rely on loose comparison to compare every field
+                        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+                        if ($dbOrgValue == $dbActualValue) {
+                            continue;
+                        }
                     }
                 }
 
