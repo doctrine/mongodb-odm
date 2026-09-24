@@ -871,6 +871,43 @@ class PersistenceBuilderTest extends BaseTestCase
         );
     }
 
+    public function testPrepareCollectionInsertPayloadHandlesEmbedManyMapping(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $phone1 = new Phonenumber('111');
+        $phone2 = new Phonenumber('222');
+
+        $coll = $user->getPhonenumbers();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        $payload = $this->pb->prepareCollectionInsertPayload($coll, [3 => $phone1, 7 => $phone2]);
+
+        self::assertEquals(
+            [
+                '$each' => [
+                    $this->pb->prepareEmbeddedDocumentValue($coll->getMapping(), $phone1),
+                    $this->pb->prepareEmbeddedDocumentValue($coll->getMapping(), $phone2),
+                ],
+            ],
+            $payload,
+        );
+    }
+
+    public function testPrepareCollectionInsertPayloadReturnsEmptyEachForEmptyDiff(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $coll = $user->getGroups();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        self::assertSame(['$each' => []], $this->pb->prepareCollectionInsertPayload($coll, []));
+    }
+
     private function setProtectedProperty(object $object, string $property, mixed $value): void
     {
         (new ReflectionProperty($object, $property))->setValue($object, $value);
