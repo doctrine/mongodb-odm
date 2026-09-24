@@ -56,7 +56,7 @@ class NativeLazyObjectFactory implements ProxyFactory
             $identifier,
             $metadata,
         ): void {
-            $original = $this->unitOfWork->getDocumentPersister($metadata->name)->load([$metadata->identifier => $identifier], $object);
+            $original = $this->unitOfWork->getDocumentLoader($metadata->name)->load([$metadata->identifier => $identifier], $object);
 
             if ($object instanceof NotifyPropertyChanged) {
                 $object->addPropertyChangedListener($this->unitOfWork);

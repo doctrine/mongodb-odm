@@ -70,8 +70,8 @@ class DocumentPersisterTest extends BaseTestCase
     public function testExistsReturnsTrueForExistentDocuments(): void
     {
         foreach (['a', 'b', 'c', 'd'] as $name) {
-            $document = $this->documentPersister->load(['name' => $name]);
-            self::assertTrue($this->documentPersister->exists($document));
+            $document = $this->documentPersister->getDocumentLoader()->load(['name' => $name]);
+            self::assertTrue($this->documentPersister->getDocumentLoader()->exists($document));
         }
     }
 
@@ -80,7 +80,7 @@ class DocumentPersisterTest extends BaseTestCase
         $document     = new DocumentPersisterTestDocument();
         $document->id = new ObjectId();
 
-        self::assertFalse($this->documentPersister->exists($document));
+        self::assertFalse($this->documentPersister->getDocumentLoader()->exists($document));
     }
 
     public function testLoadPreparesCriteriaAndSort(): void
@@ -88,7 +88,7 @@ class DocumentPersisterTest extends BaseTestCase
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => -1];
 
-        $document = $this->documentPersister->load($criteria, null, [], 0, $sort);
+        $document = $this->documentPersister->getDocumentLoader()->load($criteria, null, [], 0, $sort);
 
         self::assertInstanceOf($this->class, $document);
         self::assertEquals('b', $document->name);
@@ -99,7 +99,7 @@ class DocumentPersisterTest extends BaseTestCase
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => -1];
 
-        $cursor    = $this->documentPersister->loadAll($criteria, $sort);
+        $cursor    = $this->documentPersister->getDocumentLoader()->loadAll($criteria, $sort);
         $documents = $cursor->toArray();
 
         self::assertInstanceOf($this->class, $documents[0]);
@@ -113,7 +113,7 @@ class DocumentPersisterTest extends BaseTestCase
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => SortDirection::Descending];
 
-        $document = $this->documentPersister->load($criteria, null, [], 0, $sort);
+        $document = $this->documentPersister->getDocumentLoader()->load($criteria, null, [], 0, $sort);
 
         self::assertInstanceOf($this->class, $document);
         self::assertEquals('b', $document->name);
@@ -124,7 +124,7 @@ class DocumentPersisterTest extends BaseTestCase
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => SortDirection::Descending];
 
-        $cursor    = $this->documentPersister->loadAll($criteria, $sort);
+        $cursor    = $this->documentPersister->getDocumentLoader()->loadAll($criteria, $sort);
         $documents = $cursor->toArray();
 
         self::assertInstanceOf($this->class, $documents[0]);
@@ -138,7 +138,7 @@ class DocumentPersisterTest extends BaseTestCase
         $criteria = ['name' => ['$in' => ['a', 'b']]];
         $sort     = ['name' => SortDirection::Ascending];
 
-        $cursor    = $this->documentPersister->loadAll($criteria, $sort);
+        $cursor    = $this->documentPersister->getDocumentLoader()->loadAll($criteria, $sort);
         $documents = $cursor->toArray();
 
         self::assertInstanceOf($this->class, $documents[0]);
@@ -151,7 +151,7 @@ class DocumentPersisterTest extends BaseTestCase
     {
         $sort = ['name' => -1];
 
-        $cursor    = $this->documentPersister->loadAll([], $sort, 1, 2);
+        $cursor    = $this->documentPersister->getDocumentLoader()->loadAll([], $sort, 1, 2);
         $documents = $cursor->toArray();
 
         self::assertInstanceOf($this->class, $documents[0]);
