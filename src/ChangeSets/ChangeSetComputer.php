@@ -194,7 +194,10 @@ final class ChangeSetComputer
 
         // Read-only documents never produce a changeset: whatever their fields
         // say now is irrelevant. We just echo back whatever changeset (if any)
-        // the caller already had.
+        // the caller already had. UnitOfWork::applyChangeSet() never reaches
+        // this with an existing snapshot (it returns early for a read-only
+        // class that already has one), so this branch only matters for a
+        // direct caller of this stateless computer.
         if ($class->isReadOnly) {
             return $request->existingChangeSet ?? new ChangeSet($document, $request->originalData);
         }

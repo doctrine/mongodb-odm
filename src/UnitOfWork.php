@@ -697,22 +697,11 @@ final class UnitOfWork implements PropertyChangedListener
         $result = $this->changeSetComputer->computeChangeSet($request, $this->isCollectionScheduledForDeletion(...));
 
         if ($result->isNewDocument) {
-            // FIXME: this stamps $actualData as the document's "original" (i.e. persisted)
-            // snapshot before anything has actually been INSERTed. If the insert never
-            // happens (flush fails, the document is later removed from the identity map,
-            // etc.), the snapshot is left describing data that was never written to MongoDB,
-            // and a later diff against it will silently miss changes made in the meantime.
+            // Stamps originalData before the insert is actually persisted; see #3065.
             $objectState->originalData           = $actualData;
             $this->documentChangeSets[$document] = $result->changeSet;
         } elseif (! $result->changeSet->isEmpty()) {
-            // FIXME: same premature snapshot problem as above, but for UPDATEs: this makes
-            // $actualData the new baseline as soon as a diff is computed, before the
-            // corresponding update is (or possibly ever is) sent to MongoDB.
-            // DocumentPersister::update()/executeUpsert() never touch originalData themselves,
-            // so this is the only place it gets refreshed for an existing document — if the
-            // write later fails (LockException, connection error, the flush being aborted by
-            // an event listener) the snapshot is left describing data that was never actually
-            // persisted, and a subsequent diff against it will miss the real remaining changes.
+            // Same premature snapshot problem as above, but for updates; see #3065.
             $objectState->originalData = $actualData;
             $this->scheduleForUpdate($document);
 
