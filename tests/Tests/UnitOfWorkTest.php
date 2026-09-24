@@ -566,6 +566,59 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertEquals([], $this->uow->getDocumentChangeSet($user->getStar()));
     }
 
+    /**
+     * Reproduces the scenario from a PreUpdate listener calling
+     * PreUpdateEventArgs::setNewValue() (which pushes a changeset covering
+     * only the fields recorded so far back into the UnitOfWork via
+     * setDocumentChangeSet()), followed by a second field being changed and
+     * a recompute picking it up. The old value of that second field must
+     * come from the document's real snapshot, not null — a null old value
+     * for an increment-strategy field would corrupt the resulting $inc.
+     */
+    public function testRecomputeAfterSetNewValuePreservesOldValueForFieldAddedByRecompute(): void
+    {
+        $user = new User();
+        $user->setUsername('alice');
+        $user->incrementCount(1);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->uow->setDocumentChangeSet($user, ['username' => ['alice', 'bob']]);
+        $user->setUsername('bob');
+        $user->incrementCount(4); // count: 1 -> 5, as if set by a preUpdate callback
+
+        $classMetadata = $this->dm->getClassMetadata(User::class);
+        $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user);
+
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+
+        self::assertSame(['alice', 'bob'], $changeSet['username']);
+        self::assertSame([1, 5], $changeSet['count']);
+    }
+
+    /**
+     * Change tracking NOTIFY is deprecated; while it's still supported, the
+     * old value it reports must be the document's real original-data
+     * snapshot, never whatever value the notifying setter itself happened
+     * to pass as "old".
+     */
+    public function testNotifyTrackingReportsOldValueFromSnapshotNotFromNotifier(): void
+    {
+        $document = new NotifyChangedDocument();
+        $document->setId(1);
+        $document->setData('initial');
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+
+        $this->uow->propertyChanged($document, 'data', 'not-the-real-old-value', 'changed');
+
+        $changeSet = $this->uow->getDocumentChangeSet($document);
+
+        self::assertSame(['initial', 'changed'], $changeSet['data']);
+    }
+
     public function testCommitsInProgressIsUpdatedOnException(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
