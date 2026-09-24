@@ -371,56 +371,30 @@ final class PersistenceBuilder
     public function prepareUpsertData($document)
     {
         $class     = $this->dm->getClassMetadata($document::class);
-        $changeset = $this->uow->getDocumentChangeSet($document);
+        $changeSet = $this->uow->getChangeSet($document);
 
         $updateData = [];
-        foreach ($changeset as $fieldName => $change) {
+        foreach ($changeSet->getFieldNames() as $fieldName) {
             $mapping = $class->fieldMappings[$fieldName];
-
-            [$old, $new] = $change;
+            $new     = $changeSet->getNewValue($fieldName);
 
             // Fields with a null value should only be written for inserts
             if ($new === null) {
-                if ($mapping['nullable'] === true) {
-                    $updateData['$setOnInsert'][$mapping['name']] = null;
-                }
-
+                $this->applyNullFieldUpsert($updateData, $mapping);
                 continue;
             }
 
             // Scalar fields
             if (! isset($mapping['association'])) {
-                if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
-                    $operator = '$inc';
-                    $type     = $class->getFieldType($fieldName);
-                    assert($type instanceof Incrementable);
-                    $value = $type->convertToDatabaseValue($type->diff($old, $new));
-                } else {
-                    $operator = '$set';
-                    $value    = $class->getFieldType($fieldName)->convertToDatabaseValue($new);
-                }
-
-                $updateData[$operator][$mapping['name']] = $value;
+                $this->applyScalarFieldUpsert($updateData, $class, $mapping, $changeSet->getOldValue($fieldName), $new);
 
             // @EmbedOne
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
-                // If we don't have a new value then do nothing on upsert
-                // If we have a new embedded document then lets set the whole thing
-                if ($this->uow->isScheduledForInsert($new)) {
-                    $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
-                } else {
-                    // Update existing embedded document
-                    $update = $this->prepareUpsertData($new);
-                    foreach ($update as $cmd => $values) {
-                        foreach ($values as $key => $value) {
-                            $updateData[$cmd][$mapping['name'] . '.' . $key] = $value;
-                        }
-                    }
-                }
+                $this->applyEmbedOneFieldUpsert($updateData, $mapping, $new);
 
             // @ReferenceOne
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                $this->applyReferenceOneField($updateData, $mapping, $new);
 
             // @ReferenceMany, @EmbedMany
             } elseif (
@@ -430,25 +404,81 @@ final class PersistenceBuilder
             ) {
                 $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
             }
-            // @EmbedMany and @ReferenceMany are handled by CollectionPersister
+            // @EmbedMany and non-atomic @ReferenceMany are handled by CollectionPersister
         }
 
-        // add discriminator if the class has one
         if (isset($class->discriminatorField)) {
-            $discriminatorValue = $class->discriminatorValue;
-
-            if ($discriminatorValue === null) {
-                if (! empty($class->discriminatorMap)) {
-                    throw MappingException::unlistedClassInDiscriminatorMap($class->name);
-                }
-
-                $discriminatorValue = $class->name;
-            }
-
-            $updateData['$set'][$class->discriminatorField] = $discriminatorValue;
+            $updateData['$set'][$class->discriminatorField] = $this->resolveDiscriminatorValue($class);
         }
 
         return $updateData;
+    }
+
+    /**
+     * A null value is only meaningful for an insert (`$setOnInsert`): an
+     * upsert that matches an existing document must never overwrite one of
+     * its fields back to null just because the in-memory value happens to be
+     * null, so a non-nullable field is skipped entirely rather than unset.
+     *
+     * @param array<string, mixed> $updateData
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyNullFieldUpsert(array &$updateData, array $mapping): void
+    {
+        if ($mapping['nullable'] === true) {
+            $updateData['$setOnInsert'][$mapping['name']] = null;
+        }
+    }
+
+    /**
+     * Identical to {@see self::applyScalarFieldUpdate()}, except an
+     * identifier field is never treated as an increment here: update()
+     * already filters id fields out of its changeset walk before reaching
+     * the scalar branch, but upsertData iterates the raw changeset, which
+     * still contains a newly-assigned id field for a to-be-inserted document.
+     *
+     * @param array<string, mixed> $updateData
+     * @phpstan-param ClassMetadata<object> $class
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyScalarFieldUpsert(array &$updateData, ClassMetadata $class, array $mapping, mixed $old, mixed $new): void
+    {
+        if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
+            $operator = '$inc';
+            $type     = $class->getFieldType($mapping['fieldName']);
+            assert($type instanceof Incrementable);
+            $value = $type->convertToDatabaseValue($type->diff($old, $new));
+        } else {
+            $operator = '$set';
+            $value    = $class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($new);
+        }
+
+        $updateData[$operator][$mapping['name']] = $value;
+    }
+
+    /**
+     * Same shape as {@see self::applyEmbedOneFieldUpdate()}, but recurses
+     * via {@see self::prepareUpsertData()} instead, so a nested embedded
+     * document gets the same insert-vs-update-matching null handling as the
+     * top-level document.
+     *
+     * @param array<string, mixed> $updateData
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyEmbedOneFieldUpsert(array &$updateData, array $mapping, object $new): void
+    {
+        if ($this->uow->isScheduledForInsert($new)) {
+            $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+
+            return;
+        }
+
+        $update = $this->prepareUpsertData($new);
+        foreach ($update as $cmd => $values) {
+            foreach ($values as $key => $value) {
+                $updateData[$cmd][$mapping['name'] . '.' . $key] = $value;
+            }
+        }
     }
 
     /**
