@@ -5,9 +5,31 @@
 `UnitOfWork::getChangeSet(object $document): ChangeSet` is a new method
 returning a `Doctrine\ODM\MongoDB\ChangeSets\ChangeSet` object describing a
 document's pending field changes, as an alternative to the existing
-`getDocumentChangeSet(): array`, which is unaffected and continues to return
-the same `array<string, array{0: mixed, 1: mixed}>` shape as before. This is
-purely additive: no existing method's signature or behavior has changed.
+`getDocumentChangeSet(): array`. `getDocumentChangeSet()`'s return shape is
+unchanged (`array<string, array{0: mixed, 1: mixed}>`), but the values it
+reports for some fields have changed:
+
+- **Change tracking NOTIFY**: the old value reported for a field is now
+  always read from the document's original-data snapshot, never from the
+  `$oldValue` argument a `propertyChanged()` notification carries. If you
+  still use NOTIFY change tracking (deprecated), and rely on
+  `getDocumentChangeSet()`/`PreUpdateEventArgs::getOldValue()` reporting
+  exactly what your setter passed as the old value rather than the
+  document's persisted value, check any code that reads old values for
+  NOTIFY-tracked documents.
+- An embedded document's change bubbling up to its parent's own changeset
+  (a changed embed-one/embed-many child) used to report `[$value, $value]`
+  for the parent's association field — the same instance as both old and
+  new. It now reports the parent's real original-data snapshot value as the
+  old value.
+
+The following previously `@internal` method's signature and behavior also
+changed, for anyone calling it directly despite the annotation:
+
+- `UnitOfWork::clearDocumentChangeSet()` now takes the `object $document`
+  instead of `int $oid`, and `unset()`s the document's changeset instead of
+  replacing it with `[]` — so `isset()`-style checks against the internal
+  changeset map now see it as absent afterwards rather than present-but-empty.
 
 ## Removed previously internal, deprecated `UnitOfWork` methods
 
