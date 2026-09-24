@@ -14,7 +14,6 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\CriteriaPreparer;
 use Doctrine\ODM\MongoDB\Query\Query;
@@ -653,29 +652,13 @@ final class DocumentPersister
     }
 
     /**
-     * Loads a PersistentCollection data. Used in the initialize() method.
+     * Gets the CollectionLoader instance used by this persister.
      *
-     * @param PersistentCollectionInterface<array-key, object> $collection
+     * @internal
      */
-    public function loadCollection(PersistentCollectionInterface $collection): void
+    public function getCollectionLoader(): CollectionLoader
     {
-        $this->collectionLoader->loadCollection($collection);
-    }
-
-    /** @param PersistentCollectionInterface<array-key, object> $collection */
-    public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection): Query
-    {
-        return $this->collectionLoader->createReferenceManyInverseSideQuery($collection);
-    }
-
-    /**
-     * @param PersistentCollectionInterface<array-key, object> $collection
-     *
-     * @return Iterator<object>
-     */
-    public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection): Iterator
-    {
-        return $this->collectionLoader->createReferenceManyWithRepositoryMethodCursor($collection);
+        return $this->collectionLoader;
     }
 
     /** @param array<string, mixed> $options */
