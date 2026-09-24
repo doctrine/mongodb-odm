@@ -1979,6 +1979,7 @@ final class UnitOfWork implements PropertyChangedListener
                     $this->scheduledDocumentDeletions[$oid],
                     $this->scheduledDocumentUpserts[$oid],
                     $this->hasScheduledCollections[$oid],
+                    $this->documentChangeSets[$document],
                 );
                 break;
             case self::STATE_NEW:
