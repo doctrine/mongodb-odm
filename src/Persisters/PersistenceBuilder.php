@@ -158,10 +158,10 @@ final class PersistenceBuilder
     public function prepareUpdateData($document)
     {
         $class     = $this->dm->getClassMetadata($document::class);
-        $changeset = $this->uow->getDocumentChangeSet($document);
+        $changeSet = $this->uow->getChangeSet($document);
 
         $updateData = [];
-        foreach ($changeset as $fieldName => $change) {
+        foreach ($changeSet->getFieldNames() as $fieldName) {
             $mapping = $class->fieldMappings[$fieldName];
 
             // skip non embedded document identifiers
@@ -169,81 +169,187 @@ final class PersistenceBuilder
                 continue;
             }
 
-            [$old, $new] = $change;
+            $new = $changeSet->getNewValue($fieldName);
 
             if ($new === null) {
-                if ($mapping['nullable'] === true) {
-                    $updateData['$set'][$mapping['name']] = null;
-                } else {
-                    $updateData['$unset'][$mapping['name']] = true;
-                }
-
+                $this->applyNullFieldUpdate($updateData, $mapping);
                 continue;
             }
 
             // Scalar fields
             if (! isset($mapping['association'])) {
-                if (isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
-                    $operator = '$inc';
-                    $type     = $class->getFieldType($fieldName);
-                    assert($type instanceof Incrementable);
-                    $value = $type->convertToDatabaseValue($type->diff($old, $new));
-                } else {
-                    $operator = '$set';
-                    $value    = $class->getFieldType($fieldName)->convertToDatabaseValue($new);
-                }
-
-                $updateData[$operator][$mapping['name']] = $value;
+                $this->applyScalarFieldUpdate($updateData, $class, $mapping, $changeSet->getOldValue($fieldName), $new);
 
             // @EmbedOne
             } elseif ($mapping['association'] === ClassMetadata::EMBED_ONE) {
-                // If we have a new embedded document then lets set the whole thing
-                if ($this->uow->isScheduledForInsert($new)) {
-                    $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
-
-                // Update existing embedded document
-                } else {
-                    $update = $this->prepareUpdateData($new);
-                    foreach ($update as $cmd => $values) {
-                        foreach ($values as $key => $value) {
-                            $updateData[$cmd][$mapping['name'] . '.' . $key] = $value;
-                        }
-                    }
-                }
+                $this->applyEmbedOneFieldUpdate($updateData, $mapping, $new);
 
             // @ReferenceMany, @EmbedMany
             } elseif ($mapping['type'] === ClassMetadata::MANY) {
-                if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($new)) {
-                    $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
-                } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($new)) {
-                    $updateData['$unset'][$mapping['name']] = true;
-                    $this->uow->unscheduleCollectionDeletion($new);
-                } elseif (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($old)) {
-                    $updateData['$unset'][$mapping['name']] = true;
-                    $this->uow->unscheduleCollectionDeletion($old);
-                } elseif ($mapping['association'] === ClassMetadata::EMBED_MANY) {
-                    foreach ($new as $key => $embeddedDoc) {
-                        if ($this->uow->isScheduledForInsert($embeddedDoc)) {
-                            continue;
-                        }
-
-                        $update = $this->prepareUpdateData($embeddedDoc);
-                        foreach ($update as $cmd => $values) {
-                            foreach ($values as $name => $value) {
-                                $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
-                            }
-                        }
-                    }
-                }
+                $this->applyManyFieldUpdate($updateData, $mapping, $changeSet->getOldValue($fieldName), $new);
 
             // @ReferenceOne
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
-                $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+                $this->applyReferenceOneField($updateData, $mapping, $new);
             }
         }
 
-        // collections that aren't dirty but could be subject to update are
-        // excluded from change set, let's go through them now
+        $this->applyScheduledCollectionsUpdate($updateData, $document);
+
+        return $updateData;
+    }
+
+    /**
+     * A null value is only ever recorded for a nullable field as an
+     * explicit `$set`; for a non-nullable field, null means the field was
+     * removed from the document entirely, so it's `$unset` instead.
+     *
+     * @param array<string, mixed> $updateData
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyNullFieldUpdate(array &$updateData, array $mapping): void
+    {
+        if ($mapping['nullable'] === true) {
+            $updateData['$set'][$mapping['name']] = null;
+        } else {
+            $updateData['$unset'][$mapping['name']] = true;
+        }
+    }
+
+    /**
+     * An INCREMENT-strategy field is written as the delta between old and
+     * new value via `$inc`, so concurrent writers accumulate rather than
+     * clobber each other; every other scalar field is simply overwritten.
+     *
+     * @param array<string, mixed> $updateData
+     * @phpstan-param ClassMetadata<object> $class
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyScalarFieldUpdate(array &$updateData, ClassMetadata $class, array $mapping, mixed $old, mixed $new): void
+    {
+        if (isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
+            $operator = '$inc';
+            $type     = $class->getFieldType($mapping['fieldName']);
+            assert($type instanceof Incrementable);
+            $value = $type->convertToDatabaseValue($type->diff($old, $new));
+        } else {
+            $operator = '$set';
+            $value    = $class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($new);
+        }
+
+        $updateData[$operator][$mapping['name']] = $value;
+    }
+
+    /**
+     * A newly-created embedded document (not yet persisted anywhere) is
+     * written whole via `$set`; an existing one is diffed recursively via
+     * {@see self::prepareUpdateData()}, and its own `$set`/`$unset` keys are
+     * nested under this field's dot-path.
+     *
+     * @param array<string, mixed> $updateData
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyEmbedOneFieldUpdate(array &$updateData, array $mapping, object $new): void
+    {
+        if ($this->uow->isScheduledForInsert($new)) {
+            $updateData['$set'][$mapping['name']] = $this->prepareEmbeddedDocumentValue($mapping, $new);
+
+            return;
+        }
+
+        $update = $this->prepareUpdateData($new);
+        foreach ($update as $cmd => $values) {
+            foreach ($values as $key => $value) {
+                $updateData[$cmd][$mapping['name'] . '.' . $key] = $value;
+            }
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $updateData
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyManyFieldUpdate(array &$updateData, array $mapping, mixed $old, mixed $new): void
+    {
+        if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($new)) {
+            $updateData['$set'][$mapping['name']] = $this->prepareAssociatedCollectionValue($new, true);
+
+            return;
+        }
+
+        // Either the new or the old collection instance for this field (never
+        // both) may carry a pending deletion; whichever one does needs
+        // unscheduling now that this $unset takes care of it instead.
+        if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($new)) {
+            $updateData['$unset'][$mapping['name']] = true;
+            $this->uow->unscheduleCollectionDeletion($new);
+
+            return;
+        }
+
+        if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForDeletion($old)) {
+            $updateData['$unset'][$mapping['name']] = true;
+            $this->uow->unscheduleCollectionDeletion($old);
+
+            return;
+        }
+
+        if ($mapping['association'] !== ClassMetadata::EMBED_MANY) {
+            return;
+        }
+
+        $this->applyEmbedManyFieldUpdate($updateData, $mapping, $new);
+    }
+
+    /**
+     * A non-atomic embed-many collection is updated element by element: each
+     * entry not itself scheduled for insert (which will be written whole by
+     * the parent's own embed-many insert path) is diffed recursively via
+     * {@see self::prepareUpdateData()}, nested under this field's dot-path
+     * plus the entry's key.
+     *
+     * @param array<string, mixed>                             $updateData
+     * @param PersistentCollectionInterface<array-key, object> $new
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyEmbedManyFieldUpdate(array &$updateData, array $mapping, PersistentCollectionInterface $new): void
+    {
+        foreach ($new as $key => $embeddedDoc) {
+            if ($this->uow->isScheduledForInsert($embeddedDoc)) {
+                continue;
+            }
+
+            $update = $this->prepareUpdateData($embeddedDoc);
+            foreach ($update as $cmd => $values) {
+                foreach ($values as $name => $value) {
+                    $updateData[$cmd][$mapping['name'] . '.' . $key . '.' . $name] = $value;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $updateData
+     * @phpstan-param FieldMapping $mapping
+     */
+    private function applyReferenceOneField(array &$updateData, array $mapping, object $new): void
+    {
+        $updateData['$set'][$mapping['name']] = $this->prepareReferencedDocumentValue($mapping, $new);
+    }
+
+    /**
+     * Collections that aren't dirty but could still be subject to an atomic
+     * update (or a pending deletion) are excluded from the changeset, since
+     * neither condition changes a field value the changeset would track; go
+     * through them separately here instead. Non-atomic `@ReferenceMany`
+     * collections need no handling here: they're persisted via their own
+     * write operations by {@see CollectionPersister}, not embedded in this
+     * document's update.
+     *
+     * @param array<string, mixed> $updateData
+     */
+    private function applyScheduledCollectionsUpdate(array &$updateData, object $document): void
+    {
         foreach ($this->uow->getScheduledCollections($document) as $coll) {
             $mapping = $coll->getMapping();
             if (CollectionHelper::isAtomic($mapping['strategy']) && $this->uow->isCollectionScheduledForUpdate($coll)) {
@@ -252,10 +358,7 @@ final class PersistenceBuilder
                 $updateData['$unset'][$mapping['name']] = true;
                 $this->uow->unscheduleCollectionDeletion($coll);
             }
-            // @ReferenceMany is handled by CollectionPersister
         }
-
-        return $updateData;
     }
 
     /**
