@@ -4,25 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\CriteriaMerger;
 use Doctrine\ODM\MongoDB\Query\CriteriaPreparer;
-use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
-use SortDirection;
 use stdClass;
 
 use function array_key_exists;
@@ -48,10 +43,6 @@ use function trigger_deprecation;
  *      withTransaction?: bool,
  *      writeConcern?: WriteConcern
  * }
- * @phpstan-import-type Hints from UnitOfWork
- * @phpstan-import-type FieldMapping from ClassMetadata
- * @phpstan-import-type SortMeta from Sort
- * @phpstan-import-type SortShape from Sort
  */
 final class DocumentPersister
 {
@@ -437,73 +428,6 @@ final class DocumentPersister
     }
 
     /**
-     * Refreshes a managed document.
-     */
-    public function refresh(object $document): void
-    {
-        $this->documentLoader->refresh($document);
-    }
-
-    /**
-     * Finds a document by a set of criteria.
-     *
-     * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
-     * be used to match an _id value.
-     *
-     * @param array<string, mixed>|scalar|ObjectId|null                          $criteria Query criteria
-     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
-     * @param T|null                                                             $document
-     * @phpstan-param SortShape|null $sort
-     * @phpstan-param Hints $hints
-     *
-     * @return T|null
-     *
-     * @throws LockException
-     */
-    public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
-    {
-        return $this->documentLoader->load($criteria, $document, $hints, $lockMode, $sort);
-    }
-
-    /**
-     * Finds documents by a set of criteria.
-     *
-     * @param array<string, mixed>                                               $criteria
-     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
-     * @phpstan-param SortShape|null $sort
-     *
-     * @return Iterator<T>
-     */
-    public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
-    {
-        return $this->documentLoader->loadAll($criteria, $sort, $limit, $skip);
-    }
-
-    /**
-     * Checks whether the given managed document exists in the database.
-     */
-    public function exists(object $document): bool
-    {
-        return $this->documentLoader->exists($document);
-    }
-
-    /**
-     * Locks document by storing the lock mode on the mapped lock field.
-     */
-    public function lock(object $document, int $lockMode): void
-    {
-        $this->documentLoader->lock($document, $lockMode);
-    }
-
-    /**
-     * Releases any lock that exists on this document.
-     */
-    public function unlock(object $document): void
-    {
-        $this->documentLoader->unlock($document);
-    }
-
-    /**
      * Gets the CollectionLoader instance used by this persister.
      *
      * @internal
@@ -511,6 +435,18 @@ final class DocumentPersister
     public function getCollectionLoader(): CollectionLoader
     {
         return $this->collectionLoader;
+    }
+
+    /**
+     * Gets the DocumentLoader instance used by this persister.
+     *
+     * @internal
+     *
+     * @phpstan-return DocumentLoader<T>
+     */
+    public function getDocumentLoader(): DocumentLoader
+    {
+        return $this->documentLoader;
     }
 
     /** @param array<string, mixed> $options */

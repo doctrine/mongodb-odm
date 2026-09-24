@@ -27,9 +27,9 @@ use function is_scalar;
 
 /**
  * DocumentLoader is responsible for loading single documents, the read-side
- * counterpart to DocumentPersister. It is invoked from UnitOfWork (via
- * DocumentPersister's thin delegating methods) to load, refresh, lock and
- * check the existence of managed documents.
+ * counterpart to DocumentPersister. It is obtained via
+ * UnitOfWork::getDocumentLoader() to load, refresh, lock and check the
+ * existence of managed documents.
  *
  * @internal
  *

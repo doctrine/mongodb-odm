@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\LockMode;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Persisters\DocumentLoader;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
 use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
@@ -141,7 +142,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         $criteria = ['_id' => $id];
 
         if ($lockMode === LockMode::NONE) {
-            return $this->getDocumentPersister()->load($criteria);
+            return $this->getDocumentLoader()->load($criteria);
         }
 
         if ($lockMode === LockMode::OPTIMISTIC) {
@@ -149,7 +150,7 @@ class DocumentRepository implements ObjectRepository, Selectable
                 throw LockException::notVersioned($this->documentName);
             }
 
-            $document = $this->getDocumentPersister()->load($criteria);
+            $document = $this->getDocumentLoader()->load($criteria);
             if ($document !== null) {
                 $this->uow->lock($document, $lockMode, $lockVersion);
             }
@@ -157,7 +158,7 @@ class DocumentRepository implements ObjectRepository, Selectable
             return $document;
         }
 
-        return $this->getDocumentPersister()->load($criteria, null, [], $lockMode);
+        return $this->getDocumentLoader()->load($criteria, null, [], $lockMode);
     }
 
     /**
@@ -178,7 +179,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function findBy(array $criteria, ?array $orderBy = null, $limit = null, $offset = null): array
     {
-        return $this->getDocumentPersister()->loadAll($criteria, $orderBy, $limit, $offset)->toArray();
+        return $this->getDocumentLoader()->loadAll($criteria, $orderBy, $limit, $offset)->toArray();
     }
 
     /**
@@ -191,7 +192,7 @@ class DocumentRepository implements ObjectRepository, Selectable
      */
     public function findOneBy(array $criteria, ?array $sort = null): ?object
     {
-        return $this->getDocumentPersister()->load($criteria, null, [], 0, $sort);
+        return $this->getDocumentLoader()->load($criteria, null, [], 0, $sort);
     }
 
     /** @return class-string<T> */
@@ -257,5 +258,11 @@ class DocumentRepository implements ObjectRepository, Selectable
     protected function getDocumentPersister(): DocumentPersister
     {
         return $this->uow->getDocumentPersister($this->documentName);
+    }
+
+    /** @return DocumentLoader<T> */
+    protected function getDocumentLoader(): DocumentLoader
+    {
+        return $this->uow->getDocumentLoader($this->documentName);
     }
 }
