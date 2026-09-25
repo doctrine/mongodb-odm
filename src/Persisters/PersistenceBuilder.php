@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
+use Closure;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\ChangeSets\ChangeSet;
@@ -17,6 +18,7 @@ use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
 use UnexpectedValueException;
 
+use function array_map;
 use function array_search;
 use function array_values;
 use function assert;
@@ -728,10 +730,7 @@ final class PersistenceBuilder
     public function prepareAssociatedCollectionValue(PersistentCollectionInterface $coll, $includeNestedCollections = false): array
     {
         $mapping  = $coll->getMapping();
-        $pb       = $this;
-        $callback = isset($mapping['embedded'])
-            ? static fn ($v) => $pb->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections)
-            : static fn ($v) => $pb->prepareReferencedDocumentValue($mapping, $v);
+        $callback = $this->buildValuePrepareCallback($mapping, $includeNestedCollections);
 
         $setData = $coll->map($callback)->toArray();
         if (CollectionHelper::isList($mapping['strategy'])) {
@@ -742,6 +741,48 @@ final class PersistenceBuilder
         $this->uow->unscheduleCollectionUpdate($coll);
 
         return $setData;
+    }
+
+    /**
+     * Returns the callback used to prepare each element of a collection for
+     * storage, based on whether the collection holds embedded or referenced
+     * documents.
+     *
+     * @param PersistentCollectionInterface<array-key, object> $coll
+     *
+     * @phpstan-return Closure(mixed): mixed
+     */
+    public function getCollectionValuePrepareCallback(PersistentCollectionInterface $coll): Closure
+    {
+        return $this->buildValuePrepareCallback($coll->getMapping());
+    }
+
+    /**
+     * Prepares the "$each" payload for the elements added to a "pushAll" or
+     * "addToSet" collection, i.e. the values inserted since the last flush.
+     *
+     * @param PersistentCollectionInterface<array-key, object> $coll
+     * @param mixed[]                                          $insertDiff
+     *
+     * @return array{'$each': mixed[]}
+     */
+    public function prepareCollectionInsertPayload(PersistentCollectionInterface $coll, array $insertDiff): array
+    {
+        $callback = $this->getCollectionValuePrepareCallback($coll);
+
+        return ['$each' => array_values(array_map($callback, $insertDiff))];
+    }
+
+    /**
+     * @phpstan-param FieldMapping $mapping
+     *
+     * @phpstan-return Closure(mixed): mixed
+     */
+    private function buildValuePrepareCallback(array $mapping, bool $includeNestedCollections = false): Closure
+    {
+        return isset($mapping['embedded'])
+            ? fn ($v) => $this->prepareEmbeddedDocumentValue($mapping, $v, $includeNestedCollections)
+            : fn ($v) => $this->prepareReferencedDocumentValue($mapping, $v);
     }
 
     /**

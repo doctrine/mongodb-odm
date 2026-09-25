@@ -8,6 +8,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Iterator\Iterator;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Persisters\PersistenceBuilder;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Documents\Address;
@@ -33,6 +34,7 @@ use Documents\Functional\Ticket\GH683\UnmappedEmbedded;
 use Documents\Group;
 use Documents\Message;
 use Documents\Page;
+use Documents\Phonenumber;
 use Documents\Profile;
 use Documents\Project;
 use Documents\Strategy;
@@ -798,6 +800,112 @@ class PersistenceBuilderTest extends BaseTestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->pb->prepareAssociatedDocumentValue($mapping, new stdClass());
+    }
+
+    public function testGetCollectionValuePrepareCallbackReturnsEmbeddedPreparerForEmbedManyMapping(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $phonenumber = new Phonenumber('12345');
+        $coll        = $user->getPhonenumbers();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        $callback = $this->pb->getCollectionValuePrepareCallback($coll);
+
+        self::assertEquals(
+            $this->pb->prepareEmbeddedDocumentValue($coll->getMapping(), $phonenumber),
+            $callback($phonenumber),
+        );
+    }
+
+    public function testGetCollectionValuePrepareCallbackReturnsReferencePreparerForReferenceManyMapping(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $group = new Group('admins');
+        $this->dm->persist($group);
+        $this->dm->flush();
+
+        $coll = $user->getGroups();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        $callback = $this->pb->getCollectionValuePrepareCallback($coll);
+
+        self::assertEquals(
+            $this->pb->prepareReferencedDocumentValue($coll->getMapping(), $group),
+            $callback($group),
+        );
+    }
+
+    public function testPrepareCollectionInsertPayloadWrapsPreparedValuesInEach(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $group1 = new Group('one');
+        $group2 = new Group('two');
+        $this->dm->persist($group1);
+        $this->dm->persist($group2);
+        $this->dm->flush();
+
+        $coll = $user->getGroups();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        // Non-sequential keys mimic a real insert diff: array_values must
+        // reindex the result rather than leaking the diff's original keys.
+        $payload = $this->pb->prepareCollectionInsertPayload($coll, [2 => $group1, 5 => $group2]);
+
+        self::assertEquals(
+            [
+                '$each' => [
+                    $this->pb->prepareReferencedDocumentValue($coll->getMapping(), $group1),
+                    $this->pb->prepareReferencedDocumentValue($coll->getMapping(), $group2),
+                ],
+            ],
+            $payload,
+        );
+    }
+
+    public function testPrepareCollectionInsertPayloadHandlesEmbedManyMapping(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $phone1 = new Phonenumber('111');
+        $phone2 = new Phonenumber('222');
+
+        $coll = $user->getPhonenumbers();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        $payload = $this->pb->prepareCollectionInsertPayload($coll, [3 => $phone1, 7 => $phone2]);
+
+        self::assertEquals(
+            [
+                '$each' => [
+                    $this->pb->prepareEmbeddedDocumentValue($coll->getMapping(), $phone1),
+                    $this->pb->prepareEmbeddedDocumentValue($coll->getMapping(), $phone2),
+                ],
+            ],
+            $payload,
+        );
+    }
+
+    public function testPrepareCollectionInsertPayloadReturnsEmptyEachForEmptyDiff(): void
+    {
+        $user = new User();
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $coll = $user->getGroups();
+        self::assertInstanceOf(PersistentCollectionInterface::class, $coll);
+
+        self::assertSame(['$each' => []], $this->pb->prepareCollectionInsertPayload($coll, []));
     }
 
     private function setProtectedProperty(object $object, string $property, mixed $value): void

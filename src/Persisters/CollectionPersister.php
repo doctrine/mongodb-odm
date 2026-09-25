@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Persisters;
 
-use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
@@ -19,9 +18,7 @@ use function array_fill_keys;
 use function array_flip;
 use function array_intersect_key;
 use function array_keys;
-use function array_map;
 use function array_reverse;
-use function array_values;
 use function assert;
 use function count;
 use function end;
@@ -344,9 +341,7 @@ final class CollectionPersister
         $pushAllColls   = array_intersect_key($pathCollsMap, array_flip($pushAllPaths));
         $pushAllPayload = [];
         foreach ($pushAllColls as $propertyPath => $coll) {
-            $callback                      = $this->getValuePrepareCallback($coll);
-            $value                         = array_values(array_map($callback, $diffsMap[$propertyPath]));
-            $pushAllPayload[$propertyPath] = ['$each' => $value];
+            $pushAllPayload[$propertyPath] = $this->pb->prepareCollectionInsertPayload($coll, $diffsMap[$propertyPath]);
         }
 
         if (! empty($pushAllPayload)) {
@@ -355,9 +350,7 @@ final class CollectionPersister
 
         $pushAllColls = array_diff_key($pathCollsMap, array_flip($pushAllPaths));
         foreach ($pushAllColls as $propertyPath => $coll) {
-            $callback = $this->getValuePrepareCallback($coll);
-            $value    = array_values(array_map($callback, $diffsMap[$propertyPath]));
-            $query    = ['$push' => [$propertyPath => ['$each' => $value]]];
+            $query = ['$push' => [$propertyPath => $this->pb->prepareCollectionInsertPayload($coll, $diffsMap[$propertyPath])]];
             $this->executeQuery($parent, $query, $options);
         }
     }
@@ -379,9 +372,7 @@ final class CollectionPersister
 
         $addToSetPayload = [];
         foreach ($addToSetColls as $propertyPath => $coll) {
-            $callback                       = $this->getValuePrepareCallback($coll);
-            $value                          = array_values(array_map($callback, $diffsMap[$propertyPath]));
-            $addToSetPayload[$propertyPath] = ['$each' => $value];
+            $addToSetPayload[$propertyPath] = $this->pb->prepareCollectionInsertPayload($coll, $diffsMap[$propertyPath]);
         }
 
         if (empty($addToSetPayload)) {
@@ -389,22 +380,6 @@ final class CollectionPersister
         }
 
         $this->executeQuery($parent, ['$addToSet' => $addToSetPayload], $options);
-    }
-
-    /**
-     * Return callback instance for specified collection. This callback will prepare values for query from documents
-     * that collection contain.
-     *
-     * @param PersistentCollectionInterface<array-key, object> $coll
-     */
-    private function getValuePrepareCallback(PersistentCollectionInterface $coll): Closure
-    {
-        $mapping = $coll->getMapping();
-        if (isset($mapping['embedded'])) {
-            return fn ($v) => $this->pb->prepareEmbeddedDocumentValue($mapping, $v);
-        }
-
-        return fn ($v) => $this->pb->prepareReferencedDocumentValue($mapping, $v);
     }
 
     /**
