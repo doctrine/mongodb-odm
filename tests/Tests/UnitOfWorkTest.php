@@ -598,6 +598,42 @@ class UnitOfWorkTest extends BaseTestCase
     }
 
     /**
+     * Reproduces the flush-order case where applyChangeSet() has already
+     * stamped the document's originalData snapshot with the in-memory
+     * (not-yet-persisted) actual data before a preUpdate listener calls
+     * setNewValue(). The old value setNewValue()'s changeset carries for a
+     * field is diffed against the true persisted snapshot before that
+     * premature stamp happens, so it must win over the (by then stale)
+     * snapshot instead of being overwritten by it.
+     */
+    public function testSetNewValueDuringPreUpdateReportsPersistedOldValueNotFlushTimeSnapshot(): void
+    {
+        $user = new User();
+        $user->setUsername('alice');
+        $user->incrementCount(1);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->incrementCount(4); // count: 1 -> 5, the in-memory change flush is about to persist
+
+        $classMetadata = $this->dm->getClassMetadata(User::class);
+        // Simulates the flush prematurely stamping originalData with the
+        // actual (pre-write) data, as applyChangeSet() does before preUpdate runs.
+        $this->uow->computeChangeSet($classMetadata, $user);
+
+        // A preUpdate listener overrides the value further, the way
+        // PreUpdateEventArgs::setNewValue() does: it keeps the true old
+        // value (1) already present in the changeset it was given, and only
+        // replaces the new one.
+        $this->uow->setDocumentChangeSet($user, ['count' => [1, 7]]);
+
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+
+        self::assertSame([1, 7], $changeSet['count']);
+    }
+
+    /**
      * Change tracking NOTIFY is deprecated; while it's still supported, the
      * old value it reports must be the document's real original-data
      * snapshot, never whatever value the notifying setter itself happened
