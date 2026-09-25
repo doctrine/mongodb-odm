@@ -536,7 +536,7 @@ final class UnitOfWork implements PropertyChangedListener
      * bookkeeping. That guarantee costs a clone on every call; see #3066
      * for whether that is worth optimizing further. Callers that don't need
      * a detached ChangeSet (e.g. only checking whether one is empty) should
-     * read {@see self::$documentChangeSets} directly instead.
+     * use {@see self::getDocumentChangeSet()} instead.
      */
     public function getChangeSet(object $document): ChangeSet
     {
