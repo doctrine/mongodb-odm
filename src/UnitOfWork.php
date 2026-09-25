@@ -316,6 +316,22 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * Get the DocumentLoader instance for the given document name.
+     *
+     * @internal
+     *
+     * @param class-string<T> $documentName
+     *
+     * @return Persisters\DocumentLoader<T>
+     *
+     * @template T of object
+     */
+    public function getDocumentLoader(string $documentName): Persisters\DocumentLoader
+    {
+        return $this->getDocumentPersister($documentName)->getDocumentLoader();
+    }
+
+    /**
      * Get the collection persister instance.
      */
     public function getCollectionPersister(): CollectionPersister
@@ -1546,7 +1562,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         // DB lookup
-        if ($this->getDocumentPersister($class->name)->exists($document)) {
+        if ($this->getDocumentLoader($class->name)->exists($document)) {
             return self::STATE_DETACHED;
         }
 
@@ -2044,7 +2060,7 @@ final class UnitOfWork implements PropertyChangedListener
                 throw new InvalidArgumentException('Document is not MANAGED.');
             }
 
-            $this->getDocumentPersister($class->name)->refresh($document);
+            $this->getDocumentLoader($class->name)->refresh($document);
         }
 
         $this->cascadeRefresh($document, $visited);
@@ -2256,7 +2272,7 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
         } elseif (in_array($lockMode, [LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE])) {
-            $this->getDocumentPersister($class->name)->lock($document, $lockMode);
+            $this->getDocumentLoader($class->name)->lock($document, $lockMode);
         }
     }
 
@@ -2274,7 +2290,7 @@ final class UnitOfWork implements PropertyChangedListener
         }
 
         $documentName = $document::class;
-        $this->getDocumentPersister($documentName)->unlock($document);
+        $this->getDocumentLoader($documentName)->unlock($document);
     }
 
     /**
