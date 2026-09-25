@@ -554,13 +554,23 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function setDocumentChangeSet(object $document, array $changeset): void
     {
-        // Seeded from the document's real snapshot rather than only the
-        // fields $changeset happens to carry: a caller such as
+        // The object-state snapshot fills in fields $changeset doesn't carry
+        // (e.g. ones a later recompute adds), since a caller such as
         // PreUpdateEventArgs::setNewValue() may pass a changeset that only
         // covers the fields already recorded at that point, and a
         // truncated snapshot here would make a later merge onto this
         // instance (see ChangeSetComputer::computeChangeSet()) report a
         // null old value for every field the merge adds.
+        //
+        // But for fields $changeset DOES carry, its own old value wins over
+        // the snapshot: applyChangeSet() stamps originalData with the
+        // flush's actual (pre-write) data as soon as it diffs, i.e. before
+        // any preUpdate listener runs, so by the time setNewValue() calls
+        // this method the snapshot may already reflect the in-memory value
+        // rather than what's persisted. The old value in $changeset was
+        // diffed against the true persisted snapshot before that premature
+        // stamp happened, so it stays correct even though the snapshot no
+        // longer is.
         //
         // TODO: originalData is still a snapshot copied at construction
         // time rather than a live view of the document's actual state, so
@@ -569,8 +579,9 @@ final class UnitOfWork implements PropertyChangedListener
         // issue tracked in applyChangeSet().
         $originalData = $this->documentRegistry->getOrCreateObjectState($document)->originalData ?? [];
         $newValues    = [];
-        foreach ($changeset as $field => [, $newValue]) {
-            $newValues[$field] = $newValue;
+        foreach ($changeset as $field => [$oldValue, $newValue]) {
+            $originalData[$field] = $oldValue;
+            $newValues[$field]    = $newValue;
         }
 
         $this->documentChangeSets[$document] = ChangeSet::fromChanges($document, $originalData, $newValues);
