@@ -385,9 +385,11 @@ final class ChangeSetComputer
         $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
 
         // Loose comparison is only safe when both values are UTC dates. A custom
-        // type overriding "date" may produce a different database representation.
+        // type overriding "date" may produce a different database representation;
+        // fall back to strict comparison so an unchanged value isn't reported as
+        // changed just because it isn't a UTCDateTime.
         if (! $dbOrgValue instanceof UTCDateTime || ! $dbActualValue instanceof UTCDateTime) {
-            return false;
+            return $dbOrgValue === $dbActualValue;
         }
 
         // We rely on loose comparison to compare every field (including microseconds)
