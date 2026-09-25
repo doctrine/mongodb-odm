@@ -32,7 +32,7 @@ class DocumentPersisterFilterTest extends BaseTestCase
             ],
         ];
 
-        self::assertSame($expectedCriteria, $persister->addFilterToPreparedQuery($preparedQuery));
+        self::assertSame($expectedCriteria, $persister->getCriteriaPreparer()->addFilterToPreparedQuery($preparedQuery));
     }
 
     public function testFilterCrieriaShouldAndWithMappingCriteriaOwningSide(): void

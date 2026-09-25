@@ -32,7 +32,7 @@ class UnsetStage extends Stage
     public function getExpression(): array
     {
         return [
-            '$unset' => array_map([$this->documentPersister, 'prepareFieldName'], $this->fields),
+            '$unset' => array_map($this->documentPersister->getCriteriaPreparer()->prepareFieldName(...), $this->fields),
         ];
     }
 }
