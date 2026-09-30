@@ -920,6 +920,26 @@ class Configuration
     {
         return $this->attributes['assertSearchIndexExistsForEmptyResult'] ?? true;
     }
+
+    /**
+     * When a document is persisted with an identifier that is already mapped to a
+     * different document instance, the identity map keeps the first instance. This
+     * is a safeguard against an inconsistency, as identifiers should uniquely map
+     * to document object instances.
+     *
+     * When enabled, such a collision throws a DocumentIdentityCollisionException.
+     * When disabled (the default), a deprecation is triggered instead and the
+     * exception will be thrown unconditionally in 3.0.
+     */
+    public function setRejectIdCollisionInIdentityMap(bool $enabled): void
+    {
+        $this->attributes['rejectIdCollisionInIdentityMap'] = $enabled;
+    }
+
+    public function isRejectIdCollisionInIdentityMapEnabled(): bool
+    {
+        return $this->attributes['rejectIdCollisionInIdentityMap'] ?? false;
+    }
 }
 
 interface_exists(MappingDriver::class);

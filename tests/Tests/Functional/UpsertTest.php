@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\DocumentIdentityCollisionException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use MongoDB\BSON\ObjectId;
 
+use function array_filter;
+use function array_values;
 use function assert;
+use function str_contains;
 
 class UpsertTest extends BaseTestCase
 {
+    use CaptureDeprecationMessages;
+
     /**
      * Tests for "MongoCursorException: Cannot apply $push/$pushAll modifier to non-array" error.
      *
@@ -64,6 +71,73 @@ class UpsertTest extends BaseTestCase
         self::assertNotNull($upsertResult->nullableField);
         self::assertNotNull($upsertResult->nullableReferenceOne);
         self::assertNotNull($upsertResult->nullableEmbedOne);
+    }
+
+    public function testPersistingDifferentDocumentWithSameIdTriggersDeprecation(): void
+    {
+        $first = new UpsertTestUser();
+        $this->dm->persist($first);
+        $this->dm->flush();
+
+        $second     = new UpsertTestUser();
+        $second->id = $first->id;
+
+        $this->captureDeprecationMessages(
+            fn () => $this->dm->persist($second),
+            $errors,
+        );
+
+        self::assertCount(1, $this->filterIdentityMapDeprecations($errors));
+    }
+
+    public function testPersistingDifferentDocumentWithSameIdThrowsWhenEnabled(): void
+    {
+        $this->config->setRejectIdCollisionInIdentityMap(true);
+
+        $first = new UpsertTestUser();
+        $this->dm->persist($first);
+        $this->dm->flush();
+
+        $second     = new UpsertTestUser();
+        $second->id = $first->id;
+
+        $this->expectException(DocumentIdentityCollisionException::class);
+
+        $this->dm->persist($second);
+    }
+
+    public function testUpsertingNewInstanceAfterClearDoesNotWarn(): void
+    {
+        $first = new UpsertTestUser();
+        $this->dm->persist($first);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $second     = new UpsertTestUser();
+        $second->id = $first->id;
+
+        $this->captureDeprecationMessages(
+            function () use ($second): void {
+                $this->dm->persist($second);
+                $this->dm->flush();
+            },
+            $errors,
+        );
+
+        self::assertSame([], $this->filterIdentityMapDeprecations($errors));
+    }
+
+    /**
+     * @param list<string> $errors
+     *
+     * @return list<string>
+     */
+    private function filterIdentityMapDeprecations(array $errors): array
+    {
+        return array_values(array_filter(
+            $errors,
+            static fn (string $error): bool => str_contains($error, 'already mapped to the same identifier'),
+        ));
     }
 
     public function testUpsertsWritesNullableFieldsOnInsert(): void

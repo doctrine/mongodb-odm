@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Registry;
 
 use Countable;
+use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentIdentityCollisionException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use InvalidArgumentException;
 use SplObjectStorage;
@@ -13,6 +15,7 @@ use function count;
 use function serialize;
 use function spl_object_id;
 use function sprintf;
+use function trigger_deprecation;
 
 /**
  * Tracks every document known to a DocumentManager for the lifetime of that
@@ -35,7 +38,7 @@ final class DocumentRegistry implements Countable
     /** @var array<class-string, array<string, object>> */
     private array $identityMap = [];
 
-    public function __construct()
+    public function __construct(private readonly Configuration $config)
     {
         $this->objectStates = new SplObjectStorage();
     }
@@ -177,6 +180,29 @@ final class DocumentRegistry implements Countable
         $id = $this->getSerializedIdForDocument($class, $document);
 
         if (isset($this->identityMap[$class->name][$id])) {
+            $existingDocument = $this->identityMap[$class->name][$id];
+
+            // Embedded documents are excluded: two instances of the same embedded
+            // class may legitimately share an identifier across different parents.
+            if ($existingDocument !== $document && ! $class->isEmbeddedDocument) {
+                $identifier = $this->getObjectState($document)?->identifier;
+
+                if ($this->config->isRejectIdCollisionInIdentityMapEnabled()) {
+                    throw DocumentIdentityCollisionException::create($existingDocument, $document, $identifier);
+                }
+
+                trigger_deprecation(
+                    'doctrine/mongodb-odm',
+                    '2.18',
+                    'Adding a document of class %s with identifier "%s" to the identity map while a different '
+                    . 'document is already mapped to the same identifier. The new document is ignored and the '
+                    . 'managed document is kept. This will throw an exception in 3.0. Detach the managed document '
+                    . 'or clear the DocumentManager before persisting a new instance.',
+                    $document::class,
+                    $identifier,
+                );
+            }
+
             return false;
         }
 

@@ -9,6 +9,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
+use Doctrine\ODM\MongoDB\DocumentIdentityCollisionException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
@@ -42,6 +43,8 @@ use function sprintf;
 
 class UnitOfWorkTest extends BaseTestCase
 {
+    use CaptureDeprecationMessages;
+
     /** Clear by class name is deprecated */
     #[IgnoreDeprecations]
     public function testPartialClear(): void
@@ -84,6 +87,60 @@ class UnitOfWorkTest extends BaseTestCase
         $this->uow->scheduleForUpsert($class, $user);
         self::assertFalse($this->uow->isScheduledForInsert($user));
         self::assertTrue($this->uow->isScheduledForUpsert($user));
+    }
+
+    public function testScheduleForUpsertWithSameIdTriggersDeprecation(): void
+    {
+        $class = $this->dm->getClassMetadata(ForumUser::class);
+        $id    = new ObjectId();
+
+        $first     = new ForumUser();
+        $first->id = $id;
+        $this->uow->scheduleForUpsert($class, $first);
+
+        $second     = new ForumUser();
+        $second->id = $id;
+
+        $this->captureDeprecationMessages(
+            fn () => $this->uow->scheduleForUpsert($class, $second),
+            $errors,
+        );
+
+        self::assertCount(1, $errors);
+    }
+
+    public function testScheduleForUpsertWithSameIdThrowsWhenEnabled(): void
+    {
+        $this->config->setRejectIdCollisionInIdentityMap(true);
+
+        $class = $this->dm->getClassMetadata(ForumUser::class);
+        $id    = new ObjectId();
+
+        $first     = new ForumUser();
+        $first->id = $id;
+        $this->uow->scheduleForUpsert($class, $first);
+
+        $second     = new ForumUser();
+        $second->id = $id;
+
+        $this->expectException(DocumentIdentityCollisionException::class);
+
+        $this->uow->scheduleForUpsert($class, $second);
+    }
+
+    public function testAddToIdentityMapWithSameDocumentDoesNotTriggerDeprecation(): void
+    {
+        $class    = $this->dm->getClassMetadata(ForumUser::class);
+        $user     = new ForumUser();
+        $user->id = new ObjectId();
+        $this->uow->scheduleForUpsert($class, $user);
+
+        $this->captureDeprecationMessages(
+            fn () => $this->uow->addToIdentityMap($user),
+            $errors,
+        );
+
+        self::assertSame([], $errors);
     }
 
     public function testGetScheduledDocumentUpserts(): void
