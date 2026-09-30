@@ -22,7 +22,7 @@ class DocumentRegistryTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->registry = new DocumentRegistry();
+        $this->registry = new DocumentRegistry($this->config);
     }
 
     public function testGetObjectStateReturnsNullForUnknownDocument(): void
