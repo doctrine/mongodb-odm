@@ -1434,17 +1434,15 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * @internal
      */
-    public function addToIdentityMap(object $document): bool
+    public function addToIdentityMap(object $document): void
     {
         $class = $this->dm->getClassMetadata($document::class);
 
         if (! $this->documentRegistry->addToIdentityMap($class, $document)) {
-            return false;
+            return;
         }
 
         $this->registerPropertyChangedListener($document);
-
-        return true;
     }
 
     /**
