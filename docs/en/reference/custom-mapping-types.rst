@@ -245,6 +245,54 @@ can omit the ``type`` option when defining the field mapping::
     and does not handle all edge cases, but it should give you a good starting
     point for implementing your own custom types.
 
+Detecting Changes on Value Objects
+----------------------------------
+
+By default, the ``UnitOfWork`` detects a change when the object stored in a
+mapped property is not the same instance as the one it loaded. Replacing a value
+object with an equal one therefore triggers an update, even when the mapped
+value did not change.
+
+Make your custom type implement the ``Doctrine\ODM\MongoDB\Types\EquatableType``
+interface to compare values by value instead of identity. The comparison lives
+in the type, so it also works for classes you cannot modify, such as a value
+object from a third-party library. The ``valuesAreEqual()`` method returns
+``true`` when both values are equal, which prevents useless updates. It is only
+called when both the old and the new value are objects.
+
+.. code-block:: php
+
+    <?php
+
+    namespace App\MongoDB\Types;
+
+    use Doctrine\ODM\MongoDB\Types\EquatableType;
+    use Doctrine\ODM\MongoDB\Types\Type;
+    use Money\Money;
+
+    final class MoneyType extends Type implements EquatableType
+    {
+        // convertToPHPValue() and convertToDatabaseValue() omitted
+
+        public function valuesAreEqual(object $a, object $b): bool
+        {
+            return $a instanceof Money
+                && $b instanceof Money
+                && $a->equals($b);
+        }
+    }
+
+When the database representation can be compared directly, use the
+``Doctrine\ODM\MongoDB\Types\BsonValueEquality`` trait instead of writing the
+method yourself. It compares the values returned by ``convertToDatabaseValue()``
+with a loose comparison, which works for scalars and for BSON objects such as
+``UTCDateTime`` or ``ObjectId``. The built-in ``DateType`` uses this trait, so
+two ``DateTime`` instances representing the same instant are not considered a
+change.
+
+When a value object is replaced by an equal one in a managed document, the ODM
+skips the update.
+
 .. _`moneyphp/money library`: https://github.com/moneyphp/money
 .. |FQCN| raw:: html
   <abbr title="Fully-Qualified Class Name">FQCN</abbr>

@@ -26,8 +26,10 @@ use const STR_PAD_LEFT;
 /**
  * The Date type.
  */
-class DateType extends Type implements Versionable
+class DateType extends Type implements Versionable, EquatableType
 {
+    use BsonValueEquality;
+
     /**
      * Converts a value to a DateTime.
      * Supports microseconds

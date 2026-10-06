@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
+use Doctrine\ODM\MongoDB\Types\EquatableType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
@@ -30,6 +31,7 @@ class CustomTypeTest extends BaseTestCase
 
         $this->typeRegistry->register('date_collection', new DateCollectionType());
         $this->typeRegistry->register(Language::class, LanguageType::class);
+        $this->typeRegistry->register('custom_value_object_child', CustomValueObjectChild::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -45,6 +47,32 @@ class CustomTypeTest extends BaseTestCase
         $country = $this->dm->find(Country::class, $country->id);
 
         self::assertContainsOnlyInstancesOf(DateTime::class, $country->nationalHolidays);
+    }
+
+    public function testValueObjectChangeSets(): void
+    {
+        $root        = new DocumentWithCustomTypeValueObject();
+        $root->child = new ValueObjectChild(10, 12);
+
+        $this->uow->persist($root);
+
+        $this->uow->computeChangeSets();
+
+        self::assertNotEmpty($this->uow->getDocumentChangeSet($root));
+
+        $this->uow->commit();
+
+        // Replacing the value object with an equal one is not a change.
+        $root->child = new ValueObjectChild(10, 12);
+        $this->uow->computeChangeSets();
+        self::assertArrayNotHasKey('child', $this->uow->getDocumentChangeSet($root));
+
+        // Replacing the value object with a different one is a change.
+        $root->child = new ValueObjectChild(12, 12);
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($root);
+        self::assertArrayHasKey('child', $changeSet);
+        self::assertSame(12, $changeSet['child'][1]->prop1);
     }
 
     public function testConvertToDatabaseValueExpectsArray(): void
@@ -240,4 +268,60 @@ class CustomTypeWithRequiredConstructor extends Type
     public function __construct(private string $required)
     {
     }
+}
+
+class CustomValueObjectChild extends Type implements EquatableType
+{
+    use ClosureToPHP;
+
+    /** @return array{prop1:int,prop2:int}|null */
+    public function convertToDatabaseValue($value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        assert($value instanceof ValueObjectChild);
+
+        return ['prop1' => $value->prop1, 'prop2' => $value->prop2];
+    }
+
+    /** @param array{prop1:int,prop2:int}|null $value */
+    public function convertToPHPValue($value): ?ValueObjectChild
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        assert(is_array($value) && isset($value['prop1'], $value['prop2']));
+
+        return new ValueObjectChild($value['prop1'], $value['prop2']);
+    }
+
+    public function valuesAreEqual(object $a, object $b): bool
+    {
+        return $a instanceof ValueObjectChild
+            && $b instanceof ValueObjectChild
+            && $a->prop1 === $b->prop1
+            && $a->prop2 === $b->prop2;
+    }
+}
+
+class ValueObjectChild
+{
+    public function __construct(
+        public readonly int $prop1,
+        public readonly int $prop2,
+    ) {
+    }
+}
+
+#[ODM\Document]
+class DocumentWithCustomTypeValueObject
+{
+    #[ODM\Id]
+    public ?string $id;
+
+    #[ODM\Field(type: 'custom_value_object_child')]
+    public ValueObjectChild $child;
 }
