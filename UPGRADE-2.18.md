@@ -125,3 +125,22 @@ $registry = new TypeRegistry($container, ['money' => 'app.odm_type.money']);
 ```
 
 To access the type of a mapped field, use the `ClassMetadata::getFieldType()` method.
+
+## Value objects are compared through the mapping type
+
+A mapped field whose old and new values are both objects is now compared using
+the field type, when the type implements the new
+`Doctrine\ODM\MongoDB\Types\EquatableType` interface. When the type reports the
+values as equal, the field is left out of the change set and no update is
+written for it.
+
+A value object replaced by an equal one therefore no longer triggers an update.
+This covers `date` and `date_immutable` fields: their comparison was previously
+hard-coded in the `UnitOfWork` and only applied to the `date` type.
+
+A custom type that maps a value object can take part in the comparison by
+implementing `EquatableType`. The
+`Doctrine\ODM\MongoDB\Types\BsonValueEquality` trait compares the BSON
+representation of the two values and fits types such as dates or identifiers.
+
+Types that do not implement the interface keep the previous behavior.
