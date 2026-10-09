@@ -409,7 +409,7 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:setVersionMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\: string, fieldName\: string, name\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, \.\.\.\} given\.$#'
+			message: '#^Parameter \#1 \$mapping of method Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\<T of object\>\:\:setVersionMapping\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{type\: string, fieldName\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, cascade\?\: list\<string\>, \.\.\.\}\|array\{type\: string, fieldName\: string, strategy\?\: string, association\?\: int, id\?\: bool, isOwningSide\?\: bool, collectionClass\?\: class\-string, embedded\: bool, \.\.\.\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Mapping/ClassMetadata.php
@@ -1265,3 +1265,27 @@ parameters:
 			identifier: staticMethod.impossibleType
 			count: 1
 			path: tests/Tests/Types/BinaryUuidTypeTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\FloatType'' and Doctrine\\ODM\\MongoDB\\Types\\StringType will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Tests/Types/TypeTest.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\Types\\\\IntType'' and \*NEVER\* will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Tests/Types/TypeTest.php
+
+		-
+			message: '#^Call to method ReflectionEnum\<BackedEnum\>\:\:isBacked\(\) will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: src/Mapping/ClassMetadata.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) with ''Doctrine\\\\ODM\\\\MongoDB\\\\PersistentCollection\\\\PersistentCollectionInterface'' and Doctrine\\Common\\Collections\\ArrayCollection\<\(int\|string\), mixed\> will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
+			count: 1
+			path: tests/Tests/Functional/Ticket/GH1011Test.php

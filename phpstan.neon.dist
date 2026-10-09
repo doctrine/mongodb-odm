@@ -13,6 +13,11 @@ parameters:
     - tests/Hydrators/
     - tests/PersistentCollections/ (?)
     - tests/Proxies/
+    # PHP 8.4-only fixtures (property hooks, virtual properties). They are only
+    # autoloaded on PHP >= 8.4 while the package supports PHP 8.1, so PHPStan's
+    # composer.json-derived version range rejects them. The property.hooksNotSupported
+    # error is non-ignorable, so the directory must be excluded from analysis.
+    - tests/Documents84/
   treatPhpDocTypesAsCertain: false
   ignoreErrors:
       # Ignore typing providers in tests
