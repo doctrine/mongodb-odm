@@ -68,6 +68,11 @@
         "doctrine/annotations": "For annotation mapping support",
         "ext-bcmath": "Decimal128 type support"
     },
+    "extra": {
+        "ai-mate": {
+            "skills": ["skills"]
+        }
+    },
     "autoload": {
         "psr-4": { "Doctrine\\ODM\\MongoDB\\": "src" }
     },
