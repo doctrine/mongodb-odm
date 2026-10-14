@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mongo-mapping xmlns="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping
+                        http://doctrine-project.org/schemas/odm/doctrine-mongo-mapping.xsd">
+
+    <document name="Doctrine\ODM\MongoDB\Tests\Functional\SortOrderXmlBook">
+        <id field-name="id" />
+        <field field-name="position" type="int" />
+        <reference-one field="shelf" target-document="Doctrine\ODM\MongoDB\Tests\Functional\SortOrderXmlShelf" store-as="id" />
+    </document>
+
+</doctrine-mongo-mapping>

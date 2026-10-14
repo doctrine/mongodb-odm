@@ -417,9 +417,12 @@ class QueryTest extends BaseTestCase
 
         self::assertInstanceOf(Person::class, $readOnly);
         self::assertNotSame($p, $readOnly);
-        self::assertTrue($this->uow->isInIdentityMap($p));
-        self::assertFalse($this->uow->isInIdentityMap($readOnly));
-        self::assertFalse($this->uow->isInIdentityMap($readOnly->pet));
+
+        $registry = $this->dm->getDocumentRegistry();
+
+        self::assertTrue($registry->isInIdentityMap($this->dm->getClassMetadata(Person::class), $p));
+        self::assertFalse($registry->isInIdentityMap($this->dm->getClassMetadata(Person::class), $readOnly));
+        self::assertFalse($registry->isInIdentityMap($this->dm->getClassMetadata(Pet::class), $readOnly->pet));
     }
 
     public function testConstructorShouldThrowExceptionForInvalidType(): void
@@ -626,6 +629,7 @@ class QueryTest extends BaseTestCase
         return $this->createMock(Collection::class);
     }
 
+    /** @return CursorInterface|Traversable<mixed, mixed> */
     private function createCursorMock(): CursorInterface|Traversable
     {
         return $this->createMock(

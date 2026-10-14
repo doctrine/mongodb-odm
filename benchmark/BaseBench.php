@@ -42,7 +42,7 @@ abstract class BaseBench
         $config->setPersistentCollectionDir(__DIR__ . '/../tests/PersistentCollections');
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(self::DATABASE_NAME);
-        $config->setMetadataDriverImpl(self::createMetadataDriverImpl());
+        $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
         $config->setMetadataCache(new ArrayAdapter());
 
         if (PHP_VERSION_ID >= 80400) {

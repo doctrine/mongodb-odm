@@ -12,6 +12,7 @@ use function sprintf;
 /** @internal */
 trait CompoundedSearchOperatorTrait
 {
+    /** @param mixed ...$args */
     public function __construct(private Compound $compound, private Closure $addOperator, ...$args)
     {
         if (! $this instanceof CompoundSearchOperatorInterface) {

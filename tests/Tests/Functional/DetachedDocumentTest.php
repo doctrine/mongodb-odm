@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
+use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Documents\CmsAddress;
 use Documents\CmsArticle;
 use Documents\CmsPhonenumber;
 use Documents\CmsUser;
+use Documents\VersionedUser;
+use InvalidArgumentException;
 
 use function assert;
 use function serialize;
@@ -115,6 +120,117 @@ class DetachedDocumentTest extends BaseTestCase
         $cmsArticle = $this->dm->merge($cmsArticle);
 
         self::assertSame('alcaeus', $cmsArticle->user->getUsername());
+    }
+
+    public function testMergeThrowsWhenManagedCopyWasRemoved(): void
+    {
+        $user           = new CmsUser();
+        $user->username = 'alcaeus';
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // scheduleForDelete() removes a document from the identity map as
+        // soon as remove() is called, so find() can never observe a
+        // STATE_REMOVED document through the normal remove()+merge() flow.
+        // Simulate the state directly to exercise doMerge()'s guard.
+        $uow              = $this->dm->getUnitOfWork();
+        $reregistered     = new CmsUser();
+        $reregistered->id = $user->id;
+        $uow->registerManaged($reregistered, $user->id, ['id' => $user->id]);
+
+        $this->dm->getDocumentRegistry()->getOrCreateObjectState($reregistered)->state = PersistenceState::Removed;
+
+        $detachedCopy           = new CmsUser();
+        $detachedCopy->id       = $user->id;
+        $detachedCopy->username = 'alcaeus-detached';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Removed entity detected during merge. Cannot merge with a removed entity.');
+
+        $this->dm->merge($detachedCopy);
+    }
+
+    public function testMergeThrowsOnVersionMismatch(): void
+    {
+        $user = new VersionedUser();
+        $user->setUsername('alcaeus');
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        $detachedCopy = new VersionedUser();
+        $detachedCopy->setId($user->getId());
+        $detachedCopy->setUsername('alcaeus-detached');
+        $detachedCopy->setVersion($user->getVersion() + 1);
+
+        $this->expectException(LockException::class);
+
+        $this->dm->merge($detachedCopy);
+    }
+
+    public function testMergeInitializesUninitializedDocument(): void
+    {
+        $user           = new CmsUser();
+        $user->username = 'alcaeus';
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $id = $user->id;
+        // getReference() returns the already-loaded instance directly if it's
+        // still in the identity map, so clear it first to force a real proxy.
+        $this->dm->clear();
+
+        $proxy = $this->dm->getReference(CmsUser::class, $id);
+        self::assertTrue($this->dm->getUnitOfWork()->isUninitializedObject($proxy));
+
+        // Clear again so the proxy is detached (but still uninitialized) when merged.
+        $this->dm->clear();
+
+        $merged = $this->dm->merge($proxy);
+
+        // doMerge() initializes an uninitialized $document before reading its
+        // fields, so the original proxy is no longer uninitialized afterwards.
+        self::assertFalse($this->dm->getUnitOfWork()->isUninitializedObject($proxy));
+        self::assertSame('alcaeus', $merged->username);
+    }
+
+    public function testMergeReattachesDetachedNonCascadedReference(): void
+    {
+        $address        = new CmsAddress();
+        $address->city  = 'Berlin';
+        $user           = new CmsUser();
+        $user->username = 'alcaeus';
+        $user->address  = $address;
+        $this->dm->persist($user);
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // A plain (non-proxy) detached CmsAddress carrying the same id as the
+        // persisted one. CmsUser::$address only cascades "persist", not
+        // "merge", so its value should be reattached by reference rather than
+        // field-merged.
+        $detachedAddress       = new CmsAddress();
+        $detachedAddress->id   = $address->id;
+        $detachedAddress->city = 'Munich';
+
+        $detachedUser           = new CmsUser();
+        $detachedUser->id       = $user->id;
+        $detachedUser->username = 'alcaeus';
+        $detachedUser->address  = $detachedAddress;
+
+        $merged = $this->dm->merge($detachedUser);
+
+        self::assertNotSame($detachedAddress, $merged->address);
+        self::assertSame((string) $address->id, (string) $merged->address->id);
+        self::assertTrue($this->dm->contains($merged->address));
+
+        $this->dm->flush();
+        $this->dm->clear();
+
+        // The address itself must not have been field-merged, since the
+        // association doesn't cascade merge.
+        $reloadedAddress = $this->dm->find(CmsAddress::class, $address->id);
+        self::assertSame('Berlin', $reloadedAddress->city);
     }
 
     public function testMergeIgnoresStaticProperties(): void

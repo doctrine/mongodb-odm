@@ -14,11 +14,14 @@ use MongoDB\BSON\UTCDateTime;
  * @internal
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-search/near/
+ *
+ * @phpstan-type GeoJsonGeometry array{type: string, coordinates?: mixed, crs?: mixed, bbox?: mixed}
  */
 class Near extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;
 
+    /** @var int|float|UTCDateTime|GeoJsonGeometry|Point|null */
     private int|float|UTCDateTime|array|Point|null $origin;
 
     private int|float|null $pivot;
@@ -27,8 +30,8 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
     private array $path;
 
     /**
-     * @param int|float|UTCDateTime|array|Point|null $origin
-     * @param int|float|null                         $pivot
+     * @param int|float|UTCDateTime|GeoJsonGeometry|Point|null $origin
+     * @param int|float|null                                   $pivot
      */
     public function __construct(Search $search, DocumentPersister $persister, $origin = null, $pivot = null, string ...$path)
     {
@@ -40,7 +43,7 @@ class Near extends AbstractSearchOperator implements ScoredSearchOperator
             ->path(...$path);
     }
 
-    /** @param int|float|UTCDateTime|array|Point|null $origin */
+    /** @param int|float|UTCDateTime|GeoJsonGeometry|Point|null $origin */
     public function origin($origin): static
     {
         $this->origin = $origin;

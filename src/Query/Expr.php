@@ -8,16 +8,17 @@ use BadMethodCallException;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
 use InvalidArgumentException;
 use LogicException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\Javascript;
+use SortDirection;
 
 use function array_filter;
 use function array_key_exists;
-use function array_map;
 use function array_merge;
 use function array_values;
 use function assert;
@@ -29,7 +30,6 @@ use function is_string;
 use function key;
 use function sprintf;
 use function strpos;
-use function strtolower;
 
 /**
  * Query expression builder for ODM.
@@ -150,7 +150,7 @@ class Expr
     public function addToSet($valueOrExpression): self
     {
         $this->requiresCurrentField(__METHOD__);
-        $this->newObj['$addToSet'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
+        $this->newObj['$addToSet'][$this->currentField] = self::convertExpression($valueOrExpression, $this->class);
 
         return $this;
     }
@@ -995,7 +995,7 @@ class Expr
     public function pull($valueOrExpression): self
     {
         $this->requiresCurrentField(__METHOD__);
-        $this->newObj['$pull'][$this->currentField] = static::convertExpression($valueOrExpression, $this->class);
+        $this->newObj['$pull'][$this->currentField] = self::convertExpression($valueOrExpression, $this->class);
 
         return $this;
     }
@@ -1262,14 +1262,14 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
      *
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string                       $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
      */
     public function sort($fieldName, $order = null): self
     {
-        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
-        return $this->operator('$sort', array_map(fn ($order) => $this->normalizeSortOrder($order), $fields));
+        return $this->operator('$sort', SortHelper::normalizeSortDirections($fields));
     }
 
     /**
@@ -1374,16 +1374,6 @@ class Expr
         }
     }
 
-    /** @param int|string $order */
-    private function normalizeSortOrder($order): int
-    {
-        if (is_string($order)) {
-            $order = strtolower($order) === 'asc' ? 1 : -1;
-        }
-
-        return $order;
-    }
-
     /**
      * Ensure that a current field has been set.
      *
@@ -1464,7 +1454,7 @@ class Expr
                 continue;
             }
 
-            $convertedQuery[$key] = static::convertExpression($value, $fieldMetadata ?? $classMetadata);
+            $convertedQuery[$key] = self::convertExpression($value, $fieldMetadata ?? $classMetadata);
         }
 
         return $convertedQuery;

@@ -20,6 +20,7 @@ use GeoJson\Geometry\Polygon;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Constraint\IsInstanceOf;
+use SortDirection;
 
 use function array_combine;
 use function array_map;
@@ -789,6 +790,22 @@ class SearchTest extends BaseTestCase
             },
         ];
 
+        yield 'Range with mixed bound inclusivity' => [
+            'expectedOperator' => [
+                'range' => (object) [
+                    'path' => ['field1', 'field2'],
+                    'gt' => 5,
+                    'lte' => 10,
+                ],
+            ],
+            'createOperator' => static function (Search|CompoundSearchOperatorInterface|SupportsEmbeddableSearchOperators $stage) {
+                return $stage->range()
+                    ->path('field1', 'field2')
+                    ->gt(5)
+                    ->lte(10);
+            },
+        ];
+
         yield 'Range with boost score' => [
             'expectedOperator' => [
                 'range' => (object) [
@@ -1089,6 +1106,7 @@ class SearchTest extends BaseTestCase
         ];
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideCompoundBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
@@ -1143,6 +1161,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideCompoundBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
@@ -1190,6 +1209,52 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    public function testSortWithEnumDirection(): void
+    {
+        $searchStage = $this->createSearchStage();
+        $searchStage
+            ->index('my_search_index')
+            ->sort(['date' => SortDirection::Descending, 'bar' => SortDirection::Ascending]);
+
+        self::assertEquals(
+            [
+                '$search' => (object) [
+                    'index' => 'my_search_index',
+                    'sort' => (object) [
+                        'date' => -1,
+                        'bar' => 1,
+                    ],
+                ],
+            ],
+            $searchStage->getExpression(),
+        );
+    }
+
+    public function testSortWithIntegerLikeFieldNames(): void
+    {
+        $searchStage = $this->createSearchStage();
+        $searchStage
+            ->index('my_search_index')
+            ->sort('2024', 'desc')
+            // @phpstan-ignore argument.type (integer-like string keys become integer keys in PHP)
+            ->sort(['2025' => 'desc'])
+            ->sort('2024', 'asc');
+
+        self::assertEquals(
+            [
+                '$search' => (object) [
+                    'index' => 'my_search_index',
+                    'sort' => (object) [
+                        '2024' => 1,
+                        '2025' => -1,
+                    ],
+                ],
+            ],
+            $searchStage->getExpression(),
+        );
+    }
+
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideEmbeddedDocumentBuilders')]
     #[DataProvider('provideEqualsBuilders')]
@@ -1239,6 +1304,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     #[DataProvider('provideCompoundBuilders')]
     #[DataProvider('provideEqualsBuilders')]
@@ -1276,6 +1342,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     public function testSearchOperatorsWithSearchBefore(array $expectedOperator, Closure $createOperator, ?string $className = null): void
     {
@@ -1317,6 +1384,7 @@ class SearchTest extends BaseTestCase
         );
     }
 
+    /** @param array<string, mixed> $expectedOperator */
     #[DataProvider('provideAutocompleteBuilders')]
     public function testSearchOperatorsWithSearchAfter(array $expectedOperator, Closure $createOperator, ?string $className = null): void
     {

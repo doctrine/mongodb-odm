@@ -51,6 +51,7 @@ use PHPUnit\Framework\Constraint\Constraint;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\MockObject\MockObject;
 
+use function array_column;
 use function array_count_values;
 use function array_key_exists;
 use function array_map;
@@ -354,6 +355,36 @@ class SchemaManagerTest extends BaseTestCase
 
     /** @phpstan-param IndexOptions $expectedWriteOptions */
     #[DataProvider('getWriteOptions')]
+    public function testUpdateDocumentIndexesShouldDropAndRecreateRenamedIndex(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $indexes        = [
+            [
+                'v' => 1,
+                'key' => ['topic' => 1],
+                'name' => 'old_topic_1',
+            ],
+        ];
+
+        $collection
+            ->expects($this->once())
+            ->method('listIndexes')
+            ->willReturn($this->createIndexIterator($indexes));
+        $collection
+            ->expects($this->once())
+            ->method('createIndex')
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
+        $collection
+            ->expects($this->once())
+            ->method('dropIndex')
+            ->with($this->anything(), $this->writeOptions($expectedWriteOptions));
+
+        $this->schemaManager->updateDocumentIndexes(CmsArticle::class, $maxTimeMs, $writeConcern);
+    }
+
+    /** @phpstan-param IndexOptions $expectedWriteOptions */
+    #[DataProvider('getWriteOptions')]
     public function testDeleteIndexes(array $expectedWriteOptions, ?int $maxTimeMs, ?WriteConcern $writeConcern): void
     {
         $views = array_map(
@@ -568,6 +599,56 @@ class SchemaManagerTest extends BaseTestCase
             ->expects($this->once())
             ->method('updateSearchIndex')
             ->with('search_articles', $this->anything());
+        $collection
+            ->expects($this->never())
+            ->method('createSearchIndexes');
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testUpdateDocumentSearchIndexesCreatesMissingSearchIndexes(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willReturn(new ArrayIterator([['name' => 'foo']]));
+        $collection
+            ->expects($this->once())
+            ->method('dropSearchIndex')
+            ->with('foo');
+        $collection
+            ->expects($this->never())
+            ->method('updateSearchIndex');
+        $collection
+            ->expects($this->once())
+            ->method('createSearchIndexes')
+            ->willReturnCallback(function (array $indexes): array {
+                $this->assertSame(['search_articles'], array_column($indexes, 'name'));
+
+                return ['search_articles'];
+            });
+
+        $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
+    }
+
+    public function testUpdateDocumentSearchIndexesMissingIndexNotCreatedError(): void
+    {
+        $collectionName = $this->dm->getClassMetadata(CmsArticle::class)->getCollection();
+        $collection     = $this->documentCollections[$collectionName];
+        $collection
+            ->expects($this->once())
+            ->method('listSearchIndexes')
+            ->willReturn(new ArrayIterator([]));
+        $collection
+            ->expects($this->once())
+            ->method('createSearchIndexes')
+            ->with($this->anything())
+            ->willReturn([]);
+
+        $this->expectException(SchemaException::class);
+        $this->expectExceptionMessage('The document class "Documents\CmsArticle" is missing the following search index(es): "search_articles"');
 
         $this->schemaManager->updateDocumentSearchIndexes(CmsArticle::class);
     }
@@ -1239,11 +1320,147 @@ EOT;
                 'mongoIndex' => [],
                 'documentIndex' => ['options' => ['bucketSize' => 16]],
             ],
+            // expireAfterSeconds option
+            'expireAfterSecondsOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['expireAfterSeconds' => 86400],
+                'documentIndex' => [],
+            ],
+            'expireAfterSecondsOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['expireAfterSeconds' => 86400]],
+            ],
+            'expireAfterSecondsInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['expireAfterSeconds' => 86400],
+                'documentIndex' => ['options' => ['expireAfterSeconds' => 172800]],
+            ],
+            'expireAfterSecondsInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['expireAfterSeconds' => 86400],
+                'documentIndex' => ['options' => ['expireAfterSeconds' => 86400]],
+            ],
+            // bucketSize option
+            'bucketSizeOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['bucketSize' => 16],
+                'documentIndex' => [],
+            ],
+            'bucketSizeInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['bucketSize' => 8],
+                'documentIndex' => ['options' => ['bucketSize' => 16]],
+            ],
+            'bucketSizeInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['bucketSize' => 16],
+                'documentIndex' => ['options' => ['bucketSize' => 16]],
+            ],
+            // hidden option
+            'hiddenOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['hidden' => true],
+                'documentIndex' => [],
+            ],
+            'hiddenOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['hidden' => true]],
+            ],
+            'hiddenInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['hidden' => false],
+                'documentIndex' => ['options' => ['hidden' => true]],
+            ],
+            'hiddenInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['hidden' => true],
+                'documentIndex' => ['options' => ['hidden' => true]],
+            ],
+            // collation option
+            'collationOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
+                'documentIndex' => [],
+            ],
+            'collationOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 2]]],
+            ],
+            'collationInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 1]]],
+            ],
+            'collationInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 2]]],
+            ],
+            // wildcardProjection option
+            'wildcardProjectionOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['wildcardProjection' => ['a' => 1, 'b' => 1]],
+                'documentIndex' => [],
+            ],
+            'wildcardProjectionOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['wildcardProjection' => ['a' => 1, 'b' => 1]]],
+            ],
+            'wildcardProjectionInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['wildcardProjection' => ['a' => 1, 'b' => 1]],
+                'documentIndex' => ['options' => ['wildcardProjection' => ['a' => 1]]],
+            ],
+            'wildcardProjectionInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['wildcardProjection' => ['a' => 1, 'b' => 1]],
+                'documentIndex' => ['options' => ['wildcardProjection' => ['a' => 1, 'b' => 1]]],
+            ],
+            // storageEngine option
+            'storageEngineOnlyInMongoIndex' => [
+                'expected' => false,
+                'mongoIndex' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]],
+                'documentIndex' => [],
+            ],
+            'storageEngineOnlyInDocumentIndex' => [
+                'expected' => false,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]]],
+            ],
+            'storageEngineInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]],
+                'documentIndex' => ['options' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=snappy']]]],
+            ],
+            'storageEngineInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]],
+                'documentIndex' => ['options' => ['storageEngine' => ['wiredTiger' => ['configString' => 'block_compression=zstd']]]],
+            ],
             // index name autogenerated
             'indexNameAutogenerated' => [
                 'expected' => true,
                 'mongoIndex' => ['name' => 'foo_1_bar_1'],
                 'documentIndex' => [],
+            ],
+            'indexNameMappedAndSame' => [
+                'expected' => true,
+                'mongoIndex' => ['name' => 'my_index'],
+                'documentIndex' => ['options' => ['name' => 'my_index']],
+            ],
+            'indexNameMappedAndDifferent' => [
+                'expected' => false,
+                'mongoIndex' => ['name' => 'my_index'],
+                'documentIndex' => ['options' => ['name' => 'my_renamed_index']],
+            ],
+            'indexNameMappedAndServerGenerated' => [
+                'expected' => false,
+                'mongoIndex' => ['name' => 'foo_1_bar_-1'],
+                'documentIndex' => ['options' => ['name' => 'my_index']],
             ],
             // background option
             'backgroundOptionOnlyInMongoIndex' => [
@@ -1266,11 +1483,26 @@ EOT;
                 'mongoIndex' => ['background' => true],
                 'documentIndex' => ['options' => ['background' => true]],
             ],
-            // 2dsphereIndexVersion index options
+            // 2dsphereIndexVersion option
             '2dsphereIndexVersionOptionsDifferent' => [
                 'expected' => true,
                 'mongoIndex' => ['2dsphereIndexVersion' => 3],
                 'documentIndex' => [],
+            ],
+            '2dsphereIndexVersionOnlyInDocumentIndex' => [
+                'expected' => true,
+                'mongoIndex' => [],
+                'documentIndex' => ['options' => ['2dsphereIndexVersion' => 3]],
+            ],
+            '2dsphereIndexVersionInBothIndexesMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['2dsphereIndexVersion' => 3],
+                'documentIndex' => ['options' => ['2dsphereIndexVersion' => 2]],
+            ],
+            '2dsphereIndexVersionInBothIndexes' => [
+                'expected' => true,
+                'mongoIndex' => ['2dsphereIndexVersion' => 3],
+                'documentIndex' => ['options' => ['2dsphereIndexVersion' => 3]],
             ],
         ];
     }
@@ -1502,6 +1734,7 @@ EOT;
         return new CommandException('Unrecognized pipeline stage name: \'$listSearchIndexes\'', 40324);
     }
 
+    /** @param array<array<string, mixed>> $indexes */
     private function createIndexIterator(array $indexes = []): Iterator
     {
         if (interface_exists(IndexInfoIterator::class)) {
@@ -1514,6 +1747,7 @@ EOT;
         ));
     }
 
+    /** @param array<array<string, mixed>> $collections */
     private function createCollectionIterator(array $collections = []): Iterator
     {
         if (interface_exists(CollectionInfoIterator::class)) {

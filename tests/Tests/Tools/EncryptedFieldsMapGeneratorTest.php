@@ -211,10 +211,12 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
     {
         return new class ($classMetadataFactory, $className) extends AbstractClassMetadataFactory implements ClassMetadataFactoryInterface
         {
+            /** @param array<string> $classNames */
             public function __construct(private ClassMetadataFactoryInterface $classMetadataFactory, private array $classNames)
             {
             }
 
+            /** @return list<\Doctrine\Persistence\Mapping\ClassMetadata<object>> */
             public function getAllMetadata(): array
             {
                 return array_map(
@@ -237,21 +239,28 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
                 return $this->classMetadataFactory->getDriver();
             }
 
+            /** @param \Doctrine\Persistence\Mapping\ClassMetadata<object> $class */
             protected function wakeupReflection(\Doctrine\Persistence\Mapping\ClassMetadata $class, ReflectionService $reflService): void
             {
                 $this->classMetadataFactory->wakeupReflection($class, $reflService);
             }
 
+            /** @param \Doctrine\Persistence\Mapping\ClassMetadata<object> $class */
             protected function initializeReflection(\Doctrine\Persistence\Mapping\ClassMetadata $class, ReflectionService $reflService): void
             {
                 $this->classMetadataFactory->initializeReflection($class, $reflService);
             }
 
+            /** @param \Doctrine\Persistence\Mapping\ClassMetadata<object> $class */
             protected function isEntity(\Doctrine\Persistence\Mapping\ClassMetadata $class): bool
             {
                 return $this->classMetadataFactory->isEntity($class);
             }
 
+            /**
+             * @param \Doctrine\Persistence\Mapping\ClassMetadata<object>      $class
+             * @param \Doctrine\Persistence\Mapping\ClassMetadata<object>|null $parent
+             */
             protected function doLoadMetadata(\Doctrine\Persistence\Mapping\ClassMetadata $class, ?\Doctrine\Persistence\Mapping\ClassMetadata $parent, bool $rootEntityFound, array $nonSuperclassParents): void
             {
                 $this->classMetadataFactory->doLoadMetadata($class, $parent, $rootEntityFound, $nonSuperclassParents);

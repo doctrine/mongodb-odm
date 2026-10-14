@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Closure;
+use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use SortDirection;
 
 use function array_merge;
 
@@ -74,6 +77,10 @@ class SetWindowFieldsTest extends BaseTestCase
         );
     }
 
+    /**
+     * @param array<string, mixed>           $expected
+     * @param Closure(Expr): mixed[]|mixed[] $args
+     */
     #[DataProvider('provideGroupAccumulatorExpressionOperators')]
     #[DataProvider('provideWindowExpressionOperators')]
     public function testOperators(array $expected, string $operator, $args): void
@@ -113,6 +120,59 @@ class SetWindowFieldsTest extends BaseTestCase
         $setWindowFieldsStage
             ->partitionBy('$field1')
             ->sortBy(['field1' => 'asc', 'field2' => 'desc'])
+            ->output()
+                ->field('foo')->locf('$foo');
+
+        self::assertEquals(
+            [
+                '$setWindowFields' => (object) [
+                    'partitionBy' => '$field1',
+                    'sortBy' => (object) [
+                        'field1' => 1,
+                        'field2' => -1,
+                    ],
+                    'output' => (object) [
+                        'foo' => ['$locf' => '$foo'],
+                    ],
+                ],
+            ],
+            $setWindowFieldsStage->getExpression(),
+        );
+    }
+
+    public function testStageWithMultipleSortByCalls(): void
+    {
+        $setWindowFieldsStage = new SetWindowFields($this->getTestAggregationBuilder());
+        $setWindowFieldsStage
+            ->partitionBy('$field1')
+            ->sortBy('field1')
+            ->sortBy('field2', 'desc')
+            ->output()
+                ->field('foo')->locf('$foo');
+
+        self::assertEquals(
+            [
+                '$setWindowFields' => (object) [
+                    'partitionBy' => '$field1',
+                    'sortBy' => (object) [
+                        'field1' => 1,
+                        'field2' => -1,
+                    ],
+                    'output' => (object) [
+                        'foo' => ['$locf' => '$foo'],
+                    ],
+                ],
+            ],
+            $setWindowFieldsStage->getExpression(),
+        );
+    }
+
+    public function testStageWithEnumSort(): void
+    {
+        $setWindowFieldsStage = new SetWindowFields($this->getTestAggregationBuilder());
+        $setWindowFieldsStage
+            ->partitionBy('$field1')
+            ->sortBy(['field1' => SortDirection::Ascending, 'field2' => SortDirection::Descending])
             ->output()
                 ->field('foo')->locf('$foo');
 

@@ -27,6 +27,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function avg($expression, ...$expressions): static
     {
         $this->getExpr()->avg(...func_get_args());
@@ -90,6 +94,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function max($expression, ...$expressions): static
     {
         $this->getExpr()->max(...func_get_args());
@@ -104,6 +112,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function mergeObjects($expression, ...$expressions): static
     {
         $this->getExpr()->mergeObjects(...func_get_args());
@@ -111,6 +123,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function min($expression, ...$expressions): static
     {
         $this->getExpr()->min(...func_get_args());
@@ -132,6 +148,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function stdDevPop($expression, ...$expressions): static
     {
         $this->getExpr()->stdDevPop(...func_get_args());
@@ -139,6 +159,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function stdDevSamp($expression, ...$expressions): static
     {
         $this->getExpr()->stdDevSamp(...func_get_args());
@@ -146,6 +170,10 @@ trait ProvidesGroupAccumulatorOperators
         return $this;
     }
 
+    /**
+     * @param mixed|Expr $expression
+     * @param mixed|Expr ...$expressions
+     */
     public function sum($expression, ...$expressions): static
     {
         $this->getExpr()->sum(...func_get_args());

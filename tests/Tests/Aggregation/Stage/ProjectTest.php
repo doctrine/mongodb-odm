@@ -40,8 +40,12 @@ class ProjectTest extends BaseTestCase
         self::assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 
+    /**
+     * @param array<string, mixed> $expected
+     * @param array<string>        $args
+     */
     #[DataProvider('provideAccumulatorExpressionOperators')]
-    public function testAccumulatorsWithMultipleArguments(array $expected, string $operator, $args): void
+    public function testAccumulatorsWithMultipleArguments(array $expected, string $operator, array $args): void
     {
         $projectStage = new Project($this->getTestAggregationBuilder());
         $projectStage

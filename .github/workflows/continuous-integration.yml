@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - "*.x"
-      - "feature/*"
   push:
 
 env:
@@ -18,6 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        topology:
+          - "server"
         php-version:
           - "8.2"
           - "8.3"
@@ -29,8 +30,6 @@ jobs:
           - "6.0"
         driver-version:
           - "stable"
-        topology:
-          - "server"
         dependencies:
           - "highest"
         symfony-version:
@@ -39,11 +38,11 @@ jobs:
           - "lazy-ghost"
         include:
           # Test against lowest dependencies
-          - dependencies: "lowest"
+          - topology: "server"
             php-version: "8.1"
             mongodb-version: "6.0"
             driver-version: "1.21.0"
-            topology: "server"
+            dependencies: "lowest"
             symfony-version: ""
             proxy: "lazy-ghost"
           # Test with Symfony 6.4
@@ -71,14 +70,16 @@ jobs:
             symfony-version: ""
             proxy: "lazy-ghost"
           # Test with ProxyManager
-          - php-version: "8.2"
+          - topology: "server"
+            php-version: "8.2"
             mongodb-version: "6.0"
             driver-version: "stable"
             dependencies: "highest"
             symfony-version: ""
             proxy: "proxy-manager"
           # Test with Native Lazy Objects
-          - php-version: "8.4"
+          - topology: "server"
+            php-version: "8.4"
             mongodb-version: "8.0"
             driver-version: "stable"
             dependencies: "highest"
@@ -144,7 +145,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
-          coverage: "none"
+          coverage: "xdebug"
           ini-values: "zend.assertions=1"
           tools: "flex"
 
@@ -182,9 +183,17 @@ jobs:
           topology: ${{ matrix.topology }}
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit --exclude-group=atlas ${{ matrix.dependencies == 'lowest' && '--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice' || '' }}"
+        run: "vendor/bin/phpunit --coverage-clover coverage.xml --exclude-group=atlas ${{ matrix.dependencies == 'lowest' && '--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice' || '' }}"
         env:
+          XDEBUG_MODE: "coverage"
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
           USE_LAZY_GHOST_OBJECT: ${{ matrix.proxy == 'lazy-ghost' && '1' || '0' }}
           USE_NATIVE_LAZY_OBJECT: ${{ matrix.proxy == 'native' && '1' || '0' }}
           CRYPT_SHARED_LIB_PATH: ${{ steps.setup-mongodb.outputs.crypt-shared-lib-path }}
+
+      - name: "Upload coverage report"
+        uses: codecov/codecov-action@v7
+        with:
+          disable_search: true
+          files: coverage.xml
+          flags: "${{ matrix.mongodb-version }}-${{ matrix.topology }}"

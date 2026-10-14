@@ -14,6 +14,7 @@ class Client
     #[ODM\Id]
     public ?string $id;
 
+    /** @param Collection<array-key, ClientCard> $clientCards */
     public function __construct(
         #[ODM\Field]
         #[ODM\Encrypt]

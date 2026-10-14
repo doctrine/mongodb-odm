@@ -18,10 +18,12 @@ use Doctrine\ODM\MongoDB\Proxy\Resolver\ClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\LazyGhostProxyClassNameResolver;
 use Doctrine\ODM\MongoDB\Proxy\Resolver\ProxyManagerClassNameResolver;
 use Doctrine\ODM\MongoDB\Query\FilterCollection;
+use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\Persistence\Mapping\ProxyClassNameResolver;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
@@ -140,19 +142,24 @@ class DocumentManager implements ObjectManager
     /** @var ProxyClassNameResolver&ClassNameResolver  */
     private ProxyClassNameResolver $classNameResolver;
 
+    private DocumentRegistry $documentRegistry;
+
+    private ?TypeGuesser $typeGuesser = null;
+
     /**
      * Creates a new Document that operates on the given Mongo connection
      * and uses the given Configuration.
      */
     protected function __construct(?Client $client = null, ?Configuration $config = null, ?EventManager $eventManager = null)
     {
-        $this->config       = $config ?: new Configuration();
-        $this->eventManager = $eventManager ?: new EventManager();
-        $this->client       = $client ?: new Client(
+        $this->config           = $config ?: new Configuration();
+        $this->eventManager     = $eventManager ?: new EventManager();
+        $this->client           = $client ?: new Client(
             'mongodb://127.0.0.1',
             [],
             $this->config->getDriverOptions(),
         );
+        $this->documentRegistry = new DocumentRegistry();
 
         if ($this->config->isNativeLazyObjectEnabled()) {
             $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
@@ -639,7 +646,7 @@ class DocumentManager implements ObjectManager
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
         assert($class instanceof ClassMetadata);
         /** @phpstan-var T|false $document */
-        $document = $this->unitOfWork->tryGetById($identifier, $class);
+        $document = $this->documentRegistry->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($document !== false) {
@@ -673,7 +680,7 @@ class DocumentManager implements ObjectManager
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($documentName, '\\'));
 
-        $document = $this->unitOfWork->tryGetById($identifier, $class);
+        $document = $this->documentRegistry->tryGetById($identifier, $class);
 
         // Check identity map first, if its already in there just return it.
         if ($document) {
@@ -734,6 +741,21 @@ class DocumentManager implements ObjectManager
     }
 
     /**
+     * Gets the registry tracking long-lived per-document state and the
+     * identity map for this DocumentManager.
+     *
+     * Only reach for this directly when you need lower-level access than
+     * the methods below provide (e.g. from UnitOfWork, which caches the
+     * result of this method); most callers should prefer those instead.
+     *
+     * @internal
+     */
+    public function getDocumentRegistry(): DocumentRegistry
+    {
+        return $this->documentRegistry;
+    }
+
+    /**
      * Closes the DocumentManager. All documents that are currently managed
      * by this DocumentManager become detached. The DocumentManager may no longer
      * be used after it is closed.
@@ -762,7 +784,7 @@ class DocumentManager implements ObjectManager
         }
 
         return $this->unitOfWork->isScheduledForInsert($object) ||
-            $this->unitOfWork->isInIdentityMap($object) &&
+            $this->documentRegistry->isInIdentityMap($this->getClassMetadata($object::class), $object) &&
             ! $this->unitOfWork->isScheduledForDelete($object);
     }
 
@@ -772,6 +794,14 @@ class DocumentManager implements ObjectManager
     public function getConfiguration(): Configuration
     {
         return $this->config;
+    }
+
+    /**
+     * Returns a type guesser backed by the configured type registry.
+     */
+    public function getTypeGuesser(): TypeGuesser
+    {
+        return $this->typeGuesser ??= new TypeGuesser($this->config->getTypeProvider());
     }
 
     /**
@@ -787,7 +817,7 @@ class DocumentManager implements ObjectManager
     public function createReference(object $document, array $referenceMapping)
     {
         $class = $this->getClassMetadata($document::class);
-        $id    = $this->unitOfWork->getDocumentIdentifier($document);
+        $id    = $this->documentRegistry->getDocumentIdentifier($document);
 
         if ($id === null) {
             throw new RuntimeException(

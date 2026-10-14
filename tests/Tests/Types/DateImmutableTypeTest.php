@@ -8,14 +8,12 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use Doctrine\ODM\MongoDB\Types\DateImmutableType;
-use Doctrine\ODM\MongoDB\Types\Type;
 use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
-use function assert;
 use function date;
 use function strtotime;
 
@@ -25,9 +23,7 @@ class DateImmutableTypeTest extends TestCase
 {
     public function testGetDateTime(): void
     {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
-        assert($type instanceof DateImmutableType);
-
+        $type      = new DateImmutableType();
         $timestamp = 100000000.001;
         $dateTime  = $type->getDateTime($timestamp);
         self::assertEquals($timestamp, $dateTime->format('U.u'));
@@ -39,7 +35,7 @@ class DateImmutableTypeTest extends TestCase
 
     public function testConvertToDatabaseValue(): void
     {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
+        $type = new DateImmutableType();
 
         self::assertNull($type->convertToDatabaseValue(null), 'null is not converted');
 
@@ -58,7 +54,7 @@ class DateImmutableTypeTest extends TestCase
 
     public function testConvertDateTime(): void
     {
-        $type = Type::getType(Type::DATE);
+        $type = new DateImmutableType();
 
         $timestamp = 100000000.123;
         $mongoDate = new UTCDateTime(100000000123);
@@ -69,7 +65,7 @@ class DateImmutableTypeTest extends TestCase
 
     public function testConvertOldDate(): void
     {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
+        $type = new DateImmutableType();
 
         $date      = new DateTimeImmutable('1900-01-01 00:00:00.123', new DateTimeZone('UTC'));
         $timestamp = '-2208988800.123';
@@ -80,7 +76,7 @@ class DateImmutableTypeTest extends TestCase
     #[DataProvider('provideInvalidDateValues')]
     public function testConvertToDatabaseValueWithInvalidValues($value): void
     {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
+        $type = new DateImmutableType();
         $this->expectException(InvalidArgumentException::class);
         $type->convertToDatabaseValue($value);
     }
@@ -100,7 +96,7 @@ class DateImmutableTypeTest extends TestCase
     #[DataProvider('provideDatabaseToPHPValues')]
     public function testConvertToPHPValue($input, DateTimeImmutable $output): void
     {
-        $type   = Type::getType(Type::DATE_IMMUTABLE);
+        $type   = new DateImmutableType();
         $return = $type->convertToPHPValue($input);
 
         self::assertInstanceOf('DateTimeImmutable', $return);
@@ -109,7 +105,7 @@ class DateImmutableTypeTest extends TestCase
 
     public function testConvertToPHPValueDoesNotConvertNull(): void
     {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
+        $type = new DateImmutableType();
 
         self::assertNull($type->convertToPHPValue(null));
     }
@@ -118,7 +114,7 @@ class DateImmutableTypeTest extends TestCase
     #[DataProvider('provideDatabaseToPHPValues')]
     public function testClosureToPHP($input, DateTimeImmutable $output): void
     {
-        $type = Type::getType(Type::DATE_IMMUTABLE);
+        $type = new DateImmutableType();
 
         $return = (static function ($value) use ($type) {
             $return = null;
@@ -153,7 +149,7 @@ class DateImmutableTypeTest extends TestCase
             $this->markTestSkipped('Platform is not 32-bit');
         }
 
-        $type = Type::getType(Type::DATE_IMMUTABLE);
+        $type = new DateImmutableType();
         $this->expectException(InvalidArgumentException::class);
         $type->convertToDatabaseValue('1900-01-01');
     }
@@ -164,7 +160,7 @@ class DateImmutableTypeTest extends TestCase
             $this->markTestSkipped('Platform is not 64-bit');
         }
 
-        $type   = Type::getType(Type::DATE_IMMUTABLE);
+        $type   = new DateImmutableType();
         $return = $type->convertToDatabaseValue('1900-01-01');
 
         self::assertInstanceOf(UTCDateTime::class, $return);

@@ -44,10 +44,10 @@ class GH978Test extends BaseTestCase
         //persist document
         $this->dm->persist($document);
         //check the count of uow (Persist operation of money is cascaded)
-        self::assertEquals(9, $this->uow->size());
+        self::assertCount(9, $this->dm->getDocumentRegistry());
         //detach the document
         $this->dm->detach($document);
         //should be 0 now
-        self::assertEquals(0, $this->uow->size());
+        self::assertCount(0, $this->dm->getDocumentRegistry());
     }
 }

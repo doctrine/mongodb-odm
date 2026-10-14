@@ -64,7 +64,7 @@ class GH1229Test extends BaseTestCase
 
             self::assertNotSame($actualChildren, $child);
 
-            [, $parent] = $this->uow->getParentAssociation(end($actualChildren));
+            $parent = $this->dm->getDocumentRegistry()->getParentAssociation(end($actualChildren))->parent;
             self::assertSame($this->secondParentId, $parent->id);
         }
 

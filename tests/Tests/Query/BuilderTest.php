@@ -22,10 +22,12 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Regex;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Driver\ReadPreference;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionProperty;
+use SortDirection;
 
 class BuilderTest extends BaseTestCase
 {
@@ -425,7 +427,7 @@ class BuilderTest extends BaseTestCase
 
         $expected = [
             '$setOnInsert' => [
-                'createDate' => Type::getType('date')->convertToDatabaseValue($createDate),
+                'createDate' => new UTCDateTime($createDate),
             ],
         ];
         self::assertEquals($expected, $qb->getNewObj());
@@ -440,8 +442,8 @@ class BuilderTest extends BaseTestCase
 
         $expected = [
             'createdAt' => [
-                '$gte' => Type::getType('date')->convertToDatabaseValue($start),
-                '$lt' => Type::getType('date')->convertToDatabaseValue($end),
+                '$gte' => new UTCDateTime($start),
+                '$lt' => new UTCDateTime($end),
             ],
         ];
         self::assertEquals($expected, $qb->getQueryArray());
@@ -559,7 +561,10 @@ class BuilderTest extends BaseTestCase
         ];
     }
 
-    /** @param string[] $args */
+    /**
+     * @param string[]           $args
+     * @param array<string, int> $expected
+     */
     #[DataProvider('provideSelectProjections')]
     public function testSelect(array $args, array $expected): void
     {
@@ -574,7 +579,10 @@ class BuilderTest extends BaseTestCase
         return self::provideProjections(true);
     }
 
-    /** @param string[] $args */
+    /**
+     * @param string[]           $args
+     * @param array<string, int> $expected
+     */
     #[DataProvider('provideExcludeProjections')]
     public function testExclude(array $args, array $expected): void
     {
@@ -687,9 +695,8 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => 1], $qb->debug('sort'));
     }
 
-    /** @param string|int $order */
     #[DataProvider('provideSortOrders')]
-    public function testSortWithFieldNameAndOrder($order, int $expectedOrder): void
+    public function testSortWithFieldNameAndOrder(mixed $order, mixed $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);
@@ -697,16 +704,19 @@ class BuilderTest extends BaseTestCase
         self::assertEquals(['foo' => $expectedOrder], $qb->debug('sort'));
     }
 
-    public static function provideSortOrders(): array
+    public static function provideSortOrders(): iterable
     {
-        return [
-            [1, 1],
-            [-1, -1],
-            ['asc', 1],
-            ['desc', -1],
-            ['ASC', 1],
-            ['DESC', -1],
-        ];
+        yield [1, 1];
+        yield [-1, -1];
+        yield ['asc', 1];
+        yield ['desc', -1];
+        yield ['ASC', 1];
+        yield ['DESC', -1];
+        yield [SortDirection::Ascending, 1];
+        yield [SortDirection::Descending, -1];
+        yield [1.0, 1];
+        yield [-1.0, -1];
+        yield ['textScore', ['$meta' => 'textScore']];
     }
 
     public function testSortWithArrayOfFieldNameAndOrderPairs(): void
@@ -715,6 +725,22 @@ class BuilderTest extends BaseTestCase
             ->sort(['foo' => 1, 'bar' => -1]);
 
         self::assertEquals(['foo' => 1, 'bar' => -1], $qb->debug('sort'));
+    }
+
+    public function testSortRejectsDecimalOrder(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        // @phpstan-ignore argument.type (invalid sort order on purpose)
+        $this->getTestQueryBuilder()->sort('foo', 1.1);
+    }
+
+    public function testSortWithMetaExpressionArray(): void
+    {
+        $qb = $this->getTestQueryBuilder()
+            ->sort(['score' => ['$meta' => 'textScore']]);
+
+        self::assertEquals(['score' => ['$meta' => 'textScore']], $qb->debug('sort'));
     }
 
     public function testSortMetaDoesProjectMissingField(): void

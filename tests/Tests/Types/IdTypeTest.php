@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
-use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\IdType;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +14,7 @@ class IdTypeTest extends TestCase
     public function testConvertToDatabaseValue(): void
     {
         $identifier = new ObjectId();
-        $type       = Type::getType('id');
+        $type       = new IdType();
 
         self::assertNull($type->convertToDatabaseValue(null), 'null is not converted');
         self::assertSame($identifier, $type->convertToDatabaseValue($identifier), 'ObjectId objects are not converted');
@@ -25,7 +25,7 @@ class IdTypeTest extends TestCase
     #[DataProvider('provideInvalidObjectIdConstructorArguments')]
     public function testConvertToDatabaseValueShouldGenerateObjectIds($value): void
     {
-        $type = Type::getType('id');
+        $type = new IdType();
 
         self::assertInstanceOf(ObjectId::class, $type->convertToDatabaseValue($value));
     }

@@ -7,7 +7,7 @@ namespace Documents;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-#[ODM\Index(keys: ['topic' => 'asc'])]
+#[ODM\Index(keys: ['topic' => 'asc'], name: 'topic_1')]
 #[ODM\SearchIndex(
     name: 'search_articles',
     dynamic: true,

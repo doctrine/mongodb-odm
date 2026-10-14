@@ -37,7 +37,7 @@ abstract class AbstractPersistentCollectionFactory implements PersistentCollecti
      *
      * @param string $collectionClass FQCN of class to instantiate
      *
-     * @return BaseCollection
+     * @return BaseCollection<array-key, object>
      */
     abstract protected function createCollectionClass(string $collectionClass): BaseCollection;
 }
