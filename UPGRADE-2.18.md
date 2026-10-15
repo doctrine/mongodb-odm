@@ -125,3 +125,10 @@ $registry = new TypeRegistry($container, ['money' => 'app.odm_type.money']);
 ```
 
 To access the type of a mapped field, use the `ClassMetadata::getFieldType()` method.
+
+## Identity map identifier collisions are deprecated
+
+Adding a different document to the identity map with an already mapped
+identifier now triggers a deprecation, and will throw in 3.0. Enable
+`Configuration::setRejectIdCollisionInIdentityMap(true)` to throw a
+`Doctrine\ODM\MongoDB\DocumentIdentityCollisionException` now.
