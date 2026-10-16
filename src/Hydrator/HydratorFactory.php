@@ -282,7 +282,7 @@ EOF
             $this->class->fieldMappings['%2$s']['criteria'] ?? []
         );
         $sort = $this->class->fieldMappings['%2$s']['sort'] ?? [];
-        $return = $this->dm->getUnitOfWork()->getDocumentPersister($className)->load($criteria, null, [], 0, $sort);
+        $return = $this->dm->getUnitOfWork()->getDocumentLoader($className)->load($criteria, null, [], 0, $sort);
         $this->class->propertyAccessors['%2$s']->setValue($document, $return);
         $hydratedData['%2$s'] = $return;
 
