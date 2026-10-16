@@ -567,6 +567,7 @@ class Expr
     {
         return $this->dm->getUnitOfWork()
             ->getDocumentPersister($this->class->name)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj($this->newObj, true);
     }
 
@@ -579,6 +580,7 @@ class Expr
     {
         return $this->dm->getUnitOfWork()
             ->getDocumentPersister($this->class->name)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj($this->convertExpressions($this->query));
     }
 

@@ -42,6 +42,7 @@ class DocumentRepositoryTest extends BaseTestCase
         $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(User::class)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj(['account' => $account]);
         $expectedQuery = [
             'account.$ref' => $this->dm->getDocumentCollection(Account::class)->getCollectionName(),
@@ -64,6 +65,7 @@ class DocumentRepositoryTest extends BaseTestCase
         $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(Account::class)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj(['user' => $user]);
         $expectedQuery = [
             'user.$ref' => 'users',
@@ -88,6 +90,7 @@ class DocumentRepositoryTest extends BaseTestCase
         $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(Account::class)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj(['userDbRef' => $user]);
         $expectedQuery = [
             'userDbRef.$ref' => 'users',
@@ -110,6 +113,7 @@ class DocumentRepositoryTest extends BaseTestCase
         $query         = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(Developer::class)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj(['projects' => $project]);
         $expectedQuery = [
             'projects' => [
@@ -159,6 +163,7 @@ class DocumentRepositoryTest extends BaseTestCase
         $query = $this->dm
             ->getUnitOfWork()
             ->getDocumentPersister(User::class)
+            ->getCriteriaPreparer()
             ->prepareQueryOrNewObj(['groups' => $group]);
 
         $expectedQuery = [

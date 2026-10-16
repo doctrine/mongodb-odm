@@ -670,13 +670,13 @@ class Builder
         $query = $this->query;
 
         $query['query'] = $this->expr->getQuery();
-        $query['query'] = $documentPersister->addDiscriminatorToPreparedQuery($query['query']);
-        $query['query'] = $documentPersister->addFilterToPreparedQuery($query['query']);
+        $query['query'] = $documentPersister->getCriteriaPreparer()->addDiscriminatorToPreparedQuery($query['query']);
+        $query['query'] = $documentPersister->getCriteriaPreparer()->addFilterToPreparedQuery($query['query']);
 
         $query['newObj'] = $this->expr->getNewObj();
 
         if (isset($query['distinct'])) {
-            $query['distinct'] = $documentPersister->prepareFieldName($query['distinct']);
+            $query['distinct'] = $documentPersister->getCriteriaPreparer()->prepareFieldName($query['distinct']);
         }
 
         if (
@@ -688,7 +688,7 @@ class Builder
         }
 
         if (! empty($query['select'])) {
-            $query['select'] = $documentPersister->prepareProjection($query['select']);
+            $query['select'] = $documentPersister->getCriteriaPreparer()->prepareProjection($query['select']);
             if (
                 $this->hydrate && $this->class->inheritanceType === ClassMetadata::INHERITANCE_TYPE_SINGLE_COLLECTION
                 && ! isset($query['select'][$this->class->discriminatorField])
@@ -701,7 +701,7 @@ class Builder
         }
 
         if (isset($query['sort'])) {
-            $query['sort'] = $documentPersister->prepareSort($query['sort'], ['textScore']);
+            $query['sort'] = $documentPersister->getCriteriaPreparer()->prepareSort($query['sort'], ['textScore']);
         }
 
         if ($this->class->readPreference && ! array_key_exists('readPreference', $query)) {
