@@ -20,12 +20,15 @@ use Documents\Bars\Bar;
 use Documents\Encryption\Client;
 use Documents\Encryption\InvalidRootEncrypt;
 use Documents\Encryption\Patient;
+use Documents\Encryption\PatientProfile;
 use Documents\Encryption\PatientRecord;
 use Documents\Encryption\RangeTypes;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
 
+use function array_column;
+use function array_keys;
 use function array_map;
 
 use const PHP_INT_MAX;
@@ -79,6 +82,77 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         ];
 
         self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsForClassWithSeveralEmbeddedDocuments(): void
+    {
+        $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(PatientProfile::class);
+
+        $expected = [
+            [
+                'path' => 'nationalId',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'insurance.provider',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'insurance.policyNumber',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'contact.email',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'contact.phone',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'emergencyContact.email',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'emergencyContact.phone',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+        ];
+
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsMapWithSeveralEmbeddedDocuments(): void
+    {
+        $classMetadataFactory = $this->createMetadataFactory(
+            $this->dm->getMetadataFactory(),
+            PatientProfile::class,
+        );
+
+        $factory            = new EncryptedFieldsMapGenerator($classMetadataFactory);
+        $encryptedFieldsMap = $factory->getEncryptedFieldsMap();
+
+        self::assertSame([PatientProfile::class], array_keys($encryptedFieldsMap));
+        self::assertSame(
+            [
+                'nationalId',
+                'insurance.provider',
+                'insurance.policyNumber',
+                'contact.email',
+                'contact.phone',
+                'emergencyContact.email',
+                'emergencyContact.phone',
+            ],
+            array_column($encryptedFieldsMap[PatientProfile::class]['fields'], 'path'),
+        );
     }
 
     public function testVariousRangeTypes(): void
