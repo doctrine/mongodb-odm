@@ -20,12 +20,15 @@ use Documents\Bars\Bar;
 use Documents\Encryption\Client;
 use Documents\Encryption\InvalidRootEncrypt;
 use Documents\Encryption\Patient;
+use Documents\Encryption\PatientProfile;
 use Documents\Encryption\PatientRecord;
 use Documents\Encryption\RangeTypes;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
 
+use function array_column;
+use function array_keys;
 use function array_map;
 
 use const PHP_INT_MAX;
@@ -79,6 +82,77 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         ];
 
         self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsForClassWithSeveralEmbeddedDocuments(): void
+    {
+        $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(PatientProfile::class);
+
+        $expected = [
+            [
+                'path' => 'nationalId',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'insurance.provider',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'insurance.policyNumber',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'contact.email',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'contact.phone',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'emergencyContact.email',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'emergencyContact.phone',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+        ];
+
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsMapWithSeveralEmbeddedDocuments(): void
+    {
+        $classMetadataFactory = $this->createMetadataFactory(
+            $this->dm->getMetadataFactory(),
+            PatientProfile::class,
+        );
+
+        $factory            = new EncryptedFieldsMapGenerator($classMetadataFactory);
+        $encryptedFieldsMap = $factory->getEncryptedFieldsMap();
+
+        self::assertSame([PatientProfile::class], array_keys($encryptedFieldsMap));
+        self::assertSame(
+            [
+                'nationalId',
+                'insurance.provider',
+                'insurance.policyNumber',
+                'contact.email',
+                'contact.phone',
+                'emergencyContact.email',
+                'emergencyContact.phone',
+            ],
+            array_column($encryptedFieldsMap[PatientProfile::class]['fields'], 'path'),
+        );
     }
 
     public function testVariousRangeTypes(): void
@@ -211,10 +285,12 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
     {
         return new class ($classMetadataFactory, $className) extends AbstractClassMetadataFactory implements ClassMetadataFactoryInterface
         {
+            /** @param list<class-string> $classNames */
             public function __construct(private ClassMetadataFactoryInterface $classMetadataFactory, private array $classNames)
             {
             }
 
+            /** @return array<ClassMetadata<object>> */
             public function getAllMetadata(): array
             {
                 return array_map(
@@ -237,21 +313,28 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
                 return $this->classMetadataFactory->getDriver();
             }
 
+            /** @param ClassMetadata<object> $class */
             protected function wakeupReflection(\Doctrine\Persistence\Mapping\ClassMetadata $class, ReflectionService $reflService): void
             {
                 $this->classMetadataFactory->wakeupReflection($class, $reflService);
             }
 
+            /** @param ClassMetadata<object> $class */
             protected function initializeReflection(\Doctrine\Persistence\Mapping\ClassMetadata $class, ReflectionService $reflService): void
             {
                 $this->classMetadataFactory->initializeReflection($class, $reflService);
             }
 
+            /** @param ClassMetadata<object> $class */
             protected function isEntity(\Doctrine\Persistence\Mapping\ClassMetadata $class): bool
             {
                 return $this->classMetadataFactory->isEntity($class);
             }
 
+            /**
+             * @param ClassMetadata<object>      $class
+             * @param ClassMetadata<object>|null $parent
+             */
             protected function doLoadMetadata(\Doctrine\Persistence\Mapping\ClassMetadata $class, ?\Doctrine\Persistence\Mapping\ClassMetadata $parent, bool $rootEntityFound, array $nonSuperclassParents): void
             {
                 $this->classMetadataFactory->doLoadMetadata($class, $parent, $rootEntityFound, $nonSuperclassParents);
