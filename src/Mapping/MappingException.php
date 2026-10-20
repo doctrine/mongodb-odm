@@ -320,6 +320,16 @@ final class MappingException extends BaseMappingException
         ));
     }
 
+    public static function embeddedDocumentClassCannotBeDetermined(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'The class of the embedded document field "%s" in class "%s" cannot be determined. '
+            . 'Define either "targetDocument" or "discriminatorMap" on the field to use automatic encryption.',
+            $fieldName,
+            $className,
+        ));
+    }
+
     public static function unsupportedTypeForAutoGenerator(string $className, string $type): self
     {
         return new self(sprintf(

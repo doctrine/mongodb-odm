@@ -13,6 +13,7 @@ use Generator;
 use LogicException;
 
 use function array_filter;
+use function array_unique;
 use function iterator_to_array;
 use function sprintf;
 
@@ -96,26 +97,53 @@ final class EncryptedFieldsMapGenerator
 
         foreach ($classMetadata->fieldMappings as $mapping) {
             // Add fields recursively
-            if ($mapping['embedded'] ?? false) {
-                $embedMetadata = $this->classMetadataFactory->getMetadataFor($mapping['targetDocument']);
+            if (($mapping['embedded'] ?? false) && ! isset($mapping['encrypt'])) {
+                $embeddedMetadata = $this->getEmbeddedClassMetadata($mapping);
 
-                // When the embedded document class is encrypted, the field is encrypted,
-                // but none of the embedded fields are encrypted separately.
-                if ($embedMetadata->isEncrypted) {
-                    $mapping['encrypt'] ??= [];
-                } elseif (! isset($mapping['encrypt'])) {
+                if ($embeddedMetadata === []) {
+                    throw MappingException::embeddedDocumentClassCannotBeDetermined(
+                        $classMetadata->getName(),
+                        $mapping['fieldName'],
+                    );
+                }
+
+                // When an embedded document class is encrypted, the field is encrypted
+                // as a whole object, and none of the embedded fields are encrypted separately.
+                foreach ($embeddedMetadata as $embedMetadata) {
+                    if (! $embedMetadata->isEncrypted) {
+                        continue;
+                    }
+
+                    $mapping['encrypt'] = [];
+
+                    break;
+                }
+
+                if (! isset($mapping['encrypt'])) {
                     // The fields of the embedded document are yielded individually.
                     // A "yield from" would reuse the keys of the nested generator, which
                     // restart at 0 for every embedded document. Collecting the generator
                     // with iterator_to_array() would then drop the fields whose keys collide.
-                    $embeddedFields = $this->createEncryptedFieldsForClass(
-                        $embedMetadata,
-                        $parentPath . $mapping['name'] . '.',
-                        $visitedClasses + [$classMetadata->getName() => true],
-                    );
+                    $yieldedPaths = [];
 
-                    foreach ($embeddedFields as $field) {
-                        yield $field;
+                    foreach ($embeddedMetadata as $embedMetadata) {
+                        $embeddedFields = $this->createEncryptedFieldsForClass(
+                            $embedMetadata,
+                            $parentPath . $mapping['name'] . '.',
+                            $visitedClasses + [$classMetadata->getName() => true],
+                        );
+
+                        foreach ($embeddedFields as $field) {
+                            // Several classes of a discriminator map can declare the same field.
+                            // The path is yielded only once.
+                            if (isset($yieldedPaths[$field['path']])) {
+                                continue;
+                            }
+
+                            $yieldedPaths[$field['path']] = true;
+
+                            yield $field;
+                        }
                     }
                 }
             }
@@ -152,5 +180,35 @@ final class EncryptedFieldsMapGenerator
 
             yield $field;
         }
+    }
+
+    /**
+     * Returns the metadata of the classes that an embedded field can hold.
+     *
+     * An embedded document is either mapped to a single class with "targetDocument",
+     * or to the classes listed in "discriminatorMap" when the field is polymorphic.
+     * When neither is set, the class is only known at runtime from the stored value,
+     * so it cannot be determined when building the encrypted fields map.
+     *
+     * @param array<string, mixed> $mapping
+     *
+     * @return list<ClassMetadata<object>>
+     */
+    private function getEmbeddedClassMetadata(array $mapping): array
+    {
+        if (isset($mapping['targetDocument'])) {
+            return [$this->classMetadataFactory->getMetadataFor($mapping['targetDocument'])];
+        }
+
+        if (isset($mapping['discriminatorMap'])) {
+            $metadata = [];
+            foreach (array_unique($mapping['discriminatorMap']) as $embeddedClass) {
+                $metadata[] = $this->classMetadataFactory->getMetadataFor($embeddedClass);
+            }
+
+            return $metadata;
+        }
+
+        return [];
     }
 }
