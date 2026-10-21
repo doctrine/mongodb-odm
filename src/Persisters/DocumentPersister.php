@@ -1084,7 +1084,7 @@ final class DocumentPersister
      *
      * @return mixed
      */
-    public function convertToDatabaseValue(string $fieldName, $value, ?ClassMetadata $class = null)
+    private function convertToDatabaseValue(string $fieldName, $value, ?ClassMetadata $class = null)
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
