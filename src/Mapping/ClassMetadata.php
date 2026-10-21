@@ -18,7 +18,10 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
+use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -551,6 +554,26 @@ final class ClassMetadata implements BaseClassMetadata
     private string $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
 
     /**
+     * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
+     *
+     * @var array<string, array>
+     * @phpstan-var ShardKey
+     */
+    public $shardKey = [];
+
+    /**
+     * Allows users to specify a validation schema for the collection.
+     *
+     * @phpstan-var array<string, mixed>|object|null
+     */
+    private array|object|null $validator = null;
+
+    /**
+     * Determines whether to error on invalid documents or just warn about the violations but allow invalid documents to be inserted.
+     */
+    private string $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
+
+    /**
      * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
      */
     private string $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
@@ -775,10 +798,128 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public private(set) ?TimeSeries $timeSeriesOptions = null;
 
+    /**
+     * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
+     * inheritance mapping.
+     *
+     * @var string|null
+     */
+    public $discriminatorField;
+
+    /**
+     * READ-ONLY: The default value for discriminatorField in case it's not set in the document
+     *
+     * @see discriminatorField
+     *
+     * @var string|null
+     */
+    public $defaultDiscriminatorValue;
+
+    /**
+     * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
+     *
+     * @var bool
+     */
+    public $isMappedSuperclass = false;
+
+    /**
+     * READ-ONLY: Whether this class describes the mapping of a embedded document.
+     *
+     * @var bool
+     */
+    public $isEmbeddedDocument = false;
+
+    /**
+     * READ-ONLY: Whether this class describes the mapping of an aggregation result document.
+     *
+     * @var bool
+     */
+    public $isQueryResultDocument = false;
+
+    /**
+     * READ-ONLY: Whether this class describes the mapping of a database view.
+     */
+    private bool $isView = false;
+
+    /**
+     * READ-ONLY: Whether this class describes the mapping of a gridFS file
+     *
+     * @var bool
+     */
+    public $isFile = false;
+
+    /**
+     * READ-ONLY: The default chunk size in bytes for the file
+     *
+     * @var int|null
+     */
+    public $chunkSizeBytes;
+
+    /**
+     * READ-ONLY: The policy used for change-tracking on entities of this class.
+     *
+     * @var int
+     */
+    public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
+
+    /**
+     * READ-ONLY: A flag for whether or not instances of this class are to be versioned
+     * with optimistic locking.
+     *
+     * @var bool $isVersioned
+     */
+    public $isVersioned = false;
+
+    /**
+     * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
+     *
+     * @var string|null $versionField
+     */
+    public $versionField;
+
+    /**
+     * READ-ONLY: A flag for whether or not instances of this class are to allow pessimistic
+     * locking.
+     *
+     * @var bool $isLockable
+     */
+    public $isLockable = false;
+
+    /**
+     * READ-ONLY: The name of the field which is used for locking a document.
+     *
+     * @var mixed $lockField
+     */
+    public $lockField;
+
+    /**
+     * The ReflectionClass instance of the mapped class.
+     *
+     * @var ReflectionClass<T>
+     */
+    public $reflClass;
+
+    /**
+     * READ_ONLY: A flag for whether or not this document is read-only.
+     *
+     * @var bool
+     */
+    public $isReadOnly;
+
+    /**
+     * READ-ONLY: A flag for whether or not this document has encrypted fields.
+     */
+    public bool $isEncrypted = false;
+
+    /** READ ONLY: stores metadata about the time series collection */
+    public ?TimeSeries $timeSeriesOptions = null;
+
     private InstantiatorInterface $instantiator;
 
     /** @var class-string|null */
     private ?string $rootClass;
+
+    private TypeProvider $typeProvider;
 
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
@@ -831,6 +972,24 @@ final class ClassMetadata implements BaseClassMetadata
         }
 
         return ($pathPrefix ? $pathPrefix . '.' : '') . self::getReferencePrefix($storeAs) . 'id';
+    }
+
+    /**
+     * Inject the TypeProvider instance, used for field transformation and type detection.
+     */
+    public function setTypeProvider(TypeProvider $types): void
+    {
+        $this->typeProvider = $types;
+    }
+
+    private function getTypeProvider(): TypeProvider
+    {
+        if (! isset($this->typeProvider)) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Using ClassMetadata without a TypeProvider is deprecated. Inject the TypeProvider instance from the DocumentManager via $classMetadata->setTypeProvider($configuration->getTypeProvider()).');
+            $this->typeProvider = TypeRegistry::getDeprecatedSharedInstance();
+        }
+
+        return $this->typeProvider;
     }
 
     public function getReflectionClass(): ReflectionClass
@@ -930,7 +1089,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
-        if ($this->isView) {
+        if ($this->isView()) {
             return;
         }
 
@@ -1451,7 +1610,7 @@ final class ClassMetadata implements BaseClassMetadata
         }
     }
 
-    public function getBucketName(): ?string
+    public function getBucketName(): string
     {
         return $this->bucketName;
     }
@@ -1562,7 +1721,7 @@ final class ClassMetadata implements BaseClassMetadata
             default:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
-                $type              = Type::getType($mapping['type']);
+                $type              = $this->getTypeProvider()->get($mapping['type']);
                 if ($type instanceof Incrementable) {
                     $allowedStrategies[] = self::STORAGE_STRATEGY_INCREMENT;
                 }
@@ -1662,8 +1821,6 @@ final class ClassMetadata implements BaseClassMetadata
      * @internal
      *
      * @phpstan-param AssociationFieldMapping $mapping
-     *
-     * @throws MappingException
      */
     public function addInheritedAssociationMapping(array $mapping): void
     {
@@ -1761,9 +1918,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function getPHPIdentifierValue(mixed $id): mixed
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return Type::getType($idType)->convertToPHPValue($id);
+        return $this->getFieldType($this->identifier)->convertToPHPValue($id);
     }
 
     /**
@@ -1771,9 +1926,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function getDatabaseIdentifierValue(mixed $id): mixed
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return Type::getType($idType)->convertToDatabaseValue($id);
+        return $this->getFieldType($this->identifier)->convertToDatabaseValue($id);
     }
 
     /**
@@ -1849,6 +2002,19 @@ final class ClassMetadata implements BaseClassMetadata
         }
 
         return $this->fieldMappings[$fieldName];
+    }
+
+    public function getFieldType(string $fieldName): Type
+    {
+        if (! isset($this->fieldMappings[$fieldName]['type'])) {
+            return $this->getTypeProvider()->get(Type::RAW);
+        }
+
+        try {
+            return $this->getTypeProvider()->get($this->fieldMappings[$fieldName]['type']);
+        } catch (InvalidTypeException) {
+            throw MappingException::invalidTypeForField($this->name, $fieldName, $this->fieldMappings[$fieldName]['type']);
+        }
     }
 
     /**
@@ -1996,7 +2162,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function setVersionMapping(array &$mapping): void
     {
-        if (! Type::getType($mapping['type']) instanceof Versionable) {
+        if (! $this->getTypeProvider()->get($mapping['type']) instanceof Versionable) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 
@@ -2292,7 +2458,7 @@ final class ClassMetadata implements BaseClassMetadata
 
         if (isset($mapping['encrypt']['queryType'])) {
             // The encrypted range query options min and max must be converted to the database type
-            $type = Type::getType($mapping['type']);
+            $type = $this->getTypeProvider()->get($mapping['type']);
             foreach (['min', 'max'] as $option) {
                 if (isset($mapping['encrypt'][$option])) {
                     $mapping['encrypt'][$option] = $type->convertToDatabaseValue($mapping['encrypt'][$option]);
@@ -2657,7 +2823,7 @@ final class ClassMetadata implements BaseClassMetadata
             return $mapping;
         }
 
-        if (! $type->isBuiltin() && Type::hasType($type->getName())) {
+        if (! $type->isBuiltin() && $this->getTypeProvider()->has($type->getName())) {
             $mapping['type'] = $type->getName();
 
             return $mapping;

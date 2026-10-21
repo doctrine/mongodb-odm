@@ -77,7 +77,7 @@ final class SchemaManager
     public function ensureIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -94,7 +94,7 @@ final class SchemaManager
     public function updateIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -116,7 +116,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot update document indexes for mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -274,7 +274,7 @@ final class SchemaManager
     public function ensureDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null, bool $background = false): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot create document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -300,7 +300,7 @@ final class SchemaManager
     public function deleteIndexes(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -318,7 +318,7 @@ final class SchemaManager
     public function deleteDocumentIndexes(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot delete document indexes for mapped super classes, embedded documents or query result documents.');
         }
 
@@ -331,7 +331,7 @@ final class SchemaManager
     public function createSearchIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -410,7 +410,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot create search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
@@ -443,7 +443,7 @@ final class SchemaManager
     public function updateSearchIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -465,7 +465,7 @@ final class SchemaManager
     {
         $class = $this->dm->getClassMetadata($documentName);
 
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot update search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
@@ -501,8 +501,28 @@ final class SchemaManager
             $collection->dropSearchIndex($name);
         }
 
+        $missingSearchIndexes = [];
+
         foreach ($searchIndexes as $searchIndex) {
+            if (! in_array($searchIndex['name'], $existingNames, true)) {
+                $missingSearchIndexes[] = $searchIndex;
+
+                continue;
+            }
+
             $collection->updateSearchIndex($searchIndex['name'], $searchIndex['definition']);
+        }
+
+        if (empty($missingSearchIndexes)) {
+            return;
+        }
+
+        $createdNames = $collection->createSearchIndexes($missingSearchIndexes);
+
+        $unprocessedNames = array_diff(array_column($missingSearchIndexes, 'name'), $createdNames);
+
+        if (! empty($unprocessedNames)) {
+            throw SchemaException::missingSearchIndex($class->name, $unprocessedNames);
         }
     }
 
@@ -512,7 +532,7 @@ final class SchemaManager
     public function deleteSearchIndexes(): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
                 continue;
             }
 
@@ -530,7 +550,7 @@ final class SchemaManager
     public function deleteDocumentSearchIndexes(string $documentName): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView()) {
             throw new InvalidArgumentException('Cannot delete search indexes for mapped super classes, embedded documents, query result documents, or views.');
         }
 
@@ -616,7 +636,7 @@ final class SchemaManager
     public function updateValidators(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
-            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView || $class->isFile) {
+            if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
                 continue;
             }
 
@@ -632,7 +652,7 @@ final class SchemaManager
     public function updateDocumentValidator(string $documentName, ?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
         $class = $this->dm->getClassMetadata($documentName);
-        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView || $class->isFile) {
+        if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument || $class->isView() || $class->isFile) {
             throw new InvalidArgumentException('Cannot update validators for files, views, mapped super classes, embedded documents or aggregation result documents.');
         }
 
@@ -708,7 +728,7 @@ final class SchemaManager
             throw new InvalidArgumentException('Cannot create document collection for mapped super classes, embedded documents or query result documents.');
         }
 
-        if ($class->isView) {
+        if ($class->isView()) {
             $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
 
             $rootClass = $class->getRootClass();
@@ -932,11 +952,15 @@ final class SchemaManager
      *
      *   (a) Key/direction pairs differ or are not in the same order
      *   (b) Sparse or unique options differ
-     *   (c) Geospatial options differ (bits, max, min)
+     *   (c) Geospatial options differ (bits, max, min, bucketSize, 2dsphereIndexVersion)
      *   (d) The partialFilterExpression differs
+     *   (e) The expireAfterSeconds option differs
+     *   (f) The hidden, collation, wildcardProjection or storageEngine options differ
+     *   (g) The class metadata names the index and the name differs
      *
      * The background option is only relevant to index creation and is not
-     * considered.
+     * considered. Neither is an index name the class metadata does not set,
+     * since the server generates one.
      *
      * @phpstan-param IndexMapping $documentIndex
      */
@@ -951,6 +975,16 @@ final class SchemaManager
             return false;
         }
 
+        /* A name the class metadata does not set is generated by the server, so a difference is
+         * not meaningful. A name it does set is part of the mapping, and since MongoDB refuses to
+         * create a second index over the same key spec the existing one has to be dropped first. */
+        if (
+            isset($documentIndexOptions['name']) &&
+            ($mongoIndexOptions['name'] ?? null) !== $documentIndexOptions['name']
+        ) {
+            return false;
+        }
+
         if (empty($mongoIndexOptions['sparse']) xor empty($documentIndexOptions['sparse'])) {
             return false;
         }
@@ -959,13 +993,19 @@ final class SchemaManager
             return false;
         }
 
-        foreach (['bits', 'max', 'min'] as $option) {
+        foreach (['bits', 'max', 'min', 'bucketSize', '2dsphereIndexVersion', 'hidden', 'collation', 'wildcardProjection', 'storageEngine'] as $option) {
             if (
                 isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
                 $mongoIndexOptions[$option] !== $documentIndexOptions[$option]
             ) {
                 return false;
             }
+        }
+
+        if (
+            ($mongoIndexOptions['expireAfterSeconds'] ?? null) !== ($documentIndexOptions['expireAfterSeconds'] ?? null)
+        ) {
+            return false;
         }
 
         if (empty($mongoIndexOptions['partialFilterExpression']) xor empty($documentIndexOptions['partialFilterExpression'])) {

@@ -9,6 +9,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Fill;
 use LogicException;
+use SortDirection;
 
 use function func_get_args;
 use function sprintf;

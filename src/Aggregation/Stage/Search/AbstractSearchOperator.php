@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Search;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use SortDirection;
 
 use function array_map;
 use function is_array;

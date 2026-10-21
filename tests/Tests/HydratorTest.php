@@ -86,9 +86,11 @@ class HydratorTest extends BaseTestCase
             ],
         ], [Query::HINT_READ_ONLY => true]);
 
-        self::assertFalse($this->uow->isInIdentityMap($user));
-        self::assertFalse($this->uow->isInIdentityMap($user->embedOne));
-        self::assertFalse($this->uow->isInIdentityMap($user->embedMany[0]));
+        $registry = $this->dm->getDocumentRegistry();
+
+        self::assertFalse($registry->isInIdentityMap($class, $user));
+        self::assertFalse($registry->isInIdentityMap($this->dm->getClassMetadata($user->embedOne::class), $user->embedOne));
+        self::assertFalse($registry->isInIdentityMap($this->dm->getClassMetadata($user->embedMany[0]::class), $user->embedMany[0]));
     }
 
     public function testEmbedOneWithWrongType(): void

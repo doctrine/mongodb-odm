@@ -38,7 +38,7 @@ abstract class BaseBench
         $config->setPersistentCollectionDir(__DIR__ . '/../tests/PersistentCollections');
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(self::DATABASE_NAME);
-        $config->setMetadataDriverImpl(self::createMetadataDriverImpl());
+        $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
         $config->setMetadataCache(new ArrayAdapter());
 
         $client = new Client(

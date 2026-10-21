@@ -6,6 +6,22 @@ You can have multiple indexes, they can consist of multiple fields,
 they can be unique and you can give them an order. In this chapter
 we'll show you examples of indexes using attributes.
 
+Declaring an index on a mapped document is the first step; the index
+itself is created in MongoDB when you run a schema command. Use the
+:doc:`console <console-commands>` to create indexes from the command
+line:
+
+.. code-block:: console
+
+    $ php mongodb.php odm:schema:create --index
+
+You can also update existing indexes (adding newly declared ones)
+without recreating the whole schema:
+
+.. code-block:: console
+
+    $ php mongodb.php odm:schema:update
+
 First here is an example where we put an index on a single
 property:
 
@@ -266,13 +282,6 @@ database:
 .. code-block:: javascript
 
     db.BlogPost.ensureIndexes({ 'slug' : 1, 'comments.date': 1 })
-
-Also, for your convenience you can create the indexes for your mapped documents from the
-:doc:`console <console-commands>`:
-
-.. code-block:: console
-
-    $ php mongodb.php odm:schema:create --index
 
 .. note::
 

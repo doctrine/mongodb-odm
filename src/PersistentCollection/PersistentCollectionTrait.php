@@ -640,9 +640,7 @@ trait PersistentCollectionTrait
      */
     public function __clone(): void
     {
-        if (is_object($this->coll)) {
-            $this->coll = clone $this->coll;
-        }
+        $this->coll = clone $this->coll;
 
         $this->initialize();
 

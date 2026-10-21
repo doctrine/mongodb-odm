@@ -104,11 +104,19 @@ final class EncryptedFieldsMapGenerator
                 if ($embedMetadata->isEncrypted) {
                     $mapping['encrypt'] ??= [];
                 } elseif (! isset($mapping['encrypt'])) {
-                    yield from $this->createEncryptedFieldsForClass(
+                    // The fields of the embedded document are yielded individually.
+                    // A "yield from" would reuse the keys of the nested generator, which
+                    // restart at 0 for every embedded document. Collecting the generator
+                    // with iterator_to_array() would then drop the fields whose keys collide.
+                    $embeddedFields = $this->createEncryptedFieldsForClass(
                         $embedMetadata,
                         $parentPath . $mapping['name'] . '.',
                         $visitedClasses + [$classMetadata->getName() => true],
                     );
+
+                    foreach ($embeddedFields as $field) {
+                        yield $field;
+                    }
                 }
             }
 

@@ -114,13 +114,14 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
+        $class->setTypeProvider($this->config->getTypeProvider());
     }
 
     protected function isEntity(ClassMetadataInterface $class): bool
     {
         assert($class instanceof ClassMetadata);
 
-        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView;
+        return ! $class->isMappedSuperclass && ! $class->isEmbeddedDocument && ! $class->isQueryResultDocument && ! $class->isView();
     }
 
     protected function doLoadMetadata(ClassMetadataInterface $class, ?ClassMetadataInterface $parent, bool $rootEntityFound, array $nonSuperclassParents = []): void

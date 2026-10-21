@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Operator\WindowOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 use LogicException;
+use SortDirection;
 
 use function array_filter;
 use function array_map;

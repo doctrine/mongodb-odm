@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Query\Expr as QueryExpr;
 use GeoJson\Geometry\Point;
 use MongoDB\Collection;
 use OutOfRangeException;
+use SortDirection;
 use stdClass;
 use TypeError;
 
@@ -608,9 +609,9 @@ class Builder
      */
     public function sort(array|string $fieldName, int|string|array|null $order = null): Stage\Sort
     {
-        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
-        // fixme: move to sort stage
-        $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields));
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
+        // The persister is needed here to map PHP field names to database field names
+        $stage = new Stage\Sort($this, $this->getDocumentPersister()->prepareSort($fields, Stage\Sort::ALLOWED_META_SORTS));
 
         return $this->addStage($stage);
     }

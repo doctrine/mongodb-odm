@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Types;
 
+use Doctrine\ODM\MongoDB\Types\AbstractVectorType;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use InvalidArgumentException;
 use MongoDB\BSON\Binary;
 use MongoDB\BSON\VectorType;
@@ -17,10 +19,18 @@ use function get_debug_type;
 #[RequiresPhpExtension('mongodb', '>= 2.2.0')]
 class VectorTypeTest extends TestCase
 {
+    public function getType(string $typeName): AbstractVectorType
+    {
+        $type = (new TypeRegistry())->get($typeName);
+        self::assertInstanceOf(AbstractVectorType::class, $type);
+
+        return $type;
+    }
+
     #[DataProvider('providePhpVectors')]
     public function testConvertToDatabaseValue(string $name, mixed $value, mixed $expectedValue): void
     {
-        $this->assertSameTypeAndValue($expectedValue, Type::getType($name)->convertToDatabaseValue($value));
+        $this->assertSameTypeAndValue($expectedValue, $this->getType($name)->convertToDatabaseValue($value));
     }
 
     /** @return iterable<array{0: Type::VECTOR_*, 1: mixed, 2: mixed}> */
@@ -51,14 +61,14 @@ class VectorTypeTest extends TestCase
     #[DataProvider('provideDatabaseVectors')]
     public function testConvertToPHPValue(string $name, mixed $value, mixed $expectedValue): void
     {
-        $this->assertEquals($expectedValue, Type::getType($name)->convertToPHPValue($value));
+        $this->assertEquals($expectedValue, $this->getType($name)->convertToPHPValue($value));
     }
 
     #[DataProvider('provideDatabaseVectors')]
     public function testClosureToPHP(string $name, mixed $value, mixed $expectedValue): void
     {
         $return = $this;
-        eval(Type::getType($name)->closureToPHP());
+        eval($this->getType($name)->closureToPHP());
 
         $this->assertEquals($expectedValue, $return);
     }
@@ -91,7 +101,7 @@ class VectorTypeTest extends TestCase
     #[DataProvider('provideDatabaseValueException')]
     public function testConvertToPHPValueException(mixed $value, string $message): void
     {
-        $type = Type::getType(Type::VECTOR_FLOAT32);
+        $type = $this->getType(Type::VECTOR_FLOAT32);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($message);
@@ -109,7 +119,7 @@ class VectorTypeTest extends TestCase
     #[DataProvider('providePHPValueException')]
     public function testConvertToDatabaseValueException(mixed $value, string $message): void
     {
-        $type = Type::getType(Type::VECTOR_FLOAT32);
+        $type = $this->getType(Type::VECTOR_FLOAT32);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage($message);

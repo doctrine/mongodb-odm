@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Types;
 use Stringable;
@@ -130,24 +128,28 @@ abstract class Type implements Stringable
 
     /**
      * Register a new type in the type map.
+     *
+     * @deprecated Use {@see TypeRegistry::register()} instead
      */
     public static function registerType(string $name, string $class): void
     {
-        self::$typesMap[$name] = $class;
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::registerType() is deprecated, use $typeRegistry->register() instead.');
+
+        TypeRegistry::getDeprecatedSharedInstance()->register($name, $class);
     }
 
     /**
      * Get a Type instance.
      *
+     * @deprecated Use {@see TypeRegistry::get()} instead
+     *
      * @throws InvalidTypeException
      */
     public static function getType(string $type): Type
     {
-        if (! isset(self::$typesMap[$type])) {
-            throw InvalidTypeException::invalidTypeName($type);
-        }
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::getType() is deprecated, use $typeProvider->get() instead.');
 
-        return self::$typeObjects[$type] ??= new (self::$typesMap[$type]);
+        return TypeRegistry::getDeprecatedSharedInstance()->get($type);
     }
 
     /**
@@ -155,101 +157,90 @@ abstract class Type implements Stringable
      */
     public static function getTypeFromPHPVariable(mixed $variable): ?Type
     {
-        if (is_object($variable)) {
-            if ($variable instanceof DateTimeImmutable) {
-                return self::getType(self::DATE_IMMUTABLE);
-            }
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::getTypeFromPHPVariable() is deprecated, use DocumentManager::getTypeGuesser()->guessTypeFromValue() instead.');
 
-            if ($variable instanceof DateTimeInterface) {
-                return self::getType(self::DATE);
-            }
-
-            if ($variable instanceof Uuid) {
-                return self::getType(self::UUID);
-            }
-
-            // Try the variable class as type name
-            if (self::hasType($variable::class)) {
-                return self::getType($variable::class);
-            }
-
-            return null;
-        }
-
-        return match (gettype($variable)) {
-            'integer' => self::getType(self::INT),
-            'boolean' => self::getType(self::BOOL),
-            'double' => self::getType(self::FLOAT),
-            'string' => self::getType(self::STRING),
-            default => null,
-        };
+        return (new TypeGuesser(TypeRegistry::getDeprecatedSharedInstance()))->guessTypeFromValue($variable);
     }
 
     public static function convertPHPToDatabaseValue(mixed $value): mixed
     {
-        $type = self::getTypeFromPHPVariable($value);
-        if ($type !== null) {
-            return $type->convertToDatabaseValue($value);
-        }
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::convertPHPToDatabaseValue() is deprecated, use DocumentManager::getTypeGuesser()->convertToDatabaseValue() instead.');
 
-        return $value;
+        return (new TypeGuesser(TypeRegistry::getDeprecatedSharedInstance()))->convertToDatabaseValue($value);
     }
 
     /**
      * Adds a custom type to the type map.
      *
+     * @deprecated Use {@see TypeRegistry::register()} instead
+     *
      * @param class-string $className
      *
      * @throws MappingException
-     *
-     * @static
      */
     public static function addType(string $name, string $className): void
     {
-        if (isset(self::$typesMap[$name])) {
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::addType() is deprecated, use $typeRegistry->register() instead.');
+
+        $registry = TypeRegistry::getDeprecatedSharedInstance();
+        if ($registry->has($name)) {
             throw MappingException::typeExists($name);
         }
 
-        self::$typesMap[$name] = $className;
+        $registry->register($name, $className);
     }
 
     /**
      * Checks if exists support for a type.
      *
-     * @static
+     * @deprecated Use {@see TypeRegistry::has()} instead
      */
     public static function hasType(string $name): bool
     {
-        return isset(self::$typesMap[$name]);
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::hasType() is deprecated, use $typeProvider->has() instead.');
+
+        return TypeRegistry::getDeprecatedSharedInstance()->has($name);
     }
 
     /**
      * Overrides an already defined type to use a different implementation.
      *
+     * @deprecated Use {@see TypeRegistry::register()} instead
+     *
      * @param class-string $className
      *
      * @throws MappingException
-     *
-     * @static
      */
     public static function overrideType(string $name, string $className): void
     {
-        if (! isset(self::$typesMap[$name])) {
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::overrideType() is deprecated, use $typeRegistry->register() instead.');
+
+        $registry = TypeRegistry::getDeprecatedSharedInstance();
+        if (! $registry->has($name)) {
             throw MappingException::typeNotFound($name);
         }
 
-        self::$typesMap[$name] = $className;
+        $registry->register($name, $className);
     }
 
     /**
      * Get the types array map which holds all registered types and the corresponding
      * type class
      *
+     * @deprecated Will be removed in 3.0
+     *
      * @phpstan-return array<string, class-string>
      */
     public static function getTypesMap(): array
     {
-        return self::$typesMap;
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::getTypesMap() is deprecated and will be removed in 3.0. Iterate over the TypeProvider instead.');
+
+        $map = [];
+        foreach (TypeRegistry::getDeprecatedSharedInstance() as $name => $type) {
+            $map[$name] = $type::class;
+        }
+
+        return $map;
     }
 
     public function __toString(): string
