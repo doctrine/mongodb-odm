@@ -23,12 +23,9 @@ final class TypeRegistry implements TypeProvider, IteratorAggregate
 {
     private const BUILTIN_TYPES_MAP = [
         Type::ID => IdType::class,
-        Type::INTID => IntIdType::class,
         Type::CUSTOMID => CustomIdType::class,
         Type::BOOL => BooleanType::class,
-        Type::BOOLEAN => BooleanType::class,
         Type::INT => IntType::class,
-        Type::INTEGER => IntType::class,
         Type::INT64 => Int64Type::class,
         Type::FLOAT => FloatType::class,
         Type::STRING => StringType::class,

@@ -16,6 +16,7 @@ use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Repository\GridFSRepository;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\ViewRepository;
+use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use InvalidArgumentException;
@@ -127,6 +128,10 @@ class DocumentManager implements ObjectManager
      * Collection of query filters.
      */
     private ?FilterCollection $filterCollection = null;
+
+    private DocumentRegistry $documentRegistry;
+
+    private ?TypeGuesser $typeGuesser = null;
 
     /**
      * Creates a new Document that operates on the given Mongo connection

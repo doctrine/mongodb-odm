@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Types;
 
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Types;
 use Stringable;
-use Symfony\Component\Uid\Uuid;
 
 use function end;
 use function explode;
-use function gettype;
-use function is_object;
-use function sprintf;
 use function str_replace;
+use function trigger_deprecation;
 
 /**
  * The Type interface.
@@ -49,45 +45,6 @@ abstract class Type implements Stringable
     public const string VECTOR_INT8        = 'vector_int8';
     public const string VECTOR_PACKED_BIT  = 'vector_packed_bit';
 
-    /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
-    private static array $typeObjects = [];
-
-    /** @var array<string, class-string> The map of supported doctrine mapping types. */
-    private static array $typesMap = [
-        self::ID => Types\IdType::class,
-        self::CUSTOMID => Types\CustomIdType::class,
-        self::BOOL => Types\BooleanType::class,
-        self::INT => Types\IntType::class,
-        self::INT64 => Types\Int64Type::class,
-        self::FLOAT => Types\FloatType::class,
-        self::STRING => Types\StringType::class,
-        self::DATE => Types\DateType::class,
-        self::DATE_IMMUTABLE => Types\DateImmutableType::class,
-        self::KEY => Types\KeyType::class,
-        self::TIMESTAMP => Types\TimestampType::class,
-        self::BINDATA => Types\BinDataType::class,
-        self::BINDATAFUNC => Types\BinDataFuncType::class,
-        self::BINDATABYTEARRAY => Types\BinDataByteArrayType::class,
-        self::BINDATAUUID => Types\BinDataUUIDType::class,
-        self::BINDATAUUIDRFC4122 => Types\BinDataUUIDRFC4122Type::class,
-        self::BINDATAMD5 => Types\BinDataMD5Type::class,
-        self::BINDATACUSTOM => Types\BinDataCustomType::class,
-        self::HASH => Types\HashType::class,
-        self::COLLECTION => Types\CollectionType::class,
-        self::OBJECTID => Types\ObjectIdType::class,
-        self::RAW => Types\RawType::class,
-        self::DECIMAL128 => Types\Decimal128Type::class,
-        self::UUID => Types\BinaryUuidType::class,
-        self::VECTOR_FLOAT32 => Types\VectorFloat32Type::class,
-        self::VECTOR_INT8 => Types\VectorInt8Type::class,
-        self::VECTOR_PACKED_BIT => Types\VectorPackedBitType::class,
-    ];
-
-    /** Prevent instantiation and force use of the factory method. */
-    final private function __construct()
-    {
-    }
-
     /**
      * Converts a value from its PHP representation to its database representation
      * of this type.
@@ -121,9 +78,7 @@ abstract class Type implements Stringable
      */
     public function closureToPHP(): string
     {
-        return sprintf('
-            $type = \%s::getType($typeIdentifier);
-            $return = $type->convertToPHPValue($value);', self::class);
+        return '$return = $this->class->getFieldType($fieldName)->convertToPHPValue($value);';
     }
 
     /**
@@ -154,6 +109,8 @@ abstract class Type implements Stringable
 
     /**
      * Get a Type instance based on the type of the passed php variable.
+     *
+     * @deprecated Use {@see TypeGuesser::guessTypeFromValue()} instead
      */
     public static function getTypeFromPHPVariable(mixed $variable): ?Type
     {
@@ -162,6 +119,7 @@ abstract class Type implements Stringable
         return (new TypeGuesser(TypeRegistry::getDeprecatedSharedInstance()))->guessTypeFromValue($variable);
     }
 
+    /** @deprecated Use {@see TypeGuesser::convertToDatabaseValue()} instead */
     public static function convertPHPToDatabaseValue(mixed $value): mixed
     {
         trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::convertPHPToDatabaseValue() is deprecated, use DocumentManager::getTypeGuesser()->convertToDatabaseValue() instead.');

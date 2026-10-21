@@ -126,6 +126,16 @@ class VectorTypeTest extends TestCase
         $type->convertToPHPValue($value);
     }
 
+    #[DataProvider('providePHPValueException')]
+    public function testClosureToDatabaseException(mixed $value, string $message): void
+    {
+        $type = $this->getType(Type::VECTOR_FLOAT32);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage($message);
+        eval($type->closureToPHP());
+    }
+
     public static function providePHPValueException(): iterable
     {
         yield ['invalid', 'Invalid data of type "string" received for vector field'];

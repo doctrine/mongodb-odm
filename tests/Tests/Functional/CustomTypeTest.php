@@ -12,9 +12,8 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Exception;
+use InvalidArgumentException;
 use MongoDB\BSON\UTCDateTime;
-use PHPUnit\Framework\Attributes\After;
-use ReflectionProperty;
 
 use function array_map;
 use function array_values;
@@ -29,6 +28,7 @@ class CustomTypeTest extends BaseTestCase
 
         $this->typeRegistry->register('date_collection', new DateCollectionType());
         $this->typeRegistry->register(Language::class, LanguageType::class);
+        $this->typeRegistry->register('custom_type_without_closure_to_php', CustomTypeWithoutClosureToPHP::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -85,6 +85,21 @@ class CustomTypeTest extends BaseTestCase
 
         $databaseValue = $guesser->convertToDatabaseValue($lang);
         self::assertSame(['name' => 'French', 'code' => 'fr'], $databaseValue);
+    }
+
+    public function testNoArgConstructorAllowedInCustomTypeRegisteredByClassName(): void
+    {
+        $this->typeRegistry->register('custom_with_constructor', CustomTypeWithConstructor::class);
+
+        self::assertInstanceOf(CustomTypeWithConstructor::class, $this->typeRegistry->get('custom_with_constructor'));
+    }
+
+    public function testRequiredConstructorParametersNotAllowedInCustomTypeRegisteredByClassName(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Type class "Doctrine\ODM\MongoDB\Tests\Functional\CustomTypeWithRequiredConstructor" must not have a constructor with required parameters to be registered by class name. Register an instance of the class instead.');
+
+        $this->typeRegistry->register('custom_with_required_constructor', CustomTypeWithRequiredConstructor::class);
     }
 }
 

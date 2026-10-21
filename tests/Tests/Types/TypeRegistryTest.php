@@ -221,7 +221,7 @@ class TypeRegistryTest extends TestCase
         self::assertSame($instance, $types['my_type']);
         self::assertInstanceOf(FloatType::class, $types['other_type']);
         self::assertInstanceOf(IntType::class, $types[Type::INT], 'Built-in types are yielded too');
-        self::assertCount(1 + 1 + 30, $types, 'Provider-backed and built-in types are yielded once');
+        self::assertCount(1 + 1 + 27, $types, 'Provider-backed and built-in types are yielded once');
     }
 
     public function testIteratingDoesNotResolveTheLazyService(): void

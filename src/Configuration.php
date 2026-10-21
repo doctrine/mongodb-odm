@@ -20,6 +20,7 @@ use Doctrine\ODM\MongoDB\Types\TypeProvider;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Persistence\ObjectRepository;
+use LogicException;
 use MongoDB\Client;
 use MongoDB\Driver\Manager;
 use MongoDB\Driver\WriteConcern;

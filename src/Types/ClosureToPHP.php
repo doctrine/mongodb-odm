@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-use function sprintf;
-
 /**
  * @deprecated Since 3.0, the default {@see Type::closureToPHP()} implementation is identical and this trait is no longer needed.
  *
