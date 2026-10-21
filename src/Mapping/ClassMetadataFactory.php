@@ -103,6 +103,8 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
+        $class->setTypeProvider($this->config->getTypeProvider());
+
         foreach ($class->propertyAccessors as $propertyAccessor) {
             $property = $propertyAccessor->getUnderlyingReflector();
 

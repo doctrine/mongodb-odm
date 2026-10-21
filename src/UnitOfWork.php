@@ -48,6 +48,7 @@ use function preg_match;
 use function serialize;
 use function spl_object_id;
 use function sprintf;
+use function trigger_deprecation;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -638,7 +639,7 @@ final class UnitOfWork implements PropertyChangedListener
 
             // Document is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
-            $originalData = $this->originalDocumentData[$oid];
+            $originalData = $objectState->originalData ?? [];
             $changeSet    = [];
 
             $gridFSMetadataProperty = null;
@@ -1479,49 +1480,12 @@ final class UnitOfWork implements PropertyChangedListener
     /** @return self::STATE_* */
     private function persistenceStateToInt(PersistenceState $state): int
     {
-        $oid = spl_object_id($document);
-
-        // Check if id is registered first
-        if (! isset($this->documentIdentifiers[$oid])) {
-            return false;
-        }
-
-        $class = $this->dm->getClassMetadata($document::class);
-        $id    = $this->getIdForIdentityMap($document);
-
-        if (isset($this->identityMap[$class->name][$id])) {
-            unset($this->identityMap[$class->name][$id]);
-            $this->documentStates[$oid] = self::STATE_DETACHED;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Gets a document in the identity map by its identifier hash.
-     *
-     * @internal
-     *
-     * @param mixed $id Document identifier
-     * @phpstan-param ClassMetadata<T> $class
-     *
-     * @phpstan-return T
-     *
-     * @throws InvalidArgumentException If the class does not have an identifier.
-     *
-     * @template T of object
-     */
-    public function getById(mixed $id, ClassMetadata $class): object
-    {
-        if (! $class->identifier) {
-            throw new InvalidArgumentException(sprintf('Class "%s" does not have an identifier', $class->name));
-        }
-
-        $serializedId = serialize($class->getDatabaseIdentifierValue($id));
-
-        return $this->identityMap[$class->name][$serializedId];
+        return match ($state) {
+            PersistenceState::Managed => self::STATE_MANAGED,
+            PersistenceState::New => self::STATE_NEW,
+            PersistenceState::Detached => self::STATE_DETACHED,
+            PersistenceState::Removed => self::STATE_REMOVED,
+        };
     }
 
     /**
@@ -1533,7 +1497,7 @@ final class UnitOfWork implements PropertyChangedListener
      * @param mixed $id Document identifier
      * @phpstan-param ClassMetadata<T> $class
      *
-     * @return object|false The found document or FALSE.
+     * @return mixed The found document or FALSE.
      * @phpstan-return T|false
      *
      * @throws InvalidArgumentException If the class does not have an identifier.
@@ -1566,49 +1530,6 @@ final class UnitOfWork implements PropertyChangedListener
     {
         $class                                                                     = $this->dm->getClassMetadata($document::class);
         $this->scheduledForSynchronization[$class->name][spl_object_id($document)] = $document;
-    }
-
-    /**
-     * Checks whether a document is registered in the identity map.
-     *
-     * @internal
-     */
-    public function isInIdentityMap(object $document): bool
-    {
-        $oid = spl_object_id($document);
-
-        if (! isset($this->documentIdentifiers[$oid])) {
-            return false;
-        }
-
-        $class = $this->dm->getClassMetadata($document::class);
-        $id    = $this->getIdForIdentityMap($document);
-
-        return isset($this->identityMap[$class->name][$id]);
-    }
-
-    private function getIdForIdentityMap(object $document): string
-    {
-        $class = $this->dm->getClassMetadata($document::class);
-
-        if (! $class->identifier) {
-            $id = (string) spl_object_id($document);
-        } else {
-            $id = $this->documentIdentifiers[spl_object_id($document)];
-            $id = serialize($class->getDatabaseIdentifierValue($id));
-        }
-
-        return $id;
-    }
-
-    /**
-     * Checks whether an identifier exists in the identity map.
-     *
-     * @internal
-     */
-    public function containsId(mixed $id, string $rootClassName): bool
-    {
-        return isset($this->identityMap[$rootClassName][serialize($id)]);
     }
 
     /**
@@ -1725,7 +1646,7 @@ final class UnitOfWork implements PropertyChangedListener
         $visited[$oid] = $document; // mark visited
 
         /* Cascade first, because scheduleForDelete() removes the entity from
-         * the identity map, which can cause problems when a lazy object has to
+         * the identity map, which can cause problems when a lazy Proxy has to
          * be initialized for the cascade operation.
          */
         $this->cascadeRemove($document, $visited);
@@ -2275,11 +2196,7 @@ final class UnitOfWork implements PropertyChangedListener
      */
     public function clear(): void
     {
-        $this->identityMap                  =
-        $this->documentIdentifiers          =
-        $this->originalDocumentData         =
         $this->documentChangeSets           =
-        $this->documentStates               =
         $this->scheduledForSynchronization  =
         $this->scheduledDocumentInsertions  =
         $this->scheduledDocumentUpserts     =
@@ -2287,10 +2204,10 @@ final class UnitOfWork implements PropertyChangedListener
         $this->scheduledDocumentDeletions   =
         $this->scheduledCollectionUpdates   =
         $this->scheduledCollectionDeletions =
-        $this->parentAssociations           =
-        $this->embeddedDocumentsRegistry    =
         $this->orphanRemovals               =
         $this->hasScheduledCollections      = [];
+
+        $this->documentRegistry->clear();
 
         $event = new Event\OnClearEventArgs($this->dm);
 
@@ -2730,14 +2647,8 @@ final class UnitOfWork implements PropertyChangedListener
             DocumentRegistry::class,
         );
 
-    /**
-     * Sets a property value of the original data array of a document.
-     *
-     * @internal
-     */
-    public function setOriginalDocumentProperty(int $oid, string $property, mixed $value): void
-    {
-        $this->originalDocumentData[$oid][$property] = $value;
+        $this->documentRegistry->setOriginalDocumentData($document, $data);
+        unset($this->documentChangeSets[spl_object_id($document)]);
     }
 
     /**
@@ -2905,7 +2816,7 @@ final class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Helper method to initialize a lazy object or persistent collection.
+     * Helper method to initialize a lazy loading proxy or persistent collection.
      *
      * @internal
      */

@@ -63,7 +63,7 @@ class SplObjectHashCollisionsTest extends BaseTestCase
         ];
     }
 
-    private function expectCount(string $prop, int $expected): void
+    private function expectCount(int $expected): void
     {
         self::assertSame($expected, $this->countObjectStatesWithParentAssociation());
     }

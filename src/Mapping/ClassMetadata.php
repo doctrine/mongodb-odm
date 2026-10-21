@@ -58,6 +58,7 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
+use function trigger_deprecation;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -554,26 +555,6 @@ final class ClassMetadata implements BaseClassMetadata
     private string $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
 
     /**
-     * READ-ONLY: Keys and options describing shard key. Only for sharded collections.
-     *
-     * @var array<string, array>
-     * @phpstan-var ShardKey
-     */
-    public $shardKey = [];
-
-    /**
-     * Allows users to specify a validation schema for the collection.
-     *
-     * @phpstan-var array<string, mixed>|object|null
-     */
-    private array|object|null $validator = null;
-
-    /**
-     * Determines whether to error on invalid documents or just warn about the violations but allow invalid documents to be inserted.
-     */
-    private string $validationAction = self::SCHEMA_VALIDATION_ACTION_ERROR;
-
-    /**
      * Determines how strictly MongoDB applies the validation rules to existing documents during an update.
      */
     private string $validationLevel = self::SCHEMA_VALIDATION_LEVEL_STRICT;
@@ -798,122 +779,6 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public private(set) ?TimeSeries $timeSeriesOptions = null;
 
-    /**
-     * READ-ONLY: The definition of the discriminator field used in SINGLE_COLLECTION
-     * inheritance mapping.
-     *
-     * @var string|null
-     */
-    public $discriminatorField;
-
-    /**
-     * READ-ONLY: The default value for discriminatorField in case it's not set in the document
-     *
-     * @see discriminatorField
-     *
-     * @var string|null
-     */
-    public $defaultDiscriminatorValue;
-
-    /**
-     * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
-     *
-     * @var bool
-     */
-    public $isMappedSuperclass = false;
-
-    /**
-     * READ-ONLY: Whether this class describes the mapping of a embedded document.
-     *
-     * @var bool
-     */
-    public $isEmbeddedDocument = false;
-
-    /**
-     * READ-ONLY: Whether this class describes the mapping of an aggregation result document.
-     *
-     * @var bool
-     */
-    public $isQueryResultDocument = false;
-
-    /**
-     * READ-ONLY: Whether this class describes the mapping of a database view.
-     */
-    private bool $isView = false;
-
-    /**
-     * READ-ONLY: Whether this class describes the mapping of a gridFS file
-     *
-     * @var bool
-     */
-    public $isFile = false;
-
-    /**
-     * READ-ONLY: The default chunk size in bytes for the file
-     *
-     * @var int|null
-     */
-    public $chunkSizeBytes;
-
-    /**
-     * READ-ONLY: The policy used for change-tracking on entities of this class.
-     *
-     * @var int
-     */
-    public $changeTrackingPolicy = self::CHANGETRACKING_DEFERRED_IMPLICIT;
-
-    /**
-     * READ-ONLY: A flag for whether or not instances of this class are to be versioned
-     * with optimistic locking.
-     *
-     * @var bool $isVersioned
-     */
-    public $isVersioned = false;
-
-    /**
-     * READ-ONLY: The name of the field which is used for versioning in optimistic locking (if any).
-     *
-     * @var string|null $versionField
-     */
-    public $versionField;
-
-    /**
-     * READ-ONLY: A flag for whether or not instances of this class are to allow pessimistic
-     * locking.
-     *
-     * @var bool $isLockable
-     */
-    public $isLockable = false;
-
-    /**
-     * READ-ONLY: The name of the field which is used for locking a document.
-     *
-     * @var mixed $lockField
-     */
-    public $lockField;
-
-    /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var ReflectionClass<T>
-     */
-    public $reflClass;
-
-    /**
-     * READ_ONLY: A flag for whether or not this document is read-only.
-     *
-     * @var bool
-     */
-    public $isReadOnly;
-
-    /**
-     * READ-ONLY: A flag for whether or not this document has encrypted fields.
-     */
-    public bool $isEncrypted = false;
-
-    /** READ ONLY: stores metadata about the time series collection */
-    public ?TimeSeries $timeSeriesOptions = null;
-
     private InstantiatorInterface $instantiator;
 
     /** @var class-string|null */
@@ -1089,7 +954,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function invokeLifecycleCallbacks(string $event, object $document, ?array $arguments = null): void
     {
-        if ($this->isView()) {
+        if ($this->isView) {
             return;
         }
 

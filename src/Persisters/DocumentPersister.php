@@ -63,7 +63,6 @@ use function spl_object_id;
 use function sprintf;
 use function str_contains;
 use function strpos;
-use function strtolower;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -934,19 +933,6 @@ final class DocumentPersister
         return $preparedFields;
     }
 
-    private function getSortDirection(int|string|null $sort): int|string|null
-    {
-        switch (strtolower((string) $sort)) {
-            case 'desc':
-                return -1;
-
-            case 'asc':
-                return 1;
-        }
-
-        return $sort;
-    }
-
     /**
      * Prepare a sort specification array by converting keys to MongoDB field
      * names and changing direction strings to int.
@@ -1089,7 +1075,7 @@ final class DocumentPersister
     /**
      * Converts a single value to its database representation based on the mapping type if possible.
      */
-    private function convertToDatabaseValue(string $fieldName, mixed $value, ?ClassMetadata $class = null): mixed
+    public function convertToDatabaseValue(string $fieldName, mixed $value, ?ClassMetadata $class = null): mixed
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {

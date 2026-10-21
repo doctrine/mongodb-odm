@@ -21,7 +21,6 @@ use function array_map;
 use function array_udiff_assoc;
 use function array_values;
 use function count;
-use function is_object;
 use function sprintf;
 
 /**
