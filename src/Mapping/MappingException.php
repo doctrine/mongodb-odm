@@ -320,6 +320,7 @@ final class MappingException extends BaseMappingException
         ));
     }
 
+    /** @internal */
     public static function embeddedDocumentClassCannotBeDetermined(string $className, string $fieldName): self
     {
         return new self(sprintf(
@@ -330,6 +331,7 @@ final class MappingException extends BaseMappingException
         ));
     }
 
+    /** @internal */
     public static function partiallyEncryptedDiscriminatorMap(string $className, string $fieldName): self
     {
         return new self(sprintf(
