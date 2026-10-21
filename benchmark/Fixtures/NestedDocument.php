@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Benchmark\Fixtures;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 
 /**
  * Mirrors the shape of the "large_doc_nested" fixture from the MongoDB

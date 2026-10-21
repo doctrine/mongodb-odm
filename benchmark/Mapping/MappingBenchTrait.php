@@ -12,8 +12,6 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 use function getenv;
 
-use const PHP_VERSION_ID;
-
 /**
  * Builds DocumentManager instances mapped against the isolated benchmark
  * fixtures rather than the test suite's Documents, so that metadata
@@ -29,8 +27,6 @@ trait MappingBenchTrait
     {
         $config = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/../../tests/Proxies');
-        $config->setProxyNamespace('Proxies');
         $config->setHydratorDir(__DIR__ . '/../../tests/Hydrators');
         $config->setAutoGenerateHydratorClasses(Configuration::AUTOGENERATE_ALWAYS);
         $config->setHydratorNamespace('Hydrators');
@@ -41,12 +37,6 @@ trait MappingBenchTrait
 
         if ($withMetadataCache) {
             $config->setMetadataCache(new ArrayAdapter());
-        }
-
-        if (PHP_VERSION_ID >= 80400) {
-            $config->setUseNativeLazyObject(true);
-        } else {
-            $config->setUseLazyGhostObject(true);
         }
 
         $client = new Client(
