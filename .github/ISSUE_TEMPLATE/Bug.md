@@ -3,6 +3,8 @@ name: 🐞 Bug Report
 about: Something is broken? 🔨
 ---
 
+<!-- IMPORTANT: Security vulnerabilities must not be reported here. Please follow the steps in SECURITY.md. -->
+
 ### Bug Report
 
 <!-- Fill in the relevant information below to help triage your issue. -->
