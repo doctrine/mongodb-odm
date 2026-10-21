@@ -75,8 +75,6 @@
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Tests",
             "Documentation\\": "tests/Documentation",
             "Documents\\": "tests/Documents",
-            "Documents84\\": "tests/Documents84",
-            "Stubs\\": "tests/Stubs",
             "TestDocuments\\" :"tests/Tests/Mapping/Driver/fixtures"
         }
     },
