@@ -19,10 +19,14 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use Documents\Bars\Bar;
 use Documents\Encryption\Client;
 use Documents\Encryption\InvalidRootEncrypt;
+use Documents\Encryption\PartiallyEncryptedContact;
 use Documents\Encryption\Patient;
 use Documents\Encryption\PatientProfile;
 use Documents\Encryption\PatientRecord;
+use Documents\Encryption\PolymorphicContact;
 use Documents\Encryption\RangeTypes;
+use Documents\Encryption\SchemalessContact;
+use Documents\Encryption\SchemalessEncryptedContact;
 use MongoDB\BSON\Decimal128;
 use MongoDB\BSON\Int64;
 use MongoDB\BSON\UTCDateTime;
@@ -128,6 +132,71 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         ];
 
         self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsForClassWithDiscriminatorMap(): void
+    {
+        $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(PolymorphicContact::class);
+
+        $expected = [
+            [
+                'path' => 'contact.number',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'contact.label',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+            [
+                'path' => 'contact.address',
+                'bsonType' => 'string',
+                'keyId' => null,
+            ],
+        ];
+
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsForClassWithoutTargetDocument(): void
+    {
+        // The class of an embedded document that defines neither "targetDocument" nor
+        // "discriminatorMap" is only known at runtime, so its fields cannot be encrypted.
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('The class of the embedded document field "details" in class "Documents\Encryption\SchemalessContact" cannot be determined. Define either "targetDocument" or "discriminatorMap" on the field to use automatic encryption.');
+
+        $factory = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $factory->getEncryptedFieldsForClass(SchemalessContact::class);
+    }
+
+    public function testGetEncryptionFieldsForClassWithEncryptedEmbedWithoutTargetDocument(): void
+    {
+        $factory            = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $encryptedFieldsMap = $factory->getEncryptedFieldsForClass(SchemalessEncryptedContact::class);
+
+        // An embedded field that is encrypted as a whole object does not need its class to be known.
+        $expected = [
+            [
+                'path' => 'details',
+                'bsonType' => 'array',
+                'keyId' => null,
+            ],
+        ];
+
+        self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsForClassWithPartiallyEncryptedDiscriminatorMap(): void
+    {
+        // Encrypting the field as a whole object would also encrypt the classes that are not
+        // marked with Encrypt, so the configuration is rejected as ambiguous.
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('The embedded document field "contact" in class "Documents\Encryption\PartiallyEncryptedContact" has a discriminator map where only some classes are encrypted. Encrypt all the classes of the discriminator map, or none of them.');
+
+        $factory = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $factory->getEncryptedFieldsForClass(PartiallyEncryptedContact::class);
     }
 
     public function testGetEncryptionFieldsMapWithSeveralEmbeddedDocuments(): void
