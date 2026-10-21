@@ -1214,10 +1214,10 @@ class Expr
      *
      * @see https://docs.mongodb.com/manual/reference/operator/sort/
      *
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|null                  $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
      */
-    public function sort(array|string $fieldName, int|string|null $order = null): self
+    public function sort(array|string $fieldName, int|string|SortDirection|null $order = null): self
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
 
@@ -1320,15 +1320,6 @@ class Expr
 
             return $mapping;
         }
-    }
-
-    private function normalizeSortOrder(int|string $order): int
-    {
-        if (is_string($order)) {
-            $order = strtolower($order) === 'asc' ? 1 : -1;
-        }
-
-        return $order;
     }
 
     /**

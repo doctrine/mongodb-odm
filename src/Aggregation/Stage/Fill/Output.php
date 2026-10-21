@@ -42,11 +42,11 @@ class Output extends Stage
     }
 
     /**
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|null                  $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string         $fieldName
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string        $fieldName
      */
-    public function sortBy(array|string $fieldName, int|string|null $order = null): Fill
+    public function sortBy(array|string $fieldName, int|string|SortDirection|null $order = null): Fill
     {
         return $this->fill->sortBy(...func_get_args());
     }

@@ -18,6 +18,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
     private int|float|UTCDateTime|null $gt = null;
     private int|float|UTCDateTime|null $lt = null;
     private bool $includeLowerBound        = false;
+    private bool $includeUpperBound        = false;
 
     /** @var list<string> */
     private array $path;

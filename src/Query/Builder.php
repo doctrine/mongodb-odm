@@ -28,8 +28,6 @@ use function count;
 use function func_get_args;
 use function in_array;
 use function is_array;
-use function is_string;
-use function strtolower;
 
 /**
  * Query builder for ODM.
@@ -1423,9 +1421,9 @@ class Builder
      * field name (key) and order (value) pairs.
      *
      * @param array<string, int|string|SortDirection|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|SortDirection                                             $order     Field order (if one field is specified)
+     * @param int|float|string|SortDirection                                       $order     Field order (if one field is specified)
      */
-    public function sort(array|string $fieldName, int|string|SortDirection $order = 1): self
+    public function sort(array|string $fieldName, int|float|string|SortDirection $order = 1): self
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 

@@ -602,12 +602,12 @@ class Builder
      *
      * @see https://docs.mongodb.com/manual/reference/operator/aggregation/sort/
      *
-     * @param array<string, int|string|array<string, string>>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|array|null                                  $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection|array<string, string>>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection|null                                        $order     Field order (if one field is specified)
      * @phpstan-param SortShape|string $fieldName Field name or array of field/order pairs
      * @phpstan-param int|SortMeta|SortDirectionKeywords|null $order
      */
-    public function sort(array|string $fieldName, int|string|array|null $order = null): Stage\Sort
+    public function sort(array|string $fieldName, int|string|array|SortDirection|null $order = null): Stage\Sort
     {
         $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order ?? 1];
         // The persister is needed here to map PHP field names to database field names

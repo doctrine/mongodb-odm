@@ -689,7 +689,7 @@ class BuilderTest extends BaseTestCase
     }
 
     #[DataProvider('provideSortOrders')]
-    public function testSortWithFieldNameAndOrder(int|string $order, int $expectedOrder): void
+    public function testSortWithFieldNameAndOrder(mixed $order, mixed $expectedOrder): void
     {
         $qb = $this->getTestQueryBuilder()
             ->sort('foo', $order);

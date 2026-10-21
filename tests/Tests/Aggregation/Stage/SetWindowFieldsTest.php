@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
+use Closure;
 use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
@@ -76,7 +77,10 @@ class SetWindowFieldsTest extends BaseTestCase
         );
     }
 
-    /** @param callable(Expr): mixed[]|mixed[] $args */
+    /**
+     * @param array<string, mixed>           $expected
+     * @param Closure(Expr): mixed[]|mixed[] $args
+     */
     #[DataProvider('provideGroupAccumulatorExpressionOperators')]
     #[DataProvider('provideWindowExpressionOperators')]
     public function testOperators(array $expected, string $operator, array|callable $args): void

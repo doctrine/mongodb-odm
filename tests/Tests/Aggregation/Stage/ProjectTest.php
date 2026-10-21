@@ -40,7 +40,10 @@ class ProjectTest extends BaseTestCase
         self::assertSame([['$project' => ['_id' => false, '$field' => true, '$otherField' => true, 'product' => ['$multiply' => ['$field', 5]]]]], $builder->getPipeline());
     }
 
-    /** @param mixed[] $args */
+    /**
+     * @param array<string, mixed> $expected
+     * @param array<string>        $args
+     */
     #[DataProvider('provideAccumulatorExpressionOperators')]
     public function testAccumulatorsWithMultipleArguments(array $expected, string $operator, array $args): void
     {
