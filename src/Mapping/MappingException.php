@@ -330,6 +330,16 @@ final class MappingException extends BaseMappingException
         ));
     }
 
+    public static function partiallyEncryptedDiscriminatorMap(string $className, string $fieldName): self
+    {
+        return new self(sprintf(
+            'The embedded document field "%s" in class "%s" has a discriminator map where only some classes are '
+            . 'encrypted. Encrypt all the classes of the discriminator map, or none of them.',
+            $fieldName,
+            $className,
+        ));
+    }
+
     public static function unsupportedTypeForAutoGenerator(string $className, string $type): self
     {
         return new self(sprintf(

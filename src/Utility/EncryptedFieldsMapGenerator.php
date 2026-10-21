@@ -9,12 +9,12 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Generator;
 use LogicException;
 
 use function array_filter;
 use function array_unique;
-use function iterator_to_array;
+use function array_values;
+use function count;
 use function sprintf;
 
 final class EncryptedFieldsMapGenerator
@@ -38,12 +38,12 @@ final class EncryptedFieldsMapGenerator
                 continue;
             }
 
-            $classMap = iterator_to_array($this->createEncryptedFieldsForClass($classMetadata));
+            $classMap = $this->createEncryptedFieldsForClass($classMetadata);
             if ($classMap === []) {
                 continue;
             }
 
-            $encryptedFieldsMap[$classMetadata->getName()] = ['fields' => $classMap];
+            $encryptedFieldsMap[$classMetadata->getName()] = ['fields' => array_values($classMap)];
         }
 
         return $encryptedFieldsMap;
@@ -64,20 +64,20 @@ final class EncryptedFieldsMapGenerator
             throw MongoDBException::notADocumentClass($className);
         }
 
-        $fields = iterator_to_array($this->createEncryptedFieldsForClass($classMetadata));
+        $fields = $this->createEncryptedFieldsForClass($classMetadata);
 
         if ($fields === []) {
             return null;
         }
 
-        return ['fields' => $fields];
+        return ['fields' => array_values($fields)];
     }
 
     /**
      * @param array<class-string, true> $visitedClasses
      * @phpstan-param ClassMetadata<T> $classMetadata
      *
-     * @return Generator<int, array{path: string, bsonType: string, keyId: null}>
+     * @return array<string, array{path: string, bsonType: string, keyId: null}> Keyed by field path
      *
      * @template T of object
      */
@@ -85,15 +85,19 @@ final class EncryptedFieldsMapGenerator
         ClassMetadata $classMetadata,
         string $parentPath = '',
         array $visitedClasses = [],
-    ): Generator {
+    ): array {
         if ($classMetadata->isEncrypted && ! $classMetadata->isEmbeddedDocument) {
             throw MappingException::rootDocumentCannotBeEncrypted($classMetadata->getName());
         }
 
         if (isset($visitedClasses[$classMetadata->getName()])) {
             // Prevent infinite recursion due to circular references in the metadata
-            return;
+            return [];
         }
+
+        $visitedClasses[$classMetadata->getName()] = true;
+
+        $fields = [];
 
         foreach ($classMetadata->fieldMappings as $mapping) {
             // Add fields recursively
@@ -107,43 +111,32 @@ final class EncryptedFieldsMapGenerator
                     );
                 }
 
-                // When an embedded document class is encrypted, the field is encrypted
-                // as a whole object, and none of the embedded fields are encrypted separately.
-                foreach ($embeddedMetadata as $embedMetadata) {
-                    if (! $embedMetadata->isEncrypted) {
-                        continue;
-                    }
+                $encryptedClasses = count(array_filter(
+                    $embeddedMetadata,
+                    static fn (ClassMetadata $metadata): bool => $metadata->isEncrypted,
+                ));
 
+                if ($encryptedClasses === count($embeddedMetadata)) {
+                    // When the embedded document class is encrypted, the field is encrypted
+                    // as a whole object, and none of the embedded fields are encrypted separately.
                     $mapping['encrypt'] = [];
-
-                    break;
+                } elseif ($encryptedClasses > 0) {
+                    throw MappingException::partiallyEncryptedDiscriminatorMap(
+                        $classMetadata->getName(),
+                        $mapping['fieldName'],
+                    );
                 }
 
                 if (! isset($mapping['encrypt'])) {
-                    // The fields of the embedded document are yielded individually.
-                    // A "yield from" would reuse the keys of the nested generator, which
-                    // restart at 0 for every embedded document. Collecting the generator
-                    // with iterator_to_array() would then drop the fields whose keys collide.
-                    $yieldedPaths = [];
-
+                    // The fields of the embedded document are merged individually. The paths
+                    // are used as keys, so a field declared by several classes of a
+                    // discriminator map is listed once.
                     foreach ($embeddedMetadata as $embedMetadata) {
-                        $embeddedFields = $this->createEncryptedFieldsForClass(
+                        $fields += $this->createEncryptedFieldsForClass(
                             $embedMetadata,
                             $parentPath . $mapping['name'] . '.',
-                            $visitedClasses + [$classMetadata->getName() => true],
+                            $visitedClasses,
                         );
-
-                        foreach ($embeddedFields as $field) {
-                            // Several classes of a discriminator map can declare the same field.
-                            // The path is yielded only once.
-                            if (isset($yieldedPaths[$field['path']])) {
-                                continue;
-                            }
-
-                            $yieldedPaths[$field['path']] = true;
-
-                            yield $field;
-                        }
                     }
                 }
             }
@@ -178,8 +171,10 @@ final class EncryptedFieldsMapGenerator
                 $field['queries']['queryType'] = $field['queries']['queryType']->value;
             }
 
-            yield $field;
+            $fields[$field['path']] = $field;
         }
+
+        return $fields;
     }
 
     /**

@@ -19,6 +19,7 @@ use Doctrine\Persistence\Mapping\ReflectionService;
 use Documents\Bars\Bar;
 use Documents\Encryption\Client;
 use Documents\Encryption\InvalidRootEncrypt;
+use Documents\Encryption\PartiallyEncryptedContact;
 use Documents\Encryption\Patient;
 use Documents\Encryption\PatientProfile;
 use Documents\Encryption\PatientRecord;
@@ -185,6 +186,17 @@ class EncryptedFieldsMapGeneratorTest extends BaseTestCase
         ];
 
         self::assertEquals(['fields' => $expected], $encryptedFieldsMap);
+    }
+
+    public function testGetEncryptionFieldsForClassWithPartiallyEncryptedDiscriminatorMap(): void
+    {
+        // Encrypting the field as a whole object would also encrypt the classes that are not
+        // marked with Encrypt, so the configuration is rejected as ambiguous.
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('The embedded document field "contact" in class "Documents\Encryption\PartiallyEncryptedContact" has a discriminator map where only some classes are encrypted. Encrypt all the classes of the discriminator map, or none of them.');
+
+        $factory = new EncryptedFieldsMapGenerator($this->dm->getMetadataFactory());
+        $factory->getEncryptedFieldsForClass(PartiallyEncryptedContact::class);
     }
 
     public function testGetEncryptionFieldsMapWithSeveralEmbeddedDocuments(): void
