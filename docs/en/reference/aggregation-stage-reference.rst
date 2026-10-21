@@ -781,6 +781,29 @@ The ``$sort``, ``$limit`` and ``$skip`` stages behave like the corresponding
 query options, allowing you to control the order and subset of results returned
 by the aggregation pipeline.
 
+The ``$sort`` stage sorts the documents of the pipeline. Sort directions can be
+given as the ``asc`` and ``desc`` strings, the ``1`` and ``-1`` integers, or the
+``SortDirection`` enum:
+
+.. code-block:: php
+
+    <?php
+
+    use SortDirection;
+
+    $builder = $dm->createAggregationBuilder(\Documents\Orders::class);
+    $builder->sort('purchaseDate', SortDirection::Descending);
+
+The ``$sort`` stage also accepts the ``textScore``, ``searchScore`` and
+``vectorSearchScore`` keywords, which are converted into ``$meta``
+expressions. This is typically used when sorting by an Atlas Search score:
+
+.. code-block:: php
+
+    <?php
+
+    $builder->sort('score', 'searchScore'); // equivalent to { "$sort": { "score": { "$meta": "searchScore" } } }
+
 $sortByCount
 ------------
 

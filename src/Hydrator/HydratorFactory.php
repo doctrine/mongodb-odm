@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
 use function array_key_exists;
@@ -26,9 +25,12 @@ use function mkdir;
 use function rename;
 use function rtrim;
 use function sprintf;
+use function str_contains;
 use function str_replace;
 use function substr;
+use function trigger_deprecation;
 use function uniqid;
+use function var_export;
 
 use const DIRECTORY_SEPARATOR;
 
@@ -58,7 +60,7 @@ final class HydratorFactory
     /**
      * The namespace that contains all hydrator classes.
      */
-    private ?string $hydratorNamespace;
+    private string $hydratorNamespace;
 
     /**
      * The directory that contains all hydrator classes.
@@ -193,7 +195,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $this->closureToPHP($class, $mapping['fieldName']),
                 );
             } elseif (! isset($mapping['association'])) {
                 $code .= sprintf(
@@ -216,7 +218,7 @@ EOF
                     ,
                     $mapping['name'],
                     $mapping['fieldName'],
-                    Type::getType($mapping['type'])->closureToPHP(),
+                    $this->closureToPHP($class, $mapping['fieldName']),
                 );
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE && $mapping['isOwningSide']) {
                 $code .= sprintf(
@@ -333,7 +335,7 @@ EOF
                 $embeddedMetadata = $this->dm->getClassMetadata($className);
                 $return = $embeddedMetadata->newInstance();
 
-                $this->dm->getUnitOfWork()->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
+                $this->dm->getDocumentRegistry()->setParentAssociation($return, $this->class->fieldMappings['%2$s'], $document, '%1$s');
 
                 $embeddedData = $this->dm->getHydratorFactory()->hydrate($return, $embeddedDocument, $hints);
                 $embeddedId = $embeddedMetadata->identifier && isset($embeddedData[$embeddedMetadata->identifier]) ? $embeddedData[$embeddedMetadata->identifier] : null;
@@ -460,5 +462,20 @@ EOF
         $this->evm->dispatchEvent(Events::postLoad, new LifecycleEventArgs($document, $this->dm));
 
         return $data;
+    }
+
+    private function closureToPHP(ClassMetadata $class, string $fieldName): string
+    {
+        $code = $class->getFieldType($fieldName)->closureToPHP();
+
+        if (str_contains($code, '$typeIdentifier')) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using $typeIdentifier in Type::closureToPHP() is deprecated and will be removed in Doctrine ODM 3.0');
+        }
+
+        return str_replace(
+            '$fieldName',
+            var_export($fieldName, true),
+            $code,
+        );
     }
 }

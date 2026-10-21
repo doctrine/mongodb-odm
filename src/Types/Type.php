@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Types;
 use Stringable;
-use Symfony\Component\Uid\Uuid;
 
 use function end;
 use function explode;
-use function gettype;
-use function is_object;
-use function sprintf;
 use function str_replace;
+use function trigger_deprecation;
 
 /**
  * The Type interface.
@@ -51,45 +45,6 @@ abstract class Type implements Stringable
     public const string VECTOR_INT8        = 'vector_int8';
     public const string VECTOR_PACKED_BIT  = 'vector_packed_bit';
 
-    /** @var Type[] Map of already instantiated type objects. One instance per type (flyweight). */
-    private static array $typeObjects = [];
-
-    /** @var array<string, class-string> The map of supported doctrine mapping types. */
-    private static array $typesMap = [
-        self::ID => Types\IdType::class,
-        self::CUSTOMID => Types\CustomIdType::class,
-        self::BOOL => Types\BooleanType::class,
-        self::INT => Types\IntType::class,
-        self::INT64 => Types\Int64Type::class,
-        self::FLOAT => Types\FloatType::class,
-        self::STRING => Types\StringType::class,
-        self::DATE => Types\DateType::class,
-        self::DATE_IMMUTABLE => Types\DateImmutableType::class,
-        self::KEY => Types\KeyType::class,
-        self::TIMESTAMP => Types\TimestampType::class,
-        self::BINDATA => Types\BinDataType::class,
-        self::BINDATAFUNC => Types\BinDataFuncType::class,
-        self::BINDATABYTEARRAY => Types\BinDataByteArrayType::class,
-        self::BINDATAUUID => Types\BinDataUUIDType::class,
-        self::BINDATAUUIDRFC4122 => Types\BinDataUUIDRFC4122Type::class,
-        self::BINDATAMD5 => Types\BinDataMD5Type::class,
-        self::BINDATACUSTOM => Types\BinDataCustomType::class,
-        self::HASH => Types\HashType::class,
-        self::COLLECTION => Types\CollectionType::class,
-        self::OBJECTID => Types\ObjectIdType::class,
-        self::RAW => Types\RawType::class,
-        self::DECIMAL128 => Types\Decimal128Type::class,
-        self::UUID => Types\BinaryUuidType::class,
-        self::VECTOR_FLOAT32 => Types\VectorFloat32Type::class,
-        self::VECTOR_INT8 => Types\VectorInt8Type::class,
-        self::VECTOR_PACKED_BIT => Types\VectorPackedBitType::class,
-    ];
-
-    /** Prevent instantiation and force use of the factory method. */
-    final private function __construct()
-    {
-    }
-
     /**
      * Converts a value from its PHP representation to its database representation
      * of this type.
@@ -123,133 +78,127 @@ abstract class Type implements Stringable
      */
     public function closureToPHP(): string
     {
-        return sprintf('
-            $type = \%s::getType($typeIdentifier);
-            $return = $type->convertToPHPValue($value);', self::class);
+        return '$return = $this->class->getFieldType($fieldName)->convertToPHPValue($value);';
     }
 
     /**
      * Register a new type in the type map.
+     *
+     * @deprecated Use {@see TypeRegistry::register()} instead
      */
     public static function registerType(string $name, string $class): void
     {
-        self::$typesMap[$name] = $class;
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::registerType() is deprecated, use $typeRegistry->register() instead.');
+
+        TypeRegistry::getDeprecatedSharedInstance()->register($name, $class);
     }
 
     /**
      * Get a Type instance.
      *
+     * @deprecated Use {@see TypeRegistry::get()} instead
+     *
      * @throws InvalidTypeException
      */
     public static function getType(string $type): Type
     {
-        if (! isset(self::$typesMap[$type])) {
-            throw InvalidTypeException::invalidTypeName($type);
-        }
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::getType() is deprecated, use $typeProvider->get() instead.');
 
-        return self::$typeObjects[$type] ??= new (self::$typesMap[$type]);
+        return TypeRegistry::getDeprecatedSharedInstance()->get($type);
     }
 
     /**
      * Get a Type instance based on the type of the passed php variable.
+     *
+     * @deprecated Use {@see TypeGuesser::guessTypeFromValue()} instead
      */
     public static function getTypeFromPHPVariable(mixed $variable): ?Type
     {
-        if (is_object($variable)) {
-            if ($variable instanceof DateTimeImmutable) {
-                return self::getType(self::DATE_IMMUTABLE);
-            }
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::getTypeFromPHPVariable() is deprecated, use DocumentManager::getTypeGuesser()->guessTypeFromValue() instead.');
 
-            if ($variable instanceof DateTimeInterface) {
-                return self::getType(self::DATE);
-            }
-
-            if ($variable instanceof Uuid) {
-                return self::getType(self::UUID);
-            }
-
-            // Try the variable class as type name
-            if (self::hasType($variable::class)) {
-                return self::getType($variable::class);
-            }
-
-            return null;
-        }
-
-        return match (gettype($variable)) {
-            'integer' => self::getType(self::INT),
-            'boolean' => self::getType(self::BOOL),
-            'double' => self::getType(self::FLOAT),
-            'string' => self::getType(self::STRING),
-            default => null,
-        };
+        return (new TypeGuesser(TypeRegistry::getDeprecatedSharedInstance()))->guessTypeFromValue($variable);
     }
 
+    /** @deprecated Use {@see TypeGuesser::convertToDatabaseValue()} instead */
     public static function convertPHPToDatabaseValue(mixed $value): mixed
     {
-        $type = self::getTypeFromPHPVariable($value);
-        if ($type !== null) {
-            return $type->convertToDatabaseValue($value);
-        }
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::convertPHPToDatabaseValue() is deprecated, use DocumentManager::getTypeGuesser()->convertToDatabaseValue() instead.');
 
-        return $value;
+        return (new TypeGuesser(TypeRegistry::getDeprecatedSharedInstance()))->convertToDatabaseValue($value);
     }
 
     /**
      * Adds a custom type to the type map.
      *
+     * @deprecated Use {@see TypeRegistry::register()} instead
+     *
      * @param class-string $className
      *
      * @throws MappingException
-     *
-     * @static
      */
     public static function addType(string $name, string $className): void
     {
-        if (isset(self::$typesMap[$name])) {
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::addType() is deprecated, use $typeRegistry->register() instead.');
+
+        $registry = TypeRegistry::getDeprecatedSharedInstance();
+        if ($registry->has($name)) {
             throw MappingException::typeExists($name);
         }
 
-        self::$typesMap[$name] = $className;
+        $registry->register($name, $className);
     }
 
     /**
      * Checks if exists support for a type.
      *
-     * @static
+     * @deprecated Use {@see TypeRegistry::has()} instead
      */
     public static function hasType(string $name): bool
     {
-        return isset(self::$typesMap[$name]);
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::hasType() is deprecated, use $typeProvider->has() instead.');
+
+        return TypeRegistry::getDeprecatedSharedInstance()->has($name);
     }
 
     /**
      * Overrides an already defined type to use a different implementation.
      *
+     * @deprecated Use {@see TypeRegistry::register()} instead
+     *
      * @param class-string $className
      *
      * @throws MappingException
-     *
-     * @static
      */
     public static function overrideType(string $name, string $className): void
     {
-        if (! isset(self::$typesMap[$name])) {
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::overrideType() is deprecated, use $typeRegistry->register() instead.');
+
+        $registry = TypeRegistry::getDeprecatedSharedInstance();
+        if (! $registry->has($name)) {
             throw MappingException::typeNotFound($name);
         }
 
-        self::$typesMap[$name] = $className;
+        $registry->register($name, $className);
     }
 
     /**
      * Get the types array map which holds all registered types and the corresponding
      * type class
      *
+     * @deprecated Will be removed in 3.0
+     *
      * @phpstan-return array<string, class-string>
      */
     public static function getTypesMap(): array
     {
-        return self::$typesMap;
+        trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Type::getTypesMap() is deprecated and will be removed in 3.0. Iterate over the TypeProvider instead.');
+
+        $map = [];
+        foreach (TypeRegistry::getDeprecatedSharedInstance() as $name => $type) {
+            $map[$name] = $type::class;
+        }
+
+        return $map;
     }
 
     public function __toString(): string

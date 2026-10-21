@@ -86,6 +86,21 @@ class BucketTest extends BaseTestCase
         ], $bucketStage->getExpression());
     }
 
+    public function testGroupByExpandsExprValue(): void
+    {
+        $bucketStage = new Bucket($this->getTestAggregationBuilder(), $this->dm, new ClassMetadata(User::class));
+        $bucketStage
+            ->groupBy((new Expr($this->dm, new ClassMetadata(User::class)))->literal(5))
+            ->boundaries(1, 2, 3);
+
+        self::assertSame([
+            '$bucket' => [
+                'groupBy' => ['$literal' => 5],
+                'boundaries' => [1, 2, 3],
+            ],
+        ], $bucketStage->getExpression());
+    }
+
     public function testFieldNameConversion(): void
     {
         $builder = $this->dm->createAggregationBuilder(CmsComment::class);

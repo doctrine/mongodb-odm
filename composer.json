@@ -37,7 +37,8 @@
         "psr/cache": "^1.0 || ^2.0 || ^3.0",
         "symfony/console": "^5.4 || ^6.4 || ^7.0 || ^8.0",
         "symfony/deprecation-contracts": "^2.2 || ^3.0",
-        "symfony/polyfill-php86": "^1.37"
+        "symfony/polyfill-php86": "^1.37",
+        "symfony/service-contracts": "^2.2 || ^3.0"
     },
     "require-dev": {
         "ext-bcmath": "*",
@@ -45,10 +46,11 @@
         "doctrine/orm": "^3.2",
         "jmikola/geojson": "^1.0",
         "phpbench/phpbench": "^1.4.0",
-        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan": "2.3.1",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpunit/phpunit": "^12.5.1",
+        "psr/container": "^1.1 || ^2.0",
         "squizlabs/php_codesniffer": "^4",
         "symfony/cache": "^5.4 || ^6.0 || ^7.0 || ^8.0",
         "symfony/uid": "^5.4 || ^6.0 || ^7.0 || ^8.0",
@@ -56,7 +58,13 @@
     },
     "suggest": {
         "ext-bcmath": "Decimal128 type support",
+        "psr/container": "To lazy-load custom types from a service container in TypeRegistry",
         "symfony/var-dumper": "To enable the odm:query command"
+    },
+    "extra": {
+        "ai-mate": {
+            "skills": ["skills"]
+        }
     },
     "autoload": {
         "psr-4": { "Doctrine\\ODM\\MongoDB\\": "src" }
@@ -67,8 +75,6 @@
             "Doctrine\\ODM\\MongoDB\\Tests\\": "tests/Tests",
             "Documentation\\": "tests/Documentation",
             "Documents\\": "tests/Documents",
-            "Documents84\\": "tests/Documents84",
-            "Stubs\\": "tests/Stubs",
             "TestDocuments\\" :"tests/Tests/Mapping/Driver/fixtures"
         }
     },

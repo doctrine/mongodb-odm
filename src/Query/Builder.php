@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\IterableResult;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use GeoJson\Geometry\Geometry;
 use GeoJson\Geometry\Point;
 use InvalidArgumentException;
@@ -22,18 +23,17 @@ use SortDirection;
 
 use function array_filter;
 use function array_key_exists;
+use function array_replace;
 use function count;
 use function func_get_args;
 use function in_array;
 use function is_array;
-use function is_string;
-use function strtolower;
 
 /**
  * Query builder for ODM.
  *
  * @phpstan-import-type QueryShape from Query
- * @phpstan-import-type SortMetaKeywords from Sort
+ * @phpstan-import-type SortMetaKeywords from SortHelper
  */
 class Builder
 {
@@ -690,7 +690,7 @@ class Builder
         }
 
         if (isset($query['sort'])) {
-            $query['sort'] = $documentPersister->prepareSort($query['sort']);
+            $query['sort'] = $documentPersister->prepareSort($query['sort'], ['textScore']);
         }
 
         if ($this->class->readPreference && ! array_key_exists('readPreference', $query)) {
@@ -1420,23 +1420,17 @@ class Builder
      * If sorting by multiple fields, the first argument should be an array of
      * field name (key) and order (value) pairs.
      *
-     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
+     * @param array<string, int|string|SortDirection|array<string, string>>|string $fieldName Field name or array of field/order pairs
+     * @param int|float|string|SortDirection                                       $order     Field order (if one field is specified)
      */
-    public function sort(array|string $fieldName, int|string|SortDirection $order = 1): self
+    public function sort(array|string $fieldName, int|float|string|SortDirection $order = 1): self
     {
-        $this->query['sort'] ??= [];
-        $fields                = is_array($fieldName) ? $fieldName : [$fieldName => $order];
+        $fields = is_array($fieldName) ? $fieldName : [$fieldName => $order];
 
-        foreach ($fields as $fieldName => $order) {
-            if ($order instanceof SortDirection) {
-                $order = $order === SortDirection::Ascending ? 1 : -1;
-            } elseif (is_string($order)) {
-                $order = strtolower($order) === 'asc' ? 1 : -1;
-            }
-
-            $this->query['sort'][$fieldName] = (int) $order;
-        }
+        $this->query['sort'] = array_replace(
+            $this->query['sort'] ?? [],
+            SortHelper::normalizeSortDirections($fields, ['textScore']),
+        );
 
         return $this;
     }

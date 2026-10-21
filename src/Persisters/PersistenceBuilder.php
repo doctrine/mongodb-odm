@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionInterface;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use InvalidArgumentException;
@@ -62,7 +61,7 @@ final class PersistenceBuilder
         $changeset = $this->uow->getDocumentChangeSet($document);
 
         $insertData = [];
-        foreach ($class->fieldMappings as $mapping) {
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
             $new = $changeset[$mapping['fieldName']][1] ?? null;
 
             if ($new === null) {
@@ -75,7 +74,7 @@ final class PersistenceBuilder
 
             // @Field, @String, @Date, etc.
             if (! isset($mapping['association'])) {
-                $insertData[$mapping['name']] = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                $insertData[$mapping['name']] = $class->getFieldType($fieldName)->convertToDatabaseValue($new);
 
             // @ReferenceOne
             } elseif ($mapping['association'] === ClassMetadata::REFERENCE_ONE) {
@@ -150,12 +149,12 @@ final class PersistenceBuilder
             if (! isset($mapping['association'])) {
                 if (isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                     $operator = '$inc';
-                    $type     = Type::getType($mapping['type']);
+                    $type     = $class->getFieldType($fieldName);
                     assert($type instanceof Incrementable);
                     $value = $type->convertToDatabaseValue($type->diff($old, $new));
                 } else {
                     $operator = '$set';
-                    $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    $value    = $class->getFieldType($fieldName)->convertToDatabaseValue($new);
                 }
 
                 $updateData[$operator][$mapping['name']] = $value;
@@ -252,12 +251,12 @@ final class PersistenceBuilder
             if (! isset($mapping['association'])) {
                 if (empty($mapping['id']) && isset($mapping['strategy']) && $mapping['strategy'] === ClassMetadata::STORAGE_STRATEGY_INCREMENT) {
                     $operator = '$inc';
-                    $type     = Type::getType($mapping['type']);
+                    $type     = $class->getFieldType($fieldName);
                     assert($type instanceof Incrementable);
                     $value = $type->convertToDatabaseValue($type->diff($old, $new));
                 } else {
                     $operator = '$set';
-                    $value    = Type::getType($mapping['type'])->convertToDatabaseValue($new);
+                    $value    = $class->getFieldType($fieldName)->convertToDatabaseValue($new);
                 }
 
                 $updateData[$operator][$mapping['name']] = $value;
@@ -349,7 +348,7 @@ final class PersistenceBuilder
         $embeddedDocumentValue = [];
         $class                 = $this->dm->getClassMetadata($embeddedDocument::class);
 
-        foreach ($class->fieldMappings as $mapping) {
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
             // Skip notSaved fields
             if (! empty($mapping['notSaved'])) {
                 continue;
@@ -363,7 +362,7 @@ final class PersistenceBuilder
                 switch ($mapping['association'] ?? null) {
                     // @Field, @String, @Date, etc.
                     case null:
-                        $value = Type::getType($mapping['type'])->convertToDatabaseValue($rawValue);
+                        $value = $class->getFieldType($fieldName)->convertToDatabaseValue($rawValue);
                         break;
 
                     case ClassMetadata::EMBED_ONE:
@@ -500,7 +499,12 @@ final class PersistenceBuilder
         return $setData;
     }
 
-    /** @param array<array-key, mixed>|Collection<array-key, mixed> $rawValue */
+    /**
+     * @param array<string, mixed>                                 $mapping
+     * @param array<array-key, mixed>|Collection<array-key, mixed> $rawValue
+     *
+     * @return PersistentCollectionInterface<array-key, object>
+     */
     private function preparePersistentCollection(array $mapping, object $owner, array|Collection $rawValue): PersistentCollectionInterface
     {
         if ($rawValue instanceof PersistentCollectionInterface) {

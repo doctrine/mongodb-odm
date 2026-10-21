@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - "*.x"
-      - "feature/*"
   push:
 
 env:
@@ -18,6 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        topology:
+          - "server"
         php-version:
           - "8.4"
           - "8.5"
@@ -27,8 +28,6 @@ jobs:
           - "6.0"
         driver-version:
           - "stable"
-        topology:
-          - "server"
         dependencies:
           - "highest"
         symfony-version:
@@ -97,7 +96,7 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           extensions: "mongodb-${{ matrix.driver-version }}, bcmath"
-          coverage: "none"
+          coverage: "xdebug"
           ini-values: "zend.assertions=1"
           tools: "flex"
 
@@ -134,7 +133,15 @@ jobs:
           topology: ${{ matrix.topology }}
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/phpunit --exclude-group=atlas ${{ matrix.dependencies == 'lowest' && '--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice' || '' }}"
+        run: "vendor/bin/phpunit --coverage-clover coverage.xml --exclude-group=atlas ${{ matrix.dependencies == 'lowest' && '--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice' || '' }}"
         env:
+          XDEBUG_MODE: "coverage"
           DOCTRINE_MONGODB_SERVER: ${{ steps.setup-mongodb.outputs.cluster-uri }}
           CRYPT_SHARED_LIB_PATH: ${{ steps.setup-mongodb.outputs.crypt-shared-lib-path }}
+
+      - name: "Upload coverage report"
+        uses: codecov/codecov-action@v7
+        with:
+          disable_search: true
+          files: coverage.xml
+          flags: "${{ matrix.mongodb-version }}-${{ matrix.topology }}"

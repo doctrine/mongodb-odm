@@ -19,6 +19,7 @@ use Doctrine\ODM\MongoDB\Query\Builder as QueryBuilder;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\Persistence\ObjectRepository;
+use SortDirection;
 
 use function assert;
 use function count;
@@ -102,7 +103,7 @@ class DocumentRepository implements ObjectRepository, Selectable
         }
 
         // Check identity map first
-        $document = $this->uow->tryGetById($id, $this->class);
+        $document = $this->dm->getDocumentRegistry()->tryGetById($id, $this->class);
         if ($document) {
             if ($lockMode !== LockMode::NONE) {
                 $this->dm->lock($document, $lockMode, $lockVersion);
@@ -143,6 +144,9 @@ class DocumentRepository implements ObjectRepository, Selectable
 
     /**
      * Finds documents by a set of criteria.
+     *
+     * @param array<string, mixed>                                               $criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $orderBy
      */
     public function findBy(array $criteria, ?array $orderBy = null, ?int $limit = null, ?int $offset = null): array
     {
@@ -152,8 +156,8 @@ class DocumentRepository implements ObjectRepository, Selectable
     /**
      * Finds a single document by a set of criteria.
      *
-     * @param array<string, mixed>|null $sort
-     * @param array<string, mixed>      $criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
+     * @param array<string, mixed>                                               $criteria
      *
      * @return T|null The object.
      */

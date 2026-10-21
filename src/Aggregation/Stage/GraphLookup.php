@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
-use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\Persistence\Mapping\MappingException as BaseMappingException;
 use LogicException;
 
@@ -23,7 +22,7 @@ use function substr;
 /** @phpstan-import-type FieldMapping from ClassMetadata */
 class GraphLookup extends Stage
 {
-    private ?string $from;
+    private string $from;
 
     /** @var string|Expr|mixed[]|null */
     private string|Expr|array|null $startWith = null;
@@ -254,7 +253,7 @@ class GraphLookup extends Stage
             return '$' . $this->getDocumentPersister($this->class)->prepareFieldName(substr($expression, 1));
         }
 
-        return Type::convertPHPToDatabaseValue(Expr::convertExpression($expression));
+        return $this->dm->getTypeGuesser()->convertToDatabaseValue(Expr::convertExpression($expression));
     }
 
     private function convertTargetFieldName(string $fieldName): string

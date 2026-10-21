@@ -33,6 +33,7 @@ final class Aggregation implements IterableResult
     {
     }
 
+    /** @return Iterator<array<string, mixed>|object> */
     public function execute(): Iterator
     {
         return $this->getIterator();
@@ -53,6 +54,7 @@ final class Aggregation implements IterableResult
         return $clone->getIterator()->current() ?: null;
     }
 
+    /** @return Iterator<array<string, mixed>|object> */
     public function getIterator(): Iterator
     {
         // Force cursor to be used
@@ -63,6 +65,7 @@ final class Aggregation implements IterableResult
         return $this->prepareIterator($cursor);
     }
 
+    /** @return Iterator<array<string, mixed>|object> */
     private function prepareIterator(CursorInterface $cursor): Iterator
     {
         if ($this->classMetadata) {

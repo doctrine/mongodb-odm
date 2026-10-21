@@ -21,6 +21,7 @@ use MongoDB\Collection;
 use MongoDB\Driver\WriteConcern;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionProperty;
+use SortDirection;
 
 use function get_debug_type;
 use function sprintf;
@@ -104,6 +105,45 @@ class DocumentPersisterTest extends BaseTestCase
         self::assertEquals('b', $documents[0]->name);
         self::assertInstanceOf($this->class, $documents[1]);
         self::assertEquals('a', $documents[1]->name);
+    }
+
+    public function testLoadPreparesCriteriaAndSortWithEnum(): void
+    {
+        $criteria = ['name' => ['$in' => ['a', 'b']]];
+        $sort     = ['name' => SortDirection::Descending];
+
+        $document = $this->documentPersister->load($criteria, null, [], 0, $sort);
+
+        self::assertInstanceOf($this->class, $document);
+        self::assertEquals('b', $document->name);
+    }
+
+    public function testLoadAllPreparesCriteriaAndSortWithEnum(): void
+    {
+        $criteria = ['name' => ['$in' => ['a', 'b']]];
+        $sort     = ['name' => SortDirection::Descending];
+
+        $cursor    = $this->documentPersister->loadAll($criteria, $sort);
+        $documents = $cursor->toArray();
+
+        self::assertInstanceOf($this->class, $documents[0]);
+        self::assertEquals('b', $documents[0]->name);
+        self::assertInstanceOf($this->class, $documents[1]);
+        self::assertEquals('a', $documents[1]->name);
+    }
+
+    public function testLoadAllPreparesCriteriaAndSortWithAscendingEnum(): void
+    {
+        $criteria = ['name' => ['$in' => ['a', 'b']]];
+        $sort     = ['name' => SortDirection::Ascending];
+
+        $cursor    = $this->documentPersister->loadAll($criteria, $sort);
+        $documents = $cursor->toArray();
+
+        self::assertInstanceOf($this->class, $documents[0]);
+        self::assertEquals('a', $documents[0]->name);
+        self::assertInstanceOf($this->class, $documents[1]);
+        self::assertEquals('b', $documents[1]->name);
     }
 
     public function testLoadAllWithSortLimitAndSkip(): void
@@ -222,8 +262,7 @@ class DocumentPersisterTest extends BaseTestCase
     {
         $class             = DocumentPersisterTestDocumentWithCustomId::class;
         $documentPersister = $this->uow->getDocumentPersister($class);
-
-        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+        $this->typeRegistry->register('DocumentPersisterCustomId', new DocumentPersisterCustomIdType());
 
         self::assertEquals(
             $expected,
@@ -234,7 +273,7 @@ class DocumentPersisterTest extends BaseTestCase
     #[DataProvider('queryProviderForDocumentWithReferenceToDocumentWithCustomTypedId')]
     public function testPrepareQueryOrNewObjWithReferenceToDocumentWithCustomTypedId(Closure $getTestCase): void
     {
-        Type::registerType('DocumentPersisterCustomId', DocumentPersisterCustomIdType::class);
+        $this->typeRegistry->register('DocumentPersisterCustomId', new DocumentPersisterCustomIdType());
 
         $class             = DocumentPersisterTestDocumentWithReferenceToDocumentWithCustomId::class;
         $documentPersister = $this->uow->getDocumentPersister($class);

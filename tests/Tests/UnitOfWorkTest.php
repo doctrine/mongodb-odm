@@ -9,8 +9,10 @@ use DateTime;
 use Doctrine\ODM\MongoDB\APM\CommandLogger;
 use Doctrine\ODM\MongoDB\Mapping\Attribute as ODM;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use Doctrine\ODM\MongoDB\Registry\ParentAssociation;
 use Doctrine\ODM\MongoDB\Tests\Mocks\ExceptionThrowingListenerMock;
 use Doctrine\ODM\MongoDB\Tests\Mocks\PreUpdateListenerMock;
+use Doctrine\ODM\MongoDB\Tests\Mocks\ReentrantCommitListenerMock;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Documents\Address;
 use Documents\File;
@@ -150,12 +152,12 @@ class UnitOfWorkTest extends BaseTestCase
         $c = new ParentAssociationTest('c');
         $d = new ParentAssociationTest('c');
 
-        $this->uow->setParentAssociation($b, ClassMetadataTestUtil::getFieldMapping(['name' => 'b']), $a, 'b');
-        $this->uow->setParentAssociation($c, ClassMetadataTestUtil::getFieldMapping(['name' => 'c']), $b, 'b.c');
+        $this->dm->getDocumentRegistry()->setParentAssociation($b, ClassMetadataTestUtil::getFieldMapping(['name' => 'b']), $a, 'b');
+        $this->dm->getDocumentRegistry()->setParentAssociation($c, ClassMetadataTestUtil::getFieldMapping(['name' => 'c']), $b, 'b.c');
         $mappingD = ClassMetadataTestUtil::getFieldMapping(['name' => 'c']);
-        $this->uow->setParentAssociation($d, $mappingD, $c, 'b.c.d');
+        $this->dm->getDocumentRegistry()->setParentAssociation($d, $mappingD, $c, 'b.c.d');
 
-        self::assertEquals([$mappingD, $c, 'b.c.d'], $this->uow->getParentAssociation($d));
+        self::assertEquals(new ParentAssociation($mappingD, $c, 'b.c.d'), $this->dm->getDocumentRegistry()->getParentAssociation($d));
     }
 
     #[DoesNotPerformAssertions]
@@ -430,20 +432,23 @@ class UnitOfWorkTest extends BaseTestCase
         $user    = new User();
         $user->setAddress($address);
 
+        $registry = $this->dm->getDocumentRegistry();
+        $class    = $this->dm->getClassMetadata(Address::class);
+
         self::assertEquals(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($address));
-        self::assertFalse($this->uow->isInIdentityMap($address));
+        self::assertFalse($registry->isInIdentityMap($class, $address));
         self::assertNull($this->uow->getDocumentIdentifier($address));
 
         $this->uow->persist($user);
 
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->uow->getDocumentState($user->getAddress()));
-        self::assertTrue($this->uow->isInIdentityMap($address));
+        self::assertTrue($registry->isInIdentityMap($class, $address));
         self::assertTrue($this->uow->isScheduledForInsert($address));
         self::assertEquals(spl_object_id($address), $this->uow->getDocumentIdentifier($address));
 
         $this->uow->commit();
 
-        self::assertTrue($this->uow->isInIdentityMap($address));
+        self::assertTrue($registry->isInIdentityMap($class, $address));
         self::assertFalse($this->uow->isScheduledForInsert($address));
     }
 
@@ -558,6 +563,47 @@ class UnitOfWorkTest extends BaseTestCase
             $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
 
             self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+
+            return;
+        }
+
+        $this->fail('This should never be reached, an exception should have been thrown.');
+    }
+
+    public function testCommitThrowsWhenAlreadyInProgress(): void
+    {
+        $listener = new ReentrantCommitListenerMock();
+        $this->dm->getEventManager()->addEventSubscriber($listener);
+
+        $user           = new ForumUser();
+        $user->username = '12345';
+
+        $this->dm->persist($user);
+
+        $getCommitsInProgress = Closure::bind(fn (UnitOfWork $unitOfWork) => $unitOfWork->commitsInProgress, $this->dm->getUnitOfWork(), UnitOfWork::class);
+
+        try {
+            $this->dm->flush();
+        } catch (MongoDBException $e) {
+            self::assertSame(
+                'There is already a commit operation in progress. Did you call flush from an event listener?',
+                $e->getMessage(),
+            );
+
+            // The guard must trip on the first reentrant call: onFlush must
+            // fire only once, for the outer commit(). The nested flush() it
+            // triggers must throw before ever dispatching onFlush itself.
+            self::assertSame(1, $listener->onFlushCallCount);
+
+            // The reentrancy guard must not leak commitsInProgress, otherwise
+            // every subsequent flush() would throw the same exception.
+            self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+
+            $this->dm->getEventManager()->removeEventSubscriber($listener);
+            $this->dm->flush();
+
+            self::assertSame(0, $getCommitsInProgress($this->dm->getUnitOfWork()));
+            self::assertFalse($this->uow->isScheduledForInsert($user));
 
             return;
         }

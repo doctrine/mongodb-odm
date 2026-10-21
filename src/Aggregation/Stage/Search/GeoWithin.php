@@ -15,17 +15,19 @@ use GeoJson\Geometry\Polygon;
  * @internal
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-search/geoWithin/
+ *
+ * @phpstan-type GeoJsonGeometry array{type: string, coordinates?: mixed, crs?: mixed, bbox?: mixed}
  */
 class GeoWithin extends AbstractSearchOperator implements ScoredSearchOperator
 {
     use ScoredSearchOperatorTrait;
 
     /** @var list<string> */
-    private array $path      = [];
-    private string $relation = '';
-    private ?object $box     = null;
-    private ?object $circle  = null;
+    private array $path     = [];
+    private ?object $box    = null;
+    private ?object $circle = null;
 
+    /** @var GeoJsonGeometry|MultiPolygon|Polygon|null */
     private array|MultiPolygon|Polygon|null $geometry = null;
 
     public function __construct(Search $search, DocumentPersister $persister, string ...$path)
