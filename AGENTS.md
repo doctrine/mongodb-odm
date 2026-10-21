@@ -10,8 +10,10 @@ or any other assumption stated here, update the relevant section in the same pul
 Doctrine MongoDB ODM (`doctrine/mongodb-odm`) is a PHP object-document mapper: it persists
 plain PHP objects to MongoDB, using `mongodb/mongodb` as the low-level driver and implementing
 the Doctrine persistence interfaces. It is a mature library with a strict backward-compatibility
-policy across 2.x — additive API changes are fine, but removals and signature changes need a
-deprecation cycle first (see `UPGRADE-*.md` and `@deprecated` annotations).
+policy: additive API changes are fine, but removals and signature changes need a deprecation
+cycle in a minor release first (see `UPGRADE-*.md` and `@deprecated` annotations). 3.0 is the
+major release that applies the removals and the native type hints prepared in 2.x, all listed in
+`UPGRADE-3.0.md`.
 
 **This file is about *developing* the library.** For *using* it — mapping documents, querying,
 aggregating, references vs. embeds, Atlas Search, Vector Search, Queryable Encryption — this
@@ -27,18 +29,20 @@ worth documenting is usually worth an assertion. See `tests/Skills/README.md`.
 
 ## Tech Stack
 
-- **PHP `^8.1`** (minimum declared in `composer.json`); CI runs 8.1 through 8.5.
-- **`ext-mongodb` `^1.21 || ^2.0`** — the extension is required, not just the library. Some code
-  paths are version-gated (e.g. `VectorType` needs ext-mongodb 2.2+); `ext-bcmath` is needed for
-  Decimal128 and is a dev dependency.
-- **`mongodb/mongodb` `^1.21.2 || ^2.1.1`** — the driver library the ODM is built on.
+- **PHP `^8.4`** (minimum declared in `composer.json`); CI runs 8.4 and 8.5.
+- **`ext-mongodb` `^2.2`**: the extension is required, not just the library. `ext-bcmath` is
+  needed for Decimal128 and is a dev dependency.
+- **`mongodb/mongodb` `^2.2`**: the driver library the ODM is built on.
 - **Doctrine**: `persistence`, `collections`, `event-manager`, `instantiator`.
-- **Symfony** components (`console`, `var-dumper`, `var-exporter`, `cache`), with wide version ranges.
-- **Proxies / lazy loading** — three interchangeable strategies: ProxyManager
-  (`friendsofphp/proxy-manager-lts`), Symfony VarExporter lazy ghosts, and PHP 8.4 native lazy
-  objects. Tests select one via env vars (below).
-- **Testing**: PHPUnit 10.5 / 11.5, PHPBench. **Static analysis**: PHPStan 2.3 at level 5 with a
-  baseline. **Coding standards**: `doctrine/coding-standard` via PHP_CodeSniffer.
+- **Symfony** components (`console`, `cache`, `service-contracts`, `deprecation-contracts`, plus
+  `uid` and `var-dumper` for development), with wide version ranges. `symfony/polyfill-php86`
+  provides the `SortDirection` enum that the sort APIs accept.
+- **Lazy loading** uses the native lazy objects of PHP 8.4
+  (`src/Proxy/Factory/NativeLazyObjectFactory.php`). 3.0 removed the ProxyManager factory, the
+  Symfony VarExporter lazy ghosts, and the proxy directory configuration.
+- **Testing**: PHPUnit 12.5, PHPBench. **Static analysis**: PHPStan 2.3.1, pinned in
+  `composer.json`, at level 5 with a baseline. **Coding standards**: `doctrine/coding-standard`
+  via PHP_CodeSniffer.
 - **Docs**: Sphinx/reStructuredText under `docs/en/`, built with `doctrine/docs-builder`.
 
 ## Project Structure
@@ -46,8 +50,8 @@ worth documenting is usually worth an assertion. See `tests/Skills/README.md`.
 - `src/` — library code, PSR-4 `Doctrine\ODM\MongoDB\` (mapping, persistence, query/aggregation
   builders, schema manager, console commands, types, proxies, persistent collections).
 - `tests/Tests/` — the PHPUnit suite, mirroring `src/`. `tests/Documents/` holds mapped fixture
-  documents; `tests/Documents84/` holds PHP 8.4-only fixtures (property hooks); `tests/Documentation/`
-  holds snippets kept in step with the docs; `tests/Skills/` holds the agent-skill evals.
+  documents; `tests/Documentation/` holds snippets kept in step with the docs; `tests/Skills/`
+  holds the agent-skill evals.
 - `docs/en/` — Sphinx docs (`reference/`, `cookbook/`, `tutorials/`). `docs/en/_theme` is a git
   submodule (`git submodule update --init` before building).
 - `skills/mongodb-odm/` — the shipped agent skill (`SKILL.md` + `references/`).
@@ -91,9 +95,9 @@ Tests need a **running MongoDB server**; the suite creates and drops collections
   `phpunit.xml.dist`; the server URI can additionally be overridden by an environment variable of
   the same name (`tests/Tests/BaseTestCase.php`). To change the database name, edit the const
   (via a local `phpunit.xml`, which is gitignored).
-- **Proxy strategy**: `USE_LAZY_GHOST_OBJECT` and `USE_NATIVE_LAZY_OBJECT` choose between Symfony
-  lazy ghosts, PHP 8.4 native lazy objects, and ProxyManager. Set by `phpunit.xml.dist` and
-  varied across the CI matrix.
+- **Lazy loading**: 3.0 always uses the native lazy objects of PHP 8.4, so there is no proxy
+  strategy to select. `atlas-ci.yml` still sets `USE_LAZY_GHOST_OBJECT` and
+  `USE_NATIVE_LAZY_OBJECT`, which nothing reads anymore.
 - **Suite-specific env vars**:
   - `CRYPT_SHARED_LIB_PATH` — Queryable Encryption tests (`tests/Tests/Functional/QueryableEncryptionTest.php`).
   - `VOYAGE_API_KEY` (with `EMBEDDING_PROVIDER_ENDPOINT`) — Automated Embeddings / Vector Search
@@ -101,11 +105,13 @@ Tests need a **running MongoDB server**; the suite creates and drops collections
 - **Groups**: tests tagged `#[Group('atlas')]` (Atlas Search, Vector Search, search-index waits)
   require Atlas and are excluded in CI with `--exclude-group=atlas`. Tests tagged
   `#[Group('performance')]` are excluded from the default suite and run through PHPBench.
-- **Strictness**: `phpunit.xml.dist` fails the run on deprecations, notices, warnings, risky,
-  incomplete, and empty-suite. Fix the cause — do not silence it. (Only the lowest-dependency CI
-  leg relaxes this.)
+- **Strictness**: `phpunit.xml.dist` fails the run on PHPUnit deprecations and warnings, and on
+  deprecations, notices, warnings, risky, incomplete, and empty-suite. Fix the cause, do not
+  silence it. (Only the lowest-dependency CI leg relaxes this, with
+  `--do-not-fail-on-deprecation --do-not-fail-on-warning --do-not-fail-on-notice`.)
 - **Topologies**: replica-set and sharded tests detect the topology of the configured server and
-  skip when it does not match. CI runs standalone, replica set, and sharded cluster variants.
+  skip when it does not match. CI runs a standalone server and a replica set; the sharded variant
+  is commented out.
 - **Docker**: `docker compose up` starts Atlas Local on port `27018` (see `docker-compose.yaml`
   and `.env.example`) for the Atlas-gated suites.
 
@@ -117,10 +123,14 @@ Tests need a **running MongoDB server**; the suite creates and drops collections
 - **Deprecations.** Introduce them with `trigger_deprecation()` from `symfony/deprecation-contracts`
   (not a bare `@deprecated` tag), and describe the change in the `UPGRADE-X.Y.md` for the release
   that adds it.
+- **Types.** A type is resolved through the `TypeRegistry` held by the `Configuration`, and
+  `ClassMetadata::getFieldType()` returns the type of a field. The static `Type::*` methods are
+  deprecated shims that delegate to the shared registry; don't build new code on them.
 - **Mapping options must stay in parity.** A new or changed mapping option has to be added
-  everywhere it can be declared, across all the drivers:
-  - the attribute classes in `src/Mapping/Attribute/`, and their deprecated subclasses in
-    `src/Mapping/Annotations/`;
+  everywhere it can be declared, across all the drivers. Attributes are the only PHP mapping
+  driver, since 3.0 removed the annotations driver and the `src/Mapping/Annotations/` namespace.
+  The places to update are:
+  - the attribute classes in `src/Mapping/Attribute/`;
   - the XML drivers (`src/Mapping/Driver/XmlDriver.php`, `SimplifiedXmlDriver.php`);
   - the XSD, `doctrine-mongo-mapping.xsd`;
   - the driver fixtures in `tests/Tests/Mapping/Driver/fixtures/` (PHP) and `fixtures/xml/`;
@@ -131,12 +141,15 @@ Tests need a **running MongoDB server**; the suite creates and drops collections
 
 ### Backward compatibility
 
-BC across 2.x is the top priority; prefer additive changes. In particular:
+Backward compatibility is the top priority within a release line; prefer additive changes. 3.0 is
+the major release that removes the API deprecated in 2.x, as listed in `UPGRADE-3.0.md`. In
+particular:
 
-- Don't add native parameter or return types to existing public or protected methods.
+- Don't add native parameter or return types to an existing public or protected method outside a
+  major release: callers that pass a value the type rejects get a `TypeError`.
 - Don't add parameters to interface methods.
 - Soft-mark classes as `@final` in a docblock instead of using the `final` keyword, so existing
-  subclasses keep working.
+  subclasses keep working. `ClassMetadata` is the exception: 3.0 marks it final with the keyword.
 - Don't rename classes.
 - `@internal` code may change without a deprecation cycle, but still mention it in the relevant
   `UPGRADE-X.Y.md`.
@@ -149,7 +162,9 @@ BC across 2.x is the top priority; prefer additive changes. In particular:
   `PHPORM-517: Declare the agent skill for Symfony AI Mate (#3072)`.
 - Branch/bookmark names are lowercase slugs that usually include the JIRA key
   (`phporm-472-autoembed-community-test`).
-- Target the current release line (`2.N.x` — e.g. `2.18.x`), not the upcoming `3.0.x`.
+- Target the branch the change belongs to. Fixes and additive changes go to the current release
+  line (`2.N.x`, for example `2.18.x`), which is merged up into `3.0.x` regularly. Only the
+  changes that belong to the next major target `3.0.x` directly.
 - Fill in the PR template (`.github/PULL_REQUEST_TEMPLATE.md`): type, BC break yes/no, fixed issue.
 - Document user-facing changes in the appropriate `UPGRADE-X.Y.md`.
 - **Agent etiquette.** Don't open pull requests, push branches, or post review comments on your own
@@ -164,8 +179,5 @@ BC across 2.x is the top priority; prefer additive changes. In particular:
 - **PHPStan baseline.** The project runs at level 5 with `phpstan-baseline.neon` and
   `reportUnmatchedIgnoredErrors: false`. When you fix a baseline error, delete its entry rather
   than leaving it behind; add new ignores only as a last resort.
-- **Don't "fix" the `tests/Documents84/` PHPStan exclusion.** Those fixtures use PHP 8.4 syntax
-  that PHPStan's composer.json-derived PHP range rejects; the directory is excluded on purpose.
-- **PHP version floor is 8.1.** Don't use syntax or functions newer than 8.1 in `src/` without a
-  polyfill (the project already pulls in `symfony/polyfill-php84`/`php86`). `tests/Documents84/`
-  is the one place 8.4-only syntax is allowed.
+- **PHP version floor is 8.4.** Don't use syntax or functions newer than 8.4 in `src/`; the
+  project pulls in `symfony/polyfill-php86` for the `SortDirection` enum.
