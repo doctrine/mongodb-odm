@@ -1,6 +1,6 @@
 <!-- Fill in the relevant information below to help triage your pull request. -->
 
-<!-- IMPORTANT: Security vulnerabilities must not be reported here. Please follow the steps in SECURITY.md. -->
+<!-- IMPORTANT: Security vulnerabilities must not be reported or fixed in public. Report them privately: https://github.com/doctrine/mongodb-odm/security/advisories/new (see SECURITY.md). -->
 
 |      Q       |   A
 |------------- | -----------

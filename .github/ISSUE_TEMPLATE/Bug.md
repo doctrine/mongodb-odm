@@ -3,7 +3,16 @@ name: 🐞 Bug Report
 about: Something is broken? 🔨
 ---
 
-<!-- IMPORTANT: Security vulnerabilities must not be reported here. Please follow the steps in SECURITY.md. -->
+<!--
+IMPORTANT: Security vulnerabilities must not be reported here.
+
+Does this bug let untrusted input alter queries, cause data to be stored
+unencrypted or be read/written unintentionally, or instantiate unexpected
+classes? Then please report it privately instead:
+https://github.com/doctrine/mongodb-odm/security/advisories/new
+See SECURITY.md for what counts as a security issue. If unsure, report privately.
+-->
+
 
 ### Bug Report
 

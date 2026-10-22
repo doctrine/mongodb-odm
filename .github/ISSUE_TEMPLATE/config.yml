@@ -1,0 +1,4 @@
+contact_links:
+  - name: 🔐 Report a security vulnerability
+    url: https://github.com/doctrine/mongodb-odm/security/advisories/new
+    about: Please report security issues privately, never as a public issue. Read our security policy first if you are unsure what counts as one.
