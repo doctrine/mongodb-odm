@@ -1,0 +1,56 @@
+name: 🐞 Bug Report
+description: Something is broken? 🔨
+title: ""
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **IMPORTANT:** Security vulnerabilities must not be reported here.
+
+        Does this bug let untrusted input alter queries, cause data to be stored
+        unencrypted or be read/written unintentionally, or instantiate unexpected
+        classes? Then please report it privately instead:
+        https://github.com/doctrine/mongodb-odm/security/advisories/new
+
+        See SECURITY.md for what counts as a security issue. If unsure, report privately.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Which version of `doctrine/mongodb-odm` are you using?
+      placeholder: x.y.z
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a summary describing the problem you are experiencing.
+    validations:
+      required: true
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current behavior
+      description: What is the current (buggy) behavior?
+    validations:
+      required: true
+  - type: textarea
+    id: how-to-reproduce
+    attributes:
+      label: How to reproduce
+      description: >
+        Provide steps to reproduce the bug. If possible, also add a code snippet
+        with relevant configuration etc. Adding a failing unit or functional test
+        would help us a lot - you can submit one in a pull request separately,
+        referencing this bug report.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What was the expected (correct) behavior?
+    validations:
+      required: true
