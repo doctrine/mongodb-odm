@@ -1,5 +1,5 @@
 {
     "require-dev": {
-        "doctrine/docs-builder": "^1.0.3"
+        "doctrine/docs-builder": "^1.0.4"
     }
 }
