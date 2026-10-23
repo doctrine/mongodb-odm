@@ -1,6 +1,5 @@
 name: 🐞 Bug Report
 description: Something is broken? 🔨
-title: ""
 labels: ["bug"]
 body:
   - type: markdown
