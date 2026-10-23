@@ -566,6 +566,95 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertEquals([], $this->uow->getDocumentChangeSet($user->getStar()));
     }
 
+    /**
+     * Reproduces the scenario from a PreUpdate listener calling
+     * PreUpdateEventArgs::setNewValue() (which pushes a changeset covering
+     * only the fields recorded so far back into the UnitOfWork via
+     * setDocumentChangeSet()), followed by a second field being changed and
+     * a recompute picking it up. The old value of that second field must
+     * come from the document's real snapshot, not null — a null old value
+     * for an increment-strategy field would corrupt the resulting $inc.
+     */
+    public function testRecomputeAfterSetNewValuePreservesOldValueForFieldAddedByRecompute(): void
+    {
+        $user = new User();
+        $user->setUsername('alice');
+        $user->incrementCount(1);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $this->uow->setDocumentChangeSet($user, ['username' => ['alice', 'bob']]);
+        $user->setUsername('bob');
+        $user->incrementCount(4); // count: 1 -> 5, as if set by a preUpdate callback
+
+        $classMetadata = $this->dm->getClassMetadata(User::class);
+        $this->uow->recomputeSingleDocumentChangeSet($classMetadata, $user);
+
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+
+        self::assertSame(['alice', 'bob'], $changeSet['username']);
+        self::assertSame([1, 5], $changeSet['count']);
+    }
+
+    /**
+     * Reproduces the flush-order case where applyChangeSet() has already
+     * stamped the document's originalData snapshot with the in-memory
+     * (not-yet-persisted) actual data before a preUpdate listener calls
+     * setNewValue(). The old value setNewValue()'s changeset carries for a
+     * field is diffed against the true persisted snapshot before that
+     * premature stamp happens, so it must win over the (by then stale)
+     * snapshot instead of being overwritten by it.
+     */
+    public function testSetNewValueDuringPreUpdateReportsPersistedOldValueNotFlushTimeSnapshot(): void
+    {
+        $user = new User();
+        $user->setUsername('alice');
+        $user->incrementCount(1);
+
+        $this->dm->persist($user);
+        $this->dm->flush();
+
+        $user->incrementCount(4); // count: 1 -> 5, the in-memory change flush is about to persist
+
+        $classMetadata = $this->dm->getClassMetadata(User::class);
+        // Simulates the flush prematurely stamping originalData with the
+        // actual (pre-write) data, as applyChangeSet() does before preUpdate runs.
+        $this->uow->computeChangeSet($classMetadata, $user);
+
+        // A preUpdate listener overrides the value further, the way
+        // PreUpdateEventArgs::setNewValue() does: it keeps the true old
+        // value (1) already present in the changeset it was given, and only
+        // replaces the new one.
+        $this->uow->setDocumentChangeSet($user, ['count' => [1, 7]]);
+
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+
+        self::assertSame([1, 7], $changeSet['count']);
+    }
+
+    /**
+     * Change tracking NOTIFY is deprecated; while it's still supported, the
+     * old value it reports must be the document's real original-data
+     * snapshot, never whatever value the notifying setter itself happened
+     * to pass as "old".
+     */
+    public function testNotifyTrackingReportsOldValueFromSnapshotNotFromNotifier(): void
+    {
+        $document = new NotifyChangedDocument();
+        $document->setId(1);
+        $document->setData('initial');
+
+        $this->dm->persist($document);
+        $this->dm->flush();
+
+        $this->uow->propertyChanged($document, 'data', 'not-the-real-old-value', 'changed');
+
+        $changeSet = $this->uow->getDocumentChangeSet($document);
+
+        self::assertSame(['initial', 'changed'], $changeSet['data']);
+    }
+
     public function testCommitsInProgressIsUpdatedOnException(): void
     {
         $this->dm->getEventManager()->addEventSubscriber(
