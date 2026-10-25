@@ -85,6 +85,32 @@ class GH2730Test extends BaseTestCase
         self::assertSame(1, $this->countDocuments());
     }
 
+    public function testRemoveBeforeFlushThenPersistNewDocument(): void
+    {
+        $document = new GH2730();
+        $oid      = spl_object_hash($document);
+        $this->dm->persist($document);
+
+        // Remove the document before it was written
+        $this->dm->remove($document);
+        self::assertCount(0, $this->dm->getUnitOfWork()->getScheduledDocumentInsertions());
+
+        // Remove the last reference to the document
+        unset($document);
+
+        // Create a new document
+        $document = new GH2730();
+        $this->dm->persist($document);
+
+        // If this assertion fails in a future version of PHP, this test case can be skipped.
+        self::assertSame($oid, spl_object_hash($document), 'PHP created a new object with the same object hash');
+        self::assertCount(1, $this->dm->getUnitOfWork()->getScheduledDocumentInsertions());
+
+        $this->dm->flush();
+
+        self::assertSame(1, $this->countDocuments());
+    }
+
     private function countDocuments(): int
     {
         return $this->dm->getDocumentCollection(GH2730::class)->countDocuments();
