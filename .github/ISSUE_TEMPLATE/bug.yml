@@ -7,12 +7,9 @@ body:
       value: |
         **IMPORTANT:** Security vulnerabilities must not be reported here.
 
-        Does this bug let untrusted input alter queries, cause data to be stored
-        unencrypted or be read/written unintentionally, or instantiate unexpected
-        classes? Then please report it privately instead:
-        https://github.com/doctrine/mongodb-odm/security/advisories/new
+        Does this bug let untrusted input alter queries, cause data to be stored unencrypted or be read/written unintentionally, or instantiate unexpected classes? Then please report it privately instead: https://github.com/doctrine/mongodb-odm/security/advisories/new
 
-        See SECURITY.md for what counts as a security issue. If unsure, report privately.
+        See [SECURITY.md](https://github.com/doctrine/mongodb-odm?tab=security-ov-file) for what counts as a security issue. If unsure, report privately.
   - type: input
     id: version
     attributes:
@@ -40,10 +37,7 @@ body:
     attributes:
       label: How to reproduce
       description: >
-        Provide steps to reproduce the bug. If possible, also add a code snippet
-        with relevant configuration etc. Adding a failing unit or functional test
-        would help us a lot - you can submit one in a pull request separately,
-        referencing this bug report.
+        Provide steps to reproduce the bug. If possible, also add a code snippet with relevant configuration etc. Adding a failing unit or functional test would help us a lot - you can submit one in a pull request separately, referencing this bug report.
     validations:
       required: true
   - type: textarea
