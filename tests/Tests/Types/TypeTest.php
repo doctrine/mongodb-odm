@@ -7,13 +7,8 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
-use Doctrine\ODM\MongoDB\Types\FloatType;
-use Doctrine\ODM\MongoDB\Types\IntType;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
-use Doctrine\ODM\MongoDB\Types\StringType;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Generator;
@@ -31,7 +26,6 @@ use Symfony\Component\Uid\UuidV4;
 use function get_debug_type;
 use function hex2bin;
 use function md5;
-use function sprintf;
 use function str_pad;
 use function str_repeat;
 use function time;
@@ -40,8 +34,6 @@ use const STR_PAD_LEFT;
 
 class TypeTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     private TypeRegistry $registry;
 
     private ClassMetadata $class;
@@ -76,7 +68,7 @@ class TypeTest extends BaseTestCase
         $value   ??= $expectedValue;
         $fieldName = 'theField';
         $return    = $this;
-        eval(Type::getType($typeIdentifier)->closureToPHP());
+        eval($this->registry->get($typeIdentifier)->closureToPHP());
 
         self::assertSameTypeAndValue($expectedValue, $return);
     }
@@ -160,42 +152,7 @@ class TypeTest extends BaseTestCase
     {
         $date = new DateTimeImmutable('now');
 
-        self::assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue($date));
-    }
-
-    #[DataProvider('provideTypeFromPHPVariable')]
-    public function testGetTypeFromPHPVariable(?string $expectedType, mixed $variable): void
-    {
-        $type = $this->captureDeprecationMessages(static function () use ($variable): ?Type {
-            return Type::getTypeFromPHPVariable($variable);
-        }, $errors);
-
-        if ($expectedType === null) {
-            self::assertNull($type);
-        } elseif ($type === null) {
-            self::fail(sprintf('Type is null, expected "%s"', $expectedType));
-        } else {
-            $expectedType = $this->registry->get($expectedType);
-            self::assertInstanceOf($expectedType::class, $type, $type::class);
-        }
-
-        self::assertSame(['Since doctrine/mongodb-odm 2.18: Type::getTypeFromPHPVariable() is deprecated, use DocumentManager::getTypeGuesser()->guessTypeFromValue() instead.'], $errors);
-    }
-
-    public static function provideTypeFromPHPVariable(): Generator
-    {
-        yield 'null' => [null, null];
-        yield 'bool' => [Type::BOOL, true];
-        yield 'int' => [Type::INT, 1];
-        yield 'float' => [Type::FLOAT, 3.14];
-        yield 'string' => [Type::STRING, 'ohai'];
-        yield 'DateTime' => [Type::DATE, new DateTime()];
-        yield 'DateTimeImmutable' => [Type::DATE_IMMUTABLE, new DateTimeImmutable()];
-        yield 'unknown object' => [
-            null,
-            new class () {
-            },
-        ];
+        self::assertInstanceOf(UTCDateTime::class, $this->registry->get(Type::DATE_IMMUTABLE)->convertToDatabaseValue($date));
     }
 
     public function testInvalidType(): void
@@ -204,47 +161,6 @@ class TypeTest extends BaseTestCase
         self::expectExceptionMessage('Invalid type specified: "foo"');
 
         $this->registry->get('foo');
-    }
-
-    public function testDeprecatedMethods(): void
-    {
-        $this->captureDeprecationMessages(static function () {
-            self::assertTrue(Type::hasType(Type::STRING));
-            self::assertFalse(Type::hasType('non_existent_type'));
-            self::assertInstanceOf(StringType::class, Type::getType(Type::STRING));
-            self::assertInstanceOf(IntType::class, Type::getTypeFromPHPVariable(10));
-            self::assertInstanceOf(UTCDateTime::class, Type::convertPHPToDatabaseValue(new DateTime()));
-            Type::addType('custom_type', StringType::class);
-            self::assertInstanceOf(StringType::class, Type::getType('custom_type'));
-            Type::registerType('custom_type', FloatType::class);
-            self::assertInstanceOf(FloatType::class, Type::getType('custom_type'));
-            Type::overrideType('custom_type', IntType::class);
-            self::assertInstanceOf(IntType::class, Type::getType('custom_type'));
-            self::assertIsArray(Type::getTypesMap());
-
-            try {
-                Type::overrideType('non_existent_type', IntType::class);
-                self::fail('Expected exception not thrown.');
-            } catch (MappingException $e) {
-                self::assertEquals(MappingException::typeNotFound('non_existent_type'), $e);
-            }
-        }, $errors);
-
-        self::assertSame([
-            'Since doctrine/mongodb-odm 2.18: Type::hasType() is deprecated, use $typeProvider->has() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::hasType() is deprecated, use $typeProvider->has() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::getType() is deprecated, use $typeProvider->get() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::getTypeFromPHPVariable() is deprecated, use DocumentManager::getTypeGuesser()->guessTypeFromValue() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::convertPHPToDatabaseValue() is deprecated, use DocumentManager::getTypeGuesser()->convertToDatabaseValue() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::addType() is deprecated, use $typeRegistry->register() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::getType() is deprecated, use $typeProvider->get() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::registerType() is deprecated, use $typeRegistry->register() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::getType() is deprecated, use $typeProvider->get() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::overrideType() is deprecated, use $typeRegistry->register() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::getType() is deprecated, use $typeProvider->get() instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::getTypesMap() is deprecated and will be removed in 3.0. Iterate over the TypeProvider instead.',
-            'Since doctrine/mongodb-odm 2.18: Type::overrideType() is deprecated, use $typeRegistry->register() instead.',
-        ], $errors);
     }
 
     private static function assertSameTypeAndValue(mixed $expected, mixed $actual): void

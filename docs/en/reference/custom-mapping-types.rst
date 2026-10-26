@@ -25,16 +25,12 @@ a ``DateTimeImmutable`` when the data is read from the database.
 
     use DateTimeImmutable;
     use DateTimeZone;
-    use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
     use Doctrine\ODM\MongoDB\Types\Type;
     use MongoDB\BSON\UTCDateTime;
     use RuntimeException;
 
     class DateTimeWithTimezoneType extends Type
     {
-        // This trait provides default closureToPHP used during data hydration
-        use ClosureToPHP;
-
         /** @param array{utc: UTCDateTime, tz: string} $value */
         public function convertToPHPValue($value): DateTimeImmutable
         {
@@ -181,7 +177,6 @@ Example Implementation (using ``Money\Money``)::
 
     namespace App\MongoDB\Types;
 
-    use Doctrine\ODM\MongoDB\Types\ClosureToPHP;
     use Doctrine\ODM\MongoDB\Types\Type;
     use InvalidArgumentException;
     use Money\Money;
@@ -189,9 +184,6 @@ Example Implementation (using ``Money\Money``)::
 
     final class MoneyType extends Type
     {
-        // This trait provides a default closureToPHP used during data hydration
-        use ClosureToPHP;
-
         public function convertToPHPValue(mixed $value): ?Money
         {
             if (null === $value) {

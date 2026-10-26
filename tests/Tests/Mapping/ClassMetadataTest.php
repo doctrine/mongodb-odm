@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
@@ -47,17 +46,12 @@ use ReflectionException;
 use ReflectionProperty;
 use stdClass;
 
-use function array_filter;
 use function array_merge;
-use function array_values;
 use function serialize;
-use function str_contains;
 use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
@@ -392,6 +386,7 @@ class ClassMetadataTest extends BaseTestCase
     public function testDuplicateFieldMappingThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
+        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapField(['fieldName' => 'username', 'name' => 'uname', 'type' => Type::STRING]);
 
         $this->expectException(MappingException::class);
@@ -1182,37 +1177,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertSame(Granularity::Hours, $metadata->timeSeriesOptions->granularity);
         self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
         self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
-    }
-
-    /**
-     * The mapping drivers write metadata properties directly, so deprecating
-     * these writes requires a replacement API first. Loading the whole test
-     * suite mapping must not report a single property write.
-     */
-    public function testLoadingAllMetadataDoesNotDeprecatePropertyWrites(): void
-    {
-        $this->captureDeprecationMessages(
-            fn () => $this->dm->getMetadataFactory()->getAllMetadata(),
-            $errors,
-        );
-
-        $propertyWrites = array_filter(
-            $errors,
-            static fn (string $error): bool => str_contains($error, 'Writing to property'),
-        );
-
-        self::assertSame([], array_values($propertyWrites));
-    }
-
-    public function testNotInjectingTypeProviderIsDeprecated(): void
-    {
-        $cm = new ClassMetadata(UserTyped::class);
-        $this->captureDeprecationMessages(static function () use ($cm) {
-            $cm->mapField(['name' => 'dateTimeImmutable']);
-        }, $errors);
-
-        self::assertSame(['Since doctrine/mongodb-odm 2.18: Using ClassMetadata without a TypeProvider is deprecated. Inject the TypeProvider instance from the DocumentManager via $classMetadata->setTypeProvider($configuration->getTypeProvider()).'], $errors);
-        self::assertSame('date_immutable', $cm->getFieldMapping('dateTimeImmutable')['type']);
     }
 }
 

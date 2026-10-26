@@ -180,22 +180,54 @@ class ConfigurationTest extends TestCase
         $c->setKmsProvider(['type' => ['not', 'a', 'string']]);
     }
 
-    public function testTypeProvider(): void
+    public function testDefaultTypeProvider(): void
     {
         $c = new Configuration();
-        self::assertSame($c->getTypeProvider(), TypeRegistry::getDeprecatedSharedInstance());
+
+        $defaultProvider = $c->getTypeProvider();
+        self::assertInstanceOf(TypeRegistry::class, $defaultProvider);
+        self::assertSame($defaultProvider, $c->getTypeProvider());
+    }
+
+    public function testDefaultTypeProvidersAreDistinctBetweenConfigurations(): void
+    {
+        $configuration1 = new Configuration();
+        $configuration2 = new Configuration();
+
+        self::assertInstanceOf(TypeRegistry::class, $configuration1->getTypeProvider());
+        self::assertInstanceOf(TypeRegistry::class, $configuration2->getTypeProvider());
+        self::assertNotSame($configuration1->getTypeProvider(), $configuration2->getTypeProvider());
+    }
+
+    public function testTypeProviderCanBeSetBeforeUse(): void
+    {
+        $c = new Configuration();
 
         $typeRegistry = $this->createStub(TypeProvider::class);
         $c->setTypeProvider($typeRegistry);
         self::assertSame($typeRegistry, $c->getTypeProvider());
     }
 
-    public function testTypeProviderCannotBeReplacedOnceSet(): void
+    public function testTypeProviderCanBeReplacedBeforeUse(): void
     {
         $c = new Configuration();
-        $c->setTypeProvider(new TypeRegistry());
 
-        self::expectException(LogicException::class);
+        $firstProvider  = $this->createStub(TypeProvider::class);
+        $secondProvider = $this->createStub(TypeProvider::class);
+
+        $c->setTypeProvider($firstProvider);
+        $c->setTypeProvider($secondProvider);
+
+        self::assertSame($secondProvider, $c->getTypeProvider());
+    }
+
+    public function testTypeProviderCannotBeSetAfterUse(): void
+    {
+        $c = new Configuration();
+        $c->getTypeProvider();
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('The TypeProvider is already in use and cannot be changed.');
         $c->setTypeProvider(new TypeRegistry());
     }
 
