@@ -115,10 +115,12 @@ class Configuration
 
     private ?TypeProvider $typeProvider = null;
 
+    private bool $typeProviderUsed = false;
+
     public function setTypeProvider(TypeProvider $typeProvider): void
     {
-        if ($this->typeProvider !== null) {
-            throw new LogicException('TypeProvider is already set and cannot be changed.');
+        if ($this->typeProviderUsed) {
+            throw new LogicException('The TypeProvider is already in use and cannot be changed.');
         }
 
         $this->typeProvider = $typeProvider;
@@ -126,7 +128,9 @@ class Configuration
 
     public function getTypeProvider(): TypeProvider
     {
-        return $this->typeProvider ?? TypeRegistry::getDeprecatedSharedInstance();
+        $this->typeProviderUsed = true;
+
+        return $this->typeProvider ??= new TypeRegistry();
     }
 
     /**

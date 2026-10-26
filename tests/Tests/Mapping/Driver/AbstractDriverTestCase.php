@@ -281,6 +281,7 @@ abstract class AbstractDriverTestCase extends TestCase
         ], $classMetadata->fieldMappings['name']);
 
         $classMetadata = new ClassMetadata(QueryResultDocument::class);
+        $classMetadata->setTypeProvider(new TypeRegistry());
         $this->driver->loadMetadataForClass(QueryResultDocument::class, $classMetadata);
 
         self::assertEquals([
@@ -317,6 +318,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testPartialFilterExpressions(): void
     {
         $classMetadata = new ClassMetadata(PartialFilterDocument::class);
+        $classMetadata->setTypeProvider(new TypeRegistry());
         $this->driver->loadMetadataForClass(PartialFilterDocument::class, $classMetadata);
 
         self::assertEquals([
@@ -355,6 +357,7 @@ abstract class AbstractDriverTestCase extends TestCase
     public function testCollectionPrimers(): void
     {
         $classMetadata = new ClassMetadata(PrimedCollectionDocument::class);
+        $classMetadata->setTypeProvider(new TypeRegistry());
         $this->driver->loadMetadataForClass(PrimedCollectionDocument::class, $classMetadata);
 
         self::assertEquals([
