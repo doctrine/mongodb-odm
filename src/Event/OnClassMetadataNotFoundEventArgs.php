@@ -6,6 +6,7 @@ namespace Doctrine\ODM\MongoDB\Event;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.
@@ -31,6 +32,16 @@ final class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
     public function getFoundMetadata(): ?ClassMetadata
     {
         return $this->foundMetadata;
+    }
+
+    /**
+     * The type provider configured on the document manager.
+     *
+     * Listeners can inject it into the metadata created in the event.
+     */
+    public function getTypeProvider(): TypeProvider
+    {
+        return $this->getDocumentManager()->getConfiguration()->getTypeProvider();
     }
 
     /**

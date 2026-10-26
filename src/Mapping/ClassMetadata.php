@@ -945,6 +945,11 @@ use const PHP_VERSION_ID;
         $this->typeProvider = $types;
     }
 
+    public function hasTypeProvider(): bool
+    {
+        return isset($this->typeProvider);
+    }
+
     private function getTypeProvider(): TypeProvider
     {
         if (! isset($this->typeProvider)) {

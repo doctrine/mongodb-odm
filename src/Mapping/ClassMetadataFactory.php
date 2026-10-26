@@ -98,7 +98,15 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
 
-        return $eventArgs->getFoundMetadata();
+        $metadata = $eventArgs->getFoundMetadata();
+
+        // Metadata returned by a listener does not go through initializeReflection()
+        // or wakeupReflection(). Inject the configured provider unless the listener set one.
+        if ($metadata !== null && ! $metadata->hasTypeProvider()) {
+            $metadata->setTypeProvider($this->config->getTypeProvider());
+        }
+
+        return $metadata;
     }
 
     /**
