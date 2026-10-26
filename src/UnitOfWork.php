@@ -1444,8 +1444,12 @@ final class UnitOfWork implements PropertyChangedListener
                 $this->removeFromIdentityMap($document);
             }
 
-            // The document state is removed too, the object id can be reused for a new document
-            unset($this->scheduledDocumentInsertions[$oid], $this->documentStates[$oid]);
+            // The document is forgotten completely, its object id can be reused for a new document
+            unset(
+                $this->scheduledDocumentInsertions[$oid],
+                $this->documentStates[$oid],
+                $this->documentIdentifiers[$oid],
+            );
 
             return; // document has not been persisted yet, so nothing more to do.
         }
