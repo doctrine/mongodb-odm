@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\Aggregation\Operator\WindowOperators;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 use LogicException;
+use SortDirection;
 
 use function array_filter;
 use function array_map;
@@ -51,11 +52,11 @@ class Output extends Operator implements WindowOperators
     }
 
     /**
-     * @param array<string, int|string>|string $fieldName Field name or array of field/order pairs
-     * @param int|string|null                  $order     Field order (if one field is specified)
-     * @phpstan-param SortShape|string         $fieldName
+     * @param array<string, int|string|SortDirection>|string $fieldName Field name or array of field/order pairs
+     * @param int|string|SortDirection                       $order     Field order (if one field is specified)
+     * @phpstan-param SortShape|string                         $fieldName
      */
-    public function sortBy(array|string $fieldName, int|string|null $order = null): SetWindowFields
+    public function sortBy(array|string $fieldName, int|string|SortDirection|null $order = null): SetWindowFields
     {
         return $this->setWindowFields->sortBy(...func_get_args());
     }

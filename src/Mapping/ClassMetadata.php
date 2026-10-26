@@ -18,7 +18,10 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
+use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeProvider;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -55,6 +58,7 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
+use function trigger_deprecation;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -780,6 +784,8 @@ final class ClassMetadata implements BaseClassMetadata
     /** @var class-string|null */
     private ?string $rootClass;
 
+    private TypeProvider $typeProvider;
+
     /**
      * Initializes a new ClassMetadata instance that will hold the object-document mapping
      * metadata of the class with the given name.
@@ -831,6 +837,24 @@ final class ClassMetadata implements BaseClassMetadata
         }
 
         return ($pathPrefix ? $pathPrefix . '.' : '') . self::getReferencePrefix($storeAs) . 'id';
+    }
+
+    /**
+     * Inject the TypeProvider instance, used for field transformation and type detection.
+     */
+    public function setTypeProvider(TypeProvider $types): void
+    {
+        $this->typeProvider = $types;
+    }
+
+    private function getTypeProvider(): TypeProvider
+    {
+        if (! isset($this->typeProvider)) {
+            trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Using ClassMetadata without a TypeProvider is deprecated. Inject the TypeProvider instance from the DocumentManager via $classMetadata->setTypeProvider($configuration->getTypeProvider()).');
+            $this->typeProvider = TypeRegistry::getDeprecatedSharedInstance();
+        }
+
+        return $this->typeProvider;
     }
 
     public function getReflectionClass(): ReflectionClass
@@ -1451,7 +1475,7 @@ final class ClassMetadata implements BaseClassMetadata
         }
     }
 
-    public function getBucketName(): ?string
+    public function getBucketName(): string
     {
         return $this->bucketName;
     }
@@ -1562,7 +1586,7 @@ final class ClassMetadata implements BaseClassMetadata
             default:
                 $defaultStrategy   = self::STORAGE_STRATEGY_SET;
                 $allowedStrategies = [self::STORAGE_STRATEGY_SET];
-                $type              = Type::getType($mapping['type']);
+                $type              = $this->getTypeProvider()->get($mapping['type']);
                 if ($type instanceof Incrementable) {
                     $allowedStrategies[] = self::STORAGE_STRATEGY_INCREMENT;
                 }
@@ -1662,8 +1686,6 @@ final class ClassMetadata implements BaseClassMetadata
      * @internal
      *
      * @phpstan-param AssociationFieldMapping $mapping
-     *
-     * @throws MappingException
      */
     public function addInheritedAssociationMapping(array $mapping): void
     {
@@ -1761,9 +1783,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function getPHPIdentifierValue(mixed $id): mixed
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return Type::getType($idType)->convertToPHPValue($id);
+        return $this->getFieldType($this->identifier)->convertToPHPValue($id);
     }
 
     /**
@@ -1771,9 +1791,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function getDatabaseIdentifierValue(mixed $id): mixed
     {
-        $idType = $this->fieldMappings[$this->identifier]['type'];
-
-        return Type::getType($idType)->convertToDatabaseValue($id);
+        return $this->getFieldType($this->identifier)->convertToDatabaseValue($id);
     }
 
     /**
@@ -1849,6 +1867,19 @@ final class ClassMetadata implements BaseClassMetadata
         }
 
         return $this->fieldMappings[$fieldName];
+    }
+
+    public function getFieldType(string $fieldName): Type
+    {
+        if (! isset($this->fieldMappings[$fieldName]['type'])) {
+            return $this->getTypeProvider()->get(Type::RAW);
+        }
+
+        try {
+            return $this->getTypeProvider()->get($this->fieldMappings[$fieldName]['type']);
+        } catch (InvalidTypeException) {
+            throw MappingException::invalidTypeForField($this->name, $fieldName, $this->fieldMappings[$fieldName]['type']);
+        }
     }
 
     /**
@@ -1996,7 +2027,7 @@ final class ClassMetadata implements BaseClassMetadata
      */
     public function setVersionMapping(array &$mapping): void
     {
-        if (! Type::getType($mapping['type']) instanceof Versionable) {
+        if (! $this->getTypeProvider()->get($mapping['type']) instanceof Versionable) {
             throw LockException::invalidVersionFieldType($mapping['type']);
         }
 
@@ -2292,7 +2323,7 @@ final class ClassMetadata implements BaseClassMetadata
 
         if (isset($mapping['encrypt']['queryType'])) {
             // The encrypted range query options min and max must be converted to the database type
-            $type = Type::getType($mapping['type']);
+            $type = $this->getTypeProvider()->get($mapping['type']);
             foreach (['min', 'max'] as $option) {
                 if (isset($mapping['encrypt'][$option])) {
                     $mapping['encrypt'][$option] = $type->convertToDatabaseValue($mapping['encrypt'][$option]);
@@ -2657,7 +2688,7 @@ final class ClassMetadata implements BaseClassMetadata
             return $mapping;
         }
 
-        if (! $type->isBuiltin() && Type::hasType($type->getName())) {
+        if (! $type->isBuiltin() && $this->getTypeProvider()->has($type->getName())) {
             $mapping['type'] = $type->getName();
 
             return $mapping;

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Types;
 
-use function sprintf;
-
 /**
  * @deprecated Since 3.0, the default {@see Type::closureToPHP()} implementation is identical and this trait is no longer needed.
  *
@@ -16,8 +14,6 @@ trait ClosureToPHP
     /** @return string Redirects to the method convertToPHPValue from child class */
     final public function closureToPHP(): string
     {
-        return sprintf('
-            $type = \%s::getType($typeIdentifier);
-            $return = $type->convertToPHPValue($value);', Type::class);
+        return '$return = $this->class->getFieldType($fieldName)->convertToPHPValue($value);';
     }
 }

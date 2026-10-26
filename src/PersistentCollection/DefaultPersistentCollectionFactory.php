@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection as BaseCollection;
  */
 final class DefaultPersistentCollectionFactory extends AbstractPersistentCollectionFactory
 {
+    /** @return BaseCollection<array-key, object> */
     protected function createCollectionClass(string $collectionClass): BaseCollection
     {
         return new $collectionClass();

@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
+use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use MongoDB\BSON\ObjectId;
 
@@ -74,7 +75,7 @@ class VersionableTest extends BaseTestCase
 
     private function getType(string $name): Versionable
     {
-        $type = Type::getType($name);
+        $type = (new TypeRegistry())->get($name);
 
         self::assertInstanceOf(Versionable::class, $type);
 

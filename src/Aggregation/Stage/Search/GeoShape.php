@@ -16,6 +16,8 @@ use GeoJson\Geometry\Polygon;
  * @internal
  *
  * @see https://www.mongodb.com/docs/atlas/atlas-search/geoShape/
+ *
+ * @phpstan-type GeoJsonGeometry array{type: string, coordinates?: mixed, crs?: mixed, bbox?: mixed}
  */
 class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
 {
@@ -25,6 +27,7 @@ class GeoShape extends AbstractSearchOperator implements ScoredSearchOperator
     private array $path      = [];
     private string $relation = '';
 
+    /** @var LineString|Point|Polygon|MultiPolygon|GeoJsonGeometry|null */
     private LineString|Point|Polygon|MultiPolygon|array|null $geometry = null;
 
     public function __construct(Search $search, DocumentPersister $persister, LineString|Point|Polygon|MultiPolygon|array|null $geometry = null, string $relation = '', string ...$path)

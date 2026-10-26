@@ -27,6 +27,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
+use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use Doctrine\Persistence\Mapping\MappingException;
 use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
@@ -37,6 +38,7 @@ use MongoDB\Driver\Exception\Exception as DriverException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 use MongoDB\GridFS\Bucket;
+use SortDirection;
 use stdClass;
 
 use function array_combine;
@@ -61,7 +63,6 @@ use function spl_object_id;
 use function sprintf;
 use function str_contains;
 use function strpos;
-use function strtolower;
 
 /**
  * The DocumentPersister is responsible for persisting documents.
@@ -205,7 +206,7 @@ final class DocumentPersister
             if ($this->class->isVersioned) {
                 $versionMapping = $this->class->fieldMappings[$this->class->versionField];
                 $nextVersion    = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
-                $type           = Type::getType($versionMapping['type']);
+                $type           = $this->class->getFieldType($this->class->versionField);
                 assert($type instanceof Versionable);
                 if ($nextVersion === null) {
                     $nextVersion = $type->getNextVersion(null);
@@ -283,7 +284,7 @@ final class DocumentPersister
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $nextVersion    = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
-            $type           = Type::getType($versionMapping['type']);
+            $type           = $this->class->getFieldType($this->class->versionField);
             assert($type instanceof Versionable);
             if ($nextVersion === null) {
                 $nextVersion = $type->getNextVersion(null);
@@ -368,7 +369,7 @@ final class DocumentPersister
         if ($this->class->isVersioned) {
             $versionMapping = $this->class->fieldMappings[$this->class->versionField];
             $currentVersion = $this->class->propertyAccessors[$this->class->versionField]->getValue($document);
-            $type           = Type::getType($versionMapping['type']);
+            $type           = $this->class->getFieldType($this->class->versionField);
             assert($type instanceof Versionable);
             $nextVersion                             = $type->getNextVersion($currentVersion);
             $update['$set'][$versionMapping['name']] = $type->convertToDatabaseValue($nextVersion);
@@ -415,7 +416,7 @@ final class DocumentPersister
     public function delete(object $document, array $options = []): void
     {
         if ($this->bucket instanceof Bucket) {
-            $documentIdentifier = $this->uow->getDocumentIdentifier($document);
+            $documentIdentifier = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
             $databaseIdentifier = $this->class->getDatabaseIdentifierValue($documentIdentifier);
 
             $this->bucket->delete($databaseIdentifier);
@@ -452,7 +453,8 @@ final class DocumentPersister
         }
 
         $data = $this->hydratorFactory->hydrate($document, (array) $data);
-        $this->uow->setOriginalDocumentData($document, $data);
+        $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
+        $this->uow->clearDocumentChangeSet(spl_object_id($document));
     }
 
     /**
@@ -461,9 +463,9 @@ final class DocumentPersister
      * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
      * be used to match an _id value.
      *
-     * @param array<string, mixed>|scalar|ObjectId|null            $criteria Query criteria
-     * @param array<string, int|string|array<string, string>>|null $sort
-     * @param T|null                                               $document
+     * @param array<string, mixed>|scalar|ObjectId|null                          $criteria Query criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
+     * @param T|null                                                             $document
      * @phpstan-param SortShape|null $sort
      * @phpstan-param Hints $hints
      *
@@ -487,7 +489,7 @@ final class DocumentPersister
 
         $options = [];
         if ($sort !== null) {
-            $options['sort'] = $this->prepareSort($sort);
+            $options['sort'] = $this->prepareSort($sort, ['textScore']);
         }
 
         assert($this->collection instanceof Collection);
@@ -511,8 +513,11 @@ final class DocumentPersister
     /**
      * Finds documents by a set of criteria.
      *
-     * @param array<string, mixed>           $criteria
-     * @param array<string, int|string>|null $sort
+     * @param array<string, mixed>                                               $criteria
+     * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
+     * @phpstan-param SortShape|null $sort
+     *
+     * @return Iterator<T>
      */
     public function loadAll(array $criteria = [], ?array $sort = null, ?int $limit = null, ?int $skip = null): Iterator
     {
@@ -522,7 +527,7 @@ final class DocumentPersister
 
         $options = [];
         if ($sort !== null) {
-            $options['sort'] = $this->prepareSort($sort);
+            $options['sort'] = $this->prepareSort($sort, ['textScore']);
         }
 
         if ($limit !== null) {
@@ -571,8 +576,7 @@ final class DocumentPersister
                     $shardKeyQueryPart[$keyValue[0]] = $keyValue[1];
                 }
             } else {
-                $value                   = Type::getType($mapping['type'])->convertToDatabaseValue($data[$mapping['fieldName']]);
-                $shardKeyQueryPart[$key] = $value;
+                $shardKeyQueryPart[$key] = $this->class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($data[$mapping['fieldName']]);
             }
         }
 
@@ -581,6 +585,8 @@ final class DocumentPersister
 
     /**
      * Wraps the supplied base cursor in the corresponding ODM class.
+     *
+     * @return Iterator<T>
      */
     private function wrapCursor(CursorInterface $baseCursor): Iterator
     {
@@ -603,7 +609,7 @@ final class DocumentPersister
      */
     public function lock(object $document, int $lockMode): void
     {
-        $id          = $this->uow->getDocumentIdentifier($document);
+        $id          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         assert($this->collection instanceof Collection);
@@ -616,7 +622,7 @@ final class DocumentPersister
      */
     public function unlock(object $document): void
     {
-        $id          = $this->uow->getDocumentIdentifier($document);
+        $id          = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
         $criteria    = ['_id' => $this->class->getDatabaseIdentifierValue($id)];
         $lockMapping = $this->class->fieldMappings[$this->class->lockField];
         assert($this->collection instanceof Collection);
@@ -649,6 +655,8 @@ final class DocumentPersister
 
     /**
      * Loads a PersistentCollection data. Used in the initialize() method.
+     *
+     * @param PersistentCollectionInterface<array-key, object> $collection
      */
     public function loadCollection(PersistentCollectionInterface $collection): void
     {
@@ -673,6 +681,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadEmbedManyCollection(PersistentCollectionInterface $collection): void
     {
         $embeddedDocuments = $collection->getMongoData();
@@ -696,7 +705,7 @@ final class DocumentPersister
                 throw HydratorException::associationItemTypeMismatch($owner::class, $mapping['name'], $key, 'array', gettype($embeddedDocument));
             }
 
-            $this->uow->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
+            $this->dm->getDocumentRegistry()->setParentAssociation($embeddedDocumentObject, $mapping, $owner, $mapping['name'] . '.' . $key);
 
             $data = $this->hydratorFactory->hydrate($embeddedDocumentObject, $embeddedDocument, $collection->getHints());
             $id   = $data[$embeddedMetadata->identifier ?? ''] ?? null;
@@ -713,6 +722,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadReferenceManyCollectionOwningSide(PersistentCollectionInterface $collection): void
     {
         $hints      = $collection->getHints();
@@ -786,10 +796,11 @@ final class DocumentPersister
             $cursor    = $mongoCollection->find($criteria, $options);
             $documents = $cursor->toArray();
             foreach ($documents as $documentData) {
-                $document = $this->uow->getById($documentData['_id'], $class);
+                $document = $this->dm->getDocumentRegistry()->getById($documentData['_id'], $class);
                 if ($this->uow->isUninitializedObject($document)) {
                     $data = $this->hydratorFactory->hydrate($document, $documentData);
-                    $this->uow->setOriginalDocumentData($document, $data);
+                    $this->dm->getDocumentRegistry()->setOriginalDocumentData($document, $data);
+                    $this->uow->clearDocumentChangeSet(spl_object_id($document));
                 }
 
                 if (! $sorted) {
@@ -801,6 +812,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadReferenceManyCollectionInverseSide(PersistentCollectionInterface $collection): void
     {
         $query    = $this->createReferenceManyInverseSideQuery($collection);
@@ -812,6 +824,7 @@ final class DocumentPersister
         }
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     public function createReferenceManyInverseSideQuery(PersistentCollectionInterface $collection): Query
     {
         $hints   = $collection->getHints();
@@ -859,6 +872,7 @@ final class DocumentPersister
         return $qb->getQuery();
     }
 
+    /** @param PersistentCollectionInterface<array-key, object> $collection */
     private function loadReferenceManyWithRepositoryMethod(PersistentCollectionInterface $collection): void
     {
         $cursor    = $this->createReferenceManyWithRepositoryMethodCursor($collection);
@@ -873,6 +887,11 @@ final class DocumentPersister
         }
     }
 
+    /**
+     * @param PersistentCollectionInterface<array-key, object> $collection
+     *
+     * @return Iterator<object>
+     */
     public function createReferenceManyWithRepositoryMethodCursor(PersistentCollectionInterface $collection): Iterator
     {
         $mapping          = $collection->getMapping();
@@ -916,38 +935,25 @@ final class DocumentPersister
         return $preparedFields;
     }
 
-    private function getSortDirection(int|string|null $sort): int|string|null
-    {
-        switch (strtolower((string) $sort)) {
-            case 'desc':
-                return -1;
-
-            case 'asc':
-                return 1;
-        }
-
-        return $sort;
-    }
-
     /**
      * Prepare a sort specification array by converting keys to MongoDB field
      * names and changing direction strings to int.
      *
-     * @param array<string, int|string|array<string, string>> $fields
+     * @param array<string, int|string|SortDirection|array<string, string>> $fields
+     * @param list<string>                                                  $allowedMetaSort
      * @phpstan-param SortShape $fields
      *
      * @phpstan-return array<string, -1|1|SortMeta>
+     *
+     * @throws InvalidArgumentException if a sort direction is invalid.
      */
-    public function prepareSort(array $fields): array
+    public function prepareSort(array $fields, array $allowedMetaSort = []): array
     {
         $sortFields = [];
 
-        foreach ($fields as $key => $value) {
-            if (is_array($value)) {
-                $sortFields[$this->prepareFieldName($key)] = $value;
-            } else {
-                $sortFields[$this->prepareFieldName($key)] = $this->getSortDirection($value);
-            }
+        foreach (SortHelper::normalizeSortDirections($fields, $allowedMetaSort) as $key => $value) {
+            // Field names that are integer-like strings become integer array keys in PHP
+            $sortFields[$this->prepareFieldName((string) $key)] = $value;
         }
 
         return $sortFields;
@@ -1090,7 +1096,7 @@ final class DocumentPersister
                 $value = $value->value;
             }
 
-            return Type::convertPHPToDatabaseValue($value);
+            return $this->dm->getTypeGuesser()->convertToDatabaseValue($value);
         }
 
         $mapping  = $class->fieldMappings[$fieldName];
@@ -1098,12 +1104,6 @@ final class DocumentPersister
 
         if (! empty($mapping['reference']) || ! empty($mapping['embedded'])) {
             return $value;
-        }
-
-        if (! Type::hasType($typeName)) {
-            throw new InvalidArgumentException(
-                sprintf('Mapping type "%s" does not exist', $typeName),
-            );
         }
 
         if ($value instanceof BackedEnum && isset($mapping['enumType'])) {
@@ -1114,10 +1114,7 @@ final class DocumentPersister
             return $value;
         }
 
-        $type  = Type::getType($typeName);
-        $value = $type->convertToDatabaseValue($value);
-
-        return $value;
+        return $class->getFieldType($mapping['fieldName'])->convertToDatabaseValue($value);
     }
 
     private function prepareQueryReference(mixed $value, ClassMetadata $class): mixed
@@ -1376,7 +1373,7 @@ final class DocumentPersister
     /**
      * Checks whether the value has DBRef fields.
      *
-     * This method doesn't check if the the value is a complete DBRef object,
+     * This method doesn't check if the value is a complete DBRef object,
      * although it should return true for a DBRef. Rather, we're checking that
      * the value has one or more fields for a DBref. In practice, this could be
      * $elemMatch criteria for matching a DBRef.
@@ -1391,7 +1388,7 @@ final class DocumentPersister
             $value = get_object_vars($value);
         }
 
-        foreach ($value as $key => $value) {
+        foreach ($value as $key => $v) {
             if ($key === '$ref' || $key === '$id' || $key === '$db') {
                 return true;
             }
@@ -1521,7 +1518,7 @@ final class DocumentPersister
      */
     private function getQueryForDocument(object $document): array
     {
-        $id = $this->uow->getDocumentIdentifier($document);
+        $id = $this->dm->getDocumentRegistry()->getDocumentIdentifier($document);
         $id = $this->class->getDatabaseIdentifierValue($id);
 
         $shardKeyQueryPart = $this->getShardKeyQuery($document);
@@ -1549,6 +1546,7 @@ final class DocumentPersister
             : $writeOptions;
     }
 
+    /** @param array<string, mixed> $options */
     private function isInTransaction(array $options): bool
     {
         if (! isset($options['session'])) {

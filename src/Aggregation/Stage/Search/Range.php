@@ -18,6 +18,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
     private int|float|UTCDateTime|null $gt = null;
     private int|float|UTCDateTime|null $lt = null;
     private bool $includeLowerBound        = false;
+    private bool $includeUpperBound        = false;
 
     /** @var list<string> */
     private array $path;
@@ -41,7 +42,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
     public function lt(int|float|UTCDateTime|null $value): static
     {
         $this->lt                = $value;
-        $this->includeLowerBound = false;
+        $this->includeUpperBound = false;
 
         return $this;
     }
@@ -49,7 +50,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
     public function lte(int|float|UTCDateTime|null $value): static
     {
         $this->lt                = $value;
-        $this->includeLowerBound = true;
+        $this->includeUpperBound = true;
 
         return $this;
     }
@@ -76,7 +77,7 @@ class Range extends AbstractSearchOperator implements ScoredSearchOperator
         }
 
         if ($this->lt !== null) {
-            $name          = $this->includeLowerBound ? 'lte' : 'lt';
+            $name          = $this->includeUpperBound ? 'lte' : 'lt';
             $params->$name = $this->lt;
         }
 
