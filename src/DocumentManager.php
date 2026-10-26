@@ -159,7 +159,7 @@ class DocumentManager implements ObjectManager
             [],
             $this->config->getDriverOptions(),
         );
-        $this->documentRegistry = new DocumentRegistry();
+        $this->documentRegistry = new DocumentRegistry($this->config);
 
         if ($this->config->isNativeLazyObjectEnabled()) {
             $this->classNameResolver = new class implements ClassNameResolver, ProxyClassNameResolver {
