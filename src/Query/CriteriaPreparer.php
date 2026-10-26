@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\ODM\MongoDB\Utility\SortHelper;
 use Doctrine\Persistence\Mapping\MappingException;
+use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use SortDirection;
 
@@ -85,7 +86,7 @@ final class CriteriaPreparer
      *
      * @phpstan-return array<string, -1|1|SortMeta>
      *
-     * @throws \InvalidArgumentException if a sort direction is invalid.
+     * @throws InvalidArgumentException if a sort direction is invalid.
      */
     public function prepareSort(array $fields, array $allowedMetaSort = []): array
     {
