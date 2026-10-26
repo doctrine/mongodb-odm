@@ -117,11 +117,12 @@ implementation. `TypeRegistry` itself is `final`.
 
 A `TypeRegistry` always contains the built-in types. Types passed to the constructor,
 by instance or by class name, are registered on top and override the built-in type of
-the same name. Passing a PSR-11 container together with a map of type names to service
-IDs resolves types lazily, on first use:
+the same name. Passing a `Symfony\Contracts\Service\ServiceProviderInterface` resolves
+types lazily, on first use. The service ID is the type name, and `getProvidedServices()`
+lists the types the provider exposes:
 
 ```php
-$registry = new TypeRegistry($container, ['money' => 'app.odm_type.money']);
+$registry = new TypeRegistry($serviceProvider);
 ```
 
 To access the type of a mapped field, use the `ClassMetadata::getFieldType()` method.

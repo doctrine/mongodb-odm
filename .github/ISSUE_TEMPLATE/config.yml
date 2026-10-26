@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Support Question
+    url: https://github.com/doctrine/mongodb-odm/discussions/categories/support-questions
+    about: Have a problem that you can't figure out? Ask in GitHub Discussions.

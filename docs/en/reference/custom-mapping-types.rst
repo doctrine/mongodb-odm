@@ -80,7 +80,7 @@ Restrictions to keep in mind:
 
 When you have implemented the type you still need to let Doctrine
 know about it. You can create a ``TypeRegistry`` and inject it into the
-``DocumentManager``:
+``Configuration``:
 
 .. code-block:: php
 
@@ -103,7 +103,7 @@ know about it. You can create a ``TypeRegistry`` and inject it into the
     $typeRegistry->register('date_with_timezone', \My\Project\Types\DateTimeWithTimezoneType::class);
 
     $config = new Configuration();
-    $config->setTypeRegistry($typeRegistry);
+    $config->setTypeProvider($typeRegistry);
 
 Types registered this way are scoped to the ``DocumentManager`` instances using that
 ``Configuration``, so they cannot affect the rest of the application. The registry can
@@ -117,7 +117,7 @@ answer ``get()`` and ``has()``, and to yield its types when iterated:
 
     <?php
 
-    foreach ($dm->getConfiguration()->getTypeRegistry() as $typeName => $type) {
+    foreach ($dm->getConfiguration()->getTypeProvider() as $typeName => $type) {
         // ...
     }
 
@@ -125,22 +125,22 @@ Lazy-loading types from a container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When types have their own dependencies, instantiating them all up front is wasteful.
-Pass a PSR-11 container together with a map of type names to service IDs, and each type
-is resolved on first use and then cached:
+Pass a service provider to resolve each type on first use and then cache it:
 
 .. code-block:: php
 
     <?php
 
-    $typeRegistry = new TypeRegistry($container, [
-        'money' => 'app.odm_type.money',
-        'encrypted' => 'app.odm_type.encrypted',
-    ]);
+    // $container implements Symfony\Contracts\Service\ServiceProviderInterface
+    $typeRegistry = new TypeRegistry($container);
 
-The container is never queried during construction, nor by ``has()``. Iterating the
-registry does resolve every type. The map is required whenever a container is passed:
-the registry never enumerates the container, so it cannot discover type names on its
-own. Any PSR-11 implementation works, including a Symfony service locator.
+The service ID is the type name, and the provider lists the types it exposes through
+``getProvidedServices()``. The container is not queried during construction, and
+``has()`` only asks it whether a service exists, without resolving it. Iterating the
+registry does resolve every type.
+
+``ServiceProviderInterface`` is the PSR-11 container interface extended with that one
+method, so a Symfony service locator can be passed as-is.
 
 As can be seen above, when registering the custom types in the configuration you
 specify a unique name for the mapping type and map that to the corresponding

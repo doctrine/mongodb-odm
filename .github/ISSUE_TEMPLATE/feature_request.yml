@@ -1,0 +1,31 @@
+name: 🎉 Feature Request
+description: You have a neat idea that should be implemented? 🎩
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Provide a summary of the feature you would like to see implemented.
+    validations:
+      required: true
+  - type: dropdown
+    id: rfc
+    attributes:
+      label: RFC
+      description: Does this feature require an RFC (design discussion) before implementation?
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true
+  - type: dropdown
+    id: bc-break
+    attributes:
+      label: BC Break
+      description: Does implementing this feature include a backwards compatibility break?
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true

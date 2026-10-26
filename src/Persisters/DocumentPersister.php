@@ -1077,7 +1077,7 @@ final class DocumentPersister
     /**
      * Converts a single value to its database representation based on the mapping type if possible.
      */
-    public function convertToDatabaseValue(string $fieldName, mixed $value, ?ClassMetadata $class = null): mixed
+    private function convertToDatabaseValue(string $fieldName, mixed $value, ?ClassMetadata $class = null): mixed
     {
         if (is_array($value)) {
             foreach ($value as $k => $v) {
