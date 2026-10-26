@@ -13,7 +13,6 @@ use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\TimeSeries\Granularity;
 use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
-use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Doctrine\ODM\MongoDB\Tests\ClassMetadataTestUtil;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
@@ -47,21 +46,15 @@ use ReflectionException;
 use ReflectionProperty;
 use stdClass;
 
-use function array_filter;
 use function array_merge;
-use function array_values;
 use function serialize;
-use function str_contains;
 use function unserialize;
 
 class ClassMetadataTest extends BaseTestCase
 {
-    use CaptureDeprecationMessages;
-
     public function testClassMetadataInstanceSerialization(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->setTypeProvider(new TypeRegistry());
 
         // Test initial state
         self::assertEmpty($cm->getPropertyAccessors());
@@ -133,12 +126,10 @@ class ClassMetadataTest extends BaseTestCase
     public function testOwningSideAndInverseSide(): void
     {
         $cm = new ClassMetadata(User::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapOneReference(['fieldName' => 'account', 'targetDocument' => Account::class, 'inversedBy' => 'user']);
         self::assertTrue($cm->fieldMappings['account']['isOwningSide']);
 
         $cm = new ClassMetadata(Account::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapOneReference(['fieldName' => 'user', 'targetDocument' => Account::class, 'mappedBy' => 'account']);
         self::assertTrue($cm->fieldMappings['user']['isInverseSide']);
     }
@@ -295,7 +286,6 @@ class ClassMetadataTest extends BaseTestCase
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
         $cm = new ClassMetadata(DoctrineGlobal_Article::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapManyEmbedded([
             'fieldName' => 'author',
             'targetDocument' => DoctrineGlobal_User::class,
@@ -307,7 +297,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testMapManyToManyJoinTableDefaults(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapManyEmbedded(
             [
                 'fieldName' => 'groups',
@@ -322,7 +311,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testGetAssociationTargetClassWithoutTargetDocument(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapManyEmbedded(
             [
                 'fieldName' => 'groups',
@@ -338,7 +326,6 @@ class ClassMetadataTest extends BaseTestCase
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
         $cm = new ClassMetadata(DoctrineGlobal_User::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setDiscriminatorMap(['descr' => DoctrineGlobal_Article::class, 'foo' => DoctrineGlobal_User::class]);
 
         self::assertEquals(DoctrineGlobal_Article::class, $cm->discriminatorMap['descr']);
@@ -350,7 +337,6 @@ class ClassMetadataTest extends BaseTestCase
         require_once __DIR__ . '/Documents/GlobalNamespaceDocument.php';
 
         $cm = new ClassMetadata(DoctrineGlobal_User::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setSubclasses([DoctrineGlobal_Article::class]);
 
         self::assertEquals(DoctrineGlobal_Article::class, $cm->subClasses[0]);
@@ -382,7 +368,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testDuplicateFieldNameDiscriminatorColumn2ThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setDiscriminatorField('name');
 
         $this->expectException(MappingException::class);
@@ -392,6 +377,7 @@ class ClassMetadataTest extends BaseTestCase
     public function testDuplicateFieldMappingThrowsMappingException(): void
     {
         $cm = new ClassMetadata(CmsUser::class);
+        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapField(['fieldName' => 'username', 'name' => 'uname', 'type' => Type::STRING]);
 
         $this->expectException(MappingException::class);
@@ -472,7 +458,6 @@ class ClassMetadataTest extends BaseTestCase
         };
 
         $cm = new ClassMetadata($object::class);
-        $cm->setTypeProvider(new TypeRegistry());
 
         $cm->mapField([
             'fieldName' => 'assoc',
@@ -593,7 +578,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testSetCustomRepositoryClass(): void
     {
         $cm = new ClassMetadata(self::class);
-        $cm->setTypeProvider(new TypeRegistry());
 
         $cm->setCustomRepositoryClass(Repository::class);
 
@@ -675,7 +659,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testSimpleReferenceRequiresTargetDocument(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Target document must be specified for identifier reference: stdClass::assoc');
@@ -690,7 +673,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testSimpleAsStringReferenceRequiresTargetDocument(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Target document must be specified for identifier reference: stdClass::assoc');
@@ -706,7 +688,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testRepositoryMethodCanNotBeCombinedWithSkipLimitAndSort(string $prop, mixed $value): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
@@ -733,7 +714,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testStoreAsIdReferenceRequiresTargetDocument(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Target document must be specified for identifier reference: stdClass::assoc');
@@ -812,7 +792,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testAddInheritedAssociationMapping(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $mapping = ClassMetadataTestUtil::getFieldMapping([
             'fieldName' => 'assoc',
@@ -831,7 +810,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testIdFieldsTypeMustNotBeOverridden(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setIdentifier('id');
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('stdClass::id was declared an identifier and must stay this way.');
@@ -844,7 +822,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testReferenceManySortMustNotBeUsedWithNonSetCollectionStrategy(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             'ReferenceMany\'s sort can not be used with addToSet and pushAll strategies, ' .
@@ -862,7 +839,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testSetShardKeyForClassWithoutInheritance(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setShardKey(['id' => 'asc']);
 
         $shardKey = $cm->getShardKey();
@@ -887,7 +863,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testSetShardKeyForClassWithSingleCollectionInheritanceWhichAlreadyHasIt(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setShardKey(['id' => 'asc']);
         new ReflectionProperty(ClassMetadata::class, 'inheritanceType')->setValue(
             $cm,
@@ -902,7 +877,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testIsNotShardedIfThereIsNoShardKey(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         self::assertFalse($cm->isSharded());
     }
@@ -910,7 +884,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testIsShardedIfThereIsAShardKey(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->setShardKey(['id' => 'asc']);
 
         self::assertTrue($cm->isSharded());
@@ -970,7 +943,6 @@ class ClassMetadataTest extends BaseTestCase
         };
 
         $cm = new ClassMetadata($object::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapManyEmbedded(['fieldName' => 'embedMany']);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
@@ -985,7 +957,6 @@ class ClassMetadataTest extends BaseTestCase
         };
 
         $cm = new ClassMetadata($object::class);
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->mapManyEmbedded(['fieldName' => 'referenceMany']);
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No multikey indexes are allowed in the shard key');
@@ -1011,28 +982,24 @@ class ClassMetadataTest extends BaseTestCase
     public function testDefaultValueForValidator(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         self::assertNull($cm->getValidator());
     }
 
     public function testDefaultValueForValidationAction(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_ACTION_ERROR, $cm->getValidationAction());
     }
 
     public function testDefaultValueForValidationLevel(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         self::assertEquals(ClassMetadata::SCHEMA_VALIDATION_LEVEL_STRICT, $cm->getValidationLevel());
     }
 
     public function testEmptySearchIndexDefinition(): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('stdClass search index "default" must be dynamic or specify a field mapping');
@@ -1045,7 +1012,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testSearchIndexDefinition(?string $name, string $expectedName, array $definition): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
         $cm->addSearchIndex($definition, $name);
 
         self::assertSame([
@@ -1064,7 +1030,6 @@ class ClassMetadataTest extends BaseTestCase
     public function testEmptyVectorSearchIndexDefinition(array $definition): void
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->setTypeProvider(new TypeRegistry());
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('stdClass vector search index "default" must have a "vector" or "autoEmbed" field');
@@ -1182,37 +1147,6 @@ class ClassMetadataTest extends BaseTestCase
         self::assertSame(Granularity::Hours, $metadata->timeSeriesOptions->granularity);
         self::assertSame(15, $metadata->timeSeriesOptions->bucketMaxSpanSeconds);
         self::assertSame(20, $metadata->timeSeriesOptions->bucketRoundingSeconds);
-    }
-
-    /**
-     * The mapping drivers write metadata properties directly, so deprecating
-     * these writes requires a replacement API first. Loading the whole test
-     * suite mapping must not report a single property write.
-     */
-    public function testLoadingAllMetadataDoesNotDeprecatePropertyWrites(): void
-    {
-        $this->captureDeprecationMessages(
-            fn () => $this->dm->getMetadataFactory()->getAllMetadata(),
-            $errors,
-        );
-
-        $propertyWrites = array_filter(
-            $errors,
-            static fn (string $error): bool => str_contains($error, 'Writing to property'),
-        );
-
-        self::assertSame([], array_values($propertyWrites));
-    }
-
-    public function testNotInjectingTypeProviderIsDeprecated(): void
-    {
-        $cm = new ClassMetadata(UserTyped::class);
-        $this->captureDeprecationMessages(static function () use ($cm) {
-            $cm->mapField(['name' => 'dateTimeImmutable']);
-        }, $errors);
-
-        self::assertSame(['Since doctrine/mongodb-odm 2.18: Using ClassMetadata without a TypeProvider is deprecated. Inject the TypeProvider instance from the DocumentManager via $classMetadata->setTypeProvider($configuration->getTypeProvider()).'], $errors);
-        self::assertSame('date_immutable', $cm->getFieldMapping('dateTimeImmutable')['type']);
     }
 }
 

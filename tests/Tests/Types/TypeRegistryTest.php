@@ -82,11 +82,6 @@ class TypeRegistryTest extends TestCase
         self::assertInstanceOf(RawType::class, $registry->get(Type::STRING));
     }
 
-    public function testSharedInstance(): void
-    {
-        self::assertSame(TypeRegistry::getDeprecatedSharedInstance(), TypeRegistry::getDeprecatedSharedInstance());
-    }
-
     public function testRegisterRequiresATypeClassOrInstance(): void
     {
         $registry = new TypeRegistry();

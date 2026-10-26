@@ -60,8 +60,6 @@ final class TypeRegistry implements TypeProvider, IteratorAggregate
     /** @var ServiceProviderInterface<mixed>|null */
     private ?ServiceProviderInterface $services = null;
 
-    private static ?TypeRegistry $sharedInstance = null;
-
     /**
      * Creates a registry pre-populated with all built-in types. Additional types passed via
      * {@param $types} are registered on top; if a name matches a built-in type it is
@@ -179,16 +177,5 @@ final class TypeRegistry implements TypeProvider, IteratorAggregate
         foreach ($names as $name) {
             yield $name => $this->get($name);
         }
-    }
-
-    /**
-     * The shared instance is kept only for backward compatibility with the static methods of
-     * {@see Type} and for callers that have not yet injected a dedicated registry.
-     *
-     * @internal Do not use this method. Inject a dedicated TypeRegistry instead.
-     */
-    public static function getDeprecatedSharedInstance(): TypeRegistry
-    {
-        return self::$sharedInstance ??= new self();
     }
 }

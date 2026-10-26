@@ -25,10 +25,8 @@ use function mkdir;
 use function rename;
 use function rtrim;
 use function sprintf;
-use function str_contains;
 use function str_replace;
 use function substr;
-use function trigger_deprecation;
 use function uniqid;
 use function var_export;
 
@@ -205,7 +203,6 @@ EOF
         if (isset(\$data['%1\$s']) || (! empty(\$this->class->fieldMappings['%2\$s']['nullable']) && array_key_exists('%1\$s', \$data))) {
             \$value = \$data['%1\$s'];
             if (\$value !== null) {
-                \$typeIdentifier = \$this->class->fieldMappings['%2\$s']['type'];
                 %3\$s
             } else {
                 \$return = null;
@@ -466,16 +463,10 @@ EOF
 
     private function closureToPHP(ClassMetadata $class, string $fieldName): string
     {
-        $code = $class->getFieldType($fieldName)->closureToPHP();
-
-        if (str_contains($code, '$typeIdentifier')) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.16', 'Using $typeIdentifier in Type::closureToPHP() is deprecated and will be removed in Doctrine ODM 3.0');
-        }
-
         return str_replace(
             '$fieldName',
             var_export($fieldName, true),
-            $code,
+            $class->getFieldType($fieldName)->closureToPHP(),
         );
     }
 }

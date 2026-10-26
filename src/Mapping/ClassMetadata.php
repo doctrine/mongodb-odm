@@ -21,7 +21,6 @@ use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeProvider;
-use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use Doctrine\ODM\MongoDB\Utility\CollectionHelper;
 use Doctrine\Persistence\Mapping\ClassMetadata as BaseClassMetadata;
@@ -58,7 +57,6 @@ use function ltrim;
 use function sprintf;
 use function strtolower;
 use function strtoupper;
-use function trigger_deprecation;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-document mapping metadata
@@ -850,8 +848,7 @@ final class ClassMetadata implements BaseClassMetadata
     private function getTypeProvider(): TypeProvider
     {
         if (! isset($this->typeProvider)) {
-            trigger_deprecation('doctrine/mongodb-odm', '2.18', 'Using ClassMetadata without a TypeProvider is deprecated. Inject the TypeProvider instance from the DocumentManager via $classMetadata->setTypeProvider($configuration->getTypeProvider()).');
-            $this->typeProvider = TypeRegistry::getDeprecatedSharedInstance();
+            throw new LogicException('The TypeProvider is not set. It is injected from the Configuration by ClassMetadataFactory; call setTypeProvider() when creating ClassMetadata manually.');
         }
 
         return $this->typeProvider;
