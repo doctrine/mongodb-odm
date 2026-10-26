@@ -226,7 +226,7 @@ class Lookup extends Stage
             return $fieldName;
         }
 
-        return $this->getDocumentPersister($class)->prepareFieldName($fieldName);
+        return $this->getDocumentPersister($class)->getCriteriaPreparer()->prepareFieldName($fieldName);
     }
 
     private function fromReference(string $fieldName): static
