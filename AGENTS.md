@@ -96,8 +96,7 @@ Tests need a **running MongoDB server**; the suite creates and drops collections
   the same name (`tests/Tests/BaseTestCase.php`). To change the database name, edit the const
   (via a local `phpunit.xml`, which is gitignored).
 - **Lazy loading**: 3.0 always uses the native lazy objects of PHP 8.4, so there is no proxy
-  strategy to select. `atlas-ci.yml` still sets `USE_LAZY_GHOST_OBJECT` and
-  `USE_NATIVE_LAZY_OBJECT`, which nothing reads anymore.
+  strategy to select.
 - **Suite-specific env vars**:
   - `CRYPT_SHARED_LIB_PATH` — Queryable Encryption tests (`tests/Tests/Functional/QueryableEncryptionTest.php`).
   - `VOYAGE_API_KEY` (with `EMBEDDING_PROVIDER_ENDPOINT`) — Automated Embeddings / Vector Search
