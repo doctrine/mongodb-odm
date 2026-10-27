@@ -87,10 +87,8 @@ class DocumentPersisterGetShardKeyQueryTest extends BaseTestCase
         $o        = new ShardedByScalarWithCustomFieldName();
         $o->myOid = (string) new ObjectId();
 
-        $persister = $this->uow->getDocumentPersister($o::class);
-
-        $method        = new ReflectionMethod($persister, 'getShardKeyQuery');
-        $shardKeyQuery = $method->invoke($persister, $o);
+        [$shardKeyQueryBuilder, $method] = $this->getShardKeyQueryBuilder($o::class);
+        $shardKeyQuery                   = $method->invoke($shardKeyQueryBuilder, $o);
 
         // The shard key uses DB field name 'my_oid'; value must be converted via ObjectIdType,
         // not left as a raw string (which would happen if getFieldType received the DB field
