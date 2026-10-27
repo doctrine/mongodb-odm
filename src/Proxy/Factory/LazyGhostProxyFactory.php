@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Persisters\DocumentLoader;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
@@ -181,12 +181,12 @@ EOPHP;
      *
      * @template T of object
      */
-    private function createLazyInitializer(ClassMetadata $classMetadata, DocumentPersister $persister): Closure
+    private function createLazyInitializer(ClassMetadata $classMetadata, DocumentLoader $loader): Closure
     {
         $factory = $this;
 
-        return static function (InternalProxy $proxy, mixed $identifier) use ($persister, $classMetadata, $factory): void {
-            $original = $persister->load([$classMetadata->identifier => $identifier], $proxy);
+        return static function (InternalProxy $proxy, mixed $identifier) use ($loader, $classMetadata, $factory): void {
+            $original = $loader->load([$classMetadata->identifier => $identifier], $proxy);
 
             if (! $original && ! $factory->lifecycleEventManager->documentNotFound($proxy, $identifier)) {
                 throw DocumentNotFoundException::documentNotFound($classMetadata->getName(), $identifier);
@@ -232,10 +232,10 @@ EOPHP;
             $reflector = $reflector->getParentClass();
         }
 
-        $className       = $class->getName(); // aliases and case sensitivity
-        $entityPersister = $this->uow->getDocumentPersister($className);
-        $initializer     = $this->createLazyInitializer($class, $entityPersister);
-        $proxyClassName  = $this->loadProxyClass($class);
+        $className      = $class->getName(); // aliases and case sensitivity
+        $documentLoader = $this->uow->getDocumentLoader($className);
+        $initializer    = $this->createLazyInitializer($class, $documentLoader);
+        $proxyClassName = $this->loadProxyClass($class);
 
         $proxyFactory = Closure::bind(static function (mixed $identifier) use ($initializer, $skippedProperties, $class): InternalProxy {
             /** @see LazyGhostTrait::createLazyGhost() */

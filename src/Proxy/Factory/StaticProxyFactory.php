@@ -8,7 +8,7 @@ use Closure;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
-use Doctrine\ODM\MongoDB\Persisters\DocumentPersister;
+use Doctrine\ODM\MongoDB\Persisters\DocumentLoader;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 use Doctrine\ODM\MongoDB\Utility\LifecycleEventManager;
 use Doctrine\Persistence\NotifyPropertyChanged;
@@ -48,13 +48,13 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function getProxy(ClassMetadata $metadata, $identifier): GhostObjectInterface
     {
-        $documentPersister = $this->uow->getDocumentPersister($metadata->getName());
+        $documentLoader = $this->uow->getDocumentLoader($metadata->getName());
 
         $ghostObject = $this
             ->proxyFactory
             ->createProxy(
                 $metadata->getName(),
-                $this->createInitializer($metadata, $documentPersister),
+                $this->createInitializer($metadata, $documentLoader),
                 [
                     'skippedProperties' => $this->skippedFieldsFqns($metadata),
                 ],
@@ -85,8 +85,8 @@ final class StaticProxyFactory implements ProxyFactory
     }
 
     /**
-     * @param ClassMetadata<TDocument>     $metadata
-     * @param DocumentPersister<TDocument> $documentPersister
+     * @param ClassMetadata<TDocument>  $metadata
+     * @param DocumentLoader<TDocument> $documentLoader
      *
      * @phpstan-return Closure(
      *   TDocument&GhostObjectInterface<TDocument>=,
@@ -100,7 +100,7 @@ final class StaticProxyFactory implements ProxyFactory
      */
     private function createInitializer(
         ClassMetadata $metadata,
-        DocumentPersister $documentPersister,
+        DocumentLoader $documentLoader,
     ): Closure {
         return function (
             GhostObjectInterface $ghostObject,
@@ -110,14 +110,14 @@ final class StaticProxyFactory implements ProxyFactory
             array $properties, // we currently do not use this
         ) use (
             $metadata,
-            $documentPersister,
+            $documentLoader,
         ): bool {
             $originalInitializer = $initializer;
             $initializer         = null;
             $identifier          = $metadata->getIdentifierValue($ghostObject);
 
             try {
-                $document = $documentPersister->load(['_id' => $identifier], $ghostObject);
+                $document = $documentLoader->load(['_id' => $identifier], $ghostObject);
             } catch (Throwable $exception) {
                 $initializer = $originalInitializer;
 

@@ -17,7 +17,7 @@ class CommentRepository extends DocumentRepository
     /** @return Comment|false */
     public function findOneComment()
     {
-        return $this->getDocumentPersister()
+        return $this->getDocumentLoader()
             ->loadAll([], ['date' => 'desc'], 1)
             ->current();
     }
@@ -25,6 +25,6 @@ class CommentRepository extends DocumentRepository
     /** @return Iterator<Comment> */
     public function findManyComments(): Iterator
     {
-        return $this->getDocumentPersister()->loadAll();
+        return $this->getDocumentLoader()->loadAll();
     }
 }
