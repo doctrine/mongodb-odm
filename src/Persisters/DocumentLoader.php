@@ -17,13 +17,11 @@ use Doctrine\ODM\MongoDB\MongoDBException;
 use Doctrine\ODM\MongoDB\Query\CriteriaPreparer;
 use Doctrine\ODM\MongoDB\Query\Query;
 use Doctrine\ODM\MongoDB\UnitOfWork;
-use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Driver\CursorInterface;
 use SortDirection;
 
 use function assert;
-use function is_scalar;
 
 /**
  * DocumentLoader is responsible for loading single documents, the read-side
@@ -73,10 +71,7 @@ final class DocumentLoader
     /**
      * Finds a document by a set of criteria.
      *
-     * If a scalar or MongoDB\BSON\ObjectId is provided for $criteria, it will
-     * be used to match an _id value.
-     *
-     * @param array<string, mixed>|scalar|ObjectId|null                          $criteria Query criteria
+     * @param array<string, mixed>                                               $criteria Query criteria
      * @param array<string, int|string|SortDirection|array<string, string>>|null $sort
      * @param T|null                                                             $document
      * @phpstan-param SortShape|null $sort
@@ -86,16 +81,10 @@ final class DocumentLoader
      *
      * @throws LockException
      *
-     * @todo Check identity map? loadById method? Try to guess whether
-     *     $criteria is the id?
+     * @todo Check identity map? loadById method?
      */
-    public function load($criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
+    public function load(array $criteria, ?object $document = null, array $hints = [], int $lockMode = 0, ?array $sort = null): ?object
     {
-        // TODO: remove this
-        if ($criteria === null || is_scalar($criteria) || $criteria instanceof ObjectId) {
-            $criteria = ['_id' => $criteria];
-        }
-
         $criteria = $this->criteriaPreparer->prepareQueryOrNewObj($criteria);
         $criteria = $this->criteriaPreparer->addDiscriminatorToPreparedQuery($criteria);
         $criteria = $this->criteriaPreparer->addFilterToPreparedQuery($criteria);
