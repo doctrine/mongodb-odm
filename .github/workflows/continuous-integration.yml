@@ -10,8 +10,19 @@ env:
   fail-fast: true
 
 jobs:
+  target-branch-check:
+    name: "Target branch check"
+    uses: "paulinevos/.github/.github/workflows/check-target-branch.yml@check-target-branch"
+    permissions:
+      contents: "read"
+      issues: "write"
+      pull-requests: "write"
+    with:
+      fail-on-mismatch: true
+
   phpunit:
     name: "PHPUnit"
+    needs: "target-branch-check"
     runs-on: "ubuntu-22.04"
 
     strategy:
