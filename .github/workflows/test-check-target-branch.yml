@@ -1,0 +1,28 @@
+name: "Test target branch check"
+
+on:
+  pull_request:
+    types:
+      - "opened"
+      - "reopened"
+      - "labeled"
+      - "unlabeled"
+      - "edited"
+
+permissions:
+  contents: "read"
+  issues: "write"
+  pull-requests: "write"
+
+concurrency:
+  group: "test-target-branch-check-${{ github.event.pull_request.number }}"
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: "Target branch check"
+    uses: "paulinevos/.github/.github/workflows/check-target-branch.yml@check-target-branch"
+    permissions:
+      contents: "read"
+      issues: "write"
+      pull-requests: "write"
