@@ -204,6 +204,13 @@ This list explains some of the less obvious mapping types:
 
     The vector types require the MongoDB PHP extension version 2.2.0 or higher.
 
+.. note::
+
+    Date, time and object values are compared by their database
+    representation. Replacing a value with another instance that maps to the
+    same database value does not trigger an update. In-place modifications are
+    not detected, so these objects behave as if they were immutable.
+
 .. _reference-php-mapping-types:
 
 PHP Types Mapping

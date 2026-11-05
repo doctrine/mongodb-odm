@@ -26,7 +26,7 @@ use Doctrine\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Persistence\NotifyPropertyChanged;
 use Doctrine\Persistence\PropertyChangedListener;
 use InvalidArgumentException;
-use MongoDB\BSON\UTCDateTime;
+use MongoDB\BSON\Document;
 use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
@@ -756,20 +756,33 @@ final class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
-                // skip equivalent date values
-                if (isset($class->fieldMappings[$propName]['type']) && $class->fieldMappings[$propName]['type'] === 'date') {
-                    $dateType      = $class->getFieldType($propName);
-                    $dbOrgValue    = $dateType->convertToDatabaseValue($orgValue);
-                    $dbActualValue = $dateType->convertToDatabaseValue($actualValue);
+                // Skip fields whose object or array values share the same database representation
+                if (
+                    (is_object($orgValue) || is_array($orgValue))
+                    && (is_object($actualValue) || is_array($actualValue))
+                    && isset($class->fieldMappings[$propName])
+                ) {
+                    $fieldType           = $class->getFieldType($propName);
+                    $orgDatabaseValue    = $fieldType->convertToDatabaseValue($orgValue);
+                    $actualDatabaseValue = $fieldType->convertToDatabaseValue($actualValue);
 
-                    // Loose comparison is only safe when both values are UTC dates. A custom
-                    // type overriding "date" may produce a different database representation.
-                    if ($dbOrgValue instanceof UTCDateTime && $dbActualValue instanceof UTCDateTime) {
-                        // We rely on loose comparison to compare every field
-                        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
-                        if ($dbOrgValue == $dbActualValue) {
+                    if ($orgDatabaseValue === $actualDatabaseValue) {
+                        continue;
+                    }
+
+                    // Compare the BSON representation by content. The value is
+                    // wrapped so BSON values such as UTCDateTime or ObjectId,
+                    // and values nested in arrays, are compared by value.
+                    try {
+                        if (
+                            (string) Document::fromPHP(['value' => $orgDatabaseValue])
+                            === (string) Document::fromPHP(['value' => $actualDatabaseValue])
+                        ) {
                             continue;
                         }
+                    } catch (UnexpectedValueException) {
+                        // Keep the previous behavior for values that cannot be
+                        // serialized to BSON: the field is considered changed.
                     }
                 }
 
