@@ -194,12 +194,12 @@ final class DocumentRegistry implements Countable
                 trigger_deprecation(
                     'doctrine/mongodb-odm',
                     '2.18',
-                    'Adding a document of class %s with identifier "%s" to the identity map while a different '
+                    'Adding a document of class %s with identifier %s to the identity map while a different '
                     . 'document is already mapped to the same identifier. The new document is ignored and the '
                     . 'managed document is kept. This will throw an exception in 3.0. Detach the managed document '
                     . 'or clear the DocumentManager before persisting a new instance.',
                     $document::class,
-                    $identifier,
+                    DocumentIdentityCollisionException::formatIdentifier($identifier),
                 );
             }
 

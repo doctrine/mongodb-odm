@@ -17,6 +17,7 @@ use function var_export;
  */
 final class DocumentIdentityCollisionException extends MongoDBException
 {
+    /** @internal */
     public static function create(object $existingDocument, object $newDocument, mixed $identifier): self
     {
         return new self(sprintf(
@@ -30,7 +31,8 @@ final class DocumentIdentityCollisionException extends MongoDBException
         ));
     }
 
-    private static function formatIdentifier(mixed $identifier): string
+    /** @internal */
+    public static function formatIdentifier(mixed $identifier): string
     {
         return match (true) {
             is_scalar($identifier) => var_export($identifier, true),
