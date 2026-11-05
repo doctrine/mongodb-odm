@@ -6,7 +6,7 @@ license: MIT
 
 # Doctrine MongoDB ODM
 
-Implementation skill for `doctrine/mongodb-odm` 2.16/2.17, the PHP object-document mapper that persists plain PHP classes to MongoDB. It exists to prevent the mistakes that come from treating it like a SQL ORM: expecting automatic cascading, joining collections like tables, flushing on every mutation, or assuming every advanced MongoDB feature (Vector Search, Queryable Encryption) works outside Atlas.
+Implementation skill for `doctrine/mongodb-odm`, the PHP object-document mapper that persists plain PHP classes to MongoDB. It exists to prevent the mistakes that come from treating it like a SQL ORM: expecting automatic cascading, joining collections like tables, flushing on every mutation, or assuming every advanced MongoDB feature (Vector Search, Queryable Encryption) works outside Atlas.
 
 ## Core Workflow
 
@@ -47,6 +47,7 @@ It also accepts Atlas API service account credentials (`MDB_MCP_API_CLIENT_ID`/`
 | `#[Document]`/`#[Field]`/`#[Id]`, field types, inheritance | `references/mapping.md` | Defining or modifying a document class |
 | `#[ReferenceOne]`/`#[ReferenceMany]`, `#[EmbedOne]`/`#[EmbedMany]`, bidirectional refs, trees, priming | `references/references-embedding.md` | Modeling relationships, fixing N+1 patterns |
 | Query Builder, findAndModify, upserts, geospatial queries, filters, Aggregation Builder | `references/querying-aggregation.md` | Writing any query or aggregation pipeline |
+| Offset and cursor paginators for query and aggregation builders (since 2.18) | `references/pagination.md` | Paginating a query or aggregation result, building "next page" navigation |
 | Standard indexes, Atlas Search indexes, simple keyword search | `references/indexes-search.md` | Adding indexes, Atlas full-text search |
 | Vector Search (Atlas) | `references/vector-search.md` | Embeddings, semantic search, `$vectorSearch`, hybrid text+vector search |
 | Queryable Encryption (Atlas/Enterprise) | `references/queryable-encryption.md` | Encrypting sensitive fields, `#[Encrypt]` |

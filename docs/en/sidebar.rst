@@ -35,6 +35,7 @@
    reference/query-builder-api
    reference/aggregation-builder
    reference/aggregation-stage-reference
+   reference/pagination
    reference/geospatial-queries
    reference/find-and-update
    reference/upserting-documents

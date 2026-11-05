@@ -81,6 +81,17 @@ class AggregationCursorPaginatorTest extends BaseTestCase
         $this->assertSame('6', $results[0]->name);
     }
 
+    public function testDescendingOrder(): void
+    {
+        $paginator = new AggregationCursorPaginator($this->createBuilder(-1), perPage: 10);
+
+        $results = iterator_to_array($paginator);
+        $this->assertCount(10, $results);
+
+        $this->assertSame('99', $results[0]->name);
+        $this->assertSame('90', $results[9]->name);
+    }
+
     private function prepareData(): void
     {
         foreach (array_fill(0, 100, true) as $key => $t) {
@@ -90,14 +101,14 @@ class AggregationCursorPaginatorTest extends BaseTestCase
         $this->dm->flush();
     }
 
-    private function createBuilder(): Builder
+    private function createBuilder(int $order = 1): Builder
     {
         $builder = $this->dm->createAggregationBuilder(Tag::class);
         $builder
             ->hydrate(Tag::class)
             ->match()
                 ->field('name')->notEqual('2')
-                ->sort('id', 1);
+                ->sort('id', $order);
 
         return $builder;
     }
