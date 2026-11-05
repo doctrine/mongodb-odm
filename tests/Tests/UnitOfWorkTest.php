@@ -123,9 +123,14 @@ class UnitOfWorkTest extends BaseTestCase
         $second     = new ForumUser();
         $second->id = $id;
 
-        $this->expectException(DocumentIdentityCollisionException::class);
+        try {
+            $this->uow->scheduleForUpsert($class, $second);
+            self::fail('Expected a DocumentIdentityCollisionException.');
+        } catch (DocumentIdentityCollisionException) {
+        }
 
-        $this->uow->scheduleForUpsert($class, $second);
+        self::assertFalse($this->uow->isScheduledForUpsert($second));
+        self::assertSame(UnitOfWork::STATE_NEW, $this->uow->getDocumentState($second));
     }
 
     public function testAddToIdentityMapWithSameDocumentDoesNotTriggerDeprecation(): void

@@ -195,9 +195,10 @@ final class DocumentRegistry implements Countable
                     'doctrine/mongodb-odm',
                     '2.18',
                     'Adding a document of class %s with identifier %s to the identity map while a different '
-                    . 'document is already mapped to the same identifier. The new document is ignored and the '
-                    . 'managed document is kept. This will throw an exception in 3.0. Detach the managed document '
-                    . 'or clear the DocumentManager before persisting a new instance.',
+                    . 'document is already mapped to the same identifier. The new document is not added to '
+                    . 'the identity map and the managed document is kept, but the new document may still be '
+                    . 'written to the database when it is flushed. This will throw an exception in 3.0. '
+                    . 'Detach the managed document or clear the DocumentManager before persisting a new instance.',
                     $document::class,
                     DocumentIdentityCollisionException::formatIdentifier($identifier),
                 );

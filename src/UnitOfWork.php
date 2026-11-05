@@ -1101,13 +1101,13 @@ final class UnitOfWork implements PropertyChangedListener
             $objectState->identifier = $oid;
         }
 
-        $objectState->state = PersistenceState::Managed;
-
         if ($upsert) {
             $this->scheduleForUpsert($class, $document);
         } else {
             $this->scheduleForInsert($class, $document);
         }
+
+        $objectState->state = PersistenceState::Managed;
     }
 
     /**
@@ -1256,13 +1256,11 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document can not be scheduled for insertion twice.');
         }
 
-        $this->scheduledDocumentInsertions[$oid] = $document;
-
-        if ($this->documentRegistry->getObjectState($document)?->identifier === null) {
-            return;
+        if ($this->documentRegistry->getObjectState($document)?->identifier !== null) {
+            $this->addToIdentityMap($document);
         }
 
-        $this->addToIdentityMap($document);
+        $this->scheduledDocumentInsertions[$oid] = $document;
     }
 
     /**
@@ -1298,9 +1296,11 @@ final class UnitOfWork implements PropertyChangedListener
             throw new InvalidArgumentException('Document can not be scheduled for upsert twice.');
         }
 
-        $this->scheduledDocumentUpserts[$oid]                                  = $document;
         $this->documentRegistry->getOrCreateObjectState($document)->identifier = $class->getIdentifierValue($document);
+
         $this->addToIdentityMap($document);
+
+        $this->scheduledDocumentUpserts[$oid] = $document;
     }
 
     /**
