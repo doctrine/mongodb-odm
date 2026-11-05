@@ -103,12 +103,6 @@ parameters:
 			path: src/Mapping/ClassMetadata.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between mixed and \*NEVER\* will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/Mapping/ClassMetadata.php
-
-		-
 			message: '#^Template type T is declared as covariant, but occurs in invariant position in property Doctrine\\ODM\\MongoDB\\Mapping\\ClassMetadata\:\:\$name\.$#'
 			identifier: generics.variance
 			count: 1
