@@ -2689,6 +2689,7 @@ use const PHP_VERSION_ID;
      */
     public function __serialize(): array
     {
+        // @phpstan-ignore notIdentical.alwaysTrue (soft-final class, subclasses exist at runtime)
         if (static::class !== self::class && (new ReflectionMethod($this, '__sleep'))->getDeclaringClass() !== self::class) {
             trigger_deprecation(
                 'doctrine/mongodb-odm',
