@@ -125,3 +125,15 @@ $registry = new TypeRegistry($container, ['money' => 'app.odm_type.money']);
 ```
 
 To access the type of a mapped field, use the `ClassMetadata::getFieldType()` method.
+
+## Value objects are compared through their database representation
+
+When the old and new values of a mapped field are both objects, the ODM now
+compares their database representation, obtained with the field type's
+`convertToDatabaseValue()` method. A value object replaced by an equal one no
+longer triggers an update. This also covers `date` and `date_immutable` fields,
+previously compared by a hard-coded check for the `date` type only.
+
+Custom types need no interface: they take part as soon as they convert values to
+a comparable database representation. Types that cannot be compared keep the
+previous behavior and the field is considered changed.

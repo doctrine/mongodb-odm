@@ -14,6 +14,7 @@ use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Exception;
 use InvalidArgumentException;
+use MongoDB\BSON\UTCDateTime;
 
 use function array_map;
 use function array_values;
@@ -30,6 +31,8 @@ class CustomTypeTest extends BaseTestCase
 
         $this->typeRegistry->register('date_collection', new DateCollectionType());
         $this->typeRegistry->register(Language::class, LanguageType::class);
+        $this->typeRegistry->register('custom_value_object_child', CustomValueObjectChild::class);
+        $this->typeRegistry->register('custom_value_object_with_date', CustomValueObjectWithDate::class);
     }
 
     public function testCustomTypeValueConversions(): void
@@ -45,6 +48,79 @@ class CustomTypeTest extends BaseTestCase
         $country = $this->dm->find(Country::class, $country->id);
 
         self::assertContainsOnlyInstancesOf(DateTime::class, $country->nationalHolidays);
+    }
+
+    public function testValueObjectChangeSets(): void
+    {
+        $root        = new DocumentWithCustomTypeValueObject();
+        $root->child = new ValueObjectChild(10, 12);
+
+        $this->uow->persist($root);
+
+        $this->uow->computeChangeSets();
+
+        self::assertNotEmpty($this->uow->getDocumentChangeSet($root));
+
+        $this->uow->commit();
+
+        // Replacing the value object with an equal one is not a change.
+        $root->child = new ValueObjectChild(10, 12);
+        $this->uow->computeChangeSets();
+        self::assertArrayNotHasKey('child', $this->uow->getDocumentChangeSet($root));
+
+        // Replacing the value object with a different one is a change.
+        $root->child = new ValueObjectChild(12, 12);
+        $this->uow->computeChangeSets();
+        $changeSet = $this->uow->getDocumentChangeSet($root);
+        self::assertArrayHasKey('child', $changeSet);
+        self::assertSame(12, $changeSet['child'][1]->prop1);
+    }
+
+    public function testValueObjectWithNestedBsonChangeSets(): void
+    {
+        $root        = new DocumentWithCustomTypeValueObjectWithDate();
+        $root->child = new ValueObjectWithDate(new DateTime('2020-01-01 10:00:00'));
+
+        $this->uow->persist($root);
+        $this->uow->computeChangeSets();
+
+        self::assertNotEmpty($this->uow->getDocumentChangeSet($root));
+
+        $this->uow->commit();
+
+        // Replacing the value object with an equal one is not a change, even
+        // though the converted array holds distinct UTCDateTime instances.
+        $root->child = new ValueObjectWithDate(new DateTime('2020-01-01 10:00:00'));
+        $this->uow->computeChangeSets();
+        self::assertArrayNotHasKey('child', $this->uow->getDocumentChangeSet($root));
+
+        // Replacing the value object with a different one is a change.
+        $root->child = new ValueObjectWithDate(new DateTime('2020-01-02 10:00:00'));
+        $this->uow->computeChangeSets();
+        self::assertArrayHasKey('child', $this->uow->getDocumentChangeSet($root));
+    }
+
+    public function testDateListChangeSets(): void
+    {
+        $country                   = new Country();
+        $country->nationalHolidays = [new DateTime('2020-01-01'), new DateTime('2020-01-02')];
+
+        $this->uow->persist($country);
+        $this->uow->computeChangeSets();
+
+        self::assertNotEmpty($this->uow->getDocumentChangeSet($country));
+
+        $this->uow->commit();
+
+        // Replacing the list with an equal one is not a change.
+        $country->nationalHolidays = [new DateTime('2020-01-01'), new DateTime('2020-01-02')];
+        $this->uow->computeChangeSets();
+        self::assertArrayNotHasKey('nationalHolidays', $this->uow->getDocumentChangeSet($country));
+
+        // Replacing the list with a different one is a change.
+        $country->nationalHolidays = [new DateTime('2020-01-01'), new DateTime('2020-01-03')];
+        $this->uow->computeChangeSets();
+        self::assertArrayHasKey('nationalHolidays', $this->uow->getDocumentChangeSet($country));
     }
 
     public function testConvertToDatabaseValueExpectsArray(): void
@@ -240,4 +316,98 @@ class CustomTypeWithRequiredConstructor extends Type
     public function __construct(private string $required)
     {
     }
+}
+
+class CustomValueObjectChild extends Type
+{
+    use ClosureToPHP;
+
+    /** @return array{prop1:int,prop2:int}|null */
+    public function convertToDatabaseValue($value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        assert($value instanceof ValueObjectChild);
+
+        return ['prop1' => $value->prop1, 'prop2' => $value->prop2];
+    }
+
+    /** @param array{prop1:int,prop2:int}|null $value */
+    public function convertToPHPValue($value): ?ValueObjectChild
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        assert(is_array($value) && isset($value['prop1'], $value['prop2']));
+
+        return new ValueObjectChild($value['prop1'], $value['prop2']);
+    }
+}
+
+class ValueObjectChild
+{
+    public function __construct(
+        public readonly int $prop1,
+        public readonly int $prop2,
+    ) {
+    }
+}
+
+#[ODM\Document]
+class DocumentWithCustomTypeValueObject
+{
+    #[ODM\Id]
+    public ?string $id;
+
+    #[ODM\Field(type: 'custom_value_object_child')]
+    public ValueObjectChild $child;
+}
+
+class CustomValueObjectWithDate extends Type
+{
+    use ClosureToPHP;
+
+    /** @return array{at:UTCDateTime}|null */
+    public function convertToDatabaseValue($value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        assert($value instanceof ValueObjectWithDate);
+
+        return ['at' => new UTCDateTime($value->at)];
+    }
+
+    /** @param array{at:UTCDateTime}|null $value */
+    public function convertToPHPValue($value): ?ValueObjectWithDate
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        assert(is_array($value) && isset($value['at']));
+
+        return new ValueObjectWithDate($value['at']->toDateTime());
+    }
+}
+
+class ValueObjectWithDate
+{
+    public function __construct(public readonly DateTime $at)
+    {
+    }
+}
+
+#[ODM\Document]
+class DocumentWithCustomTypeValueObjectWithDate
+{
+    #[ODM\Id]
+    public ?string $id;
+
+    #[ODM\Field(type: 'custom_value_object_with_date')]
+    public ValueObjectWithDate $child;
 }

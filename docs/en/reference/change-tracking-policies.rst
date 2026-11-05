@@ -25,6 +25,10 @@ of work. Since Doctrine can't know what has changed, it needs to check
 all managed documents for changes every time you invoke DocumentManager#flush(),
 making this operation rather costly.
 
+Date, time and other object values are compared by their database
+representation. Replacing such a value with another instance that maps to the
+same database value does not trigger an update.
+
 Deferred Explicit
 ~~~~~~~~~~~~~~~~~
 
