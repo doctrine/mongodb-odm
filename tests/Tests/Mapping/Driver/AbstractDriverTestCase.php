@@ -281,6 +281,7 @@ abstract class AbstractDriverTestCase extends TestCase
         ], $classMetadata->fieldMappings['name']);
 
         $classMetadata = new ClassMetadata(QueryResultDocument::class);
+        $classMetadata->setTypeProvider(new TypeRegistry());
         $this->driver->loadMetadataForClass(QueryResultDocument::class, $classMetadata);
 
         self::assertEquals([

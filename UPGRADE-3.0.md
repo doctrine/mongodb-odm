@@ -102,12 +102,69 @@ have been removed in favor of `Configuration::getMetadataCache()` and
 + $dm->getConfiguration()->getMetadataCache();
 ```
 
+## Types
+
+The static methods of `Doctrine\ODM\MongoDB\Types\Type` have been removed. Use a
+`Doctrine\ODM\MongoDB\Types\TypeRegistry` or the type provider of the
+`Configuration` instead:
+
+- `Type::getType()` → `TypeProvider::get()`
+- `Type::hasType()` → `TypeProvider::has()`
+- `Type::addType()`, `Type::registerType()` and `Type::overrideType()` → `TypeRegistry::register()`
+- `Type::getTypesMap()` → iterate over the `TypeProvider`
+- `Type::getTypeFromPHPVariable()` → `DocumentManager::getTypeGuesser()->guessTypeFromValue()`
+- `Type::convertPHPToDatabaseValue()` → `DocumentManager::getTypeGuesser()->convertToDatabaseValue()`
+
+The shared type registry has been removed as well. `Configuration::getTypeProvider()`
+returns a `TypeRegistry` owned by the configuration when no provider is injected.
+`Configuration::setTypeProvider()` can be called until the provider is first
+used. It throws a `LogicException` once the provider is in use.
+
+The configured provider is available from the document manager:
+
+```php
+$typeProvider = $dm->getConfiguration()->getTypeProvider();
+```
+
+To use custom types, build a `TypeRegistry` and pass it to the configuration
+before creating the document manager:
+
+```php
+$typeRegistry = new TypeRegistry([
+    'custom_type' => CustomType::class,
+]);
+
+$configuration = new Configuration();
+$configuration->setTypeProvider($typeRegistry);
+```
+
+`ClassMetadata` no longer creates a default type provider. `ClassMetadataFactory`
+injects the one from the `Configuration`. When creating a `ClassMetadata`
+instance manually, call `setTypeProvider()` before mapping fields or resolving
+types.
+
+This includes metadata returned by an `onClassMetadataNotFound` listener. Those
+instances bypass `initializeReflection()` and `wakeupReflection()`, so the
+listener must inject the provider itself:
+
+```php
+$metadata = new ClassMetadata(SomeClass::class);
+$metadata->setTypeProvider(
+    $eventArgs->getDocumentManager()->getConfiguration()->getTypeProvider(),
+);
+$eventArgs->setFoundMetadata($metadata);
+```
+
+Custom types can no longer rely on the `$typeIdentifier` variable in the code
+returned by `Type::closureToPHP()`. The type is resolved from the field mapping
+instead, through `$this->class->getFieldType($fieldName)`.
+
 ## `ClosureToPHP` in custom types
 
-The default implementation of `Type::closureToPHP` has been modified to call
-`convertToPHPValue` on the type class. This implementation was provided by
-the `ClosureToPHP` trait, which is deprecated. If you have custom types
-that use the `ClosureToPHP` trait, remove the trait.
+The `Doctrine\ODM\MongoDB\Types\ClosureToPHP` trait has been removed. The default
+implementation of `Type::closureToPHP()` calls `convertToPHPValue()` on the type
+class, which is what the trait provided. If you have custom types that use the
+trait, remove the `use ClosureToPHP;` statement.
 
 ## Persistent Collections
 

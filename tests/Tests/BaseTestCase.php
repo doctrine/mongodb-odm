@@ -110,7 +110,6 @@ abstract class BaseTestCase extends TestCase
         $config->setPersistentCollectionNamespace('PersistentCollections');
         $config->setDefaultDB(DOCTRINE_MONGODB_DATABASE);
         $config->setMetadataDriverImpl(static::createMetadataDriverImpl());
-        $config->setTypeProvider(new TypeRegistry());
 
         NativeLazyObjectFactory::enableTracking();
 

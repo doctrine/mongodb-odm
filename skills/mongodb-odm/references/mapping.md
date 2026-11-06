@@ -143,16 +143,19 @@ Gotcha: **a nullable PHP type does not imply `nullable: true`.** Without it, `nu
 ```php
 class DateTimeWithTimezoneType extends \Doctrine\ODM\MongoDB\Types\Type
 {
-    use \Doctrine\ODM\MongoDB\Types\ClosureToPHP;
-
     public function convertToPHPValue($value): DateTimeImmutable { /* ... */ }
     public function convertToDatabaseValue($value): array { /* ... */ }
 }
 
-Type::addType('date_with_timezone', DateTimeWithTimezoneType::class);      // errors if already registered
-Type::overrideType('date_immutable', DateTimeWithTimezoneType::class);     // errors if NOT already registered
-Type::registerType('date_immutable', DateTimeWithTimezoneType::class);     // no check
+$typeRegistry = new \Doctrine\ODM\MongoDB\Types\TypeRegistry([
+    'date_with_timezone' => DateTimeWithTimezoneType::class,
+]);
+
+$configuration = new \Doctrine\ODM\MongoDB\Configuration();
+$configuration->setTypeProvider($typeRegistry);
 ```
+
+`TypeRegistry::register()` replaces an already registered type without error. The registry can also be constructed with a Symfony `ServiceProviderInterface` to lazy-load type instances from a container. The static `Type::addType()`, `Type::overrideType()` and `Type::registerType()` methods have been removed in 3.0.
 
 `convertToDatabaseValue()` is never called for `NULL` values, and `UnitOfWork` never passes unchanged values to it. You can also register a type keyed by a value-object's FQCN, letting ODM auto-select it and letting you omit `type` in `#[Field]` entirely.
 
