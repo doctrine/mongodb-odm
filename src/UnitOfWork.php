@@ -1384,6 +1384,7 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             unset($this->scheduledDocumentInsertions[$oid]);
+            $this->documentRegistry->removeObjectState($document);
 
             return; // document has not been persisted yet, so nothing more to do.
         }
