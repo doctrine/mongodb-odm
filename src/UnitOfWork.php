@@ -166,6 +166,13 @@ final class UnitOfWork implements PropertyChangedListener
     private array $scheduledDocumentDeletions = [];
 
     /**
+     * Documents that were persisted again after being scheduled for removal.
+     *
+     * @var array<int, true>
+     */
+    private array $documentsPersistedAfterRemoval = [];
+
+    /**
      * All pending collection deletions.
      *
      * @var array<int, PersistentCollectionInterface<array-key, object>>
@@ -410,17 +417,18 @@ final class UnitOfWork implements PropertyChangedListener
                 }
             }
 
-            $this->scheduledDocumentInsertions  =
-            $this->scheduledDocumentUpserts     =
-            $this->scheduledDocumentUpdates     =
-            $this->scheduledDocumentDeletions   =
-            $this->documentChangeSets           =
-            $this->scheduledCollectionUpdates   =
-            $this->scheduledCollectionDeletions =
-            $this->visitedCollections           =
-            $this->scheduledForSynchronization  =
-            $this->orphanRemovals               =
-            $this->hasScheduledCollections      = [];
+            $this->scheduledDocumentInsertions    =
+            $this->scheduledDocumentUpserts       =
+            $this->scheduledDocumentUpdates       =
+            $this->scheduledDocumentDeletions     =
+            $this->documentChangeSets             =
+            $this->scheduledCollectionUpdates     =
+            $this->scheduledCollectionDeletions   =
+            $this->visitedCollections             =
+            $this->scheduledForSynchronization    =
+            $this->orphanRemovals                 =
+            $this->hasScheduledCollections        =
+            $this->documentsPersistedAfterRemoval = [];
         } finally {
             $this->commitsInProgress--;
             $this->lifecycleEventManager->clearTransactionalState();
@@ -796,7 +804,7 @@ final class UnitOfWork implements PropertyChangedListener
                     : $changeSet;
 
                 $objectState->originalData = $actualData;
-                $this->scheduleForUpdate($document);
+                $this->scheduleForUpdateAfterChangeSet($document);
             }
         }
 
@@ -835,12 +843,33 @@ final class UnitOfWork implements PropertyChangedListener
                 }
 
                 if (! $isNewDocument) {
-                    $this->scheduleForUpdate($document);
+                    $this->scheduleForUpdateAfterChangeSet($document);
                 }
 
                 break;
             }
         }
+    }
+
+    /**
+     * Schedules a document for update once its change set has been computed.
+     *
+     * A document persisted again after being scheduled for removal is scheduled
+     * for upsert. As the removal was cancelled, the pending changes must be
+     * applied with an update instead of an upsert.
+     */
+    private function scheduleForUpdateAfterChangeSet(object $document): void
+    {
+        $oid = spl_object_id($document);
+
+        if (
+            isset($this->documentsPersistedAfterRemoval[$oid])
+            && isset($this->scheduledDocumentUpserts[$oid])
+        ) {
+            unset($this->scheduledDocumentUpserts[$oid]);
+        }
+
+        $this->scheduleForUpdate($document);
     }
 
     /**
@@ -1652,6 +1681,14 @@ final class UnitOfWork implements PropertyChangedListener
             case self::STATE_REMOVED:
                 // Document becomes managed again
                 unset($this->scheduledDocumentDeletions[$oid]);
+                $this->documentsPersistedAfterRemoval[$oid] = true;
+
+                if ($class->isEmbeddedDocument) {
+                    // Embedded documents are written with their parent document.
+                    // They must not be scheduled for insertion on their own.
+                    $this->documentRegistry->getOrCreateObjectState($document)->state = PersistenceState::Managed;
+                    break;
+                }
 
                 $this->persistNew($class, $document);
                 break;
