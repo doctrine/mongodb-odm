@@ -32,3 +32,12 @@ The above would result in an operation like the following:
 The extra benefit is the fact that you don't have to fetch the ``$article`` in order
 to append some new data to the document or change something. All you need is the
 identifier.
+
+.. note::
+
+    Identifiers must uniquely map to document object instances. When you persist a
+    new document whose identifier is already used by a different managed document,
+    the identity map keeps the first instance. A deprecation is triggered, and an
+    exception is thrown if ``Configuration::setRejectIdCollisionInIdentityMap(true)``
+    is enabled. Detach the managed document or clear the document manager before
+    persisting a new instance with the same identifier.

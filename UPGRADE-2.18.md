@@ -138,3 +138,10 @@ previously compared by a hard-coded check for the `date` type only.
 Custom types need no interface: they take part as soon as they convert values to
 a comparable database representation. Types that cannot be compared keep the
 previous behavior and the field is considered changed.
+
+## Identity map identifier collisions are deprecated
+
+Adding a different document to the identity map with an already mapped
+identifier now triggers a deprecation, and will throw in 3.0. Enable
+`Configuration::setRejectIdCollisionInIdentityMap(true)` to throw a
+`Doctrine\ODM\MongoDB\DocumentIdentityCollisionException` now.

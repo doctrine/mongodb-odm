@@ -4,25 +4,30 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Registry;
 
+use Doctrine\ODM\MongoDB\DocumentIdentityCollisionException;
 use Doctrine\ODM\MongoDB\Registry\DocumentRegistry;
 use Doctrine\ODM\MongoDB\Registry\PersistenceState;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
 use Documents\Address;
 use Documents\CmsUser;
 use MongoDB\BSON\ObjectId;
 
 use function array_map;
 use function spl_object_id;
+use function sprintf;
 
 class DocumentRegistryTest extends BaseTestCase
 {
+    use CaptureDeprecationMessages;
+
     private DocumentRegistry $registry;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->registry = new DocumentRegistry();
+        $this->registry = new DocumentRegistry($this->config);
     }
 
     public function testGetObjectStateReturnsNullForUnknownDocument(): void
@@ -132,7 +137,42 @@ class DocumentRegistryTest extends BaseTestCase
 
         $second                                                      = new CmsUser();
         $this->registry->getOrCreateObjectState($second)->identifier = $id;
-        self::assertFalse($this->registry->addToIdentityMap($class, $second));
+
+        $result = $this->captureDeprecationMessages(
+            fn () => $this->registry->addToIdentityMap($class, $second),
+            $errors,
+        );
+
+        self::assertFalse($result);
+        self::assertCount(1, $errors);
+        self::assertStringContainsString('already mapped to the same identifier', $errors[0]);
+        self::assertStringContainsString($id, $errors[0]);
+    }
+
+    public function testAddToIdentityMapThrowsForDuplicateIdentifierWhenEnabled(): void
+    {
+        $this->config->setRejectIdCollisionInIdentityMap(true);
+
+        $class = $this->dm->getClassMetadata(CmsUser::class);
+        $id    = (string) new ObjectId();
+
+        $first                                                      = new CmsUser();
+        $this->registry->getOrCreateObjectState($first)->identifier = $id;
+        $this->registry->addToIdentityMap($class, $first);
+
+        $second                                                      = new CmsUser();
+        $this->registry->getOrCreateObjectState($second)->identifier = $id;
+
+        $this->expectException(DocumentIdentityCollisionException::class);
+        $this->expectExceptionMessage(sprintf(
+            "While adding a document of class %s with identifier '%s' to the identity map, "
+            . 'another document of class %s was already present for the same identifier.',
+            CmsUser::class,
+            $id,
+            CmsUser::class,
+        ));
+
+        $this->registry->addToIdentityMap($class, $second);
     }
 
     public function testTryGetByIdReturnsFalseWhenNotFound(): void
