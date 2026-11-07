@@ -12,12 +12,6 @@
             "upcoming": true
         },
         {
-            "name": "2.19",
-            "branchName": "2.19.x",
-            "slug": "latest",
-            "upcoming": true
-        },
-        {
             "name": "2.18",
             "branchName": "2.18.x",
             "slug": "2.18",
