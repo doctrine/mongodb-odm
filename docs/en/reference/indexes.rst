@@ -344,8 +344,8 @@ Text Indexes
 ------------
 
 A text index is required to run text searches with the ``$text`` query
-operator. To create one, use ``text`` as the order of each key you want to
-search:
+operator. To create one, set the value of each key you want to search to
+``text``:
 
 .. configuration-block::
 
@@ -365,6 +365,9 @@ search:
 
             #[Field(type: 'string')]
             public string $description;
+
+            #[Field(type: 'float', notSaved: true)]
+            public float $score;
         }
 
     .. code-block:: xml
@@ -379,13 +382,13 @@ search:
 A collection can have at most one text index, so put all the fields you want
 to search in the same index.
 
-Text indexes support some additional options, which you pass in the
-``options`` argument:
+Text indexes accept additional options, which you pass in the ``options``
+argument:
 
 -
    **weights** - The weight of each field relative to the other fields in the
-   index. A match in a field with a higher weight gives a higher text score.
-   Fields without a weight have a weight of 1.
+   index. A match in a field with a higher weight contributes more to the text
+   score. Fields without a weight have a weight of 1.
 -
    **default_language** - The language used for stemming and stop words. If
    not set, MongoDB uses ``english``.
@@ -394,6 +397,9 @@ Text indexes support some additional options, which you pass in the
    language for each document. If not set, MongoDB uses ``language``. Set it
    to another field name if your documents already use a ``language`` field
    for something else.
+-
+   **textIndexVersion** - The version of the text index format. Leave it unset
+   unless you need to force a specific version.
 
 .. code-block:: php
 
@@ -413,18 +419,19 @@ Text indexes support some additional options, which you pass in the
         // ...
     }
 
-In XML mapping, you can set ``default_language`` and ``language_override``
-with ``<option name="default_language" value="german" />`` elements. The
-``weights`` option is not available there, because ``<option>`` only takes
-scalar values.
+In XML mapping, you can set ``default_language``, ``language_override`` and
+``textIndexVersion`` with ``<option name="default_language" value="german" />``
+elements. The ``weights`` option cannot be set in XML mapping, because
+``<option>`` only accepts scalar values.
 
 If you change the fields or weights of a text index, or set a different
-``default_language`` or ``language_override``, ``odm:schema:update`` drops the
-existing text index and creates the new one.
+``default_language``, ``language_override`` or ``textIndexVersion``,
+``odm:schema:update`` drops the existing text index and creates the new one.
 
 To query the index, use ``text()`` in the
 :doc:`query builder <query-builder-api>`. ``sortMeta()`` sorts the results by
-their text score and adds the score to the projection:
+their text score and adds the score to the projection, which is hydrated into
+the mapped ``score`` field:
 
 .. code-block:: php
 
