@@ -14,9 +14,11 @@ use Doctrine\Instantiator\InstantiatorInterface;
 use Doctrine\ODM\MongoDB\Id\IdGenerator;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\TimeSeries;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\DelegateCollectionPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
+use Doctrine\ODM\MongoDB\PersistentCollection\DelegateCollection;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
 use Doctrine\ODM\MongoDB\Types\Incrementable;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
@@ -57,6 +59,7 @@ use function enum_exists;
 use function extension_loaded;
 use function in_array;
 use function interface_exists;
+use function is_a;
 use function is_array;
 use function is_string;
 use function is_subclass_of;
@@ -2445,11 +2448,26 @@ use const PHP_VERSION_ID;
 
         if (isset($mapping['collectionClass'])) {
             $mapping['collectionClass'] = ltrim($mapping['collectionClass'], '\\');
+
+            if (! class_exists($mapping['collectionClass']) && ! interface_exists($mapping['collectionClass'])) {
+                throw MappingException::collectionClassDoesNotExist($this->name, $mapping['fieldName'], $mapping['collectionClass']);
+            }
         }
 
         if (! empty($mapping['collectionClass'])) {
             $rColl = new ReflectionClass($mapping['collectionClass']);
-            if (! $rColl->implementsInterface(Collection::class)) {
+
+            if ($rColl->implementsInterface(DelegateCollection::class)) {
+                if (! $rColl->isInstantiable()) {
+                    throw MappingException::collectionClassNotInstantiable($this->name, $mapping['fieldName'], $mapping['collectionClass']);
+                }
+
+                try {
+                    DelegateCollectionPropertyAccessor::resolveInnerProperty($mapping['collectionClass']);
+                } catch (LogicException $e) {
+                    throw MappingException::invalidDelegateCollectionClass($this->name, $mapping['fieldName'], $mapping['collectionClass'], $e->getMessage());
+                }
+            } elseif (! $rColl->implementsInterface(Collection::class)) {
                 throw MappingException::collectionClassDoesNotImplementCommonInterface($this->name, $mapping['fieldName'], $mapping['collectionClass']);
             }
         }
@@ -2668,6 +2686,15 @@ use const PHP_VERSION_ID;
             $accessor = new EnumPropertyAccessor($accessor, $mapping['enumType']);
         }
 
+        if (
+            isset($mapping['association'])
+            && $mapping['type'] === self::MANY
+            && isset($mapping['collectionClass'])
+            && is_a($mapping['collectionClass'], DelegateCollection::class, true)
+        ) {
+            $accessor = new DelegateCollectionPropertyAccessor($accessor, $mapping['collectionClass'], $mapping['fieldName']);
+        }
+
         $this->propertyAccessors[$mapping['fieldName']] = $accessor;
 
         return $mapping;
@@ -2841,6 +2868,15 @@ use const PHP_VERSION_ID;
                 $accessor = new EnumPropertyAccessor($accessor, $mapping['enumType']);
             }
 
+            if (
+                isset($mapping['association'])
+                && $mapping['type'] === self::MANY
+                && isset($mapping['collectionClass'])
+                && is_a($mapping['collectionClass'], DelegateCollection::class, true)
+            ) {
+                $accessor = new DelegateCollectionPropertyAccessor($accessor, $mapping['collectionClass'], $field);
+            }
+
             $this->propertyAccessors[$field] = $accessor;
         }
     }
@@ -2987,8 +3023,12 @@ use const PHP_VERSION_ID;
             return $mapping;
         }
 
-        if (! isset($mapping['collectionClass']) && class_exists($type->getName())) {
-            $mapping['collectionClass'] = $type->getName();
+        $typeName = $type->getName();
+
+        if (! isset($mapping['collectionClass'])) {
+            if (class_exists($typeName) || (interface_exists($typeName) && is_a($typeName, DelegateCollection::class, true))) {
+                $mapping['collectionClass'] = $typeName;
+            }
         }
 
         return $mapping;

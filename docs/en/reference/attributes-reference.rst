@@ -203,10 +203,10 @@ Optional arguments:
     ``pushAll`` is the default. See :ref:`storage_strategies` for more
     information.
 -
-    ``collectionClass`` - A |FQCN| of class that implements ``Collection``
-    interface and is used to hold documents. When typed properties
-    are used it is inherited from PHP type, otherwise Doctrine's ``ArrayCollection`` is
-    used by default.
+    ``collectionClass`` - A |FQCN| of the class used to hold documents. It must
+    implement either ``Collection`` or ``PersistentCollection\DelegateCollection``.
+    When typed properties are used it is inherited from PHP type, otherwise
+    Doctrine's ``ArrayCollection`` is used by default.
 -
     ``notSaved`` - The property is loaded if it exists in the database; however,
     ODM will not save the property value back to the database.
@@ -1109,10 +1109,10 @@ Optional arguments:
     ``pushAll`` is the default. See :ref:`storage_strategies` for more
     information.
 -
-    ``collectionClass`` - A |FQCN| of class that implements ``Collection``
-    interface and is used to hold documents. When typed properties
-    are used it is inherited from PHP type, otherwise Doctrine's ``ArrayCollection`` is
-    used by default
+    ``collectionClass`` - A |FQCN| of the class used to hold documents. It must
+    implement either ``Collection`` or ``PersistentCollection\DelegateCollection``.
+    When typed properties are used it is inherited from PHP type, otherwise
+    Doctrine's ``ArrayCollection`` is used by default
 -
     ``prime`` - A list of references contained in the target document that will
     be initialized when the collection is loaded. Only allowed for inverse

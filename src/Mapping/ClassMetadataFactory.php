@@ -17,6 +17,7 @@ use Doctrine\ODM\MongoDB\Id\IncrementGenerator;
 use Doctrine\ODM\MongoDB\Id\ObjectIdGenerator;
 use Doctrine\ODM\MongoDB\Id\SymfonyUuidGenerator;
 use Doctrine\ODM\MongoDB\Id\UuidGenerator;
+use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\DelegateCollectionPropertyAccessor;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -120,6 +121,14 @@ final class ClassMetadataFactory extends AbstractClassMetadataFactory implements
     protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService): void
     {
         $class->setTypeProvider($this->config->getTypeProvider());
+
+        $delegateCollectionFactory = $this->config->getDelegateCollectionFactory();
+
+        foreach ($class->propertyAccessors as $propertyAccessor) {
+            if ($propertyAccessor instanceof DelegateCollectionPropertyAccessor) {
+                $propertyAccessor->setCollectionFactory($delegateCollectionFactory);
+            }
+        }
 
         if (PHP_VERSION_ID < 80400) {
             return;
