@@ -37,6 +37,7 @@ class ReadonlyAccessor implements PropertyAccessor
 
         // Initialising a lazy object hydrates the identifier again. Object identifiers (e.g. a Uuid)
         // are converted to a new instance each time, so compare those by value instead of identity.
+        // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
         if ($currentValue !== $value && ! (is_object($currentValue) && is_object($value) && $currentValue == $value)) {
             throw new LogicException(sprintf(
                 'Attempting to change readonly property %s::$%s.',
