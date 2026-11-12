@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use MongoDB\Driver\Exception\BulkWriteException;
 
+use function iterator_to_array;
+
 class IndexesTest extends BaseTestCase
 {
     /** @param class-string $class */
@@ -248,6 +250,25 @@ class IndexesTest extends BaseTestCase
         $indexes = $this->dm->getSchemaManager()->getDocumentIndexes($className);
         self::assertSame(['coordinatesWith2DIndex' => '2d'], $indexes[0]['keys']);
         self::assertSame(['coordinatesWithSphereIndex' => '2dsphere'], $indexes[1]['keys']);
+    }
+
+    public function testCollationIndexIsEquivalentOnceCreated(): void
+    {
+        $sm = $this->dm->getSchemaManager();
+        $sm->ensureDocumentIndexes(CollationIndexDocument::class);
+
+        $documentIndex = $sm->getDocumentIndexes(CollationIndexDocument::class)[0];
+        self::assertSame(
+            [
+                'unique' => false,
+                'sparse' => false,
+                'collation' => ['locale' => 'en', 'strength' => 2, 'caseLevel' => false, 'numericOrdering' => false, 'maxVariable' => 'punct'],
+            ],
+            $documentIndex['options'],
+        );
+
+        [, $mongoIndex] = iterator_to_array($this->dm->getDocumentCollection(CollationIndexDocument::class)->listIndexes(), false);
+        self::assertTrue($sm->isMongoIndexEquivalentToDocumentIndex($mongoIndex, $documentIndex));
     }
 }
 
@@ -530,4 +551,17 @@ class GeoIndexDocument
     /** @var array<float> */
     #[ODM\Field(type: 'hash')]
     public $coordinatesWithSphereIndex;
+}
+
+#[ODM\Document]
+#[ODM\Index(keys: ['name' => 'asc'], options: ['collation' => ['locale' => 'en', 'strength' => 2]])]
+class CollationIndexDocument
+{
+    /** @var string|null */
+    #[ODM\Id]
+    public $id;
+
+    /** @var string|null */
+    #[ODM\Field(type: 'string')]
+    public $name;
 }
