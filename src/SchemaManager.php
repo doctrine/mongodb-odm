@@ -54,6 +54,14 @@ final class SchemaManager
 
     private const CODE_SHARDING_ALREADY_INITIALIZED = 23;
 
+    /** Collation fields whose server default is the same for every locale */
+    private const COLLATION_DEFAULTS = [
+        'caseLevel' => false,
+        'strength' => 3,
+        'numericOrdering' => false,
+        'maxVariable' => 'punct',
+    ];
+
     private const ALLOWED_MISSING_INDEX_OPTIONS = [
         'background',
         'partialFilterExpression',
@@ -248,6 +256,12 @@ final class SchemaManager
                 'keys' => [],
                 'options' => $index['options'],
             ];
+
+            /* MongoDB fills in every collation field that is not given. Setting the defaults that do not
+             * depend on the locale lets the comparison notice when one is removed from the mapping. */
+            if (isset($newIndex['options']['collation']['locale']) && $newIndex['options']['collation']['locale'] !== 'simple') {
+                $newIndex['options']['collation'] += self::COLLATION_DEFAULTS;
+            }
 
             foreach ($index['keys'] as $key => $value) {
                 $key = $persister->prepareFieldName($key);
@@ -1003,11 +1017,11 @@ final class SchemaManager
             }
         }
 
-        /* MongoDB lists a collation with all of its fields filled in (strength, caseFirst, version...),
-         * so only the fields set in the class metadata are compared. */
-        // phpcs:disable SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
+        /* MongoDB lists a collation with all of its fields filled in (caseFirst, alternate, version...),
+         * so only the fields set in the class metadata are compared, in any order. */
         if (
             isset($mongoIndexOptions['collation'], $documentIndexOptions['collation']) &&
+            // phpcs:ignore SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
             array_intersect_key($mongoIndexOptions['collation'], $documentIndexOptions['collation']) != $documentIndexOptions['collation']
         ) {
             return false;
