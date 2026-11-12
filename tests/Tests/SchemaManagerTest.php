@@ -1399,6 +1399,16 @@ EOT;
                 'mongoIndex' => ['collation' => ['locale' => 'en', 'strength' => 2]],
                 'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 2]]],
             ],
+            'collationListedWithAllFields' => [
+                'expected' => true,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'caseLevel' => false, 'caseFirst' => 'off', 'strength' => 2, 'numericOrdering' => false, 'alternate' => 'non-ignorable', 'maxVariable' => 'punct', 'normalization' => false, 'backwards' => false, 'version' => '57.1']],
+                'documentIndex' => ['options' => ['collation' => ['strength' => 2, 'locale' => 'en']]],
+            ],
+            'collationListedWithAllFieldsMismatch' => [
+                'expected' => false,
+                'mongoIndex' => ['collation' => ['locale' => 'en', 'caseLevel' => false, 'caseFirst' => 'off', 'strength' => 2, 'numericOrdering' => false, 'alternate' => 'non-ignorable', 'maxVariable' => 'punct', 'normalization' => false, 'backwards' => false, 'version' => '57.1']],
+                'documentIndex' => ['options' => ['collation' => ['locale' => 'en', 'strength' => 1]]],
+            ],
             // wildcardProjection option
             'wildcardProjectionOnlyInMongoIndex' => [
                 'expected' => false,

@@ -20,6 +20,7 @@ use function array_column;
 use function array_diff;
 use function array_diff_key;
 use function array_filter;
+use function array_intersect_key;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -993,13 +994,23 @@ final class SchemaManager
             return false;
         }
 
-        foreach (['bits', 'max', 'min', 'bucketSize', '2dsphereIndexVersion', 'hidden', 'collation', 'wildcardProjection', 'storageEngine'] as $option) {
+        foreach (['bits', 'max', 'min', 'bucketSize', '2dsphereIndexVersion', 'hidden', 'wildcardProjection', 'storageEngine'] as $option) {
             if (
                 isset($mongoIndexOptions[$option], $documentIndexOptions[$option]) &&
                 $mongoIndexOptions[$option] !== $documentIndexOptions[$option]
             ) {
                 return false;
             }
+        }
+
+        /* MongoDB lists a collation with all of its fields filled in (strength, caseFirst, version...),
+         * so only the fields set in the class metadata are compared. */
+        // phpcs:disable SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+        if (
+            isset($mongoIndexOptions['collation'], $documentIndexOptions['collation']) &&
+            array_intersect_key($mongoIndexOptions['collation'], $documentIndexOptions['collation']) != $documentIndexOptions['collation']
+        ) {
+            return false;
         }
 
         if (
