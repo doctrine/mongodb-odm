@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use LogicException;
 use ReflectionProperty;
 
+use function is_object;
 use function sprintf;
 
 /** @internal */
@@ -32,7 +33,11 @@ class ReadonlyAccessor implements PropertyAccessor
             return;
         }
 
-        if ($this->parent->getValue($object) !== $value) {
+        $currentValue = $this->parent->getValue($object);
+
+        // Initialising a lazy object hydrates the identifier again. Object identifiers (e.g. a Uuid)
+        // are converted to a new instance each time, so compare those by value instead of identity.
+        if ($currentValue !== $value && ! (is_object($currentValue) && is_object($value) && $currentValue == $value)) {
             throw new LogicException(sprintf(
                 'Attempting to change readonly property %s::$%s.',
                 $this->reflectionProperty->getDeclaringClass()->getName(),
