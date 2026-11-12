@@ -65,6 +65,38 @@ class GH2763Test extends BaseTestCase
         self::assertSame('default value', $product->name);
     }
 
+    public function testPartialRefreshDoesNotResetInitializedProperty(): void
+    {
+        $order           = new GH2763Order();
+        $order->products = new ArrayCollection([$product = new GH2763Product()]);
+        $product->name   = 'custom value';
+        $this->dm->persist($order);
+        $this->dm->flush();
+
+        $this->dm->clear();
+
+        $order   = $this->dm->find(GH2763Order::class, $order->id);
+        $product = $order->products->first();
+
+        self::assertInstanceOf(GH2763Product::class, $product);
+        self::assertSame('custom value', $product->name);
+
+        $this->dm->createQueryBuilder(GH2763Product::class)
+            ->select('_id')
+            ->refresh()
+            ->getQuery()
+            ->getSingleResult();
+
+        self::assertSame('custom value', $product->name, 'A partial refresh must not reset a property that was previously loaded.');
+
+        $this->dm->flush();
+
+        $document = $this->dm->getDocumentCollection(GH2763Product::class)
+            ->findOne(['_id' => new ObjectId($product->id)]);
+
+        self::assertSame('custom value', $document['name'] ?? null);
+    }
+
     private function unsetProductName(GH2763Product $product): void
     {
         $this->dm->getDocumentCollection(GH2763Product::class)

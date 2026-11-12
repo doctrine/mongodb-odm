@@ -379,12 +379,13 @@ EOF
 
             $code .= sprintf(<<<'EOF'
 
-        // Proxies unset the properties of the document. Fields missing from the
-        // database must get their declared default value back.
         if ($document instanceof \Doctrine\ODM\MongoDB\Proxy\InternalProxy || $document instanceof \ProxyManager\Proxy\GhostObjectInterface) {
             foreach ([
 %s            ] as $fieldName => $defaultValue) {
-                if (array_key_exists($fieldName, $hydratedData)) {
+                if (
+                    array_key_exists($fieldName, $hydratedData)
+                    || $this->class->propertyAccessors[$fieldName]->getUnderlyingReflector()->isInitialized($document)
+                ) {
                     continue;
                 }
 

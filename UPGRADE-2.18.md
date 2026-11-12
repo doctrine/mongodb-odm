@@ -145,3 +145,19 @@ Adding a different document to the identity map with an already mapped
 identifier now triggers a deprecation, and will throw in 3.0. Enable
 `Configuration::setRejectIdCollisionInIdentityMap(true)` to throw a
 `Doctrine\ODM\MongoDB\DocumentIdentityCollisionException` now.
+
+## Default values of missing fields are restored for lazy objects
+
+Lazy ghost and ProxyManager proxies unset the properties of the document to
+intercept reads. When a document loaded through a reference was hydrated, a
+mapped property whose field was missing from the database stayed uninitialized,
+even when the property declared a default value. Accessing it threw an `Error`.
+
+Generated hydrators now restore the declared default values of mapped
+properties when a lazy ghost or ProxyManager proxy is hydrated, to match native
+lazy objects. Native lazy objects are not affected: they already restored these
+values. Regular document loads and partial projections are unchanged.
+
+Flushing a document hydrated through a proxy therefore stores the default value
+of fields missing from the database. Direct `find()` and native lazy objects
+already behaved this way.
