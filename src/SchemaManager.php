@@ -1005,7 +1005,7 @@ final class SchemaManager
 
         /* MongoDB lists a collation with all of its fields filled in (strength, caseFirst, version...),
          * so only the fields set in the class metadata are compared. */
-        // phpcs:disable SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedEqualOperator
+        // phpcs:disable SlevomatCodingStandard.Operators.DisallowEqualOperators.DisallowedNotEqualOperator
         if (
             isset($mongoIndexOptions['collation'], $documentIndexOptions['collation']) &&
             array_intersect_key($mongoIndexOptions['collation'], $documentIndexOptions['collation']) != $documentIndexOptions['collation']
