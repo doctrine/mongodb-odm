@@ -361,6 +361,41 @@ EOF
             }
         }
 
+        $defaultValues = [];
+        foreach ($class->fieldMappings as $fieldName => $mapping) {
+            $property = $class->propertyAccessors[$fieldName]->getUnderlyingReflector();
+            if (! $property->hasDefaultValue()) {
+                continue;
+            }
+
+            $defaultValues[$fieldName] = var_export($property->getDefaultValue(), true);
+        }
+
+        if ($defaultValues !== []) {
+            $entries = '';
+            foreach ($defaultValues as $fieldName => $defaultValue) {
+                $entries .= sprintf("                %s => %s,\n", var_export($fieldName, true), $defaultValue);
+            }
+
+            $code .= sprintf(<<<'EOF'
+
+        if ($document instanceof \Doctrine\ODM\MongoDB\Proxy\InternalProxy || $document instanceof \ProxyManager\Proxy\GhostObjectInterface) {
+            foreach ([
+%s            ] as $fieldName => $defaultValue) {
+                if (
+                    array_key_exists($fieldName, $hydratedData)
+                    || $this->class->propertyAccessors[$fieldName]->getUnderlyingReflector()->isInitialized($document)
+                ) {
+                    continue;
+                }
+
+                $this->class->propertyAccessors[$fieldName]->setValue($document, $defaultValue);
+            }
+        }
+
+EOF, $entries);
+        }
+
         $namespace = $this->hydratorNamespace;
         $code      = sprintf(
             <<<EOF
