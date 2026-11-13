@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional;
 
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
@@ -56,6 +57,23 @@ class ReadOnlyObjectIdentifierReferenceTest extends BaseTestCase
 
         self::assertTrue($this->uow->isUninitializedObject($document->station));
         self::assertEquals($station->id, $document->station->id);
+        self::assertSame('Station', $document->station->name);
+    }
+
+    public function testReadonlyObjectIdentifierReferenceToMissingDocumentThrowsOnAccess(): void
+    {
+        $uuid = new UuidV4();
+        $this->insertRaw(
+            ReadonlyUuidDocumentWithReference::class,
+            ['station' => new Binary($uuid->toBinary(), Binary::TYPE_UUID)],
+        );
+
+        $document = $this->dm->getRepository(ReadonlyUuidDocumentWithReference::class)->findOneBy([]);
+        assert($document instanceof ReadonlyUuidDocumentWithReference);
+
+        self::assertTrue($this->uow->isUninitializedObject($document->station));
+
+        $this->expectException(DocumentNotFoundException::class);
         self::assertSame('Station', $document->station->name);
     }
 
