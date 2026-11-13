@@ -9,6 +9,9 @@ parameters:
     - src
     - tests
   excludePaths:
+    # Compatibility shim for Collections 2 and Collections 3, its add() signature
+    # cannot be covariant with both versions at once.
+    - src/PersistentCollection/DelegateCollectionImplementation.php
     - tests/Tests/Mapping/Driver/fixtures/User.php
     - tests/Hydrators/
     - tests/PersistentCollections/ (?)

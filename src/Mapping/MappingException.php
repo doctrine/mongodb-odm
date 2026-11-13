@@ -187,6 +187,24 @@ final class MappingException extends BaseMappingException
         return new self(sprintf('%s used as custom collection class for %s::%s has to implement %s interface.', $collectionClass, $className, $fieldName, Collection::class));
     }
 
+    /** @internal */
+    public static function collectionClassDoesNotExist(string $className, string $fieldName, string $collectionClass): self
+    {
+        return new self(sprintf('%s used as custom collection class for %s::%s does not exist.', $collectionClass, $className, $fieldName));
+    }
+
+    /** @internal */
+    public static function collectionClassNotInstantiable(string $className, string $fieldName, string $collectionClass): self
+    {
+        return new self(sprintf('%s used as delegated collection class for %s::%s must be instantiable.', $collectionClass, $className, $fieldName));
+    }
+
+    /** @internal */
+    public static function invalidDelegateCollectionClass(string $className, string $fieldName, string $collectionClass, string $reason): self
+    {
+        return new self(sprintf('%s used as delegated collection class for %s::%s is invalid: %s.', $collectionClass, $className, $fieldName, $reason));
+    }
+
     public static function shardKeyInSingleCollInheritanceSubclass(string $subclassName): self
     {
         return new self(sprintf('Shard key overriding in subclass is forbidden for single collection inheritance: %s', $subclassName));
