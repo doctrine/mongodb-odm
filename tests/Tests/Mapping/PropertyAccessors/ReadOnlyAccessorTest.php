@@ -35,6 +35,56 @@ class ReadOnlyAccessorTest extends BaseTestCase
         $this->expectException(LogicException::class);
         $accessor->setValue($object, 2);
     }
+
+    public function testReadOnlyObjectPropertyAcceptsEqualValue(): void
+    {
+        $object   = new ReadOnlyObjectClass();
+        $accessor = PropertyAccessorFactory::createPropertyAccessor(ReadOnlyObjectClass::class, 'property');
+
+        $accessor->setValue($object, new ReadOnlyValue('a'));
+        $accessor->setValue($object, new ReadOnlyValue('a'));
+
+        $this->assertEquals(new ReadOnlyValue('a'), $object->property);
+    }
+
+    public function testReadOnlyObjectPropertyRejectsDifferentValue(): void
+    {
+        $object   = new ReadOnlyObjectClass();
+        $accessor = PropertyAccessorFactory::createPropertyAccessor(ReadOnlyObjectClass::class, 'property');
+
+        $accessor->setValue($object, new ReadOnlyValue('a'));
+
+        $this->expectException(LogicException::class);
+        $accessor->setValue($object, new ReadOnlyValue('b'));
+    }
+
+    public function testReadOnlyObjectPropertyRejectsDifferentType(): void
+    {
+        $object   = new ReadOnlyObjectClass();
+        $accessor = PropertyAccessorFactory::createPropertyAccessor(ReadOnlyObjectClass::class, 'property');
+
+        $accessor->setValue($object, new ReadOnlyValue('a'));
+
+        $this->expectException(LogicException::class);
+        $accessor->setValue($object, new ReadOnlyOtherValue('a'));
+    }
+}
+
+class ReadOnlyValue
+{
+    public function __construct(public string $value)
+    {
+    }
+}
+
+class ReadOnlyOtherValue extends ReadOnlyValue
+{
+}
+
+class ReadOnlyObjectClass
+{
+    // @phpstan-ignore property.uninitializedReadonly
+    public readonly ReadOnlyValue $property;
 }
 
 class ReadOnlyClass

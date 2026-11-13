@@ -71,7 +71,9 @@ class NativeLazyObjectFactory implements ProxyFactory
             }
         }, ReflectionClass::SKIP_INITIALIZATION_ON_SERIALIZE);
 
-        $metadata->propertyAccessors[$metadata->identifier]->setValue($proxy, $identifier);
+        // Seed the identifier without going through the accessor: its readonly guard calls
+        // ReflectionProperty::isInitialized(), which may run the initializer of the fresh ghost.
+        $metadata->propertyAccessors[$metadata->identifier]->getUnderlyingReflector()->setRawValueWithoutLazyInitialization($proxy, $identifier);
 
         foreach ($this->getSkippedProperties($metadata) as $property) {
             $property->skipLazyInitialization($proxy);
