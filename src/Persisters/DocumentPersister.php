@@ -1272,7 +1272,15 @@ final class DocumentPersister
                 $referencePrefix = $fieldNamePrefix . $mapping['name'];
             }
 
-            if ($targetClass->hasField($objectProperty) && $targetClass->isIdentifier($objectProperty)) {
+            // "_id" is the database name of every identifier, and a valid path
+            // to a nested document field. Aggregation stages such as $lookup can
+            // store a referenced document in the reference field, in which case
+            // "reference._id" must not be rewritten to the reference field name.
+            if (
+                $objectProperty !== '_id'
+                && $targetClass->hasField($objectProperty)
+                && $targetClass->isIdentifier($objectProperty)
+            ) {
                 $fieldName = ClassMetadata::getReferenceFieldName($mapping['storeAs'], $referencePrefix);
 
                 return [[$fieldName, $prepareValue ? $this->prepareQueryReference($value, $targetClass) : $value]];
