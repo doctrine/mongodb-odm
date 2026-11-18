@@ -3003,6 +3003,12 @@ final class UnitOfWork implements PropertyChangedListener
             return; // ignore non-persistent fields
         }
 
+        // Keep the original value of a field already in the change set: the
+        // listener reports the value before each change, not the persisted one.
+        if (isset($this->documentChangeSets[$oid][$propertyName])) {
+            $oldValue = $this->documentChangeSets[$oid][$propertyName][0];
+        }
+
         // Update changeset and mark document for synchronization
         $this->documentChangeSets[$oid][$propertyName] = [$oldValue, $newValue];
         if (isset($this->scheduledForSynchronization[$class->name][$oid])) {
