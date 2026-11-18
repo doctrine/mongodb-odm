@@ -24,6 +24,7 @@ use Documents\ForumStar;
 use Documents\ForumUser;
 use Documents\Functional\NotSaved;
 use Documents\Group;
+use Documents\Phonenumber;
 use Documents\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoDBCollection;
@@ -507,6 +508,81 @@ class UnitOfWorkTest extends BaseTestCase
         $changeSet = $this->uow->getDocumentChangeSet($user);
 
         self::assertArrayHasKey('groups', $changeSet);
+    }
+
+    public function testRecomputeKeepsOriginalValueOfFieldChangedAgain(): void
+    {
+        $user = new User();
+        $user->setUsername('original');
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $user->setUsername('changed');
+        $this->uow->computeChangeSets();
+
+        $user->setUsername('changed again');
+        $this->uow->recomputeSingleDocumentChangeSet($this->dm->getClassMetadata(User::class), $user);
+
+        self::assertSame(['original', 'changed again'], $this->uow->getDocumentChangeSet($user)['username']);
+    }
+
+    public function testComputeChangeSetsKeepsOriginalValueOfFieldChangedAgain(): void
+    {
+        $user = new User();
+        $user->setUsername('original');
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $user->setUsername('changed');
+        $this->uow->computeChangeSets();
+
+        $user->setUsername('changed again');
+        $this->uow->computeChangeSets();
+
+        self::assertSame(['original', 'changed again'], $this->uow->getDocumentChangeSet($user)['username']);
+    }
+
+    public function testRecomputeKeepsOriginalValueOfReplacedCollection(): void
+    {
+        $user = new User();
+        $user->addPhonenumber(new Phonenumber('111'));
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $originalPhonenumbers = $user->getPhonenumbers();
+        $user->setPhonenumbers(new ArrayCollection([new Phonenumber('222')]));
+        $this->uow->computeChangeSets();
+
+        // A listener, such as a timestampable one, changes another field and recomputes the change set
+        $user->setUsername('changed in listener');
+        $this->uow->recomputeSingleDocumentChangeSet($this->dm->getClassMetadata(User::class), $user);
+
+        $changeSet = $this->uow->getDocumentChangeSet($user);
+        self::assertSame($originalPhonenumbers, $changeSet['phonenumbers'][0]);
+        self::assertSame($user->getPhonenumbers(), $changeSet['phonenumbers'][1]);
+    }
+
+    public function testRecomputeUsesOriginalValueForIncrementDifference(): void
+    {
+        $user = new User();
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $user->incrementCount();
+        $this->uow->computeChangeSets();
+        $user->incrementCount(2);
+
+        $user->setUsername('changed in listener');
+        $this->uow->recomputeSingleDocumentChangeSet($this->dm->getClassMetadata(User::class), $user);
+
+        $this->uow->commit();
+
+        $id = $user->getId();
+        $this->dm->clear();
+
+        $user = $this->dm->find(User::class, $id);
+        self::assertInstanceOf(User::class, $user);
+        self::assertSame(3, $user->getCount());
     }
 
     public function testRecomputeChangesetForUninitializedProxyDoesNotCreateChangeset(): void
