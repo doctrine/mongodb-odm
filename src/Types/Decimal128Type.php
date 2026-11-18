@@ -36,7 +36,7 @@ class Decimal128Type extends Type implements Incrementable, Versionable
     /** @return string */
     public function diff($old, $new)
     {
-        return bcsub($new, $old);
+        return bcsub($new, $old ?? '0');
     }
 
     /**
