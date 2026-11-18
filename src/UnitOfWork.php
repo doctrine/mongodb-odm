@@ -849,6 +849,16 @@ final class UnitOfWork implements PropertyChangedListener
             }
 
             if ($changeSet) {
+                // Keep the original value of fields already in the change set: the
+                // original data was updated by a previous computation in this flush.
+                foreach ($changeSet as $propName => $change) {
+                    if (! isset($this->documentChangeSets[$oid][$propName])) {
+                        continue;
+                    }
+
+                    $changeSet[$propName][0] = $this->documentChangeSets[$oid][$propName][0];
+                }
+
                 $this->documentChangeSets[$oid] = isset($this->documentChangeSets[$oid])
                     ? $changeSet + $this->documentChangeSets[$oid]
                     : $changeSet;
