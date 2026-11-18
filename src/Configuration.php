@@ -11,8 +11,10 @@ use Doctrine\Common\Cache\Psr6\DoctrineProvider;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\ODM\MongoDB\PersistentCollection\DefaultDelegateCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\DefaultPersistentCollectionGenerator;
+use Doctrine\ODM\MongoDB\PersistentCollection\DelegateCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionFactory;
 use Doctrine\ODM\MongoDB\PersistentCollection\PersistentCollectionGenerator;
 use Doctrine\ODM\MongoDB\Proxy\FileLocator;
@@ -130,6 +132,7 @@ class Configuration
      *      hydratorNamespace?: string,
      *      metadataCacheImpl?: Cache,
      *      metadataDriverImpl?: MappingDriver,
+     *      delegateCollectionFactory?: DelegateCollectionFactory,
      *      persistentCollectionFactory?: PersistentCollectionFactory,
      *      persistentCollectionGenerator?: PersistentCollectionGenerator,
      *      persistentCollectionDir?: string,
@@ -665,6 +668,20 @@ class Configuration
     public function getRepositoryFactory(): RepositoryFactory
     {
         return $this->attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
+    }
+
+    public function setDelegateCollectionFactory(DelegateCollectionFactory $delegateCollectionFactory): void
+    {
+        $this->attributes['delegateCollectionFactory'] = $delegateCollectionFactory;
+    }
+
+    public function getDelegateCollectionFactory(): DelegateCollectionFactory
+    {
+        if (! isset($this->attributes['delegateCollectionFactory'])) {
+            $this->attributes['delegateCollectionFactory'] = new DefaultDelegateCollectionFactory();
+        }
+
+        return $this->attributes['delegateCollectionFactory'];
     }
 
     public function setPersistentCollectionFactory(PersistentCollectionFactory $persistentCollectionFactory): void

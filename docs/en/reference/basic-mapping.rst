@@ -241,7 +241,8 @@ and ``enumType`` to the enum's |FQCN|.
     set ``nullable=true`` to have ``null`` values saved to the database.
 
 Additionally Doctrine can determine ``collectionClass`` for ``ReferenceMany`` and
-``EmbedMany`` collections from property's type.
+``EmbedMany`` collections from property's type. See :ref:`custom_collection` for
+the supported collection contracts.
 
 Property Mapping
 ----------------

@@ -9,6 +9,9 @@ use Doctrine\Common\Collections\Collection as BaseCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 
+use function is_a;
+use function is_string;
+
 /**
  * Abstract factory for creating persistent collection classes.
  */
@@ -16,18 +19,21 @@ abstract class AbstractPersistentCollectionFactory implements PersistentCollecti
 {
     public function create(DocumentManager $dm, array $mapping, ?BaseCollection $coll = null): PersistentCollectionInterface
     {
+        $collectionClass = $mapping['collectionClass'] ?? null;
+        $isDelegated     = is_string($collectionClass) && is_a($collectionClass, DelegateCollection::class, true);
+
         if ($coll === null) {
-            $coll = ! empty($mapping['collectionClass'])
-                ? $this->createCollectionClass($mapping['collectionClass'])
-                : new ArrayCollection();
+            $coll = $isDelegated || empty($collectionClass)
+                ? new ArrayCollection()
+                : $this->createCollectionClass($collectionClass);
         }
 
-        if (empty($mapping['collectionClass'])) {
+        if ($isDelegated || empty($collectionClass)) {
             return new PersistentCollection($coll, $dm, $dm->getUnitOfWork());
         }
 
         $className = $dm->getConfiguration()->getPersistentCollectionGenerator()
-            ->loadClass($mapping['collectionClass'], $dm->getConfiguration()->getAutoGeneratePersistentCollectionClasses());
+            ->loadClass($collectionClass, $dm->getConfiguration()->getAutoGeneratePersistentCollectionClasses());
 
         return new $className($coll, $dm, $dm->getUnitOfWork());
     }
