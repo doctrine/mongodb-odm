@@ -10,10 +10,10 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Operator;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class OperatorTest extends BaseTestCase
+class OperatorTest extends UnitTestCase
 {
     use AggregationTestTrait;
     use AggregationOperatorsProviderTrait;

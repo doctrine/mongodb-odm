@@ -10,12 +10,12 @@ use Doctrine\ODM\MongoDB\Aggregation\Stage\BucketAuto;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\CmsComment;
 use Documents\User;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-class BucketAutoTest extends BaseTestCase
+class BucketAutoTest extends UnitTestCase
 {
     use AggregationOperatorsProviderTrait;
     use AggregationTestTrait;

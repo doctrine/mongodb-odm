@@ -283,18 +283,6 @@ parameters:
 			path: tests/Tests/Aggregation/Stage/FacetTest.php
 
 		-
-			message: '#^Constant DOCTRINE_MONGODB_SERVER not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: tests/Tests/BaseTestCase.php
-
-		-
-			message: '#^Used constant DOCTRINE_MONGODB_SERVER not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: tests/Tests/BaseTestCase.php
-
-		-
 			message: '#^Parameter \#2 \$referenceMapping of method Doctrine\\ODM\\MongoDB\\DocumentManager\:\:createReference\(\) expects array\{type\: string, fieldName\: string, name\: string, isCascadeRemove\: bool, isCascadePersist\: bool, isCascadeRefresh\: bool, isCascadeMerge\: bool, isCascadeDetach\: bool, \.\.\.\}, array\{storeAs\: ''dbRef''\} given\.$#'
 			identifier: argument.type
 			count: 1

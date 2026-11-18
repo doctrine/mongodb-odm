@@ -11,13 +11,13 @@ use Doctrine\Common\Collections\ExpressionBuilder;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use Doctrine\ODM\MongoDB\Query\Expr;
 use Doctrine\ODM\MongoDB\Query\QueryExpressionVisitor;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\Bars\Bar;
 use MongoDB\BSON\Regex;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 
-class QueryExpressionVisitorTest extends BaseTestCase
+class QueryExpressionVisitorTest extends UnitTestCase
 {
     private Builder $queryBuilder;
 

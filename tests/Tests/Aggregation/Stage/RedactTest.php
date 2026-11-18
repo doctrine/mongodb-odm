@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Redact;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
-class RedactTest extends BaseTestCase
+class RedactTest extends UnitTestCase
 {
     use AggregationTestTrait;
 

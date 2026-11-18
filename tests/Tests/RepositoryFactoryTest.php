@@ -9,7 +9,7 @@ use Doctrine\ODM\MongoDB\Repository\DefaultRepositoryFactory;
 use Doctrine\ODM\MongoDB\Repository\RepositoryFactory;
 use Documents\User;
 
-class RepositoryFactoryTest extends BaseTestCase
+class RepositoryFactoryTest extends UnitTestCase
 {
     public function testRepositoryFactoryCanBeReplaced(): void
     {

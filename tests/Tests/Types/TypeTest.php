@@ -8,8 +8,8 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Doctrine\ODM\MongoDB\Types\FloatType;
 use Doctrine\ODM\MongoDB\Types\IntType;
 use Doctrine\ODM\MongoDB\Types\InvalidTypeException;
@@ -38,7 +38,7 @@ use function time;
 
 use const STR_PAD_LEFT;
 
-class TypeTest extends BaseTestCase
+class TypeTest extends UnitTestCase
 {
     use CaptureDeprecationMessages;
 

@@ -7,12 +7,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
 use function serialize;
 use function unserialize;
 
-class BasicInheritanceMappingTest extends BaseTestCase
+class BasicInheritanceMappingTest extends UnitTestCase
 {
     private ClassMetadataFactory $factory;
 

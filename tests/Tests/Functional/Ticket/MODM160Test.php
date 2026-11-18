@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\Functional\Ticket\MODM160;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
-class MODM160Test extends BaseTestCase
+class MODM160Test extends UnitTestCase
 {
     #[DoesNotPerformAssertions]
     public function testEmbedManyInArrayMergeNew(): void

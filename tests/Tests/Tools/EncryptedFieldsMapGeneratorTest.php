@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactoryInterface;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use Doctrine\ODM\MongoDB\MongoDBException;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Doctrine\ODM\MongoDB\Utility\EncryptedFieldsMapGenerator;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -33,7 +33,7 @@ use function array_map;
 
 use const PHP_INT_MAX;
 
-class EncryptedFieldsMapGeneratorTest extends BaseTestCase
+class EncryptedFieldsMapGeneratorTest extends UnitTestCase
 {
     public function testGetEncryptionFieldsMapForClass(): void
     {

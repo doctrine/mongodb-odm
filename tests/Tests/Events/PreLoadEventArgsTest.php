@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Events;
 
 use Doctrine\ODM\MongoDB\Event\PreLoadEventArgs;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\Group;
 
-class PreLoadEventArgsTest extends BaseTestCase
+class PreLoadEventArgsTest extends UnitTestCase
 {
     public function testGetData(): void
     {

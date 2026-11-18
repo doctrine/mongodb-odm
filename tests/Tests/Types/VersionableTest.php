@@ -6,13 +6,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
 use Doctrine\ODM\MongoDB\Types\Versionable;
 use MongoDB\BSON\ObjectId;
 
-class VersionableTest extends BaseTestCase
+class VersionableTest extends UnitTestCase
 {
     public function testIntNextVersion(): void
     {

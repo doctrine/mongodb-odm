@@ -9,13 +9,13 @@ use Doctrine\ODM\MongoDB\Aggregation\Expr;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\SetWindowFields;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationOperatorsProviderTrait;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SortDirection;
 
 use function array_merge;
 
-class SetWindowFieldsTest extends BaseTestCase
+class SetWindowFieldsTest extends UnitTestCase
 {
     use AggregationTestTrait;
     use AggregationOperatorsProviderTrait;

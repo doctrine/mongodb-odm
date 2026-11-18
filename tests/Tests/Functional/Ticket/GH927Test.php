@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Functional\Ticket;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
-class GH927Test extends BaseTestCase
+class GH927Test extends UnitTestCase
 {
     public function testInheritedClassHasAssociationMapping(): void
     {

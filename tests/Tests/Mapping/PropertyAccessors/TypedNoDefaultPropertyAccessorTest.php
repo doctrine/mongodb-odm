@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\TypedNoDefaultPropertyAccessor;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
-class TypedNoDefaultPropertyAccessorTest extends BaseTestCase
+class TypedNoDefaultPropertyAccessorTest extends UnitTestCase
 {
     public function testSetValueWithoutDefault(): void
     {
