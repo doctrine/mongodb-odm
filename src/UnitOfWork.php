@@ -1098,7 +1098,8 @@ final class UnitOfWork implements PropertyChangedListener
      *
      * The passed document must be a managed document. If the document already has a change set
      * because this method is invoked during a commit cycle then the change sets are added.
-     * whereby changes detected in this method prevail.
+     * Changes detected in this method prevail for the new values, while the original values
+     * already stored in the change set are kept.
      *
      * @phpstan-param ClassMetadata<T> $class
      * @phpstan-param T $document

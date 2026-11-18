@@ -526,6 +526,22 @@ class UnitOfWorkTest extends BaseTestCase
         self::assertSame(['original', 'changed again'], $this->uow->getDocumentChangeSet($user)['username']);
     }
 
+    public function testComputeChangeSetsKeepsOriginalValueOfFieldChangedAgain(): void
+    {
+        $user = new User();
+        $user->setUsername('original');
+        $this->uow->persist($user);
+        $this->uow->commit();
+
+        $user->setUsername('changed');
+        $this->uow->computeChangeSets();
+
+        $user->setUsername('changed again');
+        $this->uow->computeChangeSets();
+
+        self::assertSame(['original', 'changed again'], $this->uow->getDocumentChangeSet($user)['username']);
+    }
+
     public function testRecomputeKeepsOriginalValueOfReplacedCollection(): void
     {
         $user = new User();
