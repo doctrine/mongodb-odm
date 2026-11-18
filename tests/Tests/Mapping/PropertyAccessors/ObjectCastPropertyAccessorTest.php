@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\ObjectCastPropertyAccessor;
 use Doctrine\ODM\MongoDB\Proxy\InternalProxy;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
-class ObjectCastPropertyAccessorTest extends BaseTestCase
+class ObjectCastPropertyAccessorTest extends UnitTestCase
 {
     public function testSetGetPublicPropertyValue(): void
     {

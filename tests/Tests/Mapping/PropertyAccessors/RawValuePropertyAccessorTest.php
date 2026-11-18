@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\RawValuePropertyAccessor;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents84\PropertyHooks\User;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use ReflectionObject;
@@ -13,7 +13,7 @@ use ReflectionObject;
 use function trim;
 
 #[RequiresPhp('>= 8.4.0')]
-class RawValuePropertyAccessorTest extends BaseTestCase
+class RawValuePropertyAccessorTest extends UnitTestCase
 {
     public function testSetGetValue(): void
     {

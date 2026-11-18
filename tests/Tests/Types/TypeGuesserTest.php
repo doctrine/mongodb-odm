@@ -6,7 +6,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Types;
 
 use DateTime;
 use DateTimeImmutable;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Doctrine\ODM\MongoDB\Types\Type;
 use Doctrine\ODM\MongoDB\Types\TypeGuesser;
 use Doctrine\ODM\MongoDB\Types\TypeRegistry;
@@ -17,7 +17,7 @@ use Symfony\Component\Uid\Uuid;
 
 use function sprintf;
 
-class TypeGuesserTest extends BaseTestCase
+class TypeGuesserTest extends UnitTestCase
 {
     #[DataProvider('provideTypeToGuessFromValue')]
     public function testTypeFromVariable(?string $expectedType, mixed $variable): void

@@ -6,9 +6,9 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping\PropertyAccessors;
 
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\EnumPropertyAccessor;
 use Doctrine\ODM\MongoDB\Mapping\PropertyAccessors\PropertyAccessorFactory;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
-class EnumPropertyAccessorTest extends BaseTestCase
+class EnumPropertyAccessorTest extends UnitTestCase
 {
     public function testEnumSetEnumGetValue(): void
     {

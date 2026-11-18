@@ -6,12 +6,12 @@ namespace Doctrine\ODM\MongoDB\Tests\Mapping;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadataFactory;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
 use Doctrine\ODM\MongoDB\Tests\CaptureDeprecationMessages;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 
 use function sprintf;
 
-class CollectionPerClassInheritanceDeprecationTest extends BaseTestCase
+class CollectionPerClassInheritanceDeprecationTest extends UnitTestCase
 {
     use CaptureDeprecationMessages;
 

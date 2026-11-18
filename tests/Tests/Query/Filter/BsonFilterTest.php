@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ODM\MongoDB\Tests\Query\Filter;
 
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use InvalidArgumentException;
 
-class BsonFilterTest extends BaseTestCase
+class BsonFilterTest extends UnitTestCase
 {
     public function testGetParameterInvalidArgument(): void
     {

@@ -7,11 +7,11 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use DateTime;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\MatchStage;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\User;
 use MongoDB\BSON\UTCDateTime;
 
-class MatchStageTest extends BaseTestCase
+class MatchStageTest extends UnitTestCase
 {
     use AggregationTestTrait;
 

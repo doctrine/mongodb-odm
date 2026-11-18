@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Iterator\PrimingIterator;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Query\ReferencePrimer;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\Profile;
 use Documents\ProfileNotify;
 use Documents\User;
@@ -18,7 +18,7 @@ use Iterator;
 use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 
-final class PrimingIteratorTest extends BaseTestCase
+final class PrimingIteratorTest extends UnitTestCase
 {
     /** @var class-string[] */
     private array $callbackCalls = [];

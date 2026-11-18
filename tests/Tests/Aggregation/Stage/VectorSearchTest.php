@@ -7,7 +7,7 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
 use Doctrine\ODM\MongoDB\Aggregation\Stage\VectorSearch;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\User;
 use Documents\VectorEmbedding;
 use InvalidArgumentException;
@@ -17,7 +17,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 
 use function enum_exists;
 
-class VectorSearchTest extends BaseTestCase
+class VectorSearchTest extends UnitTestCase
 {
     use AggregationTestTrait;
 

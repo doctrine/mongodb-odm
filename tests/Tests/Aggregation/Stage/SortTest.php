@@ -6,13 +6,13 @@ namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Stage\Sort;
 use Doctrine\ODM\MongoDB\Tests\Aggregation\AggregationTestTrait;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SortDirection;
 
 /** @phpstan-import-type SortShape from Sort */
-class SortTest extends BaseTestCase
+class SortTest extends UnitTestCase
 {
     use AggregationTestTrait;
 

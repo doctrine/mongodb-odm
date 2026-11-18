@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ODM\MongoDB\Tests\Aggregation\Stage;
 
 use Doctrine\ODM\MongoDB\Aggregation\Builder;
-use Doctrine\ODM\MongoDB\Tests\BaseTestCase;
+use Doctrine\ODM\MongoDB\Tests\UnitTestCase;
 use Documents\SimpleReferenceUser;
 use Documents\User;
 use Generator;
@@ -14,7 +14,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 use function is_callable;
 
-class MergeTest extends BaseTestCase
+class MergeTest extends UnitTestCase
 {
     public function testStageWithClassName(): void
     {
