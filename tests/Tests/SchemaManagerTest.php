@@ -122,7 +122,7 @@ class SchemaManagerTest extends BaseTestCase
                 $this->documentCollections[$cm->getCollection()] = $this->getMockCollection($cm->getCollection());
             }
 
-            $this->documentDatabases[$this->getDatabaseName($cm)] ??= $this->getMockDatabase();
+            $this->documentDatabases[$this->getDatabaseName($cm)] ??= $this->getMockDatabase($this->getDatabaseName($cm));
         }
 
         $client->method('getDatabase')->willReturnCallback(fn (string $db) => $this->documentDatabases[$db]);
@@ -1130,7 +1130,7 @@ EOT;
     {
         foreach ($this->documentDatabases as $database) {
             $database
-                ->expects($this->atLeastOnce())
+                ->expects($this->once())
                 ->method('drop')
                 ->with($this->writeOptions($expectedWriteOptions));
         }
@@ -1694,9 +1694,10 @@ EOT;
     }
 
     /** @return Database&MockObject */
-    private function getMockDatabase()
+    private function getMockDatabase(string $name)
     {
         $db = $this->createMock(Database::class);
+        $db->method('getDatabaseName')->willReturn($name);
         $db->method('getCollection')->willReturnCallback(fn (string $collection) => $this->documentCollections[$collection]);
         $db->method('selectGridFSBucket')->willReturnCallback(fn (array $options) => $this->documentBuckets[$options['bucketName']]);
         $db->method('listCollections')->willReturnCallback(function () {

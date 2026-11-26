@@ -873,12 +873,19 @@ final class SchemaManager
      */
     public function dropDatabases(?int $maxTimeMs = null, ?WriteConcern $writeConcern = null): void
     {
+        $databases = [];
         foreach ($this->metadataFactory->getAllMetadata() as $class) {
             if ($class->isMappedSuperclass || $class->isEmbeddedDocument || $class->isQueryResultDocument) {
                 continue;
             }
 
-            $this->dropDocumentDatabase($class->name, $maxTimeMs, $writeConcern);
+            $database                                  = $this->dm->getDocumentDatabase($class->name);
+            $databases[$database->getDatabaseName()] ??= $database;
+        }
+
+        $options = $this->getWriteOptions($maxTimeMs, $writeConcern);
+        foreach ($databases as $database) {
+            $database->drop($options);
         }
     }
 
